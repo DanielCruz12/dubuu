@@ -1,9 +1,7 @@
 import { Inter } from "next/font/google";
-import Footer from "@/layouts/footer";
 import { Header } from "@/layouts/header";
-import { ThemeProvider } from "@/components/theme-provider";
-import { ClerkProvider } from "@clerk/nextjs";
-import { dark } from "@clerk/themes";
+import Footer from "@/layouts/footer";
+import Providers from "./providers";
 import "./globals.css";
 import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/captions.css";
@@ -23,27 +21,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className}`}>
-        <ClerkProvider
-          afterSignOutUrl={"/"}
-          appearance={{
-            baseTheme: dark,
-            layout: {
-              socialButtonsPlacement: "bottom",
-              socialButtonsVariant: "iconButton",
-            },
-          }}
-        >
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <Header />
-            {children}
-            <Footer />
-          </ThemeProvider>
-        </ClerkProvider>
+        <Providers>
+          <Header />
+          {children}
+          <Footer />
+        </Providers>
       </body>
     </html>
   );
