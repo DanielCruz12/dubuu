@@ -104,7 +104,6 @@ body {
 
 body {
   overflow: auto !important;
-  
 }
 
 html {
@@ -112,13 +111,8 @@ html {
   overflow: auto !important;
 }
 
-
 /* Amplify UI Overrides */
 [data-amplify-authenticator] {
-  --amplify-components-button-primary-background-color: var(--primary);
-  --amplify-components-button-primary-hover-background-color: hsl(
-    var(--primary) / 0.9
-  );
   --amplify-components-button-border-radius: var(--radius);
   --amplify-components-fieldcontrol-border-radius: var(--radius);
 }
@@ -195,4 +189,39 @@ html {
 /* Sonner Toast Styles */
 [data-close-button="true"] {
   @apply bg-background border-border text-foreground hover:bg-muted;
+}
+/* Global scrollbar styles */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #534d4d; /* Change thumb color to darker shade in dark mode */
+}
+
+/* Scrollbar thumb for light mode */
+::-webkit-scrollbar-thumb {
+  background-color: rgba(136, 131, 131, 0.205); /* Light thumb color */
+  border-radius: 5px;
+}
+
+/* Scrollbar thumb for dark mode */
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar-thumb {
+    background-color: #bdbdbd;
+    border-radius: 20px;
+  }
+}
+
+/* Optionally, using Tailwind's dark mode variant (if your project uses it) */
+@layer base {
+  /* Scrollbar thumb styles in dark mode with Tailwind */
+  .dark ::-webkit-scrollbar-thumb {
+    background-color: rgba(168, 139, 139, 0.4);
+  }
+
+  /* Scrollbar track styles in dark mode with Tailwind */
+  .dark::-webkit-scrollbar-thumb {
+    background-color: #141414; /* Dark background for thumb */
+  }
 }

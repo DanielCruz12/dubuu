@@ -15,6 +15,7 @@ import { durations, prices, ratings } from "@/utils/filters";
 
 export default function SearchSection() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  
   const { selectedCategory, filters, setCategory, setFilters } =
     useFiltersStore();
 

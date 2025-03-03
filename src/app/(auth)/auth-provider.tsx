@@ -2,6 +2,7 @@
 
 import React, { useEffect } from "react";
 import { Amplify } from "aws-amplify";
+import { useTheme } from "next-themes";
 import {
   Authenticator,
   Heading,
@@ -43,11 +44,11 @@ const components = {
 
       return (
         <View className="text-center mt-4">
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground dark:text-white">
             Don&apos;t have an account?{" "}
             <button
               onClick={toSignUp}
-              className="text-primary underline bg-transparent border-none p-0"
+              className="text-primary underline border-none p-0"
             >
               Sign Up Now
             </button>
@@ -122,9 +123,16 @@ const Auth = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuthenticator((context) => [context.user]);
   const router = useRouter();
   const pathname = usePathname();
+  const { setTheme } = useTheme();
 
   const isAuthPage = pathname.match(/^\/(signin|signup)$/);
   const isDashboardPage = pathname.startsWith("/dashboard");
+
+  useEffect(() => {
+    if (isAuthPage) {
+      setTheme("light");
+    }
+  }, [isAuthPage, setTheme]);
 
   // Redirect authenticated users away from auth pages
   useEffect(() => {
@@ -134,7 +142,11 @@ const Auth = ({ children }: { children: React.ReactNode }) => {
   }, [user, isAuthPage, router]);
 
   if (user && isAuthPage) {
-    return <div className="h-screen flex items-center justify-center">...Cargando</div>;
+    return (
+      <div className="h-screen flex items-center justify-center">
+        Cargando...
+      </div>
+    );
   }
 
   // Allow access to public pages without authentication
@@ -143,7 +155,7 @@ const Auth = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <div className="h-screen">
+    <div className="h-screen ">
       <Authenticator
         initialState={pathname.includes("signup") ? "signUp" : "signIn"}
         components={components}

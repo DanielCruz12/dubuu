@@ -8,7 +8,7 @@ import RecentPosts from "./blog/page";
 
 export default function Home() {
   return (
-    <div className="mx-auto px-4 max-w-7xl">
+    <div className="mx-auto px-3 max-w-7xl">
       <UpTop />
       <SearchSection />
       <HeroSection />

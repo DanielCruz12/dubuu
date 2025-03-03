@@ -21,9 +21,10 @@ export function ResultDialog({
     (tour) => tour.title.toLowerCase() || tour.description.toLowerCase()
   );
 
+  
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[90%] md:max-w-[85%] lg:max-w-[75%] xl:max-w-[55%] mx-auto rounded-lg">
+      <DialogContent className="sm:max-w-[425px] max-w-[90%] md:max-w-[85%] lg:max-w-[75%] xl:max-w-[55%] mx-auto rounded-lg">
         <DialogHeader>
           <DialogTitle>Discover the Worlds Treasures</DialogTitle>
           <DialogDescription>
