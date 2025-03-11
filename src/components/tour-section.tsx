@@ -14,7 +14,10 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { NoSearchResults } from "@/components/not-results-found";
+import { useGetEventsQuery } from "@/state/api/event";
 export default function TourSection() {
+  const { data } = useGetEventsQuery("events");
+  console.log(data);
   const { filters } = useFiltersStore();
   const filteredTours = tours.filter((tour) => {
     // Filter by Category
@@ -84,8 +87,10 @@ export default function TourSection() {
 
   const plugin = useRef(Autoplay({ delay: 2200, stopOnInteraction: true }));
 
+  if (!data) return <>Cargando...</>;
   return (
     <section>
+      {JSON.stringify(data)}
       {filteredTours.length > 0 ? (
         <div>
           <Carousel

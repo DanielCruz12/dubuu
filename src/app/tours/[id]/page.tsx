@@ -29,8 +29,13 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import ImageCollage from "@/components/image-collage";
+import Head from "next/head";
+import { useGetEventsQuery } from "@/state/api/event";
 
 export default function TourBooking() {
+  const { data } = useGetEventsQuery("events");
+  console.log(data);
+
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("12:00");
   console.log(selectedTime);
@@ -46,6 +51,10 @@ export default function TourBooking() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12 ">
+      <Head>
+        The High Roller Experience: Tickets for The LINQ Observation Wheel, Las
+        Vegas Strip
+      </Head>
       <div className="flex items-center gap-2 mb-2 text-sm">
         <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
         <span className="font-medium">4.96</span>
@@ -80,22 +89,32 @@ export default function TourBooking() {
               <div className="flex items-center gap-2  rounded-lg">
                 <Calendar className="w-5 h-5 text-primary rounded-xl" />
                 <div>
-                  <div className="text-xs sm:text-sm md:text-base font-medium">Duration</div>
-                  <div className="text-xs sm:text-sm md:text-base text-muted-foreground">5-7 days</div>
+                  <div className="text-xs sm:text-sm md:text-base font-medium">
+                    Duration
+                  </div>
+                  <div className="text-xs sm:text-sm md:text-base text-muted-foreground">
+                    5-7 days
+                  </div>
                 </div>
               </div>
 
               <div className="flex items-center gap-2 ">
                 <Users className="w-5 h-5 text-primary" />
                 <div>
-                  <div className="text-xs sm:text-sm md:text-base font-medium">Group Size</div>
-                  <div className="text-xs sm:text-sm md:text-base text-muted-foreground">06 people</div>
+                  <div className="text-xs sm:text-sm md:text-base font-medium">
+                    Group Size
+                  </div>
+                  <div className="text-xs sm:text-sm md:text-base text-muted-foreground">
+                    06 people
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-2 ">
                 <Clock className="w-5 h-5 text-primary" />
                 <div>
-                  <div className="text-xs sm:text-sm md:text-base font-medium">Tour Type</div>
+                  <div className="text-xs sm:text-sm md:text-base font-medium">
+                    Tour Type
+                  </div>
                   <div className="text-xs sm:text-sm md:text-base text-muted-foreground">
                     Daily Tour
                   </div>
@@ -104,8 +123,12 @@ export default function TourBooking() {
               <div className="flex items-center gap-2">
                 <Globe className="w-5 h-5 text-primary" />
                 <div>
-                  <div className="text-xs sm:text-sm md:text-base font-medium">Language</div>
-                  <div className="text-xs sm:text-sm md:text-base text-muted-foreground">English</div>
+                  <div className="text-xs sm:text-sm md:text-base font-medium">
+                    Language
+                  </div>
+                  <div className="text-xs sm:text-sm md:text-base text-muted-foreground">
+                    English
+                  </div>
                 </div>
               </div>
             </div>

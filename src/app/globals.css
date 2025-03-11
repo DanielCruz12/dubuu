@@ -119,7 +119,7 @@ html {
 
 [data-amplify-authenticator][data-variation="default"] {
   height: 100%;
-  padding: 2rem !important;
+  padding-top: 2rem !important;
 }
 
 [data-amplify-authenticator] [data-amplify-router] {
@@ -132,7 +132,7 @@ html {
 [data-amplify-authenticator] [data-amplify-container] {
   border-radius: var(--radius);
   padding: 2rem !important;
-  border: 1px solid hsl(var(--border));
+  border-top: 1px solid hsl(var(--border));
 }
 
 [data-amplify-authenticator] [data-amplify-form] {
@@ -193,6 +193,7 @@ html {
 /* Global scrollbar styles */
 ::-webkit-scrollbar {
   width: 10px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -217,7 +218,7 @@ html {
 @layer base {
   /* Scrollbar thumb styles in dark mode with Tailwind */
   .dark ::-webkit-scrollbar-thumb {
-    background-color: rgba(168, 139, 139, 0.4);
+    background-color: rgba(171, 171, 171, 0.4);
   }
 
   /* Scrollbar track styles in dark mode with Tailwind */

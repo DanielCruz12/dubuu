@@ -1,9 +1,8 @@
 "use client";
 
-import StoreProvider from "@/state/redux";
-import { Authenticator } from "@aws-amplify/ui-react";
+import StoreProvider from "@/state/store";
 import { ThemeProvider } from "next-themes";
-import Auth from "./(auth)/auth-provider";
+import { Toaster } from "@/components/ui/toaster";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -13,11 +12,8 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
       enableSystem
       disableTransitionOnChange
     >
-      <StoreProvider>
-        <Authenticator.Provider>
-          <Auth>{children}</Auth>
-        </Authenticator.Provider>
-      </StoreProvider>
+      <Toaster />
+      <StoreProvider>{children}</StoreProvider>
     </ThemeProvider>
   );
 };

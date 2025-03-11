@@ -5,6 +5,7 @@ import Providers from "./providers";
 import "./globals.css";
 import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/captions.css";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,12 +21,22 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} w-[100%]`}>
-        <Providers>
-          <Header />
-          {children}
-          <Footer />
-        </Providers>
+      <body className={`${inter.className} w-full h-full flex flex-col`}>
+        <ClerkProvider
+          afterSignOutUrl={"/"}
+          appearance={{
+            layout: {
+              socialButtonsPlacement: "bottom",
+              socialButtonsVariant: "iconButton",
+            },
+          }}
+        >
+          <Providers>
+            <Header />
+            <main className="flex-grow">{children}</main>
+            <Footer />
+          </Providers>
+        </ClerkProvider>
       </body>
     </html>
   );

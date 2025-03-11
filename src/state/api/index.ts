@@ -1,16 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-export const api = createApi({
+export const baseApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_URL,
   }),
   reducerPath: "api",
-  tagTypes: [],
-  endpoints: (build) => ({
-
-    
-  }),
+  tagTypes: ["Events", "Users", "Projects"],
+  endpoints: () => ({}),
 });
-
-export const {} = api;
