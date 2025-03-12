@@ -5,10 +5,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Search, Star } from "lucide-react";
+import { Search } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import Image from "next/image";
-import tours from "@/utils/data";
+import { products } from "@/utils/data";
 
 export function ResultDialog({
   isOpen,
@@ -17,11 +17,10 @@ export function ResultDialog({
   isOpen: boolean;
   onClose: (isOpen: boolean) => void;
 }) {
-  const filteredTours = tours.filter(
-    (tour) => tour.title.toLowerCase() || tour.description.toLowerCase()
+  const filteredTours = products.filter(
+    (tour) => tour.name.toLowerCase() || tour.description.toLowerCase()
   );
 
-  
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px] max-w-[90%] md:max-w-[85%] lg:max-w-[75%] xl:max-w-[55%] mx-auto rounded-lg">
@@ -51,7 +50,7 @@ export function ResultDialog({
               >
                 <div className="flex-grow">
                   <div className="flex items-center mt-1">
-                    {[...Array(5)].map((_, i) => (
+                    {/*    {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
                         className={`w-4 h-4 ${
@@ -60,12 +59,12 @@ export function ResultDialog({
                             : "text-gray-300"
                         }`}
                       />
-                    ))}
-                    <span className="text-sm text-gray-600 ml-2">
+                    ))} */}
+                    {/*  <span className="text-sm text-gray-600 ml-2">
                       ({tour.reviews} reviews)
-                    </span>
+                    </span> */}
                   </div>
-                  <h3 className="font-bold text-lg">{tour.title}</h3>
+                  <h3 className="font-bold text-lg">{tour.name}</h3>
 
                   <p className="text-xl font-bold text-primary mt-1">
                     ${tour.price}
@@ -76,8 +75,8 @@ export function ResultDialog({
                 </div>
                 <div className="w-full sm:w-24 h-24 relative rounded-md overflow-hidden flex-shrink-0">
                   <Image
-                    src={tour.image}
-                    alt={tour.title}
+                    src={tour?.banner || ""}
+                    alt={tour.name}
                     fill
                     style={{ objectFit: "cover" }}
                     className="image"

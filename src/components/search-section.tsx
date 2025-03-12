@@ -1,30 +1,25 @@
 "use client";
 import { useState } from "react";
 import { Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
+/* import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui/select"; */
 import { ResultDialog } from "./results-dialog";
-import { useFiltersStore, Category } from "@/stores/useFilterStorage";
-import { durations, prices, ratings } from "@/utils/filters";
 
 export default function SearchSection() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  
-  const { selectedCategory, filters, setCategory, setFilters } =
-    useFiltersStore();
 
   return (
     <section className="py-6">
       <ResultDialog isOpen={isDialogOpen} onClose={setIsDialogOpen} />
       <div>
         <div className="flex gap-2 overflow-x-auto pb-3">
-          {Object.values(Category).map((item) => (
+          {/*  {Object.values(Category).map((item) => (
             <Button
               key={item}
               variant={selectedCategory === item ? "default" : "ghost"}
@@ -32,7 +27,7 @@ export default function SearchSection() {
             >
               {item}
             </Button>
-          ))}
+          ))} */}
         </div>
       </div>
       <div className="flex flex-col md:flex-row gap-4">
@@ -46,7 +41,7 @@ export default function SearchSection() {
           />
         </div>
       </div>
-      <div className="flex flex-wrap gap-2 mt-4">
+      {/*  <div className="flex flex-wrap gap-2 mt-4">
         {[
           { label: "Duration", options: durations, field: "duration" },
           { label: "Rating", options: ratings, field: "rating" },
@@ -70,7 +65,7 @@ export default function SearchSection() {
             </SelectContent>
           </Select>
         ))}
-      </div>
+      </div> */}
     </section>
   );
 }

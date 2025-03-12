@@ -30,10 +30,10 @@ import {
 } from "@/components/ui/accordion";
 import ImageCollage from "@/components/image-collage";
 import Head from "next/head";
-import { useGetEventsQuery } from "@/state/api/event";
+import { useGetProductsQuery } from "@/redux/slices/product-slice";
 
 export default function TourBooking() {
-  const { data } = useGetEventsQuery("events");
+  const { data } = useGetProductsQuery("products");
   console.log(data);
 
   const [selectedDate, setSelectedDate] = useState("");

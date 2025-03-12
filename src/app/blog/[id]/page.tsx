@@ -1,13 +1,18 @@
-import Image from "next/image"
-import { notFound } from "next/navigation"
-import { Badge } from "@/components/ui/badge"
-import { Clock, Calendar } from 'lucide-react'
-import { data } from "@/utils/filters"
+"use client";
+import Image from "next/image";
+import { Badge } from "@/components/ui/badge";
+import { Clock, Calendar } from "lucide-react";
+import { useGetProductsQuery } from "@/redux/slices/product-slice";
+import { notFound } from "next/navigation";
 export default function BlogPost({ params }: { params: { id: string } }) {
-  const blog = data.find((b: { id: number }) => b.id === parseInt(params.id))
+  console.log(params);
+  const { data: blog } = useGetProductsQuery("products");
+
+  /*   const blog = data.find((b: { id: number }) => b.id === parseInt(params.id))
+   */
 
   if (!blog) {
-    notFound()
+    notFound();
   }
 
   return (
@@ -37,10 +42,10 @@ export default function BlogPost({ params }: { params: { id: string } }) {
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
                 <time>
-                  {new Date(blog.date).toLocaleDateString('en-US', {
-                    month: 'long',
-                    day: 'numeric',
-                    year: 'numeric'
+                  {new Date(blog.date).toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
                   })}
                 </time>
               </div>
@@ -64,6 +69,5 @@ export default function BlogPost({ params }: { params: { id: string } }) {
         </div>
       </div>
     </article>
-  )
+  );
 }
-
