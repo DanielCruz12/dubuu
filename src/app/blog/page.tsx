@@ -4,8 +4,12 @@ import { TrendingPost } from "@/components/trending-post";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useGetProductsQuery } from "@/redux/slices/product/product-slice";
 
 export default function RecentPosts() {
+  const { data: products } = useGetProductsQuery();
+
+  console.log(products);
   const pathname = usePathname();
   const posts = [
     {

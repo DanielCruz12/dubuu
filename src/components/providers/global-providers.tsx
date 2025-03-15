@@ -1,17 +1,16 @@
-'use client'
+"use client";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/toaster";
-import { Provider } from "react-redux";
-import { store } from "@/redux/store";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Header } from "@/layouts/header";
 import Footer from "@/layouts/footer";
 import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/captions.css";
+import StoreProvider from "@/redux/store";
 
 const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
   return (
-    <Provider store={store}>
+    <StoreProvider>
       <ClerkProvider
         afterSignOutUrl={"/"}
         appearance={{
@@ -28,12 +27,12 @@ const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
           disableTransitionOnChange
         >
           <Header />
-          <main >{children}</main>
+          <main>{children}</main>
           <Footer />
           <Toaster />
         </ThemeProvider>
       </ClerkProvider>
-    </Provider>
+    </StoreProvider>
   );
 };
 

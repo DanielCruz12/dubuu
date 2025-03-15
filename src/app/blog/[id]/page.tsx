@@ -2,17 +2,15 @@
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Calendar } from "lucide-react";
-import { useGetProductsQuery } from "@/redux/slices/product-slice";
-import { notFound } from "next/navigation";
-export default function BlogPost({ params }: { params: { id: string } }) {
-  console.log(params);
-  const { data: blog } = useGetProductsQuery("products");
+import { blogData } from "../../../utils/data"; // Import blog data
 
-  /*   const blog = data.find((b: { id: number }) => b.id === parseInt(params.id))
-   */
+export default function BlogPost({ params }: { params: { id: string } }) {
+  const blog = blogData.find(
+    (b: { id: number }) => b.id === parseInt(params.id)
+  ); // Find blog post by ID
 
   if (!blog) {
-    notFound();
+    return <div>Blog post not found</div>;
   }
 
   return (

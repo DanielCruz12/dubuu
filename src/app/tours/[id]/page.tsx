@@ -30,11 +30,13 @@ import {
 } from "@/components/ui/accordion";
 import ImageCollage from "@/components/image-collage";
 import Head from "next/head";
-import { useGetProductsQuery } from "@/redux/slices/product-slice";
+import { useAppSelector } from "@/redux/store";
 
-export default function TourBooking() {
-  const { data } = useGetProductsQuery("products");
-  console.log(data);
+export default function ProductBooking() {
+  const products = useAppSelector(
+    (state) => state.products.queries["getProducts(undefined)"]?.data ?? []
+  );
+  console.log(products);
 
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("12:00");
