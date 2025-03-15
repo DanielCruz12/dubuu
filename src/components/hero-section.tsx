@@ -1,6 +1,5 @@
 "use client";
 import { motion } from "framer-motion";
-import Link from "next/link";
 
 export default function HeroSection() {
   return (
@@ -12,9 +11,7 @@ export default function HeroSection() {
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
         >
-          <Link href={"/dashboard"}>Your Journey,</Link>
-          <Link href={"/sign-in"}>Your Way</Link>
-          
+          Your Journey, Your Way
         </motion.h1>
         <p className="text-base md:text-xl text-gray-600 dark:text-gray-400">
           Discover the Worlds Treasures with Dans tour

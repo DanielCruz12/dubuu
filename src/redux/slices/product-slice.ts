@@ -6,10 +6,11 @@ export const productsApiSlice = createApi({
   reducerPath: "products",
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_URL || "localhost:3000",
+   
   }),
   endpoints: (builder) => {
     return {
-      getProducts: builder.query({
+      getProducts: builder.query<IProduct[], void>({
         query: () => `/api/v1/products`,
       }),
       createProduct: builder.mutation<IProduct, Omit<IProduct, "id">>({

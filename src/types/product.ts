@@ -10,9 +10,11 @@ export interface IProduct {
   videos: string[];
   files: string[];
   banner: string;
-  product_service_id: string;
-  product_category_id: string;
-  target_product_audience_id: string;
+  product_service: { name: string };
+  product_category: { name: string };
+  target_product_audience?: { name: string };
+  average_rating: number
+  total_reviews: number
   user_id: string;
   is_approved?: boolean;
 }

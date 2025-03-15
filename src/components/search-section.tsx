@@ -1,33 +1,41 @@
 "use client";
 import { useState } from "react";
 import { Search } from "lucide-react";
-/* import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"; */
+} from "@/components/ui/select";
 import { ResultDialog } from "./results-dialog";
+import { Category } from "@/types/filters";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { setCategory, setFilters } from "@/redux/slices/filter-slice";
+import { durations, prices, ratings } from "@/utils/data";
 
 export default function SearchSection() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const dispatch = useAppDispatch();
+  const { selectedCategory, filters } = useAppSelector(
+    (state) => state.filters
+  );
 
   return (
     <section className="py-6">
       <ResultDialog isOpen={isDialogOpen} onClose={setIsDialogOpen} />
       <div>
         <div className="flex gap-2 overflow-x-auto pb-3">
-          {/*  {Object.values(Category).map((item) => (
+          {Object.values(Category).map((item) => (
             <Button
               key={item}
               variant={selectedCategory === item ? "default" : "ghost"}
-              onClick={() => setCategory(item)}
+              onClick={() => dispatch(setCategory(item))}
             >
               {item}
             </Button>
-          ))} */}
+          ))}
         </div>
       </div>
       <div className="flex flex-col md:flex-row gap-4">
@@ -41,7 +49,7 @@ export default function SearchSection() {
           />
         </div>
       </div>
-      {/*  <div className="flex flex-wrap gap-2 mt-4">
+      <div className="flex flex-wrap gap-2 mt-4">
         {[
           { label: "Duration", options: durations, field: "duration" },
           { label: "Rating", options: ratings, field: "rating" },
@@ -49,9 +57,9 @@ export default function SearchSection() {
         ].map(({ label, options, field }) => (
           <Select
             key={field}
-            onValueChange={(value) => setFilters({ [field]: value })}
+            onValueChange={(value) => dispatch(setFilters({ [field]: value }))}
           >
-            <SelectTrigger className="w-[140px] ">
+            <SelectTrigger className="w-[140px]">
               <SelectValue
                 placeholder={filters[field as keyof typeof filters] || label}
               />
@@ -65,7 +73,7 @@ export default function SearchSection() {
             </SelectContent>
           </Select>
         ))}
-      </div> */}
+      </div>
     </section>
   );
 }
