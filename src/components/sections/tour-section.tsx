@@ -11,12 +11,17 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { TourCard } from "@/components/tour-card";
-import { useGetProductsQuery } from "@/redux/slices/product/product-slice";
-import { TourCardSkeleton } from "./skeletons/tour-card-skeleton";
+import { TourCardSkeleton } from "../skeletons/tour-card-skeleton";
+import { IProduct } from "@/types/product";
 
-export default function TourSection() {
+export default function TourSection({
+  products,
+  isLoading,
+}: {
+  products: IProduct[];
+  isLoading: boolean;
+}) {
   const plugin = useRef(Autoplay({ delay: 2200, stopOnInteraction: true }));
-  const { data: products = [], isLoading } = useGetProductsQuery();
 
   return (
     <section className="py-6">

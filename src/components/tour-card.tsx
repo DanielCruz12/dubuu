@@ -18,7 +18,7 @@ export function TourCard({
   images,
   average_rating,
   total_reviews,
-  product_category_id,
+  product_category,
 }: IProduct) {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -57,7 +57,7 @@ export function TourCard({
             </button>
             <div className="absolute bottom-[-6px] left-4 flex items-center gap-2 rounded-full px-3 py-1.5 shadow-lg bg-white dark:bg-gray-200">
               <span className="text-muted-foreground dark:text-gray-700 ">
-                {product_category_id?.name}
+                {product_category?.name}
               </span>
             </div>
           </div>

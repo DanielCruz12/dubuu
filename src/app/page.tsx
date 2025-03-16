@@ -1,13 +1,25 @@
-import HeroSection from "@/components/hero-section";
-import TourSection from "@/components/tour-section";
+"use client";
+import HeroSection from "@/components/sections/hero-section";
+import SearchSection from "@/components/sections/search-section";
+import TourSection from "@/components/sections/tour-section";
 import UpTop from "@/components/up-top";
+import { useGetProductsQuery } from "@/redux/slices/product/product-slice";
+import { RootState, useAppSelector } from "@/redux/store";
 
 export default function Home() {
+  const { data: products = [], isLoading } = useGetProductsQuery();
+  const { rating } = useAppSelector((state: RootState) => state.filters);
+
+  const filteredProducts = products.filter((product) => {
+    return !rating || product.average_rating >= Number(rating);
+  });
+
   return (
     <div className="mx-auto px-3 max-w-7xl">
       <UpTop />
       <HeroSection />
-      <TourSection />
+      <SearchSection />
+      <TourSection products={filteredProducts} isLoading={isLoading} />
 
       {/* 
       <PopularDestinations /> 

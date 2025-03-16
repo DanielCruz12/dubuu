@@ -1,34 +1,23 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Category, FilterOptions } from "@/types/filters";
 
 interface FiltersState {
-  selectedCategory: Category;
-  filters: FilterOptions;
+  rating: string;
 }
 
 const initialState: FiltersState = {
-  selectedCategory: Category.TOURS,
-  filters: {
-    category: Category.TOURS,
-    duration: null,
-    rating: null,
-    price: null,
-  },
+  rating: "3",
 };
 
 const filtersSlice = createSlice({
   name: "filters",
   initialState,
   reducers: {
-    setCategory: (state, action: PayloadAction<Category>) => {
-      state.selectedCategory = action.payload;
-      state.filters.category = action.payload;
+    setRating: (state, action: PayloadAction<string>) => {
+      state.rating = action.payload;
     },
-    setFilters: (state, action: PayloadAction<Partial<FilterOptions>>) => {
-      state.filters = { ...state.filters, ...action.payload };
-    },
+    resetFilters: () => initialState, // ✅ Resetea el filtro
   },
 });
 
-export const { setCategory, setFilters } = filtersSlice.actions;
+export const { setRating, resetFilters } = filtersSlice.actions;
 export default filtersSlice.reducer;

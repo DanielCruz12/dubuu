@@ -1,4 +1,6 @@
-"use client";
+/* "use client";
+import { useState } from "react";
+import Image from "next/image";
 import {
   Dialog,
   DialogContent,
@@ -7,22 +9,18 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Search, Star } from "lucide-react";
-import { ScrollArea } from "./ui/scroll-area";
-import Image from "next/image";
-import { useState } from "react";
-import { IProduct } from "@/types/product";
+import { ScrollArea } from "../ui/scroll-area";
 
 export function ResultDialog({
   isOpen,
   onClose,
-  products,
 }: {
   isOpen: boolean;
-  products: IProduct[];
   onClose: (isOpen: boolean) => void;
 }) {
   const [inputValue, setInputValue] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const products = [];
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.trim();
@@ -52,7 +50,7 @@ export function ResultDialog({
           </DialogDescription>
         </DialogHeader>
 
-        {/* Search Input */}
+      
         <div className="py-2">
           <div className="flex items-center gap-4">
             <div className="flex-1 relative">
@@ -68,7 +66,6 @@ export function ResultDialog({
           </div>
         </div>
 
-        {/* Results */}
         <div className="h-44 w-full flex flex-col">
           <ScrollArea className="flex-grow w-full rounded-md">
             {searchTerm.length < 3 ? (
@@ -84,7 +81,6 @@ export function ResultDialog({
                 </p>
               </div>
             ) : (
-              // Show results if found
               filteredProducts.map((tour, index) => {
                 const ratingValue = Number(tour.average_rating) || 0;
                 const reviewsCount = tour.total_reviews ?? 0;
@@ -148,3 +144,4 @@ export function ResultDialog({
     </Dialog>
   );
 }
+ */
