@@ -77,9 +77,9 @@ export function TourCard({
               <span className="text-muted-foreground text-sm">
                 {reviewsCount === 0
                   ? "(No reviews)"
-                  : reviewsCount === 1
-                    ? "(1 review)"
-                    : `(${reviewsCount} reviews)`}
+                  : reviewsCount !== 1
+                    ? `(${reviewsCount} reviews)`
+                    : "(1 review)"}
               </span>
             </div>
             <h3 className="text-lg md:text-xl font-bold pt-2 text-wrap line-clamp-1">

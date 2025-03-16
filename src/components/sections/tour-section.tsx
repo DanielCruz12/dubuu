@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useRef } from "react";
@@ -12,7 +11,7 @@ import {
 } from "@/components/ui/carousel";
 import { TourCard } from "@/components/tour-card";
 import { TourCardSkeleton } from "../skeletons/tour-card-skeleton";
-import { IProduct } from "@/types/product";
+import type { IProduct } from "@/types/product";
 
 export default function TourSection({
   products,
@@ -50,6 +49,7 @@ export default function TourSection({
                 </CarouselItem>
               ))}
         </CarouselContent>
+
         <CarouselPrevious className="hidden md:flex" />
         <CarouselNext className="hidden md:flex" />
       </Carousel>

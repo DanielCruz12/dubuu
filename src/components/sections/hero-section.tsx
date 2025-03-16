@@ -6,14 +6,14 @@ export default function HeroSection() {
     <section className="flex justify-between items-end mb-3 md:mb-6">
       <div>
         <motion.h1
-          className="text-xl md:text-4xl font-bold mb-1 md:mb-3"
+          className="text-xl md:text-3xl font-bold mb-1 md:mb-2"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
         >
           Your Journey, Your Way
         </motion.h1>
-        <p className="text-base md:text-xl text-gray-600 dark:text-gray-400">
+        <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">
           Discover the Worlds Treasures with Dans tour
         </p>
       </div>

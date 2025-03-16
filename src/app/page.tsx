@@ -8,17 +8,23 @@ import { RootState, useAppSelector } from "@/redux/store";
 
 export default function Home() {
   const { data: products = [], isLoading } = useGetProductsQuery();
-  const { rating } = useAppSelector((state: RootState) => state.filters);
+  const { rating, pricing } = useAppSelector(
+    (state: RootState) => state.filters
+  );
 
   const filteredProducts = products.filter((product) => {
-    return !rating || product.average_rating >= Number(rating);
+    return (
+      !rating ||
+      (product.average_rating >= Number(rating) &&
+        (!pricing || product.price <= pricing))
+    );
   });
 
   return (
     <div className="mx-auto px-3 max-w-7xl">
       <UpTop />
       <HeroSection />
-      <SearchSection />
+      <SearchSection products={filteredProducts} />
       <TourSection products={filteredProducts} isLoading={isLoading} />
 
       {/* 
