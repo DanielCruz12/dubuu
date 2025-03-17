@@ -38,7 +38,7 @@ export default function Products() {
                   <p className="text-gray-400 mb-2">
                     {product.duration} {product.duration > 1 ? "days" : "day"}
                   </p>
-                  <p className="text-gray-600 mb-4 text-wrap line-clamp-4">
+                  <p className="text-gray-600 mb-4 text-wrap line-clamp-3">
                     {product.description}
                   </p>
                 </div>

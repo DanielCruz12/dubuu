@@ -100,9 +100,9 @@ export default function PopularDestinations() {
 
   return (
     <section className="py-12">
-      <div className="space-y-4">
-        <h2 className="text-xl md:text-4xl font-bold">Popular Destinations</h2>
-        <p className="text-base md:text-xl text-gray-600 dark:text-gray-400">
+      <div className="space-y-3">
+        <h2 className="text-xl md:text-3xl font-bold">Popular Destinations</h2>
+        <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">
           Favorite destinations based on customer reviews
         </p>
 

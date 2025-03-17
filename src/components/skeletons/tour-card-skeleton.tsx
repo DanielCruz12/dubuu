@@ -7,7 +7,7 @@ export function TourCardSkeleton() {
     <div className="relative aspect-[16/10] rounded-lg">
       <Card className="overflow-hidden rounded-3xl border-0 shadow-lg">
         <div className="relative">
-          <div className="w-full h-36 md:h-52 bg-gray-200 dark:bg-gray-700 animate-pulse" />
+          <div className="w-full h-36 md:h-44 bg-gray-200 dark:bg-gray-700 animate-pulse" />
           <div className="absolute right-4 top-4 h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse" />
           <div className="absolute bottom-[-6px] left-4 rounded-full px-3 py-1.5 bg-gray-200 dark:bg-gray-700 animate-pulse">
             <div className="h-4 w-20" />

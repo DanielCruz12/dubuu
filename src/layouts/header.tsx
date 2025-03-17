@@ -5,12 +5,12 @@ import { SignedIn, UserButton } from "@clerk/nextjs";
 
 export function Header() {
   return (
-    <header className="">
-      <div className=" py-3 flex justify-center items-center">
+    <header>
+      {/*   <div className=" py-3 flex justify-center items-center">
         <p className="text-xs lg:text-sm">
           Unlock the Magic of Travel with Dan&apos;s Tours, Now →
         </p>
-      </div>
+      </div> */}
 
       <nav>
         <div className=" max-w-7xl px-3 mx-auto flex justify-between items-center h-16">

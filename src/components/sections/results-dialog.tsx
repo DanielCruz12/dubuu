@@ -91,22 +91,22 @@ export function ResultDialog({
         <div className="max-h-[60vh] w-full flex flex-col ">
           <ScrollArea className="flex-grow w-full p-5">
             {searchTerm.length < 3 ? (
-              <div className="flex flex-col items-center justify-center h-60 gap-3">
+              <div className="flex flex-col items-center justify-center h-80 md:h-52 gap-3">
                 <Search className="w-12 h-12 text-muted-foreground/40" />
                 <p className="text-center text-muted-foreground">
                   Type at least 3 characters to start searching
                 </p>
               </div>
             ) : filteredProducts.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-60 gap-3">
+              <div className="flex flex-col items-center justify-center h-80 md:h-52 gap-3">
                 <Search className="w-12 h-12 text-muted-foreground/40" />
                 <p className="text-center text-muted-foreground">
                   No tours found matching {searchTerm}
                 </p>
               </div>
             ) : (
-              <div className="md:space-y-4">
-                <h3 className="text-sm md:text-lg font-medium">
+              <div className="md:space-y-4 ">
+                <h3 className="text-sm md:text-lg px-4 font-medium">
                   {filteredProducts.length} result
                   {filteredProducts.length !== 1 ? "s" : ""} found
                 </h3>
@@ -122,9 +122,9 @@ export function ResultDialog({
                   return (
                     <div
                       key={tour.id}
-                      className="group p-5 md:p-6 border border-primary/10 rounded-xl hover:shadow-md transition-all duration-300 cursor-pointer hover:border-primary/30 flex flex-col sm:flex-row gap-5"
+                      className="group p-4 md:p-6 border border-primary/10 rounded-xl hover:shadow-md transition-all duration-300 cursor-pointer hover:border-primary/30 flex flex-col sm:flex-row gap-5"
                     >
-                      <div className="w-full sm:w-28 h-14 md:h-36 relative rounded-lg overflow-hidden flex-shrink-0">
+                      <div className="w-full sm:w-28 h-36 md:h-28 relative rounded-lg overflow-hidden flex-shrink-0">
                         <div className="absolute inset-0 bg-gradient-to-t dark:from-black/60 dark:to-transparent z-10" />
                         <Badge className="absolute bottom-2 right-2 z-20 bg-primary/90">
                           ${tour.price}

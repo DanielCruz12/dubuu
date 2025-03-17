@@ -3,11 +3,13 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface FiltersState {
   rating: string;
   pricing: number;
+  category: string;
 }
 
 const initialState: FiltersState = {
   rating: "3",
   pricing: 450,
+  category: "tours",
 };
 
 const filtersSlice = createSlice({
@@ -20,9 +22,13 @@ const filtersSlice = createSlice({
     setPricing: (state, action: PayloadAction<number>) => {
       state.pricing = action.payload;
     },
+    setCategory: (state, action: PayloadAction<string>) => {
+      state.category = action.payload;
+    },
     resetFilters: () => initialState, // ✅ Resetea el filtro
   },
 });
 
-export const { setRating, resetFilters, setPricing } = filtersSlice.actions;
+export const { setRating, resetFilters, setPricing, setCategory } =
+  filtersSlice.actions;
 export default filtersSlice.reducer;

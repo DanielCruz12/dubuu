@@ -50,7 +50,7 @@ export function TourCard({
               alt={name}
               width={400}
               height={300}
-              className="w-full h-36 md:h-52 object-cover"
+              className="w-full h-36 md:h-44 object-cover"
             />
             <button className="absolute right-4 top-4 rounded-full p-1 bg-transparent shadow-sm">
               <Heart className="h-4 w-4 " />
@@ -82,10 +82,10 @@ export function TourCard({
                     : "(1 review)"}
               </span>
             </div>
-            <h3 className="text-lg md:text-xl font-bold pt-2 text-wrap line-clamp-1">
+            <h3 className="text-base md:text-lg font-bold pt-2 text-wrap line-clamp-1">
               {name}
             </h3>
-            <span className="font-normal text-sm md:text-base pt-1 text-muted-foreground text-wrap line-clamp-2">
+            <span className=" md:text-sm pt-1 text-muted-foreground text-wrap line-clamp-2">
               {description}
             </span>
             <p className="font-bold">
