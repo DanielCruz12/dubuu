@@ -30,18 +30,7 @@ import { Badge } from "../ui/badge";
 import { Input } from "../ui/input";
 import { ResultDialog } from "./results-dialog";
 import { IProduct } from "@/types/product";
-
-const ratingOptions = [
-  { label: "5 stars", value: "5" },
-  { label: "+4 stars", value: "4" },
-  { label: "+3 stars", value: "3" },
-];
-
-const categoryOptions = [
-  { label: "Tours", value: "tours" },
-  { label: "Hotels", value: "hotels" },
-  { label: "Rental", value: "rentals" },
-];
+import { categoryOptions, ratingOptions } from "@/utils/data";
 
 export default function SearchSection({ products }: { products: IProduct[] }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);

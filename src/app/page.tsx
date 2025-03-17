@@ -17,7 +17,7 @@ export default function Home() {
     return (
       !rating ||
       (product.average_rating >= Number(rating) &&
-        (!pricing || product.price <= pricing) &&
+        (!pricing || product.price >= pricing) &&
         (!category || product.product_category.name === category))
     );
   });

@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState } from "react";
@@ -30,13 +29,17 @@ import {
 } from "@/components/ui/accordion";
 import ImageCollage from "@/components/image-collage";
 import Head from "next/head";
-import { useAppSelector } from "@/redux/store";
+import { notFound, useParams } from "next/navigation";
+import { useGetProductQuery } from "@/redux/slices/product/product-slice";
+import ImageCollageSkeleton from "@/components/skeletons/image-collage-skeleton";
 
 export default function ProductBooking() {
-  const products = useAppSelector(
-    (state) => state.products.queries["getProducts(undefined)"]?.data ?? []
-  );
-  console.log(products);
+  const { id } = useParams();
+  const {
+    data: product,
+    isLoading,
+    isError,
+  } = useGetProductQuery(id as string);
 
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("12:00");
@@ -51,22 +54,25 @@ export default function ProductBooking() {
     return ticketPrice + addonPrice;
   };
 
+  if (isLoading) return <ImageCollageSkeleton />;
+  if (isError || !product) return notFound();
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-12 ">
-      <Head>
-        The High Roller Experience: Tickets for The LINQ Observation Wheel, Las
-        Vegas Strip
-      </Head>
+      <Head>{product.name}</Head>
       <div className="flex items-center gap-2 mb-2 text-sm">
         <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
         <span className="font-medium">4.96</span>
-        <span className="text-muted-foreground">(672 reviews)</span>
+        <span className="text-muted-foreground">
+          {product?.total_reviews === 0
+            ? "(No reviews)"
+            : product?.total_reviews === 1
+              ? `(1 review)`
+              : `(${product?.total_reviews} review)`}
+        </span>
       </div>
-      <h1 className="text-xl md:text-3xl font-semibold">
-        The High Roller Experience: Tickets for The LINQ Observation Wheel, Las
-        Vegas Strip
-      </h1>
-      <ImageCollage />
+      <h1 className="text-xl md:text-3xl font-semibold">{product?.name}</h1>
+      <ImageCollage banner={product.banner} images={product?.images} />
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Tour Details Section */}
         <div className="lg:col-span-2 space-y-6 md:pr-6 px-2">
@@ -74,7 +80,7 @@ export default function ProductBooking() {
             <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
               <div className="flex items-center gap-1">
                 <MapPin className="w-4 h-4" />
-                <span>Las Vegas, USA</span>
+                <span>{product?.departure_point}</span>
               </div>
               <button className="underline font-semibold">
                 <a
@@ -147,26 +153,7 @@ export default function ProductBooking() {
               </AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-4 font-normal text-xs sm:text-sm md:text-base text-muted-foreground">
-                  <p>
-                    Elevate your Las Vegas experience to new heights with a
-                    journey aboard The High Roller at The LINQ. As the tallest
-                    observation wheel in the world, standing at an impressive
-                    550 feet tall, The High Roller offers a birds-eye
-                    perspective of the iconic Las Vegas Strip and its
-                    surrounding desert landscape. From the moment you step into
-                    one of the spacious cabins, youll be transported on a
-                    mesmerizing adventure, where every turn offers a new and
-                    breathtaking vista of the vibrant city below.
-                  </p>
-                  <p>
-                    Whether youre a first-time visitor or a seasoned Las Vegas
-                    aficionado, The High Roller promises an unparalleled
-                    experience that will leave you in awe. With its
-                    climate-controlled cabins and immersive audio commentary,
-                    this attraction provides a unique opportunity to see Las
-                    Vegas from a whole new perspective, while learning about its
-                    rich history and famous landmarks along the way.
-                  </p>
+                  <p>{product?.description}</p>
                 </div>
               </AccordionContent>
             </AccordionItem>
@@ -176,22 +163,7 @@ export default function ProductBooking() {
               </AccordionTrigger>
               <AccordionContent>
                 <div className="space-y-4 font-normal text-xs sm:text-sm md:text-base text-muted-foreground">
-                  <p>
-                    Ascend to the skies aboard the worlds tallest observation
-                    wheel and marvel at the panoramic vistas stretching as far
-                    as the eye can see. From the iconic landmarks of the Strip
-                    to the majestic mountains in the distance, every moment
-                    aboard The High Roller promises breathtaking sights and
-                    unforgettable memories.
-                  </p>
-                  <p>
-                    All rooms at the resort come with air conditioning, a
-                    seating area, a flat-screen TV with satellite channels, a
-                    safety deposit box and a private bathroom with a shower,
-                    free toiletries and a hairdryer. At Pickalbatros Water
-                    Valley Resort - Neverland Hurghada rooms are equipped with
-                    bed linen and towels.
-                  </p>
+                  <p>{product?.description}</p>
                 </div>
               </AccordionContent>
             </AccordionItem>

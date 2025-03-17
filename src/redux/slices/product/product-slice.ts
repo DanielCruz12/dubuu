@@ -28,9 +28,42 @@ export const productsApiSlice = createApi({
         }),
         invalidatesTags: [{ type: "Products", id: "LIST" } as const],
       }),
+
+      getProduct: builder.query<IProduct, string>({
+        query: (id) => `/api/v1/products/${id}`,
+        providesTags: (result, error, id) => [{ type: "Products", id }],
+      }),
+
+      updateProduct: builder.mutation<
+        IProduct,
+        { id: string; data: Partial<IProduct> }
+      >({
+        query: ({ id, data }) => ({
+          url: `/api/v1/products/${id}`,
+          method: "PATCH",
+          body: data,
+        }),
+        invalidatesTags: (result, error, { id }) => [{ type: "Products", id }],
+      }),
+
+      deleteProduct: builder.mutation<{ success: boolean }, string>({
+        query: (id) => ({
+          url: `/api/v1/products/${id}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: (result, error, id) => [
+          { type: "Products", id },
+          { type: "Products", id: "LIST" },
+        ],
+      }),
     };
   },
 });
 
-export const { useGetProductsQuery, useCreateProductMutation } =
-  productsApiSlice;
+export const {
+  useGetProductsQuery,
+  useGetProductQuery,
+  useCreateProductMutation,
+  useUpdateProductMutation,
+  useDeleteProductMutation,
+} = productsApiSlice;

@@ -1,36 +1,41 @@
-import { Search } from "lucide-react";
-
-/* interface NoSearchResultsProps {
-  searchTerm: string;
-  filters: string[];
-  onReset: () => void;
-} */
+"use client";
+import { FilterX } from "lucide-react";
+import { Card } from "./ui/card";
+import { Button } from "./ui/button";
+import { resetFilters } from "@/redux/slices/filter/filter-slice";
+import { useAppDispatch } from "@/redux/store";
+import Link from "next/link";
 
 export function NoSearchResults() {
+  const dispatch = useAppDispatch();
   return (
-    <div className="flex flex-col items-center justify-center text-center">
-      <div className="bg-muted rounded-full p-3 mb-4">
-        <Search className="w-6 h-6 text-muted-foreground" />
+    <section className="py-6">
+      <div className="grid gap-8">
+        <div className="p-4">
+          <Card className="flex flex-col items-center justify-center h-full min-h-[385px] text-center rounded-3xl border-0 shadow p-8">
+            <div className="mb-4 p-4 bg-muted rounded-full">
+              <FilterX className="h-10 w-10 text-muted-foreground" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">No tours found</h3>
+            <p className="text-muted-foreground mb-6 max-w-md">
+              We couldn&apos;t find any tours matching your current filters. Try
+              adjusting your search criteria or browse our complete collection.
+            </p>
+            <Button
+              onClick={() => dispatch(resetFilters())}
+              variant="outline"
+              className="mb-2"
+            >
+              <FilterX className="mr-2 h-4 w-4" />
+              Reset all filters
+            </Button>
+
+            <Link href="/tours" className="text-primary hover:underline mt-2">
+              View all available tours
+            </Link>
+          </Card>
+        </div>
       </div>
-      <h2 className="text-2xl font-semibold mb-2">
-        No se encontraron resultados
-      </h2>
-      <p className="text-muted-foreground mb-4 max-w-md">
-        No pudimos encontrar resultados {/* para {searchTerm} */}
-        {/*         {filters.length > 0 && ` con los filtros: ${filters.join(", ")}`}.
-         */}{" "}
-      </p>
-     {/*  <p className="text-sm text-muted-foreground mb-4">
-        Intenta ajustar tu búsqueda o los filtros para encontrar lo que buscas.
-      </p>
-      <Button
-        onClick={() => {}}
-        variant="outline"
-        className="flex items-center gap-2"
-      >
-        <RefreshCw className="w-4 h-4" />
-        Reiniciar búsqueda y filtros
-      </Button> */}
-    </div>
+    </section>
   );
 }

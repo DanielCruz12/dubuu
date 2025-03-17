@@ -15,7 +15,7 @@ export function TourCard({
   price,
   max_people,
   duration,
-  images,
+  banner,
   average_rating,
   total_reviews,
   product_category,
@@ -46,7 +46,7 @@ export function TourCard({
         <Card className="overflow-hidden rounded-3xl border-0 shadow-lg">
           <div className="relative">
             <Image
-              src={images.length > 0 ? images[0] : "/placeholder.jpg"}
+              src={banner || "/placeholder.svg?height=400&width=600"}
               alt={name}
               width={400}
               height={300}

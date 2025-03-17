@@ -13,21 +13,8 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Search, Star } from "lucide-react";
-import { IProduct } from "@/types/product";
+import type { IProduct } from "@/types/product";
 import { Input } from "../ui/input";
-
-// Define the product type for better type safety
-export interface Product {
-  id: number;
-  name: string;
-  average_rating: number;
-  total_reviews: number;
-  price: number;
-  description: string;
-  banner: string;
-  location?: string;
-  duration?: string;
-}
 
 export function ResultDialog({
   isOpen,
@@ -88,7 +75,7 @@ export function ResultDialog({
         </div>
 
         {/* Search Results */}
-        <div className="max-h-[60vh] w-full flex flex-col ">
+        <div className="h-[60vh] md:h-[35vh] w-full flex flex-col ">
           <ScrollArea className="flex-grow w-full p-5">
             {searchTerm.length < 3 ? (
               <div className="flex flex-col items-center justify-center h-80 md:h-52 gap-3">
