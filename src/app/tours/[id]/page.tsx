@@ -32,6 +32,7 @@ import Head from "next/head";
 import { notFound, useParams } from "next/navigation";
 import { useGetProductQuery } from "@/redux/slices/product/product-slice";
 import ImageCollageSkeleton from "@/components/skeletons/image-collage-skeleton";
+import ReviewSection from "@/components/sections/reviews-section";
 
 export default function ProductBooking() {
   const { id } = useParams();
@@ -58,7 +59,7 @@ export default function ProductBooking() {
   if (isError || !product) return notFound();
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12 ">
+    <div className="max-w-7xl mx-auto px-4 py-12">
       <Head>{product.name}</Head>
       <div className="flex items-center gap-2 mb-2 text-sm">
         <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
@@ -73,7 +74,9 @@ export default function ProductBooking() {
       </div>
       <h1 className="text-xl md:text-3xl font-semibold">{product?.name}</h1>
       <ImageCollage banner={product.banner} images={product?.images} />
-      <div className="grid lg:grid-cols-3 gap-6">
+
+      {/* Main content grid with sticky booking form */}
+      <div className="grid lg:grid-cols-3 gap-6 relative">
         {/* Tour Details Section */}
         <div className="lg:col-span-2 space-y-6 md:pr-6 px-2">
           <div>
@@ -82,19 +85,10 @@ export default function ProductBooking() {
                 <MapPin className="w-4 h-4" />
                 <span>{product?.departure_point}</span>
               </div>
-              <button className="underline font-semibold">
-                <a
-                  href="https://www.google.com/maps/place/Miami+Beach,+Florida,+EE.+UU./@25.8103728,-80.2225436,23885m/data=!3m2!1e3!4b1!4m6!3m5!1s0x88d9a6172bfeddb9:0x37be1741259463eb!8m2!3d25.790654!4d-80.1300455!16zL20vMHJubXk?hl=es-419&entry=ttu&g_ep=EgoyMDI0MTIxMS4wIKXMDSoASAFQAw%3D%3D"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Show on map
-                </a>
-              </button>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-lg shadow">
-              <div className="flex items-center gap-2  rounded-lg">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-lg shadow dark:shadow-gray-800/10">
+              <div className="flex items-center gap-2 rounded-lg">
                 <Calendar className="w-5 h-5 text-primary rounded-xl" />
                 <div>
                   <div className="text-xs sm:text-sm md:text-base font-medium">
@@ -106,7 +100,7 @@ export default function ProductBooking() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 ">
+              <div className="flex items-center gap-2">
                 <Users className="w-5 h-5 text-primary" />
                 <div>
                   <div className="text-xs sm:text-sm md:text-base font-medium">
@@ -117,7 +111,7 @@ export default function ProductBooking() {
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-2 ">
+              <div className="flex items-center gap-2">
                 <Clock className="w-5 h-5 text-primary" />
                 <div>
                   <div className="text-xs sm:text-sm md:text-base font-medium">
@@ -168,16 +162,18 @@ export default function ProductBooking() {
               </AccordionContent>
             </AccordionItem>
           </Accordion>
+
+          {/* Reviews Section */}
         </div>
 
-        {/* Booking Form */}
+        {/* Booking Form - Sticky */}
         <div className="px-3">
-          <div className="pt-3">
-            <h2 className="text-xl font-semibold mb-4">Booking Form</h2>
-            <div className="space-y-6">
+          <div className="sticky top-6 pt-3 bg-background dark:bg-background rounded-lg border dark:border-muted shadow-sm dark:shadow-gray-800/10">
+            <h2 className="text-xl font-semibold mb-4 px-4">Booking Form</h2>
+            <div className="space-y-6 px-4">
               <div className="space-y-2">
                 <Label>From:</Label>
-                <div className="flex items-center gap-2 border rounded-md p-2">
+                <div className="flex items-center gap-2 border dark:border-muted rounded-md p-2">
                   <CalendarIcon className="w-4 h-4 text-muted-foreground" />
                   <input
                     type="date"
@@ -189,7 +185,7 @@ export default function ProductBooking() {
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 px-4 mt-4">
               <Label>Time:</Label>
               <RadioGroup defaultValue="12:00" onValueChange={setSelectedTime}>
                 <div className="flex gap-4">
@@ -205,7 +201,7 @@ export default function ProductBooking() {
               </RadioGroup>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 px-4 mt-4">
               <Label>Tickets:</Label>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -215,7 +211,10 @@ export default function ProductBooking() {
                     <Select
                       value={tickets.adult1.toString()}
                       onValueChange={(value) =>
-                        setTickets({ ...tickets, adult1: parseInt(value) })
+                        setTickets({
+                          ...tickets,
+                          adult1: Number.parseInt(value),
+                        })
                       }
                     >
                       <SelectTrigger className="w-20">
@@ -238,7 +237,10 @@ export default function ProductBooking() {
                     <Select
                       value={tickets.adult2.toString()}
                       onValueChange={(value) =>
-                        setTickets({ ...tickets, adult2: parseInt(value) })
+                        setTickets({
+                          ...tickets,
+                          adult2: Number.parseInt(value),
+                        })
                       }
                     >
                       <SelectTrigger className="w-20">
@@ -257,7 +259,7 @@ export default function ProductBooking() {
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 px-4 mt-4">
               <Label>Add Extra:</Label>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -295,18 +297,18 @@ export default function ProductBooking() {
               </div>
             </div>
 
-            <div className="pt-4 border-t">
+            <div className="pt-4 px-4 mt-4 border-t dark:border-muted">
               <div className="flex items-center justify-between mb-4">
                 <span className="font-semibold">Total:</span>
                 <span className="font-semibold">
                   ${calculateTotal().toFixed(2)}
                 </span>
               </div>
-              <Button className="w-full bg-black text-white hover:bg-gray-800">
+              <Button className="w-full bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700">
                 Book Now
               </Button>
             </div>
-            <div className="mt-6 text-center">
+            <div className="mt-6 mb-6 text-center">
               <button className="text-sm text-muted-foreground hover:text-foreground flex items-center justify-center gap-2 mx-auto">
                 <Users className="w-4 h-4" />
                 Need some help?
@@ -314,6 +316,9 @@ export default function ProductBooking() {
             </div>
           </div>
         </div>
+      </div>
+      <div className="mt-12">
+        <ReviewSection productId={id as string} />
       </div>
     </div>
   );
