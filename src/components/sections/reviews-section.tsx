@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { IProduct } from "@/types/product";
 
 interface Review {
   id: string;
@@ -23,8 +24,8 @@ interface Review {
   replies?: number;
 }
 
-export default function ReviewSection({ productId }: { productId: string }) {
-    console.log(productId)
+export default function ReviewSection({ product }: { product: IProduct }) {
+  console.log(product);
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [comment, setComment] = useState("");
@@ -66,64 +67,6 @@ export default function ReviewSection({ productId }: { productId: string }) {
         isVerified: true,
         likes: 8,
         replies: 1,
-      },
-      {
-        id: "3",
-        name: "Michael Johnson",
-        email: "michael@example.com",
-        rating: 5,
-        comment:
-          "One of the best tours I've ever been on! The scenery was breathtaking and our guide knew all the hidden spots that aren't in the typical tourist guides. The small group size made it feel very personal.",
-        date: "2023-10-15",
-        isVerified: true,
-        likes: 24,
-        replies: 3,
-      },
-      {
-        id: "4",
-        name: "Emily Wilson",
-        email: "emily@example.com",
-        rating: 3,
-        comment:
-          "The tour itself was good, but I felt the description oversold some aspects. The accommodation was more basic than I expected. That said, the activities were fun and well-organized.",
-        date: "2023-09-22",
-        likes: 5,
-        replies: 1,
-      },
-      {
-        id: "5",
-        name: "David Chen",
-        email: "david@example.com",
-        rating: 5,
-        comment:
-          "Absolutely fantastic experience from start to finish! The tour guide was passionate and knowledgeable, and the itinerary was perfectly balanced between activities and free time. Would book again in a heartbeat!",
-        date: "2023-08-30",
-        isVerified: true,
-        likes: 19,
-        replies: 0,
-      },
-      {
-        id: "6",
-        name: "Sophia Rodriguez",
-        email: "sophia@example.com",
-        rating: 4,
-        comment:
-          "Very enjoyable tour with plenty of photo opportunities. The guide was informative and made sure everyone was comfortable. The only downside was that one of the locations was closed unexpectedly.",
-        date: "2023-07-18",
-        isVerified: true,
-        likes: 11,
-        replies: 2,
-      },
-      {
-        id: "7",
-        name: "James Wilson",
-        email: "james@example.com",
-        rating: 5,
-        comment:
-          "This tour exceeded all my expectations! The cultural immersion was incredible, and we got to interact with locals in a way that felt authentic rather than touristy. Highly recommend for anyone wanting to experience the real culture.",
-        date: "2023-06-05",
-        likes: 31,
-        replies: 4,
       },
     ];
 
@@ -178,7 +121,7 @@ export default function ReviewSection({ productId }: { productId: string }) {
     };
 
     const containerClasses = interactive
-      ? "flex justify-between w-full max-w-[250px] sm:max-w-[300px]"
+      ? "flex justify-between w-full max-w-[200px] sm:max-w-[250px]"
       : "flex gap-1";
 
     return (
@@ -222,7 +165,7 @@ export default function ReviewSection({ productId }: { productId: string }) {
       {/* Review Summary */}
       <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
         <div className="flex flex-col items-center p-6 bg-muted/30 dark:bg-muted/10 rounded-lg shadow-sm w-full md:w-auto">
-          <span className="text-4xl font-bold">{calculateAverageRating()}</span>
+          <span className="text-2xl font-bold">{calculateAverageRating()}</span>
           <div className="flex mt-2 justify-center w-full">
             {renderStars(Number(calculateAverageRating()), false, "large")}
           </div>
@@ -233,7 +176,7 @@ export default function ReviewSection({ productId }: { productId: string }) {
         </div>
 
         <div className="flex-1 w-full px-2">
-          <h3 className="text-lg font-medium mb-4">Rating Breakdown</h3>
+          <h3 className="text-base font-medium mb-4">Rating Breakdown</h3>
           {[5, 4, 3, 2, 1].map((star) => {
             const count = reviews.filter((r) => r.rating === star).length;
             const percentage = reviews.length
@@ -242,7 +185,7 @@ export default function ReviewSection({ productId }: { productId: string }) {
 
             return (
               <div key={star} className="flex items-center gap-2 mb-2">
-                <span className="w-8 text-sm">{star} star</span>
+                <span className="w-6 text-sm">{star} star</span>
                 <div className="flex-1 h-2 bg-muted dark:bg-muted/30 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-yellow-400 rounded-full"
@@ -260,8 +203,77 @@ export default function ReviewSection({ productId }: { productId: string }) {
 
       <Separator className="dark:border-muted" />
 
+      {/* Review List */}
+      <div>
+        <h3 className="text-lg font-medium mb-4">
+          Customer Reviews ({reviews.length})
+        </h3>
+        {reviews.length === 0 ? (
+          <p className="text-muted-foreground">
+            No reviews yet. Be the first to leave a review!
+          </p>
+        ) : (
+          <ScrollArea className="h-[500px] rounded-md dark:border-muted">
+            <div className="space-y-4">
+              {reviews.map((review) => (
+                <div
+                  key={review.id}
+                  className="p-5 bg-background dark:bg-muted/5 border dark:border-muted rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <div className="flex items-start gap-4">
+                    <Avatar className="h-12 w-12 border dark:border-muted">
+                      <AvatarFallback className="bg-primary/10 text-primary dark:bg-primary/20">
+                        {review.name.substring(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 justify-between">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-medium">{review.name}</h4>
+                            {review.isVerified && (
+                              <Badge
+                                variant="outline"
+                                className="text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800"
+                              >
+                                Verified Purchase
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="flex mt-1">
+                            {renderStars(review.rating)}
+                          </div>
+                        </div>
+                        <span className="text-sm text-muted-foreground">
+                          {review.date}
+                        </span>
+                      </div>
+
+                      <p className="text-sm my-3 line-clamp-3 ">
+                        {review.comment}
+                      </p>
+
+                      <div className="flex items-center gap-4 mt-2">
+                        <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                          <ThumbsUp className="w-3.5 h-3.5" />
+                          <span>Helpful ({review.likes || 0})</span>
+                        </button>
+                        <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                          <MessageSquare className="w-3.5 h-3.5" />
+                          <span>Reply ({review.replies || 0})</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+        )}
+      </div>
+
       {/* Write a Review */}
-      <div className="bg-muted/20 dark:bg-muted/5 p-6 rounded-lg shadow-sm">
+      <div className="bg-muted/20 dark:bg-muted/5 p-2 rounded-lg shadow-sm">
         <h3 className="text-lg font-medium mb-4">Write a Review</h3>
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -318,77 +330,6 @@ export default function ReviewSection({ productId }: { productId: string }) {
             {isSubmitting ? "Submitting..." : "Submit Review"}
           </Button>
         </div>
-      </div>
-
-      <Separator className="dark:border-muted" />
-
-      {/* Review List */}
-      <div>
-        <h3 className="text-lg font-medium mb-4">
-          Customer Reviews ({reviews.length})
-        </h3>
-        {reviews.length === 0 ? (
-          <p className="text-muted-foreground">
-            No reviews yet. Be the first to leave a review!
-          </p>
-        ) : (
-          <ScrollArea className="h-[500px] rounded-md border dark:border-muted">
-            <div className="space-y-4 p-4">
-              {reviews.map((review) => (
-                <div
-                  key={review.id}
-                  className="p-5 bg-background dark:bg-muted/5 border dark:border-muted rounded-lg shadow-sm hover:shadow-md transition-shadow"
-                >
-                  <div className="flex items-start gap-4">
-                    <Avatar className="h-12 w-12 border dark:border-muted">
-                      <AvatarFallback className="bg-primary/10 text-primary dark:bg-primary/20">
-                        {review.name.substring(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 justify-between">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h4 className="font-medium">{review.name}</h4>
-                            {review.isVerified && (
-                              <Badge
-                                variant="outline"
-                                className="text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800"
-                              >
-                                Verified Purchase
-                              </Badge>
-                            )}
-                          </div>
-                          <div className="flex mt-1">
-                            {renderStars(review.rating)}
-                          </div>
-                        </div>
-                        <span className="text-sm text-muted-foreground">
-                          {review.date}
-                        </span>
-                      </div>
-
-                      <p className="text-sm my-3 line-clamp-3 ">
-                        {review.comment}
-                      </p>
-
-                      <div className="flex items-center gap-4 mt-2">
-                        <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
-                          <ThumbsUp className="w-3.5 h-3.5" />
-                          <span>Helpful ({review.likes || 0})</span>
-                        </button>
-                        <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
-                          <MessageSquare className="w-3.5 h-3.5" />
-                          <span>Reply ({review.replies || 0})</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </ScrollArea>
-        )}
       </div>
     </div>
   );

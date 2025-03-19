@@ -15,14 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  DollarSign,
-  FilterIcon,
-  Layout,
-  RefreshCw,
-  Search,
-  Star,
-} from "lucide-react";
+import { DollarSign, FilterIcon, RefreshCw, Search, Star } from "lucide-react";
 
 import { Button } from "../ui/button";
 import { Slider } from "../ui/slider";
@@ -61,6 +54,17 @@ export default function SearchSection({ products }: { products: IProduct[] }) {
         </Button>
       </div>
 
+      <div className="flex gap-2 overflow-x-auto pt-3">
+        {categoryOptions.map(({ label, value }) => (
+          <Button
+            key={value}
+            variant={category === value ? "default" : "ghost"}
+            onClick={() => dispatch(setCategory(value))}
+          >
+            {label}
+          </Button>
+        ))}
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 py-2">
         <div>
           <label className="text-xs font-medium mb-1 inline-flex items-center gap-1">
@@ -105,28 +109,6 @@ export default function SearchSection({ products }: { products: IProduct[] }) {
             <span>$0</span>
             <span>$1000</span>
           </div>
-        </div>
-
-        <div>
-          <label className="text-xs font-medium mb-1 inline-flex items-center gap-1">
-            <Layout className="h-3 w-3" />
-            Categoría
-          </label>
-          <Select
-            value={category}
-            onValueChange={(value) => dispatch(setCategory(value))}
-          >
-            <SelectTrigger className="h-8 text-xs">
-              <SelectValue placeholder="Categoría" />
-            </SelectTrigger>
-            <SelectContent>
-              {categoryOptions.map(({ label, value }) => (
-                <SelectItem key={value} value={value} className="text-xs">
-                  {label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
       </div>
       <div className="mt-4 relative">

@@ -30,7 +30,7 @@ export default function ImageCollage({
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Create a new array with the banner as the first image, followed by the rest
-  const allImages = [banner, ...images];
+  const allImages = [banner, ...(images || [])];
 
   // Format all images for the lightbox
   const formattedImages = allImages.map((src, index) => ({
@@ -43,9 +43,9 @@ export default function ImageCollage({
   const hasMoreImages = allImages.length > MAX_VISIBLE_IMAGES;
 
   return (
-    <section className="mx-auto py-4">
+    <section className="w-full">
       {/* Mobile view - Carousel */}
-      <div className="md:hidden mb-4">
+      <div className="md:hidden">
         <Carousel
           plugins={[plugin.current]}
           className="w-full"
@@ -55,26 +55,42 @@ export default function ImageCollage({
           <CarouselContent>
             {allImages.map((image, index) => (
               <CarouselItem key={index}>
-                <div className="relative aspect-[16/9]">
+                <div className="relative aspect-[16/9] overflow-hidden rounded-lg">
                   <Image
                     src={image || "/placeholder.svg"}
                     alt={`Imagen ${index + 1}`}
                     fill
-                    className="object-cover rounded-lg"
+                    className="object-cover"
                     sizes="(max-width: 768px) 100vw, 50vw"
                     priority={index < 2}
+                    onClick={() => {
+                      setCurrentIndex(index);
+                      setOpen(true);
+                    }}
                   />
                 </div>
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
+          <div className="absolute z-10 -bottom-4 left-1/2 transform -translate-x-1/2 flex gap-1">
+            {allImages.map((_, index) => (
+              <div
+                key={index}
+                className={`w-1.5 h-1.5 rounded-full ${
+                  index === currentIndex
+                    ? "bg-primary"
+                    : "bg-gray-300 dark:bg-gray-600"
+                }`}
+              />
+            ))}
+          </div>
+          <CarouselPrevious className="left-2" />
+          <CarouselNext className="right-2" />
         </Carousel>
       </div>
 
       {/* Desktop view - Airbnb style grid */}
-      <div className="hidden md:grid grid-cols-4 gap-2 container mx-auto h-[450px]">
+      <div className="hidden md:grid grid-cols-4 gap-2 h-[450px]">
         {/* Banner image - large, spans 2 columns and 2 rows */}
         <div
           className="col-span-2 row-span-2 relative rounded-l-lg overflow-hidden cursor-pointer"
@@ -97,7 +113,7 @@ export default function ImageCollage({
         {allImages.slice(1, 3).map((image, index) => (
           <div
             key={index}
-            className="relative overflow-hidden cursor-pointer"
+            className={`relative overflow-hidden cursor-pointer ${index === 1 ? "rounded-tr-lg" : ""}`}
             onClick={() => {
               setCurrentIndex(index + 1);
               setOpen(true);
@@ -117,7 +133,7 @@ export default function ImageCollage({
         {allImages.slice(3, 5).map((image, index) => (
           <div
             key={index}
-            className={`relative overflow-hidden cursor-pointer ${index === 1 && hasMoreImages ? "rounded-br-lg" : ""} ${index === 0 && !hasMoreImages ? "rounded-br-lg" : ""}`}
+            className={`relative overflow-hidden cursor-pointer ${index === 1 ? "rounded-br-lg" : ""}`}
             onClick={() => {
               setCurrentIndex(index + 3);
               setOpen(true);
