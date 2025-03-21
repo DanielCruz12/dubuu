@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ModeToggle } from "@/components/mode-toggle";
 import { MenuProfileSheet } from "./sidebar";
-import { SignedIn, UserButton } from "@clerk/nextjs";
 
 export function Header() {
   return (
@@ -14,9 +13,6 @@ export function Header() {
 
       <nav>
         <div className=" max-w-7xl px-3 mx-auto flex justify-between items-center h-16">
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
           <div className="flex items-center gap-8">
             <Link
               href="/"

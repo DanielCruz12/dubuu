@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, Star } from "lucide-react";
 import type { IProduct } from "@/types/product";
 import { Input } from "../ui/input";
+import Link from "next/link";
 
 export function ResultDialog({
   isOpen,
@@ -52,7 +53,7 @@ export function ResultDialog({
         <div className="bg-gradient-to-r dark:from-black dark:to-primary/5  px-5">
           <DialogHeader className="">
             <DialogTitle className="text-center pt-6">
-              Discover the Worlds Treasures
+              Discover the World&apos;s Treasures
             </DialogTitle>
             <DialogDescription className="text-center">
               Explore your travel dreams and make them a reality
@@ -107,7 +108,8 @@ export function ResultDialog({
                   });
 
                   return (
-                    <div
+                    <Link
+                      href={`/tours/${tour.id}`}
                       key={tour.id}
                       className="group p-4 md:p-6 border border-primary/10 rounded-xl hover:shadow-md transition-all duration-300 cursor-pointer hover:border-primary/30 flex flex-col sm:flex-row gap-5"
                     >
@@ -171,7 +173,7 @@ export function ResultDialog({
                           {tour.description}
                         </p>
                       </div>
-                    </div>
+                    </Link>
                   );
                 })}
               </div>
