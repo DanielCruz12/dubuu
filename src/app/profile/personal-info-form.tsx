@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 const personalInfoSchema = z.object({
   firstName: z.string().min(2, {
@@ -58,16 +58,13 @@ export default function PersonalInfoForm() {
         username: data.username,
       });
 
-      toast({
-        title: "Profile updated",
-        description: "Your personal information has been updated successfully.",
+      toast.success("Profile updated successfully!", {
+        description: "Your personal information has been updated.",
       });
     } catch (error) {
       console.error(error);
-      toast({
-        title: "Error",
+      toast.error("Failed to update profile", {
         description: "There was an error updating your profile.",
-        variant: "destructive",
       });
     } finally {
       setIsUpdating(false);
@@ -83,7 +80,7 @@ export default function PersonalInfoForm() {
       <div>
         <h3 className="text-lg font-medium">Personal Information</h3>
         <p className="text-sm text-muted-foreground">
-          Update your personal details and public profile.
+          Update your personal details.
         </p>
       </div>
 

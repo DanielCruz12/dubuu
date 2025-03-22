@@ -1,7 +1,6 @@
 "use client";
 
 import { MapPin, Users, Clock, Calendar, Globe } from "lucide-react";
-import { Star } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -13,9 +12,10 @@ import Head from "next/head";
 import { notFound, useParams } from "next/navigation";
 import { useGetProductQuery } from "@/redux/slices/product/product-slice";
 import ImageCollageSkeleton from "@/components/skeletons/image-collage-skeleton";
-import ReviewSection from "@/components/sections/reviews-section";
+import ReviewSection from "@/components/sections/reviews/reviews-section";
 import BookingForm from "@/components/sections/booking-form";
 import { useEffect, useState } from "react";
+import Rating from "@/components/rating";
 
 export default function ProductBooking() {
   const { id } = useParams();
@@ -50,24 +50,18 @@ export default function ProductBooking() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 md:py-12">
-      {/* SEO */}
       <Head>{product.name}</Head>
 
-      {/* Top section - Full width */}
       <section className="w-full mb-8">
-        {/* Title and ratings */}
         <div className="mb-6">
-          <div className="flex items-center gap-2 mb-2 text-sm">
-            <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-            <span className="font-medium">{product.average_rating}</span>
-            <span className="text-muted-foreground">
-              {product.total_reviews === 0
-                ? "(No reviews)"
-                : product?.total_reviews === 1
-                  ? `(1 review)`
-                  : `(${product?.total_reviews} reviews)`}
-            </span>
-            <span className="mx-2">•</span>
+          <div className="flex items-center gap-2  text-sm">
+            <Rating
+              averageRating={product.average_rating}
+              reviewsCount={product.total_reviews}
+              maxStars={5}
+              activeStarClassName="text-yellow-400 fill-yellow-400"
+              inactiveStarClassName="text-gray-300"
+            />
             <div className="flex items-center gap-1">
               <MapPin className="w-4 h-4" />
               <span className="text-muted-foreground">
@@ -78,10 +72,8 @@ export default function ProductBooking() {
           <h1 className="text-xl md:text-3xl font-semibold">{product?.name}</h1>
         </div>
 
-        {/* Image gallery */}
         <ImageCollage banner={product.banner} images={product?.images} />
 
-        {/* Quick info cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 mt-6 rounded-lg shadow dark:shadow-gray-800/10">
           <div className="flex items-center gap-2 rounded-lg">
             <Calendar className="w-5 h-5 text-primary rounded-xl" />
@@ -130,11 +122,9 @@ export default function ProductBooking() {
         </div>
       </section>
 
-      {/* Middle section - Two columns on desktop */}
       <section className="flex flex-col lg:flex-row gap-8 mb-12">
         {/* Left column - Scrollable content */}
         <div className="w-full lg:w-2/3">
-          {/* Tour description */}
           <div className="mb-8">
             <Accordion
               type="multiple"

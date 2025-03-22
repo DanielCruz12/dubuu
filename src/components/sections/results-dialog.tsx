@@ -12,10 +12,11 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Search, Star } from "lucide-react";
+import { Search } from "lucide-react";
 import type { IProduct } from "@/types/product";
 import { Input } from "../ui/input";
 import Link from "next/link";
+import Rating from "../rating";
 
 export function ResultDialog({
   isOpen,
@@ -99,14 +100,6 @@ export function ResultDialog({
                   {filteredProducts.length !== 1 ? "s" : ""} found
                 </h3>
                 {filteredProducts.map((tour) => {
-                  const ratingValue = Number(tour.average_rating) || 0;
-                  const reviewsCount = tour.total_reviews ?? 0;
-
-                  const formattedRating = ratingValue.toLocaleString("en-US", {
-                    minimumFractionDigits: 1,
-                    maximumFractionDigits: 1,
-                  });
-
                   return (
                     <Link
                       href={`/tours/${tour.id}`}
@@ -137,38 +130,14 @@ export function ResultDialog({
                           {tour.name}
                         </h3>
 
-                        <div className="flex items-center mt-2 gap-1.5">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`w-4 h-4 ${
-                                i < Math.round(ratingValue)
-                                  ? "text-yellow-400 fill-yellow-400"
-                                  : "text-gray-300"
-                              }`}
-                            />
-                          ))}
-                          <span className="font-medium ml-1">
-                            {formattedRating}
-                          </span>
-                          <span className="text-muted-foreground text-sm">
-                            {reviewsCount === 0
-                              ? "(No reviews)"
-                              : reviewsCount !== 1
-                                ? `(${reviewsCount} reviews)`
-                                : "(1 review)"}
-                          </span>
-                        </div>
-
-                        {/*  <div className="flex flex-wrap gap-3 mt-2">
-                          {tour.departure_point && (
-                            <div className="flex items-center text-sm text-muted-foreground">
-                              <MapPin className="w-3.5 h-3.5 mr-1" />
-                              {tour.departure_point}
-                            </div>
-                          )}
-                        </div> */}
-
+                        <Rating
+                          averageRating={tour.average_rating}
+                          reviewsCount={tour.total_reviews}
+                          maxStars={5}
+                          activeStarClassName="text-yellow-400 fill-yellow-400"
+                          inactiveStarClassName="text-gray-300"
+                        />
+                        
                         <p className="text-sm mt-3 line-clamp-2 text-muted-foreground">
                           {tour.description}
                         </p>

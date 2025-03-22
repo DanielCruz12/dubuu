@@ -1,6 +1,6 @@
 "use client";
 import { ThemeProvider } from "next-themes";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/sonner";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Header } from "@/layouts/header";
 import Footer from "@/layouts/footer";

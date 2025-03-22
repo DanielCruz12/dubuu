@@ -1,12 +1,13 @@
 "use client";
 import Image from "next/image";
-import { Heart, Star } from "lucide-react";
+import { Heart } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import Link from "next/link";
 import { IProduct } from "@/types/product";
+import Rating from "./rating";
 
 export function TourCard({
   id,
@@ -21,16 +22,6 @@ export function TourCard({
   product_category,
 }: IProduct) {
   const [isHovered, setIsHovered] = useState(false);
-
-  //* Asegurar que `average_rating` sea un número con 2 decimales
-  const ratingValue = Number(average_rating) || 0;
-  const reviewsCount = total_reviews ?? 0;
-
-  //* Convertir a formato con coma para mostrar (ejemplo: 2,0)
-  const formattedRating = ratingValue.toLocaleString("es-ES", {
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-  });
 
   return (
     <Link href={`/tours/${id}`}>
@@ -62,32 +53,27 @@ export function TourCard({
             </div>
           </div>
           <CardContent className="pt-3">
-            <div className="flex items-center gap-2">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  className={`w-3 h-3 ${
-                    i < Math.round(ratingValue)
-                      ? "text-yellow-400 fill-yellow-400"
-                      : "text-gray-300"
-                  }`}
-                />
-              ))}
-              <span className="font-normal">{formattedRating}</span>
-              <span className="text-muted-foreground text-sm">
-                {reviewsCount === 0
-                  ? "(No reviews)"
-                  : reviewsCount !== 1
-                    ? `(${reviewsCount} reviews)`
-                    : "(1 review)"}
-              </span>
-            </div>
+            <Rating
+              averageRating={average_rating}
+              reviewsCount={total_reviews}
+              maxStars={5}
+              activeStarClassName="text-yellow-400 fill-yellow-400"
+              inactiveStarClassName="text-gray-300"
+            />
             <h3 className="text-base md:text-lg font-bold pt-2 text-wrap line-clamp-1">
               {name}
             </h3>
             <span className=" md:text-sm pt-1 text-muted-foreground text-wrap line-clamp-2">
               {description}
             </span>
+           {/*  <div className="flex flex-wrap gap-3 mt-2">
+              {tour.departure_point && (
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <MapPin className="w-3.5 h-3.5 mr-1" />
+                  {tour.departure_point}
+                </div>
+              )}
+            </div> */}
             <p className="font-bold">
               {duration} {duration > 1 ? "days" : "day"}
             </p>
