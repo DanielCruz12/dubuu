@@ -1,13 +1,9 @@
 export interface Review {
-    id: string
-    name: string
-    email: string
-    rating: number
-    comment: string
-    date: string
-    isVerified?: boolean
-    likes?: number
-    replies?: number
-  }
-  
-  
+  id: string;
+  name: string;
+  email: string;
+  rating: number;
+  review: string;
+  created_at?: string;
+  updated_at?: string;
+}

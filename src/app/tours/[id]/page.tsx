@@ -176,7 +176,7 @@ export default function ProductBooking() {
             </Accordion>
           </div>
           <div className="hidden md:block">
-            <ReviewSection product={product} />
+            <ReviewSection productId={product.id} />
           </div>
         </div>
 
@@ -195,7 +195,7 @@ export default function ProductBooking() {
         </div>
       </section>
       <div className="md:hidden block">
-        <ReviewSection product={product} />
+        <ReviewSection productId={product.id} />
       </div>
     </div>
   );

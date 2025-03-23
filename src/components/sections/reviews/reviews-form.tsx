@@ -14,7 +14,7 @@ interface ReviewFormProps {
 
 export default function ReviewForm({ onSubmitReview }: ReviewFormProps) {
   const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState("");
+  const [review, setReview] = useState(""); // Changed from comment to review
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -29,8 +29,9 @@ export default function ReviewForm({ onSubmitReview }: ReviewFormProps) {
   }, []);
 
   const handleSubmitReview = () => {
-    if (rating === 0 || !comment.trim()) {
-      alert("Please provide both a rating and a comment");
+    if (rating === 0 || !review.trim()) {
+      // Changed from comment to review
+      alert("Please provide both a rating and a review");
       return;
     }
 
@@ -46,10 +47,7 @@ export default function ReviewForm({ onSubmitReview }: ReviewFormProps) {
       name,
       email,
       rating,
-      comment,
-      date: new Date().toISOString().split("T")[0],
-      likes: 0,
-      replies: 0,
+      review, // Changed from comment to review
     };
 
     console.log("Submitting review:", newReview);
@@ -59,7 +57,7 @@ export default function ReviewForm({ onSubmitReview }: ReviewFormProps) {
 
     // Reiniciar formulario
     setRating(0);
-    setComment("");
+    setReview(""); // Changed from comment to review
     setIsSubmitting(false);
   };
 
@@ -106,11 +104,12 @@ export default function ReviewForm({ onSubmitReview }: ReviewFormProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="comment">Your Review</Label>
+          <Label htmlFor="review">Your Review</Label>
+          review
           <Textarea
-            id="comment"
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
+            id="review" // Changed from comment to review
+            value={review} // Changed from comment to review
+            onChange={(e) => setReview(e.target.value)} // Changed from comment to review
             placeholder="Share your experience with this tour..."
             rows={4}
             required
@@ -120,7 +119,7 @@ export default function ReviewForm({ onSubmitReview }: ReviewFormProps) {
 
         <Button
           onClick={handleSubmitReview}
-          disabled={isSubmitting || rating === 0 || !comment.trim()}
+          disabled={isSubmitting || rating === 0 || !review.trim()} // Changed from comment to review
           className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white dark:from-amber-600 dark:to-yellow-500 dark:hover:from-amber-700 dark:hover:to-yellow-600 transition-all duration-300"
         >
           {isSubmitting ? "Submitting..." : "Submit Review"}
