@@ -7,7 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import ImageCollage from "@/components/image-collage";
+import ImageCollage from "@/components/sections/image-collage";
 import Head from "next/head";
 import { notFound, useParams } from "next/navigation";
 import { useGetProductQuery } from "@/redux/slices/product/product-slice";
@@ -16,6 +16,7 @@ import ReviewSection from "@/components/sections/reviews/reviews-section";
 import BookingForm from "@/components/sections/booking-form";
 import { useEffect, useState } from "react";
 import Rating from "@/components/rating";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 export default function ProductBooking() {
   const { id } = useParams();
@@ -48,13 +49,61 @@ export default function ProductBooking() {
   if (isLoading) return <ImageCollageSkeleton />;
   if (isError || !product) return notFound();
 
+  const details = [
+    {
+      icon: <Calendar className="w-5 h-5 text-primary rounded-xl" />,
+      title: "Duration",
+      value: `${product.duration} days`,
+    },
+    {
+      icon: <Users className="w-5 h-5 text-primary" />,
+      title: "Group Size",
+      value: `${product.max_people} people`,
+    },
+    {
+      icon: <Clock className="w-5 h-5 text-primary" />,
+      title: "Tour Type",
+      value: product.product_category.name,
+    },
+    {
+      icon: <Globe className="w-5 h-5 text-primary" />,
+      title: "Language",
+      value: "English",
+    },
+    {
+      icon: <Users className="w-5 h-5 text-primary" />,
+      title: "Price",
+      value: product.price ? `$${product.price}` : "N/A",
+    },
+    {
+      icon: <Globe className="w-5 h-5 text-primary" />,
+      title: "Departure",
+      value: "City A",
+    },
+    {
+      icon: <Calendar className="w-5 h-5 text-primary" />,
+      title: "Arrival",
+      value: "City B",
+    },
+    {
+      icon: <Clock className="w-5 h-5 text-primary" />,
+      title: "Guide",
+      value: "John Doe",
+    },
+    {
+      icon: <Users className="w-5 h-5 text-primary" />,
+      title: "Rating",
+      value: "4.5/5",
+    },
+  ];
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 md:py-12">
       <Head>{product.name}</Head>
 
       <section className="w-full mb-8">
         <div className="mb-6">
-          <div className="flex items-center gap-2  text-sm">
+          <div className="flex  flex-col md:flex-row items-start gap-2  text-sm">
             <Rating
               averageRating={product.average_rating}
               reviewsCount={product.total_reviews}
@@ -74,52 +123,27 @@ export default function ProductBooking() {
 
         <ImageCollage banner={product.banner} images={product?.images} />
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 mt-6 rounded-lg shadow dark:shadow-gray-800/10">
-          <div className="flex items-center gap-2 rounded-lg">
-            <Calendar className="w-5 h-5 text-primary rounded-xl" />
-            <div>
-              <div className="text-xs sm:text-sm md:text-base font-medium">
-                Duration
+        <ScrollArea type="always" className="w-full pt-2">
+          <div className="flex gap-1 md:gap-4 p-4">
+            {details.map((detail, index) => (
+              <div
+                key={index}
+                className="flex items-center gap-2 rounded-lg w-[130px] md:w-[200px] p-2"
+              >
+                {detail.icon}
+                <div>
+                  <div className="text-xs sm:text-sm md:text-base font-medium">
+                    {detail.title}
+                  </div>
+                  <div className="text-xs sm:text-sm md:text-base text-muted-foreground">
+                    {detail.value}
+                  </div>
+                </div>
               </div>
-              <div className="text-xs sm:text-sm md:text-base text-muted-foreground">
-                {product.duration} days
-              </div>
-            </div>
+            ))}
           </div>
-          <div className="flex items-center gap-2">
-            <Users className="w-5 h-5 text-primary" />
-            <div>
-              <div className="text-xs sm:text-sm md:text-base font-medium">
-                Group Size
-              </div>
-              <div className="text-xs sm:text-sm md:text-base text-muted-foreground">
-                {product.max_people} people
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Clock className="w-5 h-5 text-primary" />
-            <div>
-              <div className="text-xs sm:text-sm md:text-base font-medium">
-                Tour Type
-              </div>
-              <div className="text-xs sm:text-sm md:text-base text-muted-foreground">
-                {product.product_category.name}
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Globe className="w-5 h-5 text-primary" />
-            <div>
-              <div className="text-xs sm:text-sm md:text-base font-medium">
-                Language
-              </div>
-              <div className="text-xs sm:text-sm md:text-base text-muted-foreground">
-                English
-              </div>
-            </div>
-          </div>
-        </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
       </section>
 
       <section className="flex flex-col lg:flex-row gap-8 mb-12">
@@ -128,7 +152,7 @@ export default function ProductBooking() {
           <div className="mb-8">
             <Accordion
               type="multiple"
-              defaultValue={["overview"]}
+              defaultValue={["overview", "highlight", "included"]}
               className="space-y-4"
             >
               <AccordionItem value="overview">
@@ -151,16 +175,7 @@ export default function ProductBooking() {
                   </div>
                 </AccordionContent>
               </AccordionItem>
-              <AccordionItem value="itinerary">
-                <AccordionTrigger className="text-base md:text-xl font-semibold">
-                  Itinerary
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-4 font-normal text-xs sm:text-sm md:text-base text-muted-foreground">
-                    <p>Day by day itinerary details will be displayed here.</p>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
+
               <AccordionItem value="included">
                 <AccordionTrigger className="text-base md:text-xl font-semibold">
                   What&apos;s Included
@@ -173,8 +188,19 @@ export default function ProductBooking() {
                   </div>
                 </AccordionContent>
               </AccordionItem>
+              <AccordionItem value="itinerary">
+                <AccordionTrigger className="text-base md:text-xl font-semibold">
+                  Itinerary
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-4 font-normal text-xs sm:text-sm md:text-base text-muted-foreground">
+                    <p>Day by day itinerary details will be displayed here.</p>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
             </Accordion>
           </div>
+
           <div className="hidden md:block">
             <ReviewSection productId={product.id} />
           </div>
@@ -189,7 +215,7 @@ export default function ProductBooking() {
             }}
           >
             <div className="bg-background dark:bg-background rounded-lg border dark:border-muted shadow-md mb-10">
-              <BookingForm productName={product.name} />
+              <BookingForm product={product} />
             </div>
           </div>
         </div>

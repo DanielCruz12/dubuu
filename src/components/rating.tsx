@@ -44,7 +44,7 @@ export const Rating: React.FC<RatingProps> = ({
       <span className="text-muted-foreground text-sm">
         {reviewsCount === 0
           ? "(No reviews)"
-          : reviewsCount !== 1
+          : reviewsCount > 1
             ? `(${reviewsCount} reviews)`
             : "(1 review)"}
       </span>

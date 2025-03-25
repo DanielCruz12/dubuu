@@ -115,7 +115,7 @@ export default function TestimonialsSection() {
                   ))}
                 </div>
 
-                <p className="dark:text-gray-200 mb-6 text-wrap line-clamp-3 md:line-clamp-5">{testimonial.text}</p>
+                <p className="dark:text-gray-200 mb-6 text-wrap line-clamp-3 md:line-clamp-4">{testimonial.text}</p>
 
                 <div className="flex items-center gap-3">
                   <Image
@@ -127,7 +127,7 @@ export default function TestimonialsSection() {
                   />
                   <div>
                     <h3 className="font-semibold">{testimonial.name}</h3>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-500 ">
                       {testimonial.location}
                     </p>
                   </div>

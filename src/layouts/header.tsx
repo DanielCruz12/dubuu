@@ -4,13 +4,7 @@ import { MenuProfileSheet } from "./sidebar";
 
 export function Header() {
   return (
-    <header>
-      {/*   <div className=" py-3 flex justify-center items-center">
-        <p className="text-xs lg:text-sm">
-          Unlock the Magic of Travel with Dan&apos;s Tours, Now →
-        </p>
-      </div> */}
-
+    <header className="z-50 ">
       <nav>
         <div className=" max-w-7xl px-3 mx-auto flex justify-between items-center h-16">
           <div className="flex items-center gap-8">

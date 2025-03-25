@@ -1,4 +1,5 @@
 "use client";
+import StoreProvider from "@/redux/store";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
 import { ClerkProvider } from "@clerk/nextjs";
@@ -6,7 +7,6 @@ import { Header } from "@/layouts/header";
 import Footer from "@/layouts/footer";
 import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/captions.css";
-import StoreProvider from "@/redux/store";
 
 const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
   return (

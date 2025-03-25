@@ -4,12 +4,8 @@ import { TrendingPost } from "@/components/trending-post";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { useGetProductsQuery } from "@/redux/slices/product/product-slice";
 
 export default function RecentPosts() {
-  const { data: products } = useGetProductsQuery();
-
-  console.log(products);
   const pathname = usePathname();
   const posts = [
     {
@@ -117,13 +113,6 @@ export default function RecentPosts() {
                   </Link>
                 ))}
           </div>
-          {pathname === "/" && (
-            <div className="mt-8 text-center">
-              <Link href="/blog">
-                <Button variant={"secondary"}>See All Posts</Button>
-              </Link>
-            </div>
-          )}
         </div>
 
         {/* Sidebar */}
@@ -136,6 +125,13 @@ export default function RecentPosts() {
           </div>
         </aside>
       </div>
+          {pathname === "/" && (
+            <div className="mt-8 text-center">
+              <Link href="/blog">
+                <Button variant={"secondary"}>See All Posts</Button>
+              </Link>
+            </div>
+          )}
     </div>
   );
 }

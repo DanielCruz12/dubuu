@@ -33,7 +33,7 @@ export default function Products() {
                   />
                 </div>
                 <div className="p-4">
-                  <h2 className="text-xl font-semibold mb-2">{product.name}</h2>
+                  <h2 className="text-xl font-semibold mb-2 line-clamp-1">{product.name}</h2>
                   <p className="text-primary font-semibold">${product.price}</p>
                   <p className="text-gray-400 mb-2">
                     {product.duration} {product.duration > 1 ? "days" : "day"}

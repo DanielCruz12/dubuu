@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -64,9 +63,6 @@ export function PostCard({
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <span>{readTime}</span>
           </div>
-          <Button variant="secondary" size="sm">
-            Keep Reading
-          </Button>
         </div>
       </div>
     </div>

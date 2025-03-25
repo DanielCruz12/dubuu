@@ -1,8 +1,12 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { CalendarIcon, Users } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useForm, Controller } from "react-hook-form";
+import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import moment from "moment";
+import "moment/locale/es";
 import {
   Select,
   SelectContent,
@@ -10,179 +14,358 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "../ui/label";
+import { Button } from "../ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Users } from "lucide-react";
+import type { IProduct } from "@/types/product";
+import { Separator } from "../ui/separator";
 
-interface BookingFormProps {
-  productName: string;
-}
+moment.locale("es");
 
-export default function BookingForm({ productName }: BookingFormProps) {
-  const [selectedDate, setSelectedDate] = useState("");
-  const [selectedTime, setSelectedTime] = useState("12:00");
-  console.log(selectedTime);
-  const [addons, setAddons] = useState<string[]>([]);
-  const [tickets, setTickets] = useState({ adult1: 1, adult2: 1 });
-  const formRef = useRef<HTMLDivElement>(null);
+// Fechas disponibles con hora
+const availableDates = [
+  {
+    value: "2025-03-24T12:00",
+    label: moment("2025-03-24T12:00").format("dddd, D [de] MMMM - h:mm A"),
+  },
+  {
+    value: "2025-03-24T17:00",
+    label: moment("2025-03-24T17:00").format("dddd, D [de] MMMM - h:mm A"),
+  },
+  {
+    value: "2025-03-25T12:00",
+    label: moment("2025-03-25T12:00").format("dddd, D [de] MMMM - h:mm A"),
+  },
+  {
+    value: "2025-03-25T17:00",
+    label: moment("2025-03-25T17:00").format("dddd, D [de] MMMM - h:mm A"),
+  },
+];
 
-  // Ensure the sticky positioning works correctly
-  useEffect(() => {
-    const handleScroll = () => {
-      if (formRef.current) {
-        const rect = formRef.current.getBoundingClientRect();
-        const isSticky = rect.top <= 16;
+const schema = z.object({
+  datetime: z.string().min(1, "Selecciona una fecha y hora"),
+  tickets: z.object({
+    adult: z.coerce
+      .number()
+      .min(1, "Mínimo 1 entrada")
+      .max(15, "Máximo 15 entradas"),
+  }),
+  addons: z.array(z.enum(["lunch", "transport"])),
+});
 
-        if (isSticky) {
-          formRef.current.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.1)";
-        } else {
-          formRef.current.style.boxShadow = "";
-        }
-      }
-    };
+type FormData = z.infer<typeof schema>;
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+export default function BookingForm({ product }: { product: IProduct }) {
+  const [paymentResponse, setPaymentResponse] = useState<{
+    idEnlace: number;
+    urlQrCodeEnlace: string;
+    urlEnlace: string;
+    estaProductivo: boolean;
+  } | null>(null);
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      datetime: "",
+      tickets: { adult: 1 },
+      addons: [],
+    },
+  });
+
+  const watchData = watch();
 
   const calculateTotal = () => {
-    const ticketPrice = (tickets.adult1 + tickets.adult2) * 42.5;
-    const addonPrice = addons.includes("service1")
-      ? 32.0
-      : 0 + (addons.includes("service2") ? 24.0 : 0);
-    return ticketPrice + addonPrice;
+    const ticketTotal = watchData.tickets.adult * product.price;
+    const iva = ticketTotal * 0.13;
+    const turismo = ticketTotal * 0.05;
+    const serviceFee = ticketTotal * 0.03;
+    return (ticketTotal + iva + turismo + serviceFee).toFixed(2);
+  };
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const onSubmit = async () => {
+    setIsLoading(true);
+    const total = parseFloat(calculateTotal());
+
+    // Crea el payload con los datos requeridos
+    const payload = {
+      identificadorEnlaceComercio: "dantours",
+      monto: total,
+      nombreProducto: product.name,
+      formaPago: {
+        permitirTarjetaCreditoDebido: true,
+        permitirPagoConPuntoAgricola: false,
+        permitirPagoEnCuotasAgricola: false,
+      },
+      cantidadMaximaCuotas: "",
+      infoProducto: {
+        descripcionProducto: product.description,
+        urlImagenProducto: product.banner,
+      },
+      configuracion: {
+        urlRedirect: "https://dantour.vercel.app",
+        esMontoEditable: false,
+        esCantidadEditable: true,
+        cantidadPorDefecto: 1,
+        duracionInterfazIntentoMinutos: 60,
+        urlRetorno: "https://dantour.vercel.app",
+        emailsNotificacion: "dubondanielcruz@gmail.com",
+        urlWebhook: null,
+        telefonosNotificacion: "77886116",
+        notificarTransaccionCliente: true,
+      },
+    };
+
+    try {
+      const response = await fetch("http://localhost:3000/api/enlacePago", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+      console.log("Respuesta de Wompi:", result);
+      setPaymentResponse(result);
+    } catch (error) {
+      console.error("Error al enviar la solicitud de pago:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div
-      ref={formRef}
-      style={{
-        position: "sticky",
-      }}
-      className="bg-background dark:bg-background rounded-lg border dark:border-muted shadow-md"
-    >
-      <div className="p-5">
-        <h2 className="text-base  font-semibold mb-4">Book - {productName}</h2>
+    <div className="sticky top-4 bg-background dark:bg-background rounded-lg border dark:border-muted shadow-md p-5 max-w-md mx-auto">
+      <h2 className="text-base font-semibold mb-4">
+        Reservar - {product.name}
+      </h2>
 
-        <div className="space-y-5">
-          <div className="space-y-2">
-            <Label>From:</Label>
-            <div className="flex items-center gap-2 border dark:border-muted rounded-md p-2">
-              <CalendarIcon className="w-4 h-4 text-muted-foreground" />
-              <input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                className="outline-none bg-transparent flex-1"
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {/* Fecha y hora */}
+        <div>
+          <Label>Fecha y hora:</Label>
+          <Controller
+            control={control}
+            name="datetime"
+            render={({ field }) => (
+              <Select onValueChange={field.onChange} value={field.value}>
+                <SelectTrigger className="mt-1 w-full">
+                  <SelectValue placeholder="Selecciona una fecha y hora" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableDates.map((d) => (
+                    <SelectItem key={d.value} value={d.value}>
+                      {d.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
+          {errors.datetime && (
+            <p className="text-sm text-red-500">{errors.datetime.message}</p>
+          )}
+        </div>
+
+        {/* Tickets */}
+        <div>
+          <Label>Entradas:</Label>
+          <div className="flex flex-col gap-2 md:flex-row md:justify-between md:items-center mt-2">
+            <span>Adultos (18+)</span>
+            <div className="flex items-center gap-2">
+              <span>${product.price}</span>
+              <Controller
+                control={control}
+                name="tickets.adult"
+                render={({ field }) => (
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() =>
+                        field.onChange(Math.max(field.value - 1, 1))
+                      }
+                    >
+                      –
+                    </Button>
+                    <span>{field.value}</span>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() =>
+                        field.onChange(Math.min(field.value + 1, 15))
+                      }
+                    >
+                      +
+                    </Button>
+                  </div>
+                )}
               />
             </div>
           </div>
+          {errors.tickets?.adult && (
+            <p className="text-sm text-red-500">
+              {errors.tickets.adult.message}
+            </p>
+          )}
+        </div>
 
-          <div className="space-y-2">
-            <Label>Time:</Label>
-            <RadioGroup defaultValue="12:00" onValueChange={setSelectedTime}>
-              <div className="flex gap-4">
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="12:00" id="time-12:00" />
-                  <Label htmlFor="time-12:00">12:00</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="17:00" id="time-17:00" />
-                  <Label htmlFor="time-17:00">17:00</Label>
-                </div>
-              </div>
-            </RadioGroup>
-          </div>
-
-          <div className="space-y-3">
-            <Label>Tickets:</Label>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span>Adult (18+ years)</span>
-                <div className="flex items-center gap-2">
-                  <span>$42.50</span>
-                  <Select
-                    value={tickets.adult2.toString()}
-                    onValueChange={(value) =>
-                      setTickets({ ...tickets, adult2: Number.parseInt(value) })
-                    }
-                  >
-                    <SelectTrigger className="w-20">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {[1, 2, 3, 4, 5].map((num) => (
-                        <SelectItem key={num} value={num.toString()}>
-                          {num}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <Label>Add Extra:</Label>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="service1"
-                    checked={addons.includes("service1")}
-                    onCheckedChange={(checked) => {
-                      if (checked) {
-                        setAddons([...addons, "service1"]);
-                      } else {
-                        setAddons(addons.filter((a) => a !== "service1"));
-                      }
-                    }}
-                  />
-                  <Label htmlFor="service1">Add service per Booking</Label>
-                </div>
-                <span>$32.00</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="service2"
-                    checked={addons.includes("service2")}
-                    onCheckedChange={(checked) => {
-                      if (checked) {
-                        setAddons([...addons, "service2"]);
-                      } else {
-                        setAddons(addons.filter((a) => a !== "service2"));
-                      }
-                    }}
-                  />
-                  <Label htmlFor="service2">Add service per Personal</Label>
-                </div>
-                <span>$24.00</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="pt-4 border-t dark:border-muted">
-            <div className="flex items-center justify-between mb-4">
-              <span className="font-semibold">Total:</span>
-              <span className="font-semibold">
-                ${calculateTotal().toFixed(2)}
+        {/* Desglose y Total */}
+        <div className="pt-4 border-t dark:border-muted space-y-3">
+          {/* Desglose de cargos */}
+          <div className="flex flex-col gap-2">
+            <div className="flex justify-between text-sm">
+              <span>IVA (13%):</span>
+              <span>
+                ${(watchData.tickets.adult * product.price * 0.13).toFixed(2)}
               </span>
             </div>
-            <Button className="w-full bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700">
-              Book Now
-            </Button>
+            <div className="flex justify-between text-sm">
+              <span>Impuesto de Turismo (5%):</span>
+              <span>
+                ${(watchData.tickets.adult * product.price * 0.05).toFixed(2)}
+              </span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span>Tarifa de Servicio (3%):</span>
+              <span>
+                ${(watchData.tickets.adult * product.price * 0.03).toFixed(2)}
+              </span>
+            </div>
           </div>
 
-          <div className="text-center">
-            <button className="text-sm text-muted-foreground hover:text-foreground flex items-center justify-center gap-2 mx-auto">
-              <Users className="w-4 h-4" />
-              Need some help?
-            </button>
+          {/* Total con tooltip */}
+          <div>
+            <div className="flex flex-col gap-2">
+              <div className="flex justify-between text-sm">
+                <span>Subtotal:</span>
+                <span>
+                  ${(watchData.tickets.adult * product.price).toFixed(2)}
+                </span>
+              </div>
+            </div>
+
+            <Separator className="my-3 " />
+
+            <div className="flex justify-between font-semibold items-center">
+              <span>
+                Total:
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        type="button"
+                        className="rounded-xl mx-2 p-2"
+                        variant="outline"
+                      >
+                        ?
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs">
+                      <p className="mt-1">
+                        <em>
+                          Nuestra tarifa de servicio es mucho menor comparada
+                          con Airbnb (14-16%) y Booking (15-18%).
+                        </em>
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </span>
+              <div className="flex items-center gap-2">
+                <span>${calculateTotal()}</span>
+              </div>
+            </div>
           </div>
+
+          <Button disabled={isLoading} type="submit" className="w-full">
+            {isLoading ? "Cargando..." : "Reservar ahora"}
+          </Button>
         </div>
-      </div>
+
+        <div className="text-center">
+          <button
+            type="button"
+            className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-2 mx-auto"
+          >
+            <Users className="w-4 h-4" />
+            ¿Necesitas ayuda?
+          </button>
+        </div>
+      </form>
+      {paymentResponse?.urlEnlace && (
+        <Dialog
+          open={!!paymentResponse?.urlEnlace}
+          onOpenChange={(open) => {
+            if (!open) setPaymentResponse(null);
+          }}
+        >
+          <DialogContent className="sm:max-w-[425px] p-6">
+            <DialogHeader className="text-center">
+              <DialogTitle className="text-xl">Pago con QR</DialogTitle>
+              <DialogDescription>
+                Escanea el código QR o usa el enlace para completar tu pago
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="flex flex-col items-center justify-center py-6">
+              <div className="bg-white p-3 rounded-lg shadow-sm mb-4">
+                <img
+                  src={paymentResponse.urlQrCodeEnlace || "/placeholder.svg"}
+                  alt="QR Code"
+                  className="w-48 h-48 md:w-64 md:h-64 object-contain"
+                />
+              </div>
+
+              <div className="text-center space-y-2">
+                <p className="text-sm text-muted-foreground">
+                  Total a pagar:{" "}
+                  <span className="font-semibold">${calculateTotal()}</span>
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  El código QR expirará en 60 minutos
+                </p>
+              </div>
+            </div>
+
+            <DialogFooter className="flex flex-col sm:flex-row gap-3 sm:gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setPaymentResponse(null)}
+                className="w-full sm:w-auto order-2 sm:order-1"
+              >
+                Cancelar
+              </Button>
+              <Button asChild className="w-full sm:w-auto order-1 sm:order-2">
+                <a
+                  href={paymentResponse.urlEnlace}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Ir a pago
+                </a>
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
