@@ -103,11 +103,11 @@ export default function NewsletterSection() {
           </form>
 
           <div className="mt-8 flex items-center justify-center gap-x-6">
-            <div className="h-px w-16 bg-white/20"></div>
+            <div className="h-px w-10 md:w-16 bg-black/40"></div>
             <p className="text-sm leading-6 text-gray-600 dark:text-gray-400">
               No spam. Just the good stuff.
             </p>
-            <div className="h-px w-16 bg-white/20"></div>
+            <div className="h-px w-10 md:w-16 bg-black/40"></div>
           </div>
 
           <p className="mt-6 text-xs text-center text-gray-800 dark:text-gray-300">

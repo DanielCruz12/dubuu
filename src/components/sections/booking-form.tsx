@@ -33,6 +33,8 @@ import {
 import { Users } from "lucide-react";
 import type { IProduct } from "@/types/product";
 import { Separator } from "../ui/separator";
+import { useUser } from "@clerk/nextjs";
+import { toast } from "sonner";
 
 moment.locale("es");
 
@@ -70,6 +72,7 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 export default function BookingForm({ product }: { product: IProduct }) {
+  const { user } = useUser();
   const [paymentResponse, setPaymentResponse] = useState<{
     idEnlace: number;
     urlQrCodeEnlace: string;
@@ -103,6 +106,11 @@ export default function BookingForm({ product }: { product: IProduct }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async () => {
+    console.log(user);
+    if (!user) {
+      toast.error("Debes iniciar sesión para continuar con la reserva");
+      return;
+    }
     setIsLoading(true);
     const total = parseFloat(calculateTotal());
 
