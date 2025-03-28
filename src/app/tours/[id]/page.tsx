@@ -17,8 +17,11 @@ import BookingForm from "@/components/sections/booking-form";
 import { useEffect, useState } from "react";
 import Rating from "@/components/rating";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import { SignInButton, useUser } from "@clerk/nextjs";
 
 export default function ProductBooking() {
+  const { user } = useUser();
   const { id } = useParams();
   const {
     data: product,
@@ -214,8 +217,24 @@ export default function ProductBooking() {
               top: `${headerHeight + 4}px`,
             }}
           >
-            <div className="bg-background dark:bg-background rounded-lg border dark:border-muted shadow-md mb-10">
-              <BookingForm product={product} />
+            <div className="bg-background dark:bg-background rounded-lg border dark:border-muted shadow-md mb-10 p-6">
+              {user ? (
+                <BookingForm product={product} />
+              ) : (
+                <div className="text-center">
+                  <h2 className="text-xl font-semibold mb-4">
+                    Necesitas iniciar sesión para realizar la reserva
+                  </h2>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Inicia sesión o crea una cuenta para poder reservar y
+                    disfrutar de nuestras promociones exclusivas.
+                    <br />
+                  </p>
+                  <SignInButton mode="modal">
+                    <Button>Iniciar sesión</Button>
+                  </SignInButton>
+                </div>
+              )}
             </div>
           </div>
         </div>

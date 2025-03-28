@@ -73,6 +73,7 @@ type FormData = z.infer<typeof schema>;
 
 export default function BookingForm({ product }: { product: IProduct }) {
   const { user } = useUser();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [paymentResponse, setPaymentResponse] = useState<{
     idEnlace: number;
     urlQrCodeEnlace: string;
@@ -106,7 +107,6 @@ export default function BookingForm({ product }: { product: IProduct }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async () => {
-    console.log(user);
     if (!user) {
       toast.error("Debes iniciar sesión para continuar con la reserva");
       return;
@@ -114,7 +114,6 @@ export default function BookingForm({ product }: { product: IProduct }) {
     setIsLoading(true);
     const total = parseFloat(calculateTotal());
 
-    // Crea el payload con los datos requeridos
     const payload = {
       identificadorEnlaceComercio: "dantours",
       monto: total,
@@ -150,12 +149,28 @@ export default function BookingForm({ product }: { product: IProduct }) {
         body: JSON.stringify(payload),
       });
       const result = await response.json();
-      console.log("Respuesta de Wompi:", result);
+      setIsDialogOpen(true);
       setPaymentResponse(result);
+      localStorage.setItem("paymentResult", JSON.stringify(result));
     } catch (error) {
       console.error("Error al enviar la solicitud de pago:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const storedPaymentResult = localStorage.getItem("paymentResult");
+
+  let paymentResult = paymentResponse;
+  if (storedPaymentResult) {
+    paymentResult = JSON.parse(storedPaymentResult);
+  }
+
+  const handleReserveClick = () => {
+    if (paymentResult !== null) {
+      setIsDialogOpen(true);
+    } else {
+      handleSubmit(onSubmit)();
     }
   };
 
@@ -165,8 +180,7 @@ export default function BookingForm({ product }: { product: IProduct }) {
         Reservar - {product.name}
       </h2>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Fecha y hora */}
+      <form className="space-y-6">
         <div>
           <Label>Fecha y hora:</Label>
           <Controller
@@ -303,8 +317,17 @@ export default function BookingForm({ product }: { product: IProduct }) {
             </div>
           </div>
 
-          <Button disabled={isLoading} type="submit" className="w-full">
-            {isLoading ? "Cargando..." : "Reservar ahora"}
+          <Button
+            disabled={isLoading}
+            type="button"
+            className="w-full"
+            onClick={handleReserveClick}
+          >
+            {isLoading
+              ? "Cargando..."
+              : paymentResult !== null
+                ? "Ver link de pago"
+                : "Reservar ahora"}
           </Button>
         </div>
 
@@ -318,12 +341,14 @@ export default function BookingForm({ product }: { product: IProduct }) {
           </button>
         </div>
       </form>
-      {paymentResponse?.urlEnlace && (
+      {paymentResult !== null && paymentResult?.urlQrCodeEnlace && (
         <Dialog
-          open={!!paymentResponse?.urlEnlace}
           onOpenChange={(open) => {
-            if (!open) setPaymentResponse(null);
+            if (!open) {
+              setIsDialogOpen(false);
+            }
           }}
+          open={isDialogOpen}
         >
           <DialogContent className="sm:max-w-[425px] p-6">
             <DialogHeader className="text-center">
@@ -336,7 +361,7 @@ export default function BookingForm({ product }: { product: IProduct }) {
             <div className="flex flex-col items-center justify-center py-6">
               <div className="bg-white p-3 rounded-lg shadow-sm mb-4">
                 <img
-                  src={paymentResponse.urlQrCodeEnlace || "/placeholder.svg"}
+                  src={paymentResult?.urlQrCodeEnlace || "/placeholder.svg"}
                   alt="QR Code"
                   className="w-48 h-48 md:w-64 md:h-64 object-contain"
                 />
@@ -356,14 +381,14 @@ export default function BookingForm({ product }: { product: IProduct }) {
             <DialogFooter className="flex flex-col sm:flex-row gap-3 sm:gap-2">
               <Button
                 variant="outline"
-                onClick={() => setPaymentResponse(null)}
+                onClick={() => setIsDialogOpen(false)}
                 className="w-full sm:w-auto order-2 sm:order-1"
               >
                 Cancelar
               </Button>
               <Button asChild className="w-full sm:w-auto order-1 sm:order-2">
                 <a
-                  href={paymentResponse.urlEnlace}
+                  href={paymentResult.urlEnlace}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

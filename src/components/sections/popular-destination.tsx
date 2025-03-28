@@ -1,16 +1,6 @@
-"use client";
-
 import Image from "next/image";
-import { useState } from "react";
 import { ChevronRight } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface Destination {
   id: string;
@@ -77,27 +67,6 @@ const destinations: Destination[] = [
 ];
 
 export default function PopularDestinations() {
-  const [category, setCategory] = useState("all");
-  const [ratingRange, setRatingRange] = useState("all");
-  const [priceRange, setPriceRange] = useState("all");
-
-  const filteredDestinations = destinations.filter((dest) => {
-    if (category !== "all" && dest.category !== category) return false;
-    if (ratingRange === "4.5-5" && (dest.rating < 4.5 || dest.rating > 5))
-      return false;
-    if (ratingRange === "4.0-4.5" && (dest.rating < 4.0 || dest.rating > 4.5))
-      return false;
-    if (priceRange === "0-50" && (dest.priceRange < 0 || dest.priceRange > 50))
-      return false;
-    if (
-      priceRange === "51-1000" &&
-      (dest.priceRange < 51 || dest.priceRange > 1000)
-    )
-      return false;
-    if (priceRange === "1000+" && dest.priceRange <= 1000) return false;
-    return true;
-  });
-
   return (
     <section className="py-12">
       <div className="space-y-3">
@@ -106,75 +75,10 @@ export default function PopularDestinations() {
           Favorite destinations based on customer reviews
         </p>
 
-        <div className="flex flex-wrap gap-4 items-center justify-start">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline">Categories</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuRadioGroup
-                value={category}
-                onValueChange={setCategory}
-              >
-                <DropdownMenuRadioItem value="all">All</DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="City">City</DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="Beach">
-                  Beach
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="Mountain">
-                  Mountain
-                </DropdownMenuRadioItem>
-              </DropdownMenuRadioGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline">Rating</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuRadioGroup
-                value={ratingRange}
-                onValueChange={setRatingRange}
-              >
-                <DropdownMenuRadioItem value="all">All</DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="4.5-5">
-                  4.5 - 5
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="4.0-4.5">
-                  4.0 - 4.5
-                </DropdownMenuRadioItem>
-              </DropdownMenuRadioGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline">Price</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuRadioGroup
-                value={priceRange}
-                onValueChange={setPriceRange}
-              >
-                <DropdownMenuRadioItem value="all">All</DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="0-50">
-                  $0 - $50
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="51-1000">
-                  $51 - $1000
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="1000+">
-                  $1000+
-                </DropdownMenuRadioItem>
-              </DropdownMenuRadioGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
-          {filteredDestinations.map((destination) => (
-            <div
+          {destinations.map((destination) => (
+            <Link
+              href={`/tours/${destination.country.trim()}`}
               key={destination.id}
               className="rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
             >
@@ -202,7 +106,7 @@ export default function PopularDestinations() {
                   {destination.tours} Tours, {destination.activities} Activities
                 </p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
