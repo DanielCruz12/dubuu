@@ -161,7 +161,7 @@ export default function ProductBooking() {
                   Overview
                 </AccordionTrigger>
                 <AccordionContent>
-                  <div className="space-y-4 font-normal text-xs sm:text-sm md:text-base text-muted-foreground">
+                  <div className="space-y-4 font-normal md:text-base text-muted-foreground">
                     Punto de salida: <p>{product?.departure_point}</p>
                     <p>{product?.description}</p>
                   </div>
@@ -172,7 +172,7 @@ export default function ProductBooking() {
                   Highlight
                 </AccordionTrigger>
                 <AccordionContent>
-                  <div className="space-y-4 font-normal text-xs sm:text-sm md:text-base text-muted-foreground">
+                  <div className="space-y-4 font-normal md:text-base text-muted-foreground">
                     <p>{product?.highlight}</p>
                   </div>
                 </AccordionContent>
@@ -183,7 +183,7 @@ export default function ProductBooking() {
                   What&apos;s Included
                 </AccordionTrigger>
                 <AccordionContent>
-                  <div className="space-y-4 font-normal text-xs sm:text-sm md:text-base text-muted-foreground">
+                  <div className="space-y-4 font-normal md:text-base text-muted-foreground">
                     <p>{product.included}</p>
                   </div>
                 </AccordionContent>

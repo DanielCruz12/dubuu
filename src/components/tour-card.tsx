@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { Heart } from "lucide-react";
+import { Heart, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -14,7 +14,8 @@ export function TourCard({
   name,
   description,
   price,
-  max_people,
+  country,
+  target_audience,
   duration,
   banner,
   average_rating,
@@ -66,27 +67,23 @@ export function TourCard({
             <span className=" md:text-sm pt-1 text-muted-foreground text-wrap line-clamp-2">
               {description}
             </span>
-           {/*  <div className="flex flex-wrap gap-3 mt-2">
-              {tour.departure_point && (
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <MapPin className="w-3.5 h-3.5 mr-1" />
-                  {tour.departure_point}
-                </div>
-              )}
-            </div> */}
+            <div className="flex flex-wrap gap-3 mt-2">
+              <div className="flex items-center text-sm text-muted-foreground">
+                <MapPin className="w-3.5 h-3.5 mr-1" />
+                {country}
+              </div>
+            </div>
             <p className="font-bold">
               {duration} {duration > 1 ? "days" : "day"}
             </p>
           </CardContent>
           <CardFooter className="flex items-center justify-between">
-            <div>
-              <span className="text-lg md:text-2xl font-bold">${price}</span>
-              <span className="text-sm text-muted-foreground">
-                / {max_people} people
-              </span>
-            </div>
+            <span className="text-lg md:text-2xl font-bold">${price}</span>
+            <span className="text-lg md:text-2xl font-bold">
+              {target_audience?.name}
+            </span>
             <Button
-              className="rounded-full px-5"
+              className="rounded-full "
               variant={isHovered ? "default" : "secondary"}
             >
               Book Now
