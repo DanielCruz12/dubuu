@@ -5,6 +5,14 @@ export interface IProduct {
   price: number;
   departure_point: string;
   max_people: string;
+
+  address: string;
+  country: string;
+  available_dates: Date[];
+  itinerary: string[];
+  highlight: string;
+  included: string;
+
   duration: number;
   images: string[];
   videos: string[];

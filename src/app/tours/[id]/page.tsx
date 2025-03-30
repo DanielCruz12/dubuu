@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/accordion";
 import ImageCollage from "@/components/sections/image-collage";
 import Head from "next/head";
-import { notFound, useParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useGetProductQuery } from "@/redux/slices/product/product-slice";
 import ImageCollageSkeleton from "@/components/skeletons/image-collage-skeleton";
 import ReviewSection from "@/components/sections/reviews/reviews-section";
@@ -50,7 +50,7 @@ export default function ProductBooking() {
   }, []);
 
   if (isLoading) return <ImageCollageSkeleton />;
-  if (isError || !product) return notFound();
+  if (isError || !product) return <>Producto no encontrado</>;
 
   const details = [
     {
@@ -116,9 +116,7 @@ export default function ProductBooking() {
             />
             <div className="flex items-center gap-1">
               <MapPin className="w-4 h-4" />
-              <span className="text-muted-foreground">
-                {product?.departure_point}
-              </span>
+              <span className="text-muted-foreground">{product?.address}</span>
             </div>
           </div>
           <h1 className="text-xl md:text-3xl font-semibold">{product?.name}</h1>
@@ -164,6 +162,7 @@ export default function ProductBooking() {
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-4 font-normal text-xs sm:text-sm md:text-base text-muted-foreground">
+                    Punto de salida: <p>{product?.departure_point}</p>
                     <p>{product?.description}</p>
                   </div>
                 </AccordionContent>
@@ -174,7 +173,7 @@ export default function ProductBooking() {
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-4 font-normal text-xs sm:text-sm md:text-base text-muted-foreground">
-                    <p>{product?.description}</p>
+                    <p>{product?.highlight}</p>
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -185,9 +184,7 @@ export default function ProductBooking() {
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-4 font-normal text-xs sm:text-sm md:text-base text-muted-foreground">
-                    <p>
-                      Details about what&apos;s included in the tour package.
-                    </p>
+                    <p>{product.included}</p>
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -197,7 +194,16 @@ export default function ProductBooking() {
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-4 font-normal text-xs sm:text-sm md:text-base text-muted-foreground">
-                    <p>Day by day itinerary details will be displayed here.</p>
+                    <ol className="relative border-s border-gray-200 dark:border-gray-700">
+                      {product.itinerary.map((item, index) => (
+                        <li key={index} className="mb-3 ms-4">
+                          <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+                          <p className="text-base font-normal text-gray-500 dark:text-gray-400">
+                            {item}
+                          </p>
+                        </li>
+                      ))}
+                    </ol>
                   </div>
                 </AccordionContent>
               </AccordionItem>

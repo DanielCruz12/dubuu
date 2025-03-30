@@ -175,7 +175,7 @@ export default function BookingForm({ product }: { product: IProduct }) {
   };
 
   return (
-    <div className="sticky top-4 bg-background dark:bg-background rounded-lg border dark:border-muted shadow-md p-5 max-w-md mx-auto">
+    <div className="sticky top-4 bg-background dark:bg-background rounded-lg dark:border-muted shadow-md px-2 max-w-md mx-auto">
       <h2 className="text-base font-semibold mb-4">
         Reservar - {product.name}
       </h2>

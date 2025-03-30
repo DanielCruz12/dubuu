@@ -9,6 +9,7 @@ interface ReviewListProps {
 }
 
 export default function ReviewList({ reviews }: ReviewListProps) {
+  console.log(reviews);
   return (
     <div>
       <h3 className="text-lg font-medium mb-4">
@@ -29,14 +30,14 @@ export default function ReviewList({ reviews }: ReviewListProps) {
                 <div className="flex items-start gap-4">
                   <Avatar className="h-12 w-12 border dark:border-muted">
                     <AvatarFallback className="bg-primary/10 text-primary dark:bg-primary/20">
-                      {review.name.substring(0, 2).toUpperCase()}
+                      {review.username.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 justify-between">
                       <div>
                         <div className="flex items-center gap-2">
-                          <h4 className="font-medium">{review.name}</h4>
+                          <h4 className="font-medium">{review.username}</h4>
 
                           <Badge
                             variant="outline"
