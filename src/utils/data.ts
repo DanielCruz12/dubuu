@@ -1,4 +1,3 @@
-import { IProduct } from "@/types/product";
 
 export const blogData = [
   {
@@ -50,29 +49,6 @@ export const blogData = [
     date: "2023-05-25",
     imageUrl:
       "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&h=800&fit=crop",
-  },
-];
-
-export const products: IProduct[] = [
-  {
-    id: "1",
-    name: "California Sunset/Twilight Boat Cruise",
-    description:
-      "Experience the magic of California as you sail at sunset or under the stars. This 7-day, small-group boat cruise offers spectacular ocean views, unforgettable sunsets, and serene nature. Perfect for couples or small groups seeking an intimate and relaxing adventure.",
-    price: 35.62,
-    departure_point: "California",
-    max_people: "Small group",
-    duration: 7,
-    images: ["/tour.jpg"],
-    videos: ["https://www.youtube.com/watch?v=dQw4w9WgXcQ"],
-    files: [],
-    banner: "",
-    product_category: { name: "Adventure" },
-    target_audience: { name: "Enterprise" },
-    average_rating: 4.5,
-    total_reviews: 12,
-    user_id: "1",
-    is_approved: true,
   },
 ];
 
