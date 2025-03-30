@@ -15,7 +15,7 @@ interface ReviewFormProps {
 export default function ReviewForm({ onSubmitReview }: ReviewFormProps) {
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState(""); // Changed from comment to review
-  const [name, setName] = useState("");
+  const [username, setName] = useState("");
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -38,13 +38,13 @@ export default function ReviewForm({ onSubmitReview }: ReviewFormProps) {
     setIsSubmitting(true);
 
     // Guardar datos del usuario en localStorage para futuros usos
-    if (name) localStorage.setItem("userName", name);
+    if (username) localStorage.setItem("userName", username);
     if (email) localStorage.setItem("userEmail", email);
 
     // Crear nueva reseña
     const newReview: Review = {
       id: Date.now().toString(),
-      name,
+      username,
       email,
       rating,
       review, // Changed from comment to review
@@ -67,12 +67,12 @@ export default function ReviewForm({ onSubmitReview }: ReviewFormProps) {
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Your Name</Label>
+            <Label htmlFor="username">Your Name</Label>
             <Input
-              id="name"
-              value={name}
+              id="username"
+              value={username}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Enter your name"
+              placeholder="Enter your username"
               required
               className="bg-background dark:bg-background/80"
             />
