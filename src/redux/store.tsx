@@ -53,7 +53,7 @@ const storage =
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["global"], // Aquí puedes indicar qué reducers deseas persistir
+  whitelist: ["filters"], // Aquí puedes indicar qué reducers deseas persistir
 };
 
 const rootReducer = combineReducers({
@@ -96,5 +96,13 @@ export default function StoreProvider({
     setupListeners(storeRef.current.dispatch);
   }
 
-  return <Provider store={storeRef.current}>{children}</Provider>;
+  const persistor = persistStore(storeRef.current);
+
+  return (
+    <Provider store={storeRef.current}>
+      <PersistGate loading={null} persistor={persistor}>
+        {children}
+      </PersistGate>
+    </Provider>
+  );
 }

@@ -5,7 +5,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const reviewsApiSlice = createApi({
   reducerPath: "reviews",
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_URL || "localhost:3000",
+    baseUrl: "/api/backend",
   }),
   tagTypes: ["Reviews"],
   endpoints: (builder) => {
