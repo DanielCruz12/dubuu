@@ -52,7 +52,7 @@ export function ResultDialog({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px] max-w-[95%] md:max-w-[85%] lg:max-w-[75%] xl:max-w-[65%] p-0 overflow-hidden rounded-xl border-none shadow-xl">
         <div className="bg-gradient-to-r dark:from-black dark:to-primary/5  px-5">
-          <DialogHeader className="">
+          <DialogHeader>
             <DialogTitle className="text-center pt-6">
               Discover the World&apos;s Treasures
             </DialogTitle>

@@ -94,17 +94,17 @@ export default function SearchSection({ products }: { products: IProduct[] }) {
         </div>
 
         <Dialog open={isDialogFilterOpen} onOpenChange={setIsDialogFilterOpen}>
-          <DialogContent className="sm:max-w-[425px] max-w-[75%] md:max-w-[65%] lg:max-w-[55%] xl:max-w-[45%] p-0 overflow-hidden rounded-xl border-none shadow-xl">
-            <div className="bg-gradient-to-r dark:from-black dark:to-primary/5 px-5 border-none">
-              <DialogHeader className="pt-3">
-                <DialogTitle>Filtrar resultados</DialogTitle>
-                <DialogDescription className="pt-1 pb-2">
+          <DialogContent className="sm:max-w-[425px] max-w-[95%] md:max-w-[85%] lg:max-w-[75%] xl:max-w-[55%] p-0 overflow-hidden rounded-xl border-none shadow-xl">
+            <div className="bg-gradient-to-r dark:from-black dark:to-primary/5 border-none px-4 md:px-0">
+              <DialogHeader>
+                <DialogTitle className="text-center pt-6">Filtrar resultados</DialogTitle>
+                <DialogDescription className="pt-1 pb-2 text-center">
                   Ajusta los filtros para encontrar productos según tus
                   preferencias.
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="grid grid-cols-1 gap-3 py-3">
+              <div className="grid md:grid-cols-2 grid-cols-1 gap-3 py-3 mx-auto max-w-3xl">
                 <div>
                   <label className="text-xs font-medium mb-1 inline-flex items-center gap-1">
                     <Star className="h-3 w-3 text-amber-400" />
@@ -131,7 +131,7 @@ export default function SearchSection({ products }: { products: IProduct[] }) {
                   </Select>
                 </div>
 
-                <div className="pt-1">
+                <div className="pt-1 px-2">
                   <div className="flex justify-between items-center mb-1">
                     <label className="text-xs font-medium inline-flex items-center gap-1">
                       <DollarSign className="h-3 w-3 text-green-800" />
@@ -159,7 +159,7 @@ export default function SearchSection({ products }: { products: IProduct[] }) {
                 </div>
               </div>
 
-              <DialogFooter className="flex justify-between py-4 gap-3">
+              <DialogFooter className="flex justify-between py-4 gap-3 max-w-3xl mx-auto">
                 <Button
                   variant="secondary"
                   size="sm"

@@ -120,18 +120,20 @@ export default function BookingForm({ product }: { product: IProduct }) {
         cantidadPorDefecto: 1,
         duracionInterfazIntentoMinutos: 60,
         urlRetorno: "https://dantour.vercel.app",
-        emailsNotificacion: "dubondanielcruz@gmail.com",
-        urlWebhook: null,
-        telefonosNotificacion: "77886116",
+        emailsNotificacion: "dubondanielcruz@gmail.com", //! change
+        urlWebhook: null, //! change
+
+        telefonosNotificacion: "77886116", //! change
         notificarTransaccionCliente: true,
       },
     };
 
     try {
       const result = await createPaymentLink(payload).unwrap();
+      const enrichedResult = { ...result, productId: product.id };
       setIsDialogOpen(true);
-      setPaymentResponse(result);
-      localStorage.setItem("paymentResult", JSON.stringify(result));
+      setPaymentResponse(enrichedResult);
+      localStorage.setItem("paymentResult", JSON.stringify(enrichedResult));
     } catch (error) {
       console.error("Error al enviar la solicitud de pago:", error);
     }
@@ -141,7 +143,12 @@ export default function BookingForm({ product }: { product: IProduct }) {
 
   let paymentResult = paymentResponse;
   if (storedPaymentResult) {
-    paymentResult = JSON.parse(storedPaymentResult);
+    const parsedResult = JSON.parse(storedPaymentResult);
+    if (parsedResult.productId === product.id) {
+      paymentResult = parsedResult;
+    } else {
+      paymentResult = null;
+    }
   }
 
   const handleReserveClick = () => {

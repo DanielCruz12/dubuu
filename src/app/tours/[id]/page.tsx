@@ -11,7 +11,6 @@ import ImageCollage from "@/components/sections/image-collage";
 import Head from "next/head";
 import { useParams } from "next/navigation";
 import { useGetProductQuery } from "@/redux/slices/product/product-slice";
-import ImageCollageSkeleton from "@/components/skeletons/image-collage-skeleton";
 import ReviewSection from "@/components/sections/reviews/reviews-section";
 import BookingForm from "@/components/sections/booking-form";
 import { useEffect, useState } from "react";
@@ -19,6 +18,7 @@ import Rating from "@/components/rating";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { SignInButton, useUser } from "@clerk/nextjs";
+import ProductsSkeleton from "@/components/skeletons/product-skeleton";
 
 export default function ProductBooking() {
   const { user } = useUser();
@@ -49,7 +49,7 @@ export default function ProductBooking() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  if (isLoading) return <ImageCollageSkeleton />;
+  if (isLoading) return <ProductsSkeleton />;
   if (isError || !product) return <>Producto no encontrado</>;
 
   const details = [
@@ -234,7 +234,7 @@ export default function ProductBooking() {
                     disfrutar de nuestras promociones exclusivas.
                     <br />
                   </p>
-                  <SignInButton mode="modal">
+                  <SignInButton>
                     <Button>Iniciar sesión</Button>
                   </SignInButton>
                 </div>
