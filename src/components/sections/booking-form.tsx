@@ -35,28 +35,9 @@ import type { IProduct } from "@/types/product";
 import { Separator } from "../ui/separator";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
+import { useCreatePaymentLinkMutation } from "@/redux/slices/payment/payment-link";
 
 moment.locale("es");
-
-// Fechas disponibles con hora
-const availableDates = [
-  {
-    value: "2025-03-24T12:00",
-    label: moment("2025-03-24T12:00").format("dddd, D [de] MMMM - h:mm A"),
-  },
-  {
-    value: "2025-03-24T17:00",
-    label: moment("2025-03-24T17:00").format("dddd, D [de] MMMM - h:mm A"),
-  },
-  {
-    value: "2025-03-25T12:00",
-    label: moment("2025-03-25T12:00").format("dddd, D [de] MMMM - h:mm A"),
-  },
-  {
-    value: "2025-03-25T17:00",
-    label: moment("2025-03-25T17:00").format("dddd, D [de] MMMM - h:mm A"),
-  },
-];
 
 const schema = z.object({
   datetime: z.string().min(1, "Selecciona una fecha y hora"),
@@ -72,6 +53,11 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 export default function BookingForm({ product }: { product: IProduct }) {
+  const availableDates = product.available_dates.map((date) => ({
+    value: date,
+    label: moment(date).format("dddd, D [de] MMMM - h:mm A"),
+  }));
+
   const { user } = useUser();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [paymentResponse, setPaymentResponse] = useState<{
@@ -104,14 +90,13 @@ export default function BookingForm({ product }: { product: IProduct }) {
     return (ticketTotal + iva + turismo + serviceFee).toFixed(2);
   };
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [createPaymentLink, { isLoading }] = useCreatePaymentLinkMutation();
 
   const onSubmit = async () => {
     if (!user) {
       toast.error("Debes iniciar sesión para continuar con la reserva");
       return;
     }
-    setIsLoading(true);
     const total = parseFloat(calculateTotal());
 
     const payload = {
@@ -143,19 +128,12 @@ export default function BookingForm({ product }: { product: IProduct }) {
     };
 
     try {
-      const response = await fetch("http://localhost:3000/api/enlacePago", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const result = await response.json();
+      const result = await createPaymentLink(payload).unwrap();
       setIsDialogOpen(true);
       setPaymentResponse(result);
       localStorage.setItem("paymentResult", JSON.stringify(result));
     } catch (error) {
       console.error("Error al enviar la solicitud de pago:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -175,7 +153,7 @@ export default function BookingForm({ product }: { product: IProduct }) {
   };
 
   return (
-    <div className="sticky top-4 bg-background dark:bg-background rounded-lg dark:border-muted shadow-md px-2 max-w-md mx-auto">
+    <div className="sticky top-4 bg-background dark:bg-background rounded-lg dark:border-muted px-2 max-w-md mx-auto">
       <h2 className="text-base font-semibold mb-4">
         Reservar - {product.name}
       </h2>
@@ -188,12 +166,15 @@ export default function BookingForm({ product }: { product: IProduct }) {
             name="datetime"
             render={({ field }) => (
               <Select onValueChange={field.onChange} value={field.value}>
-                <SelectTrigger className="mt-1 w-full">
+                <SelectTrigger className="mt-1 w-full mx-auto">
                   <SelectValue placeholder="Selecciona una fecha y hora" />
                 </SelectTrigger>
                 <SelectContent>
                   {availableDates.map((d) => (
-                    <SelectItem key={d.value} value={d.value}>
+                    <SelectItem
+                      key={d.value.toString()}
+                      value={d.value.toString()}
+                    >
                       {d.label}
                     </SelectItem>
                   ))}
@@ -358,8 +339,8 @@ export default function BookingForm({ product }: { product: IProduct }) {
               </DialogDescription>
             </DialogHeader>
 
-            <div className="flex flex-col items-center justify-center py-6">
-              <div className="bg-white p-3 rounded-lg shadow-sm mb-4">
+            <div className="flex flex-col items-center justify-center">
+              <div className="bg-white rounded-lg shadow-sm mb-4">
                 <img
                   src={paymentResult?.urlQrCodeEnlace || "/placeholder.svg"}
                   alt="QR Code"

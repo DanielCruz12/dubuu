@@ -5,7 +5,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const productsApiSlice = createApi({
   reducerPath: "products",
   baseQuery: fetchBaseQuery({
-    baseUrl: "/api/backend",
+    baseUrl: "/backend",
   }),
   tagTypes: ["Products"],
   endpoints: (builder) => {

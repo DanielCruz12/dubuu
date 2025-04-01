@@ -28,6 +28,7 @@ import createWebStorage from "redux-persist/lib/storage/createWebStorage";
 
 // Importa tus slices modularizados
 import { productsApiSlice } from "@/redux/slices/product/product-slice";
+import { paymentApiSlice } from "@/redux/slices/payment/payment-link";
 import { reviewsApiSlice } from "@/redux/slices/product/review-slice";
 
 // Función para crear un almacenamiento "inerte" en entornos sin window (server-side)
@@ -59,6 +60,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   //global: globalReducer,
   [productsApiSlice.reducerPath]: productsApiSlice.reducer,
+  [paymentApiSlice.reducerPath]: paymentApiSlice.reducer,
   [reviewsApiSlice.reducerPath]: reviewsApiSlice.reducer,
   filters: filtersReducer,
 });
@@ -74,7 +76,11 @@ export const makeStore = () =>
           // Ignoramos estas acciones para evitar problemas con redux-persist
           ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
         },
-      }).concat(productsApiSlice.middleware, reviewsApiSlice.middleware),
+      }).concat(
+        productsApiSlice.middleware,
+        reviewsApiSlice.middleware,
+        paymentApiSlice.middleware
+      ),
   });
 
 /* Tipos de Redux */

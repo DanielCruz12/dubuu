@@ -101,7 +101,7 @@ export default function ProductBooking() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6 md:py-12">
+    <div className="max-w-7xl mx-auto px-4 py-6">
       <Head>{product.name}</Head>
 
       <section className="w-full mb-8">
@@ -193,18 +193,16 @@ export default function ProductBooking() {
                   Itinerary
                 </AccordionTrigger>
                 <AccordionContent>
-                  <div className="space-y-4 font-normal text-xs sm:text-sm md:text-base text-muted-foreground">
-                    <ol className="relative border-s border-gray-200 dark:border-gray-700">
-                      {product.itinerary.map((item, index) => (
-                        <li key={index} className="mb-3 ms-4">
-                          <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-                          <p className="text-base font-normal text-gray-500 dark:text-gray-400">
-                            {item}
-                          </p>
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
+                  <ol className="relative border-s border-gray-200 dark:border-gray-700">
+                    {product.itinerary.map((item, index) => (
+                      <li key={index} className="mb-3 ms-4">
+                        <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+                        <p className="space-y-4 font-normal md:text-base text-muted-foreground">
+                          {item}
+                        </p>
+                      </li>
+                    ))}
+                  </ol>
                 </AccordionContent>
               </AccordionItem>
             </Accordion>

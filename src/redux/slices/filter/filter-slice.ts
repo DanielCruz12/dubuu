@@ -7,7 +7,7 @@ interface FiltersState {
 }
 
 const initialState: FiltersState = {
-  rating: "1",
+  rating: "2",
   pricing: 10,
   category: "tours",
 };

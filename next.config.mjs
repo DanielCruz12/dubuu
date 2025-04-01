@@ -5,7 +5,7 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: "/api/backend/:path*", // Captura cualquier endpoint que venga después
+        source: "/backend/:path*", // Captura cualquier endpoint que venga después
         destination: `${process.env.BACKEND_URL}/:path*`, // Redirige correctamente
       },
     ];
