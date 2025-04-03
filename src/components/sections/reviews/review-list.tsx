@@ -9,15 +9,14 @@ interface ReviewListProps {
 }
 
 export default function ReviewList({ reviews }: ReviewListProps) {
-  console.log(reviews);
   return (
     <div>
       <h3 className="text-lg font-medium mb-4">
-        Customer Reviews ({reviews.length})
+        Comentarios de clientes ({reviews.length})
       </h3>
       {reviews.length === 0 ? (
         <p className="text-muted-foreground">
-          No reviews yet. Be the first to leave a review!
+          Aún no hay reseñas. ¡Sé el primero en dejar una!
         </p>
       ) : (
         <ScrollArea className="h-[500px] rounded-md dark:border-muted">
@@ -43,7 +42,7 @@ export default function ReviewList({ reviews }: ReviewListProps) {
                             variant="outline"
                             className="text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800"
                           >
-                            Verified Purchase
+                            Verificado 
                           </Badge>
                         </div>
                         <div className="flex mt-1">

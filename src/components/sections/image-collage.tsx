@@ -158,7 +158,7 @@ export default function ImageCollage({
                 }}
               >
                 <button className="bg-white text-black px-4 py-2 rounded-lg font-medium hover:bg-opacity-90">
-                  Show all photos ({images.length})
+                  Mostrar todas las fotos ({images.length})
                 </button>
               </div>
             )}

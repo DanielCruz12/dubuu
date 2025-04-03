@@ -14,7 +14,7 @@ export default function ReviewSection({ productId }: { productId: string }) {
 
   return (
     <div className="mt-12 space-y-8">
-      <h2 className="text-xl md:text-2xl font-semibold">Reviews</h2>
+      <h2 className="text-xl md:text-2xl font-semibold">Reseñas</h2>
       <ReviewSummary reviews={reviews} />
       <Separator className="dark:border-muted" />
       <ReviewList reviews={reviews} />

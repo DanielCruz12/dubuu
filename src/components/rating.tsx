@@ -43,10 +43,10 @@ export const Rating: React.FC<RatingProps> = ({
       <span className="font-normal">{formattedRating}</span>
       <span className="text-muted-foreground text-sm">
         {reviewsCount === 0
-          ? "(No reviews)"
+          ? "(No hay reseñas)"
           : reviewsCount > 1
-            ? `(${reviewsCount} reviews)`
-            : "(1 review)"}
+            ? `(${reviewsCount} reseñas)`
+            : "(1 reseña)"}
       </span>
     </div>
   );

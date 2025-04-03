@@ -45,13 +45,15 @@ export default function ReviewSummary({ reviews }: ReviewSummaryProps) {
           />
         </div>
         <span className="text-sm text-muted-foreground mt-2">
-          Based on {totalReviews} {totalReviews === 1 ? "review" : "reviews"}
+          Basado en {totalReviews} {totalReviews === 1 ? "reseña" : "reseñas"}
         </span>
       </div>
 
       {/* Bloque Breakdown */}
       <div className="flex-1 w-full px-2">
-        <h3 className="text-base font-medium mb-4">Rating Breakdown</h3>
+        <h3 className="text-base font-medium mb-4">
+          Desglose de la calificación
+        </h3>
         {displayedBreakdown.map(({ star, count, percentage }) => (
           <div key={star} className="flex items-center gap-2 mb-3 group">
             <div className="flex items-center w-8">

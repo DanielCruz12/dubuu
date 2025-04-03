@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin, Users, Clock, Calendar, Globe } from "lucide-react";
+import { MapPin } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -19,6 +19,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { SignInButton, useUser } from "@clerk/nextjs";
 import ProductsSkeleton from "@/components/skeletons/product-skeleton";
+import { Badge } from "@/components/ui/badge";
 
 export default function ProductBooking() {
   const { user } = useUser();
@@ -52,54 +53,6 @@ export default function ProductBooking() {
   if (isLoading) return <ProductsSkeleton />;
   if (isError || !product) return <>Producto no encontrado</>;
 
-  const details = [
-    {
-      icon: <Calendar className="w-5 h-5 text-primary rounded-xl" />,
-      title: "Duration",
-      value: `${product.duration} days`,
-    },
-    {
-      icon: <Users className="w-5 h-5 text-primary" />,
-      title: "Group Size",
-      value: `${product.max_people} people`,
-    },
-    {
-      icon: <Clock className="w-5 h-5 text-primary" />,
-      title: "Tour Type",
-      value: product.product_category.name,
-    },
-    {
-      icon: <Globe className="w-5 h-5 text-primary" />,
-      title: "Language",
-      value: "English",
-    },
-    {
-      icon: <Users className="w-5 h-5 text-primary" />,
-      title: "Price",
-      value: product.price ? `$${product.price}` : "N/A",
-    },
-    {
-      icon: <Globe className="w-5 h-5 text-primary" />,
-      title: "Departure",
-      value: "City A",
-    },
-    {
-      icon: <Calendar className="w-5 h-5 text-primary" />,
-      title: "Arrival",
-      value: "City B",
-    },
-    {
-      icon: <Clock className="w-5 h-5 text-primary" />,
-      title: "Guide",
-      value: "John Doe",
-    },
-    {
-      icon: <Users className="w-5 h-5 text-primary" />,
-      title: "Rating",
-      value: "4.5/5",
-    },
-  ];
-
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       <Head>{product.name}</Head>
@@ -125,22 +78,15 @@ export default function ProductBooking() {
         <ImageCollage banner={product.banner} images={product?.images} />
 
         <ScrollArea type="always" className="w-full pt-2">
-          <div className="flex gap-1 md:gap-4 p-4">
-            {details.map((detail, index) => (
-              <div
+          <div className="flex flex-wrap gap-2 md:gap-4 mt-3">
+            {product.services.map((service, index) => (
+              <Badge
                 key={index}
-                className="flex items-center gap-2 rounded-lg w-[130px] md:w-[200px] p-2"
+                variant="outline"
+                className="text-sm md:text-[1rem] rounded-lg p-2 mt-2"
               >
-                {detail.icon}
-                <div>
-                  <div className="text-xs sm:text-sm md:text-base font-medium">
-                    {detail.title}
-                  </div>
-                  <div className="text-xs sm:text-sm md:text-base text-muted-foreground">
-                    {detail.value}
-                  </div>
-                </div>
-              </div>
+                {service.name}
+              </Badge>
             ))}
           </div>
           <ScrollBar orientation="horizontal" />
@@ -158,18 +104,19 @@ export default function ProductBooking() {
             >
               <AccordionItem value="overview">
                 <AccordionTrigger className="text-base md:text-xl font-semibold">
-                  Overview
+                  Descripción general
                 </AccordionTrigger>
                 <AccordionContent>
+                  <span className="font-bold text">Punto de salida:</span>{" "}
+                  <p>{product?.departure_point}</p>
                   <div className="space-y-4 font-normal md:text-base text-muted-foreground">
-                    Punto de salida: <p>{product?.departure_point}</p>
                     <p>{product?.description}</p>
                   </div>
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="highlight">
                 <AccordionTrigger className="text-base md:text-xl font-semibold">
-                  Highlight
+                  Destacar
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-4 font-normal md:text-base text-muted-foreground">
@@ -180,7 +127,7 @@ export default function ProductBooking() {
 
               <AccordionItem value="included">
                 <AccordionTrigger className="text-base md:text-xl font-semibold">
-                  What&apos;s Included
+                  Qué incluye
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-4 font-normal md:text-base text-muted-foreground">
@@ -190,7 +137,7 @@ export default function ProductBooking() {
               </AccordionItem>
               <AccordionItem value="itinerary">
                 <AccordionTrigger className="text-base md:text-xl font-semibold">
-                  Itinerary
+                  Itinerario
                 </AccordionTrigger>
                 <AccordionContent>
                   <ol className="relative border-s border-gray-200 dark:border-gray-700">

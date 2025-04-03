@@ -12,6 +12,7 @@ export interface IProduct {
   itinerary: string[];
   highlight: string;
   included: string;
+  services: { name: string }[];
 
   duration: number;
   images: string[];

@@ -54,10 +54,10 @@ export function ResultDialog({
         <div className="bg-gradient-to-r dark:from-black dark:to-primary/5  px-5">
           <DialogHeader>
             <DialogTitle className="text-center pt-6">
-              Discover the World&apos;s Treasures
+              Descubra los tesoros del mundo
             </DialogTitle>
             <DialogDescription className="text-center">
-              Explore your travel dreams and make them a reality
+              Explora tus sueños de viaje y hazlos realidad
             </DialogDescription>
           </DialogHeader>
 
@@ -68,7 +68,7 @@ export function ResultDialog({
               <Input
                 type="text"
                 className="pl-8 h-8 text-xs"
-                placeholder="What are you looking for?"
+                placeholder="¿Qué estás buscando?"
                 value={inputValue}
                 onChange={handleSearch}
               />
@@ -83,21 +83,21 @@ export function ResultDialog({
               <div className="flex flex-col items-center justify-center h-80 md:h-52 gap-3">
                 <Search className="w-12 h-12 text-muted-foreground/40" />
                 <p className="text-center text-muted-foreground">
-                  Type at least 3 characters to start searching
+                  Escriba al menos 3 caracteres para iniciar la búsqueda
                 </p>
               </div>
             ) : filteredProducts.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-80 md:h-52 gap-3">
                 <Search className="w-12 h-12 text-muted-foreground/40" />
                 <p className="text-center text-muted-foreground">
-                  No tours found matching {searchTerm}
+                  No se encontraron resultados que coincidan {searchTerm}
                 </p>
               </div>
             ) : (
               <div className="md:space-y-4 ">
                 <h3 className="text-sm md:text-lg px-4 font-medium">
-                  {filteredProducts.length} result
-                  {filteredProducts.length !== 1 ? "s" : ""} found
+                  {filteredProducts.length} resultado
+                  {filteredProducts.length !== 1 ? "s" : ""} encontrado
                 </h3>
                 {filteredProducts.map((tour) => {
                   return (
@@ -137,7 +137,7 @@ export function ResultDialog({
                           activeStarClassName="text-yellow-400 fill-yellow-400"
                           inactiveStarClassName="text-gray-300"
                         />
-                        
+
                         <p className="text-sm mt-3 line-clamp-2 text-muted-foreground">
                           {tour.description}
                         </p>

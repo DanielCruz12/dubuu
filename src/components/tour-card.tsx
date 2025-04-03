@@ -134,7 +134,7 @@ export function TourCard({
         </CardContent>
         <CardFooter className="flex items-center justify-between">
           <div className="font-semibold">${price}</div>
-          <Button className="rounded-full">Book Now</Button>
+          <Button className="rounded-full">Reservar</Button>
         </CardFooter>
       </Link>
     </Card>

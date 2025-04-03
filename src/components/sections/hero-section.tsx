@@ -11,10 +11,10 @@ export default function HeroSection() {
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
         >
-          Your Journey, Your Way
+          Nuestro viaje, a tu manera
         </motion.h1>
         <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">
-          Discover the Worlds Treasures with Dans tour
+          Descubra los tesoros del mundo
         </p>
       </div>
     </section>
