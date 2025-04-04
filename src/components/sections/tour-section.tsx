@@ -62,7 +62,7 @@ export default function TourSection({
         <div className="flex justify-center mt-8">
           <Link href="/tours/all">
             <Button variant="outline" className="group">
-              See all tours
+              Ver todos los tours
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Button>
           </Link>

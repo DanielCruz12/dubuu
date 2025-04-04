@@ -11,18 +11,28 @@ import RecentPosts from "./blog/page";
 import NewsletterSection from "@/components/sections/newsletter";
 
 export default function Home() {
-  const { data: products = [], isLoading } = useGetProductsQuery();
-  const { rating, pricing, category } = useAppSelector(
+  const { data: products = { data: [], pagination: {} }, isLoading } =
+    useGetProductsQuery({
+      limit: 6,
+      page: 1,
+      sort: "createdAt",
+      order: "desc",
+    });
+  const { rating, pricing } = useAppSelector(
     (state: RootState) => state.filters
   );
 
-  const filteredProducts = products.filter((product) => {
-    return (
-      !rating ||
-      (product.average_rating >= Number(rating) &&
-        (!pricing || product.price >= pricing) &&
-        (!category || product.product_category.name === category))
-    );
+  const ratingNumber = Number(rating);
+  const pricingNumber = Number(pricing);
+
+  const filteredProducts = products.data.filter((product) => {
+    const productRating = Number(product.average_rating);
+    const productPrice = Number(product.price);
+
+    const meetsRating = isNaN(ratingNumber) || productRating >= ratingNumber;
+    const meetsPricing = isNaN(pricingNumber) || productPrice <= pricingNumber;
+
+    return meetsRating && meetsPricing;
   });
 
   return (

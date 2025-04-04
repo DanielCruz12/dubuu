@@ -6,7 +6,8 @@ import {
   resetFilters,
   setRating,
   setPricing,
-  setCategory,
+  setProductType,
+  initialFilterState,
 } from "@/redux/slices/filter/filter-slice";
 import {
   Select,
@@ -30,14 +31,14 @@ import { Badge } from "../ui/badge";
 import { Input } from "../ui/input";
 import { ResultDialog } from "./results-dialog";
 import { IProduct } from "@/types/product";
-import { categoryOptions, ratingOptions } from "@/utils/data";
+import { productTypes, ratingOptions } from "@/utils/data";
 
 export default function SearchSection({ products }: { products: IProduct[] }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDialogFilterOpen, setIsDialogFilterOpen] = useState(false);
 
   const dispatch = useAppDispatch();
-  const { rating, pricing, category } = useAppSelector(
+  const { rating, pricing, productType } = useAppSelector(
     (state: RootState) => state.filters
   );
 
@@ -53,8 +54,8 @@ export default function SearchSection({ products }: { products: IProduct[] }) {
 
   const handleResetFilters = () => {
     dispatch(resetFilters());
-    setTempRating(rating);
-    setTempPricing(pricing);
+    setTempRating(initialFilterState.rating);
+    setTempPricing(initialFilterState.pricing);
     setIsDialogFilterOpen(false);
   };
 
@@ -66,14 +67,14 @@ export default function SearchSection({ products }: { products: IProduct[] }) {
         onClose={setIsDialogOpen}
       />
 
-      <div className="flex gap-2 overflow-x-auto pb-2">
-        {categoryOptions.map(({ label, value }) => (
+      <div className="flex gap-2 overflow-x-auto pb-3">
+        {productTypes.map(({ name, id, description }) => (
           <Button
-            key={value}
-            variant={category === value ? "default" : "ghost"}
-            onClick={() => dispatch(setCategory(value))}
+            key={id}
+            variant={productType === name ? "default" : "ghost"}
+            onClick={() => dispatch(setProductType(name))}
           >
-            {label}
+            {description}
           </Button>
         ))}
       </div>
@@ -97,7 +98,9 @@ export default function SearchSection({ products }: { products: IProduct[] }) {
           <DialogContent className="sm:max-w-[425px] max-w-[95%] md:max-w-[85%] lg:max-w-[75%] xl:max-w-[55%] p-0 overflow-hidden rounded-xl border-none shadow-xl">
             <div className="bg-gradient-to-r dark:from-black dark:to-primary/5 border-none px-4 md:px-0">
               <DialogHeader>
-                <DialogTitle className="text-center pt-6">Filtrar resultados</DialogTitle>
+                <DialogTitle className="text-center pt-6">
+                  Filtrar resultados
+                </DialogTitle>
                 <DialogDescription className="pt-1 pb-2 text-center">
                   Ajusta los filtros para encontrar productos según tus
                   preferencias.

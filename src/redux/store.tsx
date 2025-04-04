@@ -30,6 +30,7 @@ import createWebStorage from "redux-persist/lib/storage/createWebStorage";
 import { productsApiSlice } from "@/redux/slices/product/product-slice";
 import { paymentApiSlice } from "@/redux/slices/payment/payment-link";
 import { reviewsApiSlice } from "@/redux/slices/product/review-slice";
+import { productTypesApiSlice } from "@/redux/slices/product/product-types";
 
 // Función para crear un almacenamiento "inerte" en entornos sin window (server-side)
 const createNoopStorage = () => {
@@ -62,6 +63,7 @@ const rootReducer = combineReducers({
   [productsApiSlice.reducerPath]: productsApiSlice.reducer,
   [paymentApiSlice.reducerPath]: paymentApiSlice.reducer,
   [reviewsApiSlice.reducerPath]: reviewsApiSlice.reducer,
+  [productTypesApiSlice.reducerPath]: productTypesApiSlice.reducer,
   filters: filtersReducer,
 });
 
@@ -79,7 +81,8 @@ export const makeStore = () =>
       }).concat(
         productsApiSlice.middleware,
         reviewsApiSlice.middleware,
-        paymentApiSlice.middleware
+        paymentApiSlice.middleware,
+        productTypesApiSlice.middleware
       ),
   });
 

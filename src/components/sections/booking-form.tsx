@@ -36,6 +36,7 @@ import { Separator } from "../ui/separator";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { useCreatePaymentLinkMutation } from "@/redux/slices/payment/payment-link";
+import { isProductType } from "@/utils";
 
 moment.locale("es");
 
@@ -53,10 +54,14 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 export default function BookingForm({ product }: { product: IProduct }) {
-  const availableDates = product.available_dates.map((date) => ({
-    value: date,
-    label: moment(date).format("dddd, D [de] MMMM - h:mm A"),
-  }));
+  const isTour = isProductType(product, "tour");
+
+  const availableDates = isTour
+    ? product.tour.available_dates.map((date) => ({
+        value: date,
+        label: moment(date).format("dddd, D [de] MMMM - h:mm A"),
+      }))
+    : [];
 
   const { user } = useUser();
   const [isDialogOpen, setIsDialogOpen] = useState(false);

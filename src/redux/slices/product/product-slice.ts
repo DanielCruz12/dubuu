@@ -10,19 +10,44 @@ export const productsApiSlice = createApi({
   tagTypes: ["Products"],
   endpoints: (builder) => {
     return {
-      getProducts: builder.query<IProduct[], void>({
-        query: () => `/api/v1/products`,
+      getProducts: builder.query<
+        {
+          data: IProduct[];
+          pagination: {
+            total: number;
+            totalPages: number;
+            page: number;
+            limit: number;
+          };
+        },
+        Record<string, string | number | boolean | undefined>
+      >({
+        query: (params) => {
+          const searchParams = new URLSearchParams();
+
+          Object.entries(params).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) {
+              searchParams.append(key, String(value));
+            }
+          });
+
+          return `/api/v1/products?${searchParams.toString()}`;
+        },
         providesTags: (result) =>
-          result
+          result?.data
             ? [
                 { type: "Products", id: "LIST" },
-                ...result.map(({ id }) => ({ type: "Products" as const, id })),
+                ...result.data.map(({ id }) => ({
+                  type: "Products" as const,
+                  id,
+                })),
               ]
             : [{ type: "Products", id: "LIST" }],
       }),
-      createProduct: builder.mutation<IProduct, Omit<IProduct, "id">>({
+
+      createProduct: builder.mutation<IProduct, Partial<IProduct>>({
         query: (post) => ({
-          url: "api/v1/products",
+          url: "/api/v1/products",
           method: "POST",
           body: post,
         }),

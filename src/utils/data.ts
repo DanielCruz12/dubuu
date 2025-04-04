@@ -1,4 +1,3 @@
-
 export const blogData = [
   {
     id: 1,
@@ -60,8 +59,8 @@ export const ratingOptions = [
   { label: "+1 stars", value: "1" },
 ];
 
-export const categoryOptions = [
-  { label: "Tours", value: "tours" },
-  { label: "Hotels", value: "hotels" },
-  { label: "Rental", value: "rentals" },
+export const productTypes = [
+  { description: "Tours", name: "tour", id: 1 },
+  { description: "Hotels", name: "hotel", id: 2 },
+  { description: "Rental", name: "rental", id: 3 },
 ];

@@ -20,32 +20,28 @@ import { Button } from "@/components/ui/button";
 import { SignInButton, useUser } from "@clerk/nextjs";
 import ProductsSkeleton from "@/components/skeletons/product-skeleton";
 import { Badge } from "@/components/ui/badge";
+import { isProductType } from "@/utils";
+import { IProduct } from "@/types/product";
 
 export default function ProductBooking() {
   const { user } = useUser();
   const { id } = useParams();
-  const {
-    data: product,
-    isLoading,
-    isError,
-  } = useGetProductQuery(id as string);
+  const { data, isLoading, isError } = useGetProductQuery(id as string);
+
+  const product = data as IProduct;
 
   const [headerHeight, setHeaderHeight] = useState(0);
 
-  // Measure header height to adjust sticky positioning
   useEffect(() => {
     const header = document.querySelector("header");
     if (header) {
       setHeaderHeight(header.offsetHeight);
     }
-
-    // Re-measure on resize
     const handleResize = () => {
       if (header) {
         setHeaderHeight(header.offsetHeight);
       }
     };
-
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -53,15 +49,19 @@ export default function ProductBooking() {
   if (isLoading) return <ProductsSkeleton />;
   if (isError || !product) return <>Producto no encontrado</>;
 
+  const isTour = isProductType(product, "tour");
+  const tourData = isTour ? product.tour : null;
+  
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       <Head>{product.name}</Head>
 
       <section className="w-full mb-8">
         <div className="mb-6">
-          <div className="flex  flex-col md:flex-row items-start gap-2  text-sm">
+          <div className="flex flex-col md:flex-row items-start gap-2 text-sm">
             <Rating
-              averageRating={product.average_rating}
+              averageRating={Number(product.average_rating)}
               reviewsCount={product.total_reviews}
               maxStars={5}
               activeStarClassName="text-yellow-400 fill-yellow-400"
@@ -79,7 +79,7 @@ export default function ProductBooking() {
 
         <ScrollArea type="always" className="w-full pt-2">
           <div className="flex flex-wrap gap-2 md:gap-4 mt-3">
-            {product.services.map((service, index) => (
+            {product.amenities?.map((service, index) => (
               <Badge
                 key={index}
                 variant="outline"
@@ -94,7 +94,6 @@ export default function ProductBooking() {
       </section>
 
       <section className="flex flex-col lg:flex-row gap-8 mb-12">
-        {/* Left column - Scrollable content */}
         <div className="w-full lg:w-2/3">
           <div className="mb-8">
             <Accordion
@@ -107,20 +106,25 @@ export default function ProductBooking() {
                   Descripción general
                 </AccordionTrigger>
                 <AccordionContent>
-                  <span className="font-bold text">Punto de salida:</span>{" "}
-                  <p>{product?.departure_point}</p>
+                  {tourData && (
+                    <>
+                      <span className="font-bold text">Punto de salida:</span>
+                      <p>{tourData.departure_point}</p>
+                    </>
+                  )}
                   <div className="space-y-4 font-normal md:text-base text-muted-foreground">
                     <p>{product?.description}</p>
                   </div>
                 </AccordionContent>
               </AccordionItem>
+
               <AccordionItem value="highlight">
                 <AccordionTrigger className="text-base md:text-xl font-semibold">
                   Destacar
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-4 font-normal md:text-base text-muted-foreground">
-                    <p>{product?.highlight}</p>
+                    <p>{tourData?.highlight}</p>
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -131,17 +135,18 @@ export default function ProductBooking() {
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-4 font-normal md:text-base text-muted-foreground">
-                    <p>{product.included}</p>
+                    <p>{tourData?.included}</p>
                   </div>
                 </AccordionContent>
               </AccordionItem>
+
               <AccordionItem value="itinerary">
                 <AccordionTrigger className="text-base md:text-xl font-semibold">
                   Itinerario
                 </AccordionTrigger>
                 <AccordionContent>
                   <ol className="relative border-s border-gray-200 dark:border-gray-700">
-                    {product.itinerary.map((item, index) => (
+                    {tourData?.itinerary?.map((item, index) => (
                       <li key={index} className="mb-3 ms-4">
                         <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
                         <p className="space-y-4 font-normal md:text-base text-muted-foreground">
@@ -160,7 +165,6 @@ export default function ProductBooking() {
           </div>
         </div>
 
-        {/* Right column - Sticky booking form */}
         <div className="w-full lg:w-1/3">
           <div
             style={{

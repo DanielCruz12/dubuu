@@ -1,9 +1,8 @@
-"use client";
 import { motion } from "framer-motion";
 
 export default function HeroSection() {
   return (
-    <section className="flex justify-between items-end mb-3 md:mb-6">
+    <section className="flex justify-between items-end mb-3 ">
       <div>
         <motion.h1
           className="text-xl md:text-3xl font-bold mb-1 md:mb-2"

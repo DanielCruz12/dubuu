@@ -8,20 +8,24 @@ import Link from "next/link";
 import { IProduct } from "@/types/product";
 import Rating from "./rating";
 import { Badge } from "./ui/badge";
+import { isTourProduct } from "@/utils";
 
-export function TourCard({
-  id,
-  name,
-  description,
-  price,
-  country,
-  target_audience,
-  duration,
-  images,
-  average_rating,
-  total_reviews,
-  product_category,
-}: IProduct) {
+export function TourCard(product: IProduct) {
+  const {
+    id,
+    name,
+    description,
+    price,
+    country,
+    target_audience,
+    images,
+    average_rating,
+    total_reviews,
+    product_category,
+  } = product;
+
+  const duration = isTourProduct(product) ? product.tour.duration : null;
+
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const nextImage = (e: React.MouseEvent) => {
@@ -127,9 +131,11 @@ export function TourCard({
             <span className="text-sm text-muted-foreground">
               {target_audience?.name} /
             </span>
-            <span className="text-sm text-muted-foreground">
-              {duration} {duration > 1 ? "días" : "día"}
-            </span>
+            {duration && (
+              <span className="text-sm text-muted-foreground">
+                {duration} {duration > 1 ? "días" : "día"}
+              </span>
+            )}
           </div>
         </CardContent>
         <CardFooter className="flex items-center justify-between">
