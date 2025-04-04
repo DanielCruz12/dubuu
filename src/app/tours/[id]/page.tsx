@@ -52,7 +52,6 @@ export default function ProductBooking() {
   const isTour = isProductType(product, "tour");
   const tourData = isTour ? product.tour : null;
   
-
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       <Head>{product.name}</Head>

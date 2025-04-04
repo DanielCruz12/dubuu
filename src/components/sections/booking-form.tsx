@@ -2,7 +2,7 @@
 "use client";
 
 import { useForm, Controller } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import moment from "moment";
@@ -36,6 +36,10 @@ import { Separator } from "../ui/separator";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { useCreatePaymentLinkMutation } from "@/redux/slices/payment/payment-link";
+import {
+  useCreateBookingMutation,
+  useGetBookingsByUserIdQuery,
+} from "@/redux/slices/booking/booking-slice";
 import { isProductType } from "@/utils";
 
 moment.locale("es");
@@ -54,6 +58,33 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 export default function BookingForm({ product }: { product: IProduct }) {
+  const { user } = useUser();
+  const { data: userBookings } = useGetBookingsByUserIdQuery(user?.id ?? "", {
+    skip: !user?.id,
+  });
+
+  const existingBooking = userBookings?.find(
+    (b) => b.product_id === product.id && b.status === "in-process"
+  );
+
+  useEffect(() => {
+    if (existingBooking) {
+      setIsDialogOpen(true);
+    }
+  }, [existingBooking]);
+
+  const [createBooking] = useCreateBookingMutation();
+  const [createPaymentLink, { isLoading }] = useCreatePaymentLinkMutation();
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [paymentResponse, setPaymentResponse] = useState<{
+    idEnlace: number;
+    urlQrCodeEnlace: string;
+    urlEnlace: string;
+    estaProductivo: boolean;
+    createdAt?: string;
+  } | null>(null);
+
   const isTour = isProductType(product, "tour");
 
   const availableDates = isTour
@@ -63,14 +94,6 @@ export default function BookingForm({ product }: { product: IProduct }) {
       }))
     : [];
 
-  const { user } = useUser();
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [paymentResponse, setPaymentResponse] = useState<{
-    idEnlace: number;
-    urlQrCodeEnlace: string;
-    urlEnlace: string;
-    estaProductivo: boolean;
-  } | null>(null);
   const {
     control,
     handleSubmit,
@@ -95,13 +118,12 @@ export default function BookingForm({ product }: { product: IProduct }) {
     return (ticketTotal + iva + turismo + serviceFee).toFixed(2);
   };
 
-  const [createPaymentLink, { isLoading }] = useCreatePaymentLinkMutation();
-
   const onSubmit = async () => {
     if (!user) {
       toast.error("Debes iniciar sesión para continuar con la reserva");
       return;
     }
+
     const total = parseFloat(calculateTotal());
 
     const payload = {
@@ -125,39 +147,52 @@ export default function BookingForm({ product }: { product: IProduct }) {
         cantidadPorDefecto: 1,
         duracionInterfazIntentoMinutos: 60,
         urlRetorno: "https://dantour.vercel.app",
-        emailsNotificacion: "dubondanielcruz@gmail.com", //! change
-        urlWebhook: null, //! change
-
-        telefonosNotificacion: "77886116", //! change
+        emailsNotificacion:
+          user.emailAddresses?.[0]?.emailAddress ?? "dubondanielcruz@gmail.com",
+        urlWebhook: null,
+        telefonosNotificacion:
+          user.phoneNumbers?.[0]?.phoneNumber ?? "77886116",
         notificarTransaccionCliente: true,
       },
     };
 
     try {
       const result = await createPaymentLink(payload).unwrap();
-      const enrichedResult = { ...result, productId: product.id };
+
+      await createBooking({
+        user_id: user.id,
+        status: "in-process",
+        product_id: product.id,
+        payment_link_id: result.idEnlace,
+        payment_url: result.urlEnlace,
+        qr_url: result.urlQrCodeEnlace,
+        is_live: result.estaProductivo,
+      });
+
+      const timestamp = new Date();
+
+      setPaymentResponse({
+        ...result,
+        createdAt: timestamp.toISOString(),
+      });
       setIsDialogOpen(true);
-      setPaymentResponse(enrichedResult);
-      localStorage.setItem("paymentResult", JSON.stringify(enrichedResult));
     } catch (error) {
       console.error("Error al enviar la solicitud de pago:", error);
+      toast.error("Error al generar el enlace de pago");
     }
   };
 
-  const storedPaymentResult = localStorage.getItem("paymentResult");
-
-  let paymentResult = paymentResponse;
-  if (storedPaymentResult) {
-    const parsedResult = JSON.parse(storedPaymentResult);
-    if (parsedResult.productId === product.id) {
-      paymentResult = parsedResult;
-    } else {
-      paymentResult = null;
-    }
-  }
+  const paymentResult = existingBooking
+    ? {
+        idEnlace: existingBooking.payment_link_id,
+        urlQrCodeEnlace: existingBooking.qr_url,
+        urlEnlace: existingBooking.payment_url,
+        estaProductivo: existingBooking.is_live,
+      }
+    : paymentResponse;
 
   const handleReserveClick = () => {
-    if (paymentResult !== null) {
+    if (paymentResult) {
       setIsDialogOpen(true);
     } else {
       handleSubmit(onSubmit)();
@@ -199,7 +234,6 @@ export default function BookingForm({ product }: { product: IProduct }) {
           )}
         </div>
 
-        {/* Tickets */}
         <div>
           <Label>Entradas:</Label>
           <div className="flex flex-col gap-2 md:flex-row md:justify-between md:items-center mt-2">
@@ -242,9 +276,7 @@ export default function BookingForm({ product }: { product: IProduct }) {
           )}
         </div>
 
-        {/* Desglose y Total */}
         <div className="pt-4 border-t dark:border-muted space-y-3">
-          {/* Desglose de cargos */}
           <div className="flex flex-col gap-2">
             <div className="flex justify-between text-sm">
               <span>IVA (13%):</span>
@@ -266,19 +298,14 @@ export default function BookingForm({ product }: { product: IProduct }) {
             </div>
           </div>
 
-          {/* Total con tooltip */}
           <div>
-            <div className="flex flex-col gap-2">
-              <div className="flex justify-between text-sm">
-                <span>Subtotal:</span>
-                <span>
-                  ${(watchData.tickets.adult * product.price).toFixed(2)}
-                </span>
-              </div>
+            <div className="flex justify-between text-sm">
+              <span>Subtotal:</span>
+              <span>
+                ${(watchData.tickets.adult * product.price).toFixed(2)}
+              </span>
             </div>
-
-            <Separator className="my-3 " />
-
+            <Separator className="my-3" />
             <div className="flex justify-between font-semibold items-center">
               <span>
                 Total:
@@ -318,7 +345,7 @@ export default function BookingForm({ product }: { product: IProduct }) {
           >
             {isLoading
               ? "Cargando..."
-              : paymentResult !== null
+              : paymentResult
                 ? "Ver link de pago"
                 : "Reservar ahora"}
           </Button>
@@ -334,14 +361,11 @@ export default function BookingForm({ product }: { product: IProduct }) {
           </button>
         </div>
       </form>
-      {paymentResult !== null && paymentResult?.urlQrCodeEnlace && (
+
+      {paymentResult && (
         <Dialog
-          onOpenChange={(open) => {
-            if (!open) {
-              setIsDialogOpen(false);
-            }
-          }}
           open={isDialogOpen}
+          onOpenChange={(open) => !open && setIsDialogOpen(false)}
         >
           <DialogContent className="sm:max-w-[425px] p-6">
             <DialogHeader className="text-center">
@@ -354,7 +378,7 @@ export default function BookingForm({ product }: { product: IProduct }) {
             <div className="flex flex-col items-center justify-center">
               <div className="bg-white rounded-lg shadow-sm mb-4">
                 <img
-                  src={paymentResult?.urlQrCodeEnlace || "/placeholder.svg"}
+                  src={paymentResult.urlQrCodeEnlace}
                   alt="QR Code"
                   className="w-48 h-48 md:w-64 md:h-64 object-contain"
                 />
@@ -365,8 +389,9 @@ export default function BookingForm({ product }: { product: IProduct }) {
                   Total a pagar:{" "}
                   <span className="font-semibold">${calculateTotal()}</span>
                 </p>
-                <p className="text-xs text-muted-foreground">
-                  El código QR expirará en 60 minutos
+                <p className="text-sm text-muted-foreground">
+                  ¿Cambiaste de idea? Puedes contactarnos para modificar o
+                  cancelar tu reserva.
                 </p>
               </div>
             </div>
@@ -379,6 +404,7 @@ export default function BookingForm({ product }: { product: IProduct }) {
               >
                 Cancelar
               </Button>
+
               <Button asChild className="w-full sm:w-auto order-1 sm:order-2">
                 <a
                   href={paymentResult.urlEnlace}
