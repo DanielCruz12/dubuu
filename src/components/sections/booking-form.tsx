@@ -367,54 +367,58 @@ export default function BookingForm({ product }: { product: IProduct }) {
           open={isDialogOpen}
           onOpenChange={(open) => !open && setIsDialogOpen(false)}
         >
-          <DialogContent className="sm:max-w-[425px] p-6">
-            <DialogHeader className="text-center">
-              <DialogTitle className="text-xl">Pago con QR</DialogTitle>
-              <DialogDescription>
-                Escanea el código QR o usa el enlace para completar tu pago
-              </DialogDescription>
-            </DialogHeader>
+          <DialogContent className="sm:max-w-[425px] max-w-[95%] md:max-w-[85%] lg:max-w-[75%] xl:max-w-[65%] p-0 overflow-hidden rounded-xl border-none shadow-xl">
+            <div className="bg-gradient-to-r dark:from-black dark:to-primary/5 border-none px-4 md:px-0">
+              <DialogHeader className="text-center">
+                <DialogTitle className="text-center pt-6">
+                  Pago con QR
+                </DialogTitle>
+                <DialogDescription className="text-center pb-2">
+                  Escanea el código QR o usa el enlace para completar tu pago
+                </DialogDescription>
+              </DialogHeader>
 
-            <div className="flex flex-col items-center justify-center">
-              <div className="bg-white rounded-lg shadow-sm mb-4">
-                <img
-                  src={paymentResult.urlQrCodeEnlace}
-                  alt="QR Code"
-                  className="w-48 h-48 md:w-64 md:h-64 object-contain"
-                />
+              <div className="flex flex-col items-center justify-center">
+                <div className="bg-white rounded-lg shadow-sm mb-4">
+                  <img
+                    src={paymentResult.urlQrCodeEnlace}
+                    alt="QR Code"
+                    className="w-48 h-48 md:w-64 md:h-64 object-contain"
+                  />
+                </div>
+
+                <div className="text-center space-y-2">
+                  <p className="text-sm text-muted-foreground">
+                    Total a pagar:{" "}
+                    <span className="font-semibold">${calculateTotal()}</span>
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    ¿Cambiaste de idea? Puedes contactarnos para modificar o
+                    cancelar tu reserva.
+                  </p>
+                </div>
               </div>
 
-              <div className="text-center space-y-2">
-                <p className="text-sm text-muted-foreground">
-                  Total a pagar:{" "}
-                  <span className="font-semibold">${calculateTotal()}</span>
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  ¿Cambiaste de idea? Puedes contactarnos para modificar o
-                  cancelar tu reserva.
-                </p>
-              </div>
-            </div>
-
-            <DialogFooter className="flex flex-col sm:flex-row gap-3 sm:gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setIsDialogOpen(false)}
-                className="w-full sm:w-auto order-2 sm:order-1"
-              >
-                Cancelar
-              </Button>
-
-              <Button asChild className="w-full sm:w-auto order-1 sm:order-2">
-                <a
-                  href={paymentResult.urlEnlace}
-                  target="_blank"
-                  rel="noopener noreferrer"
+              <DialogFooter className="flex flex-col sm:flex-row gap-3 sm:gap-2 py-2 pb-3">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsDialogOpen(false)}
+                  className="w-full sm:w-auto order-2 sm:order-1"
                 >
-                  Ir a pago
-                </a>
-              </Button>
-            </DialogFooter>
+                  Cancelar
+                </Button>
+
+                <Button asChild className="w-full sm:w-auto order-1 sm:order-2">
+                  <a
+                    href={paymentResult.urlEnlace}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Ir a pago
+                  </a>
+                </Button>
+              </DialogFooter>
+            </div>
           </DialogContent>
         </Dialog>
       )}
