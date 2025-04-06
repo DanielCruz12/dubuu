@@ -52,7 +52,15 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export default function BookingForm({ product }: { product: IProduct }) {
+export default function BookingForm({
+  product,
+  setShowPaymentStep,
+  showPaymentStep,
+}: {
+  product: IProduct;
+  setShowPaymentStep: () => void;
+  showPaymentStep: boolean;
+}) {
   const { user } = useUser();
   const { data: userBookings } = useGetBookingsByUserIdQuery(user?.id ?? "", {
     skip: !user?.id,
@@ -118,6 +126,8 @@ export default function BookingForm({ product }: { product: IProduct }) {
       toast.error("Debes iniciar sesión para continuar con la reserva");
       return;
     }
+
+    setShowPaymentStep();
 
     const total = parseFloat(calculateTotal());
 
@@ -274,36 +284,20 @@ export default function BookingForm({ product }: { product: IProduct }) {
         <div className="pt-4 border-t dark:border-muted space-y-3">
           <div className="flex flex-col gap-2">
             <div className="flex justify-between text-sm">
-              <span>IVA (13%):</span>
+              <span>IVA (13%)</span>
               <span>
                 ${(watchData.tickets.adult * product.price * 0.13).toFixed(2)}
               </span>
             </div>
             <div className="flex justify-between text-sm">
-              <span>Impuesto de Turismo (5%):</span>
+              <span>Impuesto de Turismo (5%)</span>
               <span>
                 ${(watchData.tickets.adult * product.price * 0.05).toFixed(2)}
               </span>
             </div>
             <div className="flex justify-between text-sm">
-              <span>Tarifa de Servicio (3%):</span>
               <span>
-                ${(watchData.tickets.adult * product.price * 0.03).toFixed(2)}
-              </span>
-            </div>
-          </div>
-
-          <div>
-            <div className="flex justify-between text-sm">
-              <span>Subtotal:</span>
-              <span>
-                ${(watchData.tickets.adult * product.price).toFixed(2)}
-              </span>
-            </div>
-            <Separator className="my-3" />
-            <div className="flex justify-between font-semibold items-center">
-              <span>
-                Total:
+                Tarifa de Servicio (3%)
                 <Popover>
                   <PopoverTrigger>
                     <Button
@@ -325,24 +319,44 @@ export default function BookingForm({ product }: { product: IProduct }) {
                   </PopoverContent>
                 </Popover>
               </span>
+              <span>
+                ${(watchData.tickets.adult * product.price * 0.03).toFixed(2)}
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <div className="flex justify-between text-sm">
+              <span>Subtotal</span>
+              <span>
+                ${(watchData.tickets.adult * product.price).toFixed(2)}
+              </span>
+            </div>
+            <Separator className="my-3" />
+
+            <div className="flex rounded py-3 px-2 justify-between font-semibold items-center">
+              <span className="text-lg md:text-2xl">Total</span>
               <div className="flex items-center gap-2">
-                <span>${calculateTotal()}</span>
+                <span className="text-lg md:text-2xl">${calculateTotal()}</span>
               </div>
             </div>
           </div>
 
-          <Button
-            disabled={isLoading}
-            type="button"
-            className="w-full"
-            onClick={handleReserveClick}
-          >
-            {isLoading
-              ? "Cargando..."
-              : paymentResult
-                ? "Ver link de pago"
-                : "Reservar ahora"}
-          </Button>
+          {!showPaymentStep && (
+            <Button
+              disabled={isLoading}
+              type="button"
+              variant={"secondary"}
+              className="w-full"
+              onClick={handleReserveClick}
+            >
+              {isLoading
+                ? "Cargando..."
+                : paymentResult
+                  ? "Ver link de pago"
+                  : "Reservar ahora"}
+            </Button>
+          )}
         </div>
 
         <div className="text-center">

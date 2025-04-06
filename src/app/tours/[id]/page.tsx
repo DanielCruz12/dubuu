@@ -1,32 +1,29 @@
 "use client";
 
-import { Lock, Headphones, MapPin } from "lucide-react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { useEffect, useState } from "react";
+import { MapPin } from "lucide-react";
 import ImageCollage from "@/components/sections/image-collage";
 import Head from "next/head";
 import { useParams } from "next/navigation";
 import { useGetProductQuery } from "@/redux/slices/product/product-slice";
 import ReviewSection from "@/components/sections/reviews/reviews-section";
 import BookingForm from "@/components/sections/booking-form";
-import { useEffect, useState } from "react";
 import Rating from "@/components/rating";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { SignInButton, useUser } from "@clerk/nextjs";
 import ProductsSkeleton from "@/components/skeletons/product-skeleton";
 import { Badge } from "@/components/ui/badge";
-import { isProductType } from "@/utils";
 import { IProduct } from "@/types/product";
+import ProductDetails from "@/components/sections/product-details";
+import TrustSection from "@/components/sections/trust-section";
+import CheckoutForm from "@/components/sections/checkout/checkout-form";
 
 export default function ProductBooking() {
   const { user } = useUser();
   const { id } = useParams();
   const { data, isLoading, isError } = useGetProductQuery(id as string);
+  const [showPaymentStep, setShowPaymentStep] = useState(false);
 
   const product = data as IProduct;
 
@@ -48,9 +45,6 @@ export default function ProductBooking() {
 
   if (isLoading) return <ProductsSkeleton />;
   if (isError || !product) return <>Producto no encontrado</>;
-
-  const isTour = isProductType(product, "tour");
-  const tourData = isTour ? product.tour : null;
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
@@ -93,76 +87,18 @@ export default function ProductBooking() {
       </section>
 
       <section className="flex flex-col lg:flex-row gap-8 mb-12">
-        <div className="w-full lg:w-2/3">
-          <div className="mb-8">
-            <Accordion
-              type="multiple"
-              defaultValue={["overview", "highlight", "included"]}
-              className="space-y-4"
-            >
-              <AccordionItem value="overview">
-                <AccordionTrigger className="text-base md:text-xl font-semibold">
-                  Descripción general
-                </AccordionTrigger>
-                <AccordionContent>
-                  {tourData && (
-                    <>
-                      <span className="font-bold text">Punto de salida:</span>
-                      <p>{tourData.departure_point}</p>
-                    </>
-                  )}
-                  <div className="space-y-4 font-normal md:text-base text-muted-foreground">
-                    <p>{product?.description}</p>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="highlight">
-                <AccordionTrigger className="text-base md:text-xl font-semibold">
-                  Destacar
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-4 font-normal md:text-base text-muted-foreground">
-                    <p>{tourData?.highlight}</p>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="included">
-                <AccordionTrigger className="text-base md:text-xl font-semibold">
-                  Qué incluye
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-4 font-normal md:text-base text-muted-foreground">
-                    <p>{tourData?.included}</p>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="itinerary">
-                <AccordionTrigger className="text-base md:text-xl font-semibold">
-                  Itinerario
-                </AccordionTrigger>
-                <AccordionContent>
-                  <ol className="relative border-s border-gray-200 dark:border-gray-700">
-                    {tourData?.itinerary?.map((item, index) => (
-                      <li key={index} className="mb-3 ms-4">
-                        <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-                        <p className="space-y-4 font-normal md:text-base text-muted-foreground">
-                          {item}
-                        </p>
-                      </li>
-                    ))}
-                  </ol>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+        {showPaymentStep ? (
+          <div className="w-full lg:w-2/3">
+            <CheckoutForm />
           </div>
-
-          <div className="hidden md:block">
-            <ReviewSection productId={product.id} />
+        ) : (
+          <div className="w-full lg:w-2/3">
+            <ProductDetails product={product} />
+            <div className="hidden md:block">
+              <ReviewSection productId={product.id} />
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="w-full lg:w-1/3">
           <div
@@ -173,7 +109,11 @@ export default function ProductBooking() {
           >
             <div className="bg-background dark:bg-background rounded-lg border dark:border-muted shadow-md mb-10 p-6">
               {user ? (
-                <BookingForm product={product} />
+                <BookingForm
+                  showPaymentStep={showPaymentStep}
+                  setShowPaymentStep={() => setShowPaymentStep(true)}
+                  product={product}
+                />
               ) : (
                 <div className="text-center">
                   <h2 className="text-xl font-semibold mb-4">
@@ -190,43 +130,15 @@ export default function ProductBooking() {
                 </div>
               )}
             </div>
-            <div className="max-w-md mx-auto rounded-lg p-6 shadow-sm border">
-              <h2 className="text-md font-bold mb-4">Reserva con confianza</h2>
-
-              <hr className="my-4" />
-
-              <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <Lock className="h-6 w-6 mt-1 flex-shrink-0" />
-                  <div>
-                    <h3 className="font-semibold text-base md:text-lg">
-                      Protección de la privacidad
-                    </h3>
-                    <span className="space-y-4 font-normal text-sm md:text-base text-muted-foreground">
-                      Usamos encriptación SSL para proteger sus datos
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <Headphones className="h-6 w-6 mt-1 flex-shrink-0" />
-                  <div>
-                    <h3 className="font-semibold text-base md:text-lg">
-                      Asistencia global las 24 horas, los 7 días de la semana
-                    </h3>
-                    <span className="space-y-4 font-normal text-sm md:text-base text-muted-foreground">
-                      Obtenga las respuestas que necesite, cuando las necesite
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <TrustSection />
           </div>
         </div>
       </section>
-      <div className="md:hidden block">
-        <ReviewSection productId={product.id} />
-      </div>
+      {!showPaymentStep && (
+        <div className="md:hidden block">
+          <ReviewSection productId={product.id} />
+        </div>
+      )}
     </div>
   );
 }
