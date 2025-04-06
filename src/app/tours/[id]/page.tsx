@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin } from "lucide-react";
+import { Lock, Headphones, MapPin } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -51,7 +51,7 @@ export default function ProductBooking() {
 
   const isTour = isProductType(product, "tour");
   const tourData = isTour ? product.tour : null;
-  
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       <Head>{product.name}</Head>
@@ -189,6 +189,37 @@ export default function ProductBooking() {
                   </SignInButton>
                 </div>
               )}
+            </div>
+            <div className="max-w-md mx-auto rounded-lg p-6 shadow-sm border">
+              <h2 className="text-md font-bold mb-4">Reserva con confianza</h2>
+
+              <hr className="my-4" />
+
+              <div className="space-y-6">
+                <div className="flex items-start gap-4">
+                  <Lock className="h-6 w-6 mt-1 flex-shrink-0" />
+                  <div>
+                    <h3 className="font-semibold text-base md:text-lg">
+                      Protección de la privacidad
+                    </h3>
+                    <span className="space-y-4 font-normal text-sm md:text-base text-muted-foreground">
+                      Usamos encriptación SSL para proteger sus datos
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <Headphones className="h-6 w-6 mt-1 flex-shrink-0" />
+                  <div>
+                    <h3 className="font-semibold text-base md:text-lg">
+                      Asistencia global las 24 horas, los 7 días de la semana
+                    </h3>
+                    <span className="space-y-4 font-normal text-sm md:text-base text-muted-foreground">
+                      Obtenga las respuestas que necesite, cuando las necesite
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

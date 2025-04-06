@@ -19,7 +19,7 @@ export default function ReviewList({ reviews }: ReviewListProps) {
           Aún no hay reseñas. ¡Sé el primero en dejar una!
         </p>
       ) : (
-        <ScrollArea className="h-[500px] rounded-md dark:border-muted">
+        <ScrollArea className="max-h-[500px] rounded-md dark:border-muted">
           <div className="space-y-4">
             {reviews.map((review) => (
               <div

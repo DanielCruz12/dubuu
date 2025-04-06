@@ -4,9 +4,17 @@ import { Separator } from "@/components/ui/separator";
 import ReviewSummary from "./reviews-summary";
 import ReviewList from "./review-list";
 import { useGetReviewsQuery } from "@/redux/slices/product/review-slice";
+import ReviewForm from "./reviews-form";
+import { useGetBookingsByUserIdQuery } from "@/redux/slices/booking/booking-slice";
+import { useUser } from "@clerk/nextjs";
 
 export default function ReviewSection({ productId }: { productId: string }) {
+  const { user } = useUser();
+  const userId = user?.id as string;
   const { data: reviews = [], isLoading } = useGetReviewsQuery(productId);
+  const { data: booking = [] } = useGetBookingsByUserIdQuery(userId);
+
+  const addReview = () => {};
 
   if (isLoading) {
     return <div className="animate-pulse">Loading...</div>;
@@ -18,7 +26,8 @@ export default function ReviewSection({ productId }: { productId: string }) {
       <ReviewSummary reviews={reviews} />
       <Separator className="dark:border-muted" />
       <ReviewList reviews={reviews} />
-      {/* <ReviewForm onSubmitReview={addReview} /> */}
+
+      {booking.length > 0 && <ReviewForm onSubmitReview={addReview} />}
     </div>
   );
 }

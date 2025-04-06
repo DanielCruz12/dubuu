@@ -17,12 +17,6 @@ import {
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -36,6 +30,7 @@ import { Separator } from "../ui/separator";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { useCreatePaymentLinkMutation } from "@/redux/slices/payment/payment-link";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import {
   useCreateBookingMutation,
   useGetBookingsByUserIdQuery,
@@ -309,27 +304,26 @@ export default function BookingForm({ product }: { product: IProduct }) {
             <div className="flex justify-between font-semibold items-center">
               <span>
                 Total:
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        type="button"
-                        className="rounded-xl mx-2 p-2"
-                        variant="outline"
-                      >
-                        ?
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-xs">
-                      <p className="mt-1">
-                        <em>
-                          Nuestra tarifa de servicio es mucho menor comparada
-                          con Airbnb (14-16%) y Booking (15-18%).
-                        </em>
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <Popover>
+                  <PopoverTrigger>
+                    <Button
+                      type="button"
+                      className="rounded-xl mx-2 p-2"
+                      variant="outline"
+                    >
+                      ?
+                    </Button>
+                  </PopoverTrigger>
+
+                  <PopoverContent className="max-w-xs">
+                    <p className="mt-1">
+                      <em>
+                        Nuestra tarifa de servicio es mucho menor comparada con
+                        Airbnb (14-16%) y Booking (15-18%).
+                      </em>
+                    </p>
+                  </PopoverContent>
+                </Popover>
               </span>
               <div className="flex items-center gap-2">
                 <span>${calculateTotal()}</span>

@@ -61,6 +61,6 @@ export const ratingOptions = [
 
 export const productTypes = [
   { description: "Tours", name: "tour", id: 1 },
-  { description: "Hotels", name: "hotel", id: 2 },
+  { description: "Properties", name: "properties", id: 2 },
   { description: "Rental", name: "rental", id: 3 },
 ];
