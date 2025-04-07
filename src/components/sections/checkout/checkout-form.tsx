@@ -1,6 +1,6 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
+import { parsePhoneNumberFromString } from "libphonenumber-js";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, FormProvider } from "react-hook-form";
 import {
@@ -62,9 +62,13 @@ export default function CheckoutForm({
       return;
     }
 
+    const original = values.phone;
+    const parsedPhone = parsePhoneNumberFromString(original);
+
     const payload = {
       ...bookingData,
       ...values,
+      phone: parsedPhone,
     };
 
     toast.promise(
