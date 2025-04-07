@@ -29,7 +29,7 @@ const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
           <Header />
           <main>{children}</main>
           <Footer />
-          <Toaster />
+          <Toaster richColors />
         </ThemeProvider>
       </ClerkProvider>
     </StoreProvider>

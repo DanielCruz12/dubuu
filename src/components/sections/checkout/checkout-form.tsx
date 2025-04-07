@@ -62,68 +62,56 @@ export default function CheckoutForm({
       return;
     }
 
-    try {
-      const response = await create3DSTransaction({
-        ...bookingData,
-        ...values,
-      }).unwrap();
+    const payload = {
+      ...bookingData,
+      ...values,
+    };
 
-      //create booking with response
-      const bookingPayload = {
-        ...bookingData,
-        user_id: bookingData.user_id,
-        product_id: bookingData.product_id,
-        tickets: bookingData.tickets.adult,
-        total: bookingData.total,
+    toast.promise(
+      (async () => {
+        const response = await create3DSTransaction(payload).unwrap();
 
-        first_name: values.firstName,
-        last_name: values.lastName,
-        email: values.email,
-        phone: values.phone,
-        id_region: values.state,
-        country: values.country,
-        zip_code: values.zipCode,
-        paymentMethod: values.paymentMethod,
-        is_live: true,
+        const bookingPayload = {
+          ...bookingData,
+          user_id: bookingData.user_id,
+          product_id: bookingData.product_id,
+          tickets: bookingData.tickets.adult,
+          total: bookingData.total,
+          first_name: values.firstName,
+          last_name: values.lastName,
+          email: values.email,
+          phone: values.phone,
+          id_region: values.state,
+          country: values.country,
+          zip_code: values.zipCode,
+          paymentMethod: values.paymentMethod,
+          is_live: true,
+          idTransaccion: response.idTransaccion,
+          urlCompletarPago3Ds: response.urlCompletarPago3Ds,
+        };
 
-        idTransaccion: response.idTransaccion,
-        urlCompletarPago3Ds: response.urlCompletarPago3Ds,
-      };
+        await createBooking(bookingPayload).unwrap();
 
-      await createBooking(bookingPayload);
+        if (response?.urlCompletarPago3Ds) {
+          setRedirecting(true);
+          setTimeout(() => {
+            window.location.href = response.urlCompletarPago3Ds;
+          }, 1500);
 
-      if (response?.urlCompletarPago3Ds) {
-        setRedirecting(true);
-        setTimeout(() => {
-          window.location.href = response.urlCompletarPago3Ds;
-        }, 1500);
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 },
-        });
-      } else {
-        console.error("No se pudo obtener la URL de redirección");
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 },
+          });
+        } else {
+          throw new Error("No se pudo obtener la URL de redirección");
+        }
+      })(),
+      {
+        loading: "Procesando pago...",
+        success: "¡Reserva creada! Redirigiendo al banco...",
+        error: (err) => err?.data?.message || "Error al procesar el pago",
       }
-    } catch (error: any) {
-      console.error("Error al procesar el pago:", error);
-      toast.error("Pago no realizado", {
-        description: error.data?.message || "Error desconocido",
-      });
-    }
-  }
-
-  if (redirecting) {
-    return (
-      <div className="text-center py-16">
-        <div className="text-2xl font-semibold mb-4">
-          Redirigiendo al banco...
-        </div>
-        <p className="text-slate-500 mb-2">
-          Estamos verificando tu tarjeta con el sistema de seguridad 3DS.
-        </p>
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 mx-auto" />
-      </div>
     );
   }
 
