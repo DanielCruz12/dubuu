@@ -25,8 +25,10 @@ export default function ProductBooking() {
     tickets: { adult: number };
     addons: string[];
     total: number;
+    user_id: string;
+    product_id: string;
   } | null>(null);
-  
+
   const { user } = useUser();
   const { id } = useParams();
   const { data, isLoading, isError } = useGetProductQuery(id as string);

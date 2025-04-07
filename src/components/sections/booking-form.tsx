@@ -60,6 +60,8 @@ export default function BookingForm({
     tickets: { adult: number };
     addons: string[];
     total: number;
+    user_id: string;
+    product_id: string;
   }) => void;
   showPaymentStep: boolean;
 }) {
@@ -118,6 +120,8 @@ export default function BookingForm({
       tickets: watchData.tickets,
       addons: watchData.addons,
       total: parseFloat(calculateTotal()),
+      user_id: user.id,
+      product_id: product.id,
     });
 
     setShowPaymentStep();
@@ -228,7 +232,9 @@ export default function BookingForm({
               <div>
                 Tarifa de Servicio (3%)
                 <Popover>
-                  <PopoverTrigger className="px-3 ml-2  bg-secondary rounded">?</PopoverTrigger>
+                  <PopoverTrigger className="px-3 ml-2  bg-secondary rounded">
+                    ?
+                  </PopoverTrigger>
                   <PopoverContent className="max-w-xs">
                     <p className="mt-1">
                       <em>
