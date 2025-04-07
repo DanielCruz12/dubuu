@@ -14,6 +14,7 @@ import { useCreate3DSTransactionMutation } from "@/redux/slices/payment/payment-
 import confetti from "canvas-confetti";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useCreateBookingMutation } from "@/redux/slices/booking/booking-slice";
 
 export default function CheckoutForm({
   bookingData,
@@ -53,22 +54,44 @@ export default function CheckoutForm({
   const [create3DSTransaction, { isLoading }] =
     useCreate3DSTransactionMutation();
 
+  const [createBooking] = useCreateBookingMutation();
+
   async function onSubmit(values: any) {
     if (!bookingData) {
       console.error("No hay datos de reserva");
       return;
     }
 
-    const payload = {
-      ...values,
-      ...bookingData,
-      user_id: bookingData.user_id,
-      product_id: bookingData.product_id,
-      tickets: bookingData.tickets.adult
-    };
-
     try {
-      const response = await create3DSTransaction(payload).unwrap();
+      const response = await create3DSTransaction({
+        ...bookingData,
+        ...values,
+      }).unwrap();
+
+      //create booking with response
+      const bookingPayload = {
+        ...bookingData,
+        user_id: bookingData.user_id,
+        product_id: bookingData.product_id,
+        tickets: bookingData.tickets.adult,
+        total: bookingData.total,
+
+        first_name: values.firstName,
+        last_name: values.lastName,
+        email: values.email,
+        phone: values.phone,
+        id_region: values.state,
+        country: values.country,
+        zip_code: values.zipCode,
+        paymentMethod: values.paymentMethod,
+        is_live: true,
+
+        idTransaccion: response.idTransaccion,
+        urlCompletarPago3Ds: response.urlCompletarPago3Ds,
+      };
+
+      await createBooking(bookingPayload);
+
       if (response?.urlCompletarPago3Ds) {
         setRedirecting(true);
         setTimeout(() => {
@@ -84,7 +107,6 @@ export default function CheckoutForm({
       }
     } catch (error: any) {
       console.error("Error al procesar el pago:", error);
-
       toast.error("Pago no realizado", {
         description: error.data?.message || "Error desconocido",
       });
