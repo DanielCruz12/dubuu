@@ -25,7 +25,7 @@ import { CheckoutFormValues } from "@/schemas/checkout-schema";
 import CreditCardForm from "../payment-methods/credit-card-form";
 import Image from "next/image";
 
-export default function PaymentMethodForm() {
+export default function PaymentMethodForm({isLoading}: {isLoading: boolean}) {
   const { control, watch, setValue } = useFormContext<CheckoutFormValues>();
   const [paymentTab, setPaymentTab] = useState("credit");
 
@@ -101,7 +101,12 @@ export default function PaymentMethodForm() {
                         htmlFor="googlepay"
                         className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
                       >
-                        <Image width={100} height={100} src={"/Google-Pay-logo.png"} alt="google-pay" />
+                        <Image
+                          width={100}
+                          height={100}
+                          src={"/Google-Pay-logo.png"}
+                          alt="google-pay"
+                        />
                       </FormLabel>
                     </FormItem>
                   </div>
@@ -120,8 +125,13 @@ export default function PaymentMethodForm() {
         </Tabs>
       </CardContent>
       <CardFooter className=" pt-8">
-        <Button size={"lg"} type="submit" className="w-full text-base transition-all duration-300 py-2">
-          Completar Pedido
+        <Button
+          size={"lg"}
+          disabled={isLoading}
+          type="submit"
+          className="w-full text-base transition-all duration-300 py-2"
+        >
+          {isLoading ? "Procesando..." : "Proceder al pago"}
         </Button>
       </CardFooter>
     </Card>

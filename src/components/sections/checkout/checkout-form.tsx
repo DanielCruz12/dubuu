@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, FormProvider } from "react-hook-form";
@@ -9,8 +10,19 @@ import {
 import ContactForm from "./forms/contact-form";
 import ShippingForm from "./forms/shipping-form";
 import PaymentMethodForm from "./forms/payment-form";
+import { useCreate3DSTransactionMutation } from "@/redux/slices/payment/payment-link";
+import confetti from "canvas-confetti";
 
-export default function CheckoutForm() {
+export default function CheckoutForm({
+  bookingData,
+}: {
+  bookingData: {
+    datetime: string;
+    tickets: { adult: number };
+    addons: string[];
+    total: number;
+  } | null;
+}) {
   const methods = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutFormSchema),
     defaultValues: {
@@ -32,9 +44,32 @@ export default function CheckoutForm() {
     mode: "onChange",
   });
 
-  function onSubmit(values: CheckoutFormValues) {
-    console.log(values);
-    // En una aplicación real, aquí procesarías el pago
+  // ✅ Hook correcto fuera de onSubmit
+  const [create3DSTransaction, { isLoading }] =
+    useCreate3DSTransactionMutation();
+
+  async function onSubmit(values: any) {
+    if (!bookingData) {
+      console.error("No hay datos de reserva");
+      return;
+    }
+
+    const payload = {
+      ...values,
+      ...bookingData,
+    };
+
+    try {
+      const response = await create3DSTransaction(payload).unwrap();
+      console.log("Respuesta:", response);
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+      });
+    } catch (error) {
+      console.error("Error al procesar el pago:", error);
+    }
   }
 
   return (
@@ -46,7 +81,7 @@ export default function CheckoutForm() {
       <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-8">
         <ContactForm />
         <ShippingForm />
-        <PaymentMethodForm />
+        <PaymentMethodForm isLoading={isLoading} />
       </form>
     </FormProvider>
   );

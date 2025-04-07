@@ -2,7 +2,6 @@
 "use client";
 
 import { useForm, Controller } from "react-hook-form";
-import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import moment from "moment";
@@ -16,25 +15,21 @@ import {
 } from "@/components/ui/select";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
-import {
+/* import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/components/ui/dialog"; */
 import { Users } from "lucide-react";
 import type { IProduct } from "@/types/product";
 import { Separator } from "../ui/separator";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
-import { useCreatePaymentLinkMutation } from "@/redux/slices/payment/payment-link";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import {
-  useCreateBookingMutation,
-  useGetBookingsByUserIdQuery,
-} from "@/redux/slices/booking/booking-slice";
+import { useGetBookingsByUserIdQuery } from "@/redux/slices/booking/booking-slice";
 import { isProductType } from "@/utils";
 
 moment.locale("es");
@@ -55,10 +50,17 @@ type FormData = z.infer<typeof schema>;
 export default function BookingForm({
   product,
   setShowPaymentStep,
+  setBookingData,
   showPaymentStep,
 }: {
   product: IProduct;
   setShowPaymentStep: () => void;
+  setBookingData: (data: {
+    datetime: string;
+    tickets: { adult: number };
+    addons: string[];
+    total: number;
+  }) => void;
   showPaymentStep: boolean;
 }) {
   const { user } = useUser();
@@ -66,27 +68,11 @@ export default function BookingForm({
     skip: !user?.id,
   });
 
-  const existingBooking = userBookings?.find(
+  console.log(userBookings);
+
+  /*   const existingBooking = userBookings?.find(
     (b) => b.product_id === product.id && b.status === "in-process"
-  );
-
-  useEffect(() => {
-    if (existingBooking) {
-      setIsDialogOpen(true);
-    }
-  }, [existingBooking]);
-
-  const [createBooking] = useCreateBookingMutation();
-  const [createPaymentLink, { isLoading }] = useCreatePaymentLinkMutation();
-
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [paymentResponse, setPaymentResponse] = useState<{
-    idEnlace: number;
-    urlQrCodeEnlace: string;
-    urlEnlace: string;
-    estaProductivo: boolean;
-    createdAt?: string;
-  } | null>(null);
+  ); */
 
   const isTour = isProductType(product, "tour");
 
@@ -127,78 +113,18 @@ export default function BookingForm({
       return;
     }
 
+    setBookingData({
+      datetime: watchData.datetime,
+      tickets: watchData.tickets,
+      addons: watchData.addons,
+      total: parseFloat(calculateTotal()),
+    });
+
     setShowPaymentStep();
-
-    const total = parseFloat(calculateTotal());
-
-    const payload = {
-      identificadorEnlaceComercio: "dantours",
-      monto: total,
-      nombreProducto: product.name,
-      formaPago: {
-        permitirTarjetaCreditoDebido: true,
-        permitirPagoConPuntoAgricola: false,
-        permitirPagoEnCuotasAgricola: false,
-      },
-      cantidadMaximaCuotas: "",
-      infoProducto: {
-        descripcionProducto: product.description,
-        urlImagenProducto: product.banner,
-      },
-      configuracion: {
-        urlRedirect: "https://dantour.vercel.app",
-        esMontoEditable: false,
-        esCantidadEditable: true,
-        cantidadPorDefecto: 1,
-        duracionInterfazIntentoMinutos: 60,
-        urlRetorno: "https://dantour.vercel.app",
-        emailsNotificacion:
-          user.emailAddresses?.[0]?.emailAddress ?? "dubondanielcruz@gmail.com",
-        urlWebhook: null,
-        telefonosNotificacion:
-          user.phoneNumbers?.[0]?.phoneNumber ?? "77886116",
-        notificarTransaccionCliente: true,
-      },
-    };
-
-    try {
-      const result = await createPaymentLink(payload).unwrap();
-
-      await createBooking({
-        user_id: user.id,
-        status: "in-process",
-        product_id: product.id,
-        payment_link_id: result.idEnlace,
-        payment_url: result.urlEnlace,
-        qr_url: result.urlQrCodeEnlace,
-        is_live: result.estaProductivo,
-      });
-
-      const timestamp = new Date();
-
-      setPaymentResponse({
-        ...result,
-        createdAt: timestamp.toISOString(),
-      });
-      setIsDialogOpen(true);
-    } catch (error) {
-      console.error("Error al enviar la solicitud de pago:", error);
-      toast.error("Error al generar el enlace de pago");
-    }
   };
 
-  const paymentResult = existingBooking
-    ? {
-        idEnlace: existingBooking.payment_link_id,
-        urlQrCodeEnlace: existingBooking.qr_url,
-        urlEnlace: existingBooking.payment_url,
-        estaProductivo: existingBooking.is_live,
-      }
-    : paymentResponse;
-
   const handleReserveClick = () => {
-    if (paymentResult) {
-      setIsDialogOpen(true);
+    if (showPaymentStep) {
     } else {
       handleSubmit(onSubmit)();
     }
@@ -226,6 +152,7 @@ export default function BookingForm({
                     <SelectItem
                       key={d.value.toString()}
                       value={d.value.toString()}
+                      disabled={showPaymentStep}
                     >
                       {d.label}
                     </SelectItem>
@@ -253,6 +180,7 @@ export default function BookingForm({
                     <Button
                       type="button"
                       variant="outline"
+                      disabled={showPaymentStep}
                       onClick={() =>
                         field.onChange(Math.max(field.value - 1, 1))
                       }
@@ -263,6 +191,7 @@ export default function BookingForm({
                     <Button
                       type="button"
                       variant="outline"
+                      disabled={showPaymentStep}
                       onClick={() =>
                         field.onChange(Math.min(field.value + 1, 15))
                       }
@@ -296,19 +225,10 @@ export default function BookingForm({
               </span>
             </div>
             <div className="flex justify-between text-sm">
-              <span>
+              <div>
                 Tarifa de Servicio (3%)
                 <Popover>
-                  <PopoverTrigger>
-                    <Button
-                      type="button"
-                      className="rounded-xl mx-2 p-2"
-                      variant="outline"
-                    >
-                      ?
-                    </Button>
-                  </PopoverTrigger>
-
+                  <PopoverTrigger className="px-3 ml-2  bg-secondary rounded">?</PopoverTrigger>
                   <PopoverContent className="max-w-xs">
                     <p className="mt-1">
                       <em>
@@ -318,7 +238,7 @@ export default function BookingForm({
                     </p>
                   </PopoverContent>
                 </Popover>
-              </span>
+              </div>
               <span>
                 ${(watchData.tickets.adult * product.price * 0.03).toFixed(2)}
               </span>
@@ -344,17 +264,12 @@ export default function BookingForm({
 
           {!showPaymentStep && (
             <Button
-              disabled={isLoading}
               type="button"
               variant={"secondary"}
               className="w-full"
               onClick={handleReserveClick}
             >
-              {isLoading
-                ? "Cargando..."
-                : paymentResult
-                  ? "Ver link de pago"
-                  : "Reservar ahora"}
+              Reservar ahora
             </Button>
           )}
         </div>
@@ -369,7 +284,7 @@ export default function BookingForm({
           </button>
         </div>
       </form>
-
+      {/* 
       {paymentResult && (
         <Dialog
           open={isDialogOpen}
@@ -416,7 +331,7 @@ export default function BookingForm({
                   Cancelar
                 </Button>
 
-              {/*   <Button asChild className="w-full sm:w-auto order-1 sm:order-2">
+                 <Button asChild className="w-full sm:w-auto order-1 sm:order-2">
                   <a
                     href={paymentResult.urlEnlace}
                     target="_blank"
@@ -424,12 +339,13 @@ export default function BookingForm({
                   >
                     Ir a pago
                   </a>
-                </Button> */}
+                </Button>
               </DialogFooter>
             </div>
           </DialogContent>
         </Dialog>
       )}
+      */}
     </div>
   );
 }

@@ -16,7 +16,17 @@ export const paymentApiSlice = createApi({
       }),
       invalidatesTags: [{ type: "Payment", id: "LIST" }],
     }),
+
+    create3DSTransaction: builder.mutation({
+      query: (body) => ({
+        url: "/api/v1/TransaccionCompra/3DS",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: [{ type: "Payment", id: "LIST" }],
+    }),
   }),
 });
 
-export const { useCreatePaymentLinkMutation } = paymentApiSlice;
+export const { useCreatePaymentLinkMutation, useCreate3DSTransactionMutation } =
+  paymentApiSlice;

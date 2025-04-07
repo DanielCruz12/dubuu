@@ -20,10 +20,17 @@ import TrustSection from "@/components/sections/trust-section";
 import CheckoutForm from "@/components/sections/checkout/checkout-form";
 
 export default function ProductBooking() {
+  const [bookingData, setBookingData] = useState<{
+    datetime: string;
+    tickets: { adult: number };
+    addons: string[];
+    total: number;
+  } | null>(null);
+  
   const { user } = useUser();
   const { id } = useParams();
   const { data, isLoading, isError } = useGetProductQuery(id as string);
-  const [showPaymentStep, setShowPaymentStep] = useState(true);
+  const [showPaymentStep, setShowPaymentStep] = useState(false);
 
   const product = data as IProduct;
 
@@ -89,7 +96,7 @@ export default function ProductBooking() {
       <section className="flex flex-col lg:flex-row gap-8 mb-12">
         {showPaymentStep ? (
           <div className="w-full lg:w-2/3">
-            <CheckoutForm />
+            <CheckoutForm bookingData={bookingData} />
           </div>
         ) : (
           <div className="w-full lg:w-2/3">
@@ -110,6 +117,7 @@ export default function ProductBooking() {
             <div className="bg-background dark:bg-background rounded-lg border dark:border-muted shadow-md mb-10 p-6">
               {user ? (
                 <BookingForm
+                  setBookingData={setBookingData}
                   showPaymentStep={showPaymentStep}
                   setShowPaymentStep={() => setShowPaymentStep(true)}
                   product={product}
