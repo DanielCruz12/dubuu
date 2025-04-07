@@ -62,14 +62,18 @@ export default function CheckoutForm({
       return;
     }
 
-    const original = values.phone;
-    const parsedPhone = parsePhoneNumberFromString(original);
+    const parsedPhone = parsePhoneNumberFromString(values.phone);
+    if (!parsedPhone) {
+      return;
+    }
 
     const payload = {
       ...bookingData,
       ...values,
-      phone: parsedPhone,
+      phone: parsedPhone.nationalNumber,
     };
+
+    console.log("Payload:", payload, parsedPhone);
 
     toast.promise(
       (async () => {
