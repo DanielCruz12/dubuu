@@ -23,7 +23,7 @@ export default function ProductBooking() {
   const { user } = useUser();
   const { id } = useParams();
   const { data, isLoading, isError } = useGetProductQuery(id as string);
-  const [showPaymentStep, setShowPaymentStep] = useState(false);
+  const [showPaymentStep, setShowPaymentStep] = useState(true);
 
   const product = data as IProduct;
 

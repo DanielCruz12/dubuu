@@ -64,3 +64,82 @@ export const productTypes = [
   { description: "Properties", name: "properties", id: 2 },
   { description: "Rental", name: "rental", id: 3 },
 ];
+
+export const countries: Country[] = [
+  {
+    id: "SV",
+    nombre: "El Salvador",
+    orden: 1,
+    regiones: [
+      { id: "SV-AH", nombre: "Ahuachapan", codigoPostal: "2101" },
+      { id: "SV-CA", nombre: "Cabanas", codigoPostal: "1201" },
+      { id: "SV-CH", nombre: "Chalatenango", codigoPostal: "1301" },
+      { id: "SV-CU", nombre: "Cuscatlan", codigoPostal: "1401" },
+      { id: "SV-LI", nombre: "La Libertad", codigoPostal: "1501" },
+      { id: "SV-MO", nombre: "Morazan", codigoPostal: "3201" },
+      { id: "SV-PA", nombre: "La Paz", codigoPostal: "1601" },
+      { id: "SV-SA", nombre: "Santa Ana", codigoPostal: "2201" },
+      { id: "SV-SM", nombre: "San Miguel", codigoPostal: "3301" },
+      { id: "SV-SO", nombre: "Sonsonate", codigoPostal: "2301" },
+      { id: "SV-SS", nombre: "San Salvador", codigoPostal: "1101" },
+      { id: "SV-SV", nombre: "San Vicente", codigoPostal: "1701" },
+      { id: "SV-UN", nombre: "La Union", codigoPostal: "3101" },
+      { id: "SV-US", nombre: "Usulutan", codigoPostal: "3401" },
+    ],
+  },
+  {
+    id: "GT",
+    nombre: "Guatemala",
+    orden: 2,
+    regiones: [
+      { id: "GT-AV", nombre: "Alta Verapaz", codigoPostal: null },
+      { id: "GT-BV", nombre: "Baja Verapaz", codigoPostal: null },
+      { id: "GT-CM", nombre: "Chimaltenango", codigoPostal: null },
+      { id: "GT-CQ", nombre: "Chiquimula", codigoPostal: null },
+      { id: "GT-ES", nombre: "Escuintla", codigoPostal: null },
+      { id: "GT-GU", nombre: "Guatemala", codigoPostal: null },
+      { id: "GT-HU", nombre: "Huehuetenango", codigoPostal: null },
+      { id: "GT-IZ", nombre: "Izabal", codigoPostal: null },
+      { id: "GT-JA", nombre: "Jalapa", codigoPostal: null },
+      { id: "GT-JU", nombre: "Jutiapa", codigoPostal: null },
+      { id: "GT-PE", nombre: "Peten", codigoPostal: null },
+      { id: "GT-PR", nombre: "El Progreso", codigoPostal: null },
+      { id: "GT-QC", nombre: "Quiche", codigoPostal: null },
+      { id: "GT-QZ", nombre: "Quetzaltenango", codigoPostal: null },
+      { id: "GT-RE", nombre: "Retalhuleu", codigoPostal: null },
+      { id: "GT-SA", nombre: "Sacatepequez", codigoPostal: null },
+      { id: "GT-SM", nombre: "San Marcos", codigoPostal: null },
+      { id: "GT-SO", nombre: "Solola", codigoPostal: null },
+      { id: "GT-SR", nombre: "Santa Rosa", codigoPostal: null },
+      { id: "GT-SU", nombre: "Suchitepequez", codigoPostal: null },
+      { id: "GT-TO", nombre: "Totonicapan", codigoPostal: null },
+      { id: "GT-ZA", nombre: "Zacapa", codigoPostal: null },
+    ],
+  },
+];
+
+export type Region = {
+  id: string;
+  nombre: string;
+  codigoPostal: string | null;
+};
+
+export type Country = {
+  id: string;
+  nombre: string;
+  orden: number;
+  regiones: Region[];
+};
+
+export const getCountryById = (id: string): Country | undefined => {
+  return countries.find((country) => country.id === id);
+};
+
+export const getRegionById = (
+  countryId: string,
+  regionId: string
+): Region | undefined => {
+  const country = getCountryById(countryId);
+  if (!country) return undefined;
+  return country.regiones.find((region) => region.id === regionId);
+};

@@ -416,7 +416,7 @@ export default function BookingForm({
                   Cancelar
                 </Button>
 
-                <Button asChild className="w-full sm:w-auto order-1 sm:order-2">
+              {/*   <Button asChild className="w-full sm:w-auto order-1 sm:order-2">
                   <a
                     href={paymentResult.urlEnlace}
                     target="_blank"
@@ -424,7 +424,7 @@ export default function BookingForm({
                   >
                     Ir a pago
                   </a>
-                </Button>
+                </Button> */}
               </DialogFooter>
             </div>
           </DialogContent>
