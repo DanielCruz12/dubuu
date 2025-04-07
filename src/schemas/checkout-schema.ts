@@ -19,7 +19,8 @@ export const contactInfoSchema = z.object({
 export const shippingInfoSchema = z.object({
   address: z
     .string()
-    .min(5, { message: "La dirección debe tener al menos 5 caracteres." }),
+    .min(5, { message: "La dirección debe tener al menos 5 caracteres." })
+    .max(50, { message: "La dirección no puede tener más de 50 caracteres." }),
   city: z
     .string()
     .min(2, { message: "La ciudad debe tener al menos 2 caracteres." })
@@ -36,12 +37,9 @@ export const creditCardSchema = z.object({
     .refine((val) => /^[0-9]{16}$/.test(val.replace(/\s/g, "")), {
       message: "Número de tarjeta inválido.",
     }),
-  cardName: z
-    .string()
-    .min(4, {
-      message:
-        "Por favor ingresa el nombre completo como aparece en la tarjeta.",
-    }),
+  cardName: z.string().min(4, {
+    message: "Por favor ingresa el nombre completo como aparece en la tarjeta.",
+  }),
   cardExpiry: z
     .string()
     .refine((val) => /^(0[1-9]|1[0-2])\/([0-9]{2})$/.test(val), {

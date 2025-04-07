@@ -64,6 +64,7 @@ export default function CheckoutForm({
       ...bookingData,
       user_id: bookingData.user_id,
       product_id: bookingData.product_id,
+      tickets: bookingData.tickets.adult
     };
 
     try {
