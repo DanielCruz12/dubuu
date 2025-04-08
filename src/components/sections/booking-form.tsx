@@ -23,14 +23,14 @@ import { Button } from "../ui/button";
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"; */
-import { Users } from "lucide-react";
+import { Info, Users } from "lucide-react";
 import type { IProduct } from "@/types/product";
 import { Separator } from "../ui/separator";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { useGetBookingsByUserIdQuery } from "@/redux/slices/booking/booking-slice";
-import { isProductType } from "@/utils";
+import { calculateTotal, isProductType } from "@/utils";
 
 moment.locale("es");
 
@@ -69,12 +69,15 @@ export default function BookingForm({
   const { data: userBookings } = useGetBookingsByUserIdQuery(user?.id ?? "", {
     skip: !user?.id,
   });
-
   console.log(userBookings);
 
-  /*   const existingBooking = userBookings?.find(
-    (b) => b.product_id === product.id && b.status === "in-process"
-  ); */
+  /*    const existingBooking = userBookings?.find(
+    (b) => b.product_id === product.id
+  ); 
+
+  const isCompleted= existingBooking?.status === "completed";
+  const isInProcess= existingBooking?.status === "in-process";
+  const isCanceled= existingBooking?.status === "canceled"; */
 
   const isTour = isProductType(product, "tour");
 
@@ -101,14 +104,6 @@ export default function BookingForm({
 
   const watchData = watch();
 
-  const calculateTotal = () => {
-    const ticketTotal = watchData.tickets.adult * product.price;
-    const iva = ticketTotal * 0.13;
-    const turismo = ticketTotal * 0.05;
-    const serviceFee = ticketTotal * 0.03;
-    return (ticketTotal + iva + turismo + serviceFee).toFixed(2);
-  };
-
   const onSubmit = async () => {
     if (!user) {
       toast.error("Debes iniciar sesión para continuar con la reserva");
@@ -119,7 +114,7 @@ export default function BookingForm({
       datetime: watchData.datetime,
       tickets: watchData.tickets,
       addons: watchData.addons,
-      total: parseFloat(calculateTotal()),
+      total: calculateTotal({ watchData, product }),
       user_id: user.id,
       product_id: product.id,
     });
@@ -135,8 +130,8 @@ export default function BookingForm({
   };
 
   return (
-    <div className="sticky top-4 bg-background dark:bg-background rounded-lg dark:border-muted px-2 max-w-md mx-auto">
-      <h2 className="text-base font-semibold mb-4">
+    <div className="sticky top-4 rounded-lg px-2 max-w-md mx-auto">
+      <h2 className="text-base font-semibold mb-4 hidden md:block">
         Reservar - {product.name}
       </h2>
 
@@ -228,19 +223,18 @@ export default function BookingForm({
                 ${(watchData.tickets.adult * product.price * 0.05).toFixed(2)}
               </span>
             </div>
-            <div className="flex justify-between text-sm">
-              <div>
+            <div className="flex justify-between text-sm mb-3">
+              <div className="">
                 Tarifa de Servicio (3%)
                 <Popover>
-                  <PopoverTrigger className="px-3 ml-2  bg-secondary rounded">
-                    ?
+                  <PopoverTrigger className="px-1 ml-2 ">
+                    <Info className="h-4 w-4" />
+                    <span className="sr-only">Información sobre impuestos</span>
                   </PopoverTrigger>
                   <PopoverContent className="max-w-xs">
-                    <p className="mt-1">
-                      <em>
-                        Nuestra tarifa de servicio es mucho menor comparada con
-                        Airbnb (14-16%) y Booking (15-18%).
-                      </em>
+                    <p className="text-sm text-muted-foreground">
+                      Nuestra tarifa de servicio es mucho menor comparada con
+                      Airbnb (14-16%) y Booking (15-18%).
                     </p>
                   </PopoverContent>
                 </Popover>
@@ -263,7 +257,9 @@ export default function BookingForm({
             <div className="flex rounded py-3 px-2 justify-between font-semibold items-center">
               <span className="text-lg md:text-2xl">Total</span>
               <div className="flex items-center gap-2">
-                <span className="text-lg md:text-2xl">${calculateTotal()}</span>
+                <span className="text-lg md:text-2xl">
+                  ${calculateTotal({ watchData, product })}
+                </span>
               </div>
             </div>
           </div>

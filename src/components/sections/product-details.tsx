@@ -9,14 +9,14 @@ import { isProductType } from "@/utils";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ProductDetails = ({ product }: { product: IProduct }) => {
-    const isTour = isProductType(product, "tour");
+  const isTour = isProductType(product, "tour");
   const tourData = isTour ? product.tour : null;
 
   return (
-    <div className="mb-8">
+    <div className="mb-2">
       <Accordion
         type="multiple"
-        defaultValue={["overview", "highlight", "included"]}
+        defaultValue={["overview"]}
         className="space-y-4"
       >
         <AccordionItem value="overview">

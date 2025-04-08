@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Separator } from "@/components/ui/separator";
@@ -7,6 +8,15 @@ import { useGetReviewsQuery } from "@/redux/slices/product/review-slice";
 import ReviewForm from "./reviews-form";
 import { useGetBookingsByUserIdQuery } from "@/redux/slices/booking/booking-slice";
 import { useUser } from "@clerk/nextjs";
+import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Info } from "lucide-react";
+import { ReusableDialog } from "@/components/reusable-dialog";
+import { useState } from "react";
 
 export default function ReviewSection({ productId }: { productId: string }) {
   const { user } = useUser();
@@ -14,8 +24,13 @@ export default function ReviewSection({ productId }: { productId: string }) {
   const { data: reviews = [], isLoading } = useGetReviewsQuery(productId);
   const { data: booking = [] } = useGetBookingsByUserIdQuery(userId);
 
-  const addReview = () => {};
+  const [dialogOpen, setDialogOpen] = useState(false);
 
+  const addReview = (review: any) => {
+    // Aquí iría la lógica para enviar la reseña
+    console.log("Reseña enviada:", review);
+    setDialogOpen(false);
+  };
   if (isLoading) {
     return <div className="animate-pulse">Loading...</div>;
   }
@@ -26,8 +41,52 @@ export default function ReviewSection({ productId }: { productId: string }) {
       <ReviewSummary reviews={reviews} />
       <Separator className="dark:border-muted" />
       <ReviewList reviews={reviews} />
+      {booking.length > 0 && (
+        <div>
+          <div className="flex items-center mb-2">
+            <h3 className="text-lg md:text-xl font-semibold">
+              Deja una reseña
+            </h3>
+            <Popover>
+              <PopoverTrigger className="px-2 ml-2 ">
+                <Info className="h-4 w-4" />
+                <span className="sr-only">Información sobre reseñas</span>
+              </PopoverTrigger>
+              <PopoverContent className="max-w-xs">
+                <p className="text-sm text-muted-foreground">
+                  Por favor, asegúrate de que tu reseña cumpla con nuestras
+                  políticas de contenido. No se permiten comentarios ofensivos,
+                  difamatorios o inapropiados. Nos reservamos el derecho de
+                  moderar y eliminar cualquier contenido que no cumpla con estas
+                  pautas.
+                </p>
+              </PopoverContent>
+            </Popover>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Tu opinión es importante para nosotros y ayudan a otros viajeros a
+            tomar decisiones informadas y mejoran nuestros servicios.
+            Agradecemos tu tiempo y comentarios.
+          </p>
 
-      {booking.length > 0 && <ReviewForm onSubmitReview={addReview} />}
+          <div className="py-4">
+            <ReusableDialog
+              trigger={
+                <Button variant="outline" className="text-sm">
+                  Puedes dejar una reseña
+                </Button>
+              }
+              title="Escribe tu reseña"
+              description="Comparte tu experiencia con otros viajeros"
+              open={dialogOpen}
+              onOpenChange={setDialogOpen}
+              className="sm:max-w-[600px]"
+            >
+              <ReviewForm onSubmitReview={addReview} />
+            </ReusableDialog>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

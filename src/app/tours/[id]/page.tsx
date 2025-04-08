@@ -18,8 +18,18 @@ import { IProduct } from "@/types/product";
 import ProductDetails from "@/components/sections/product-details";
 import TrustSection from "@/components/sections/trust-section";
 import CheckoutForm from "@/components/sections/checkout/checkout-form";
+import LocationMap from "@/components/location";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 export default function ProductBooking() {
+  const { user } = useUser();
+  const { id } = useParams();
+  const { data, isLoading, isError } = useGetProductQuery(id as string);
   const [bookingData, setBookingData] = useState<{
     datetime: string;
     tickets: { adult: number };
@@ -29,9 +39,6 @@ export default function ProductBooking() {
     product_id: string;
   } | null>(null);
 
-  const { user } = useUser();
-  const { id } = useParams();
-  const { data, isLoading, isError } = useGetProductQuery(id as string);
   const [showPaymentStep, setShowPaymentStep] = useState(false);
 
   const product = data as IProduct;
@@ -75,6 +82,13 @@ export default function ProductBooking() {
             </div>
           </div>
           <h1 className="text-xl md:text-3xl font-semibold">{product?.name}</h1>
+
+          <div className="flex items-center gap-2 mt-2">
+            <Badge variant="default" className="text-sm md:text-[1rem]">
+              ${product.price}
+            </Badge>
+            sin impuestos
+          </div>
         </div>
 
         <ImageCollage banner={product.banner} images={product?.images} />
@@ -104,6 +118,17 @@ export default function ProductBooking() {
           <div className="w-full lg:w-2/3">
             <ProductDetails product={product} />
             <div className="hidden md:block">
+              <LocationMap
+                product={product}
+                title="Ubicación"
+                locationName="Galar Gdański - Tourist Cruises"
+                address="Dokowa 1, Gdansk, 80-863"
+                latitude={54.352}
+                longitude={18.6566}
+                zoom={15}
+              />
+            </div>
+            <div className="hidden md:block">
               <ReviewSection productId={product.id} />
             </div>
           </div>
@@ -116,14 +141,40 @@ export default function ProductBooking() {
               top: `${headerHeight + 4}px`,
             }}
           >
-            <div className="bg-background dark:bg-background rounded-lg border dark:border-muted shadow-md mb-10 p-6">
+            <div className="rounded-lg border mb-10 p-6">
               {user ? (
-                <BookingForm
-                  setBookingData={setBookingData}
-                  showPaymentStep={showPaymentStep}
-                  setShowPaymentStep={() => setShowPaymentStep(true)}
-                  product={product}
-                />
+                <div>
+                  <div className="md:block hidden">
+                    <BookingForm
+                      setBookingData={setBookingData}
+                      showPaymentStep={showPaymentStep}
+                      setShowPaymentStep={() => setShowPaymentStep(true)}
+                      product={product}
+                    />
+                  </div>
+                  <div className="md:hidden block">
+                    <Accordion type="single" collapsible>
+                      <AccordionItem value="item-1">
+                        <AccordionTrigger>
+                          <div className="flex flex-row items-center gap-2">
+                            <Badge className="">
+                              {product.product_type.name}
+                            </Badge>
+                            {product.name}
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <BookingForm
+                            setBookingData={setBookingData}
+                            showPaymentStep={showPaymentStep}
+                            setShowPaymentStep={() => setShowPaymentStep(true)}
+                            product={product}
+                          />
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </div>
+                </div>
               ) : (
                 <div className="text-center">
                   <h2 className="text-xl font-semibold mb-4">
@@ -144,6 +195,18 @@ export default function ProductBooking() {
           </div>
         </div>
       </section>
+
+      <div className="block md:hidden">
+        <LocationMap
+          product={product}
+          title="Ubicación"
+          locationName="Galar Gdański - Tourist Cruises"
+          address="Dokowa 1, Gdansk, 80-863"
+          latitude={54.352}
+          longitude={18.6566}
+          zoom={15}
+        />
+      </div>
       {!showPaymentStep && (
         <div className="md:hidden block">
           <ReviewSection productId={product.id} />

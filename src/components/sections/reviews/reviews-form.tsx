@@ -1,5 +1,7 @@
 "use client";
 
+import type React from "react";
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,6 +11,8 @@ import type { Review } from "@/types/review";
 import StarRating from "./start-rating";
 import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
+import { X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ReviewFormProps {
   onSubmitReview: (review: Review) => void;
@@ -22,6 +26,8 @@ export default function ReviewForm({ onSubmitReview }: ReviewFormProps) {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [images, setImages] = useState<File[]>([]);
+  const [charCount, setCharCount] = useState(0);
+  const minChars = 100;
 
   useEffect(() => {
     if (user) {
@@ -30,18 +36,28 @@ export default function ReviewForm({ onSubmitReview }: ReviewFormProps) {
     }
   }, [user]);
 
+  useEffect(() => {
+    setCharCount(review.trim().length);
+  }, [review]);
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    if (files.length > 2) {
-      alert("You can upload a maximum of 2 images.");
+    if (files.length + images.length > 2) {
+      alert("Puedes subir un máximo de 2 imágenes.");
       return;
     }
-    setImages(files);
+    setImages((prev) => [...prev, ...files]);
+  };
+
+  const removeImage = (index: number) => {
+    setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmitReview = () => {
-    if (rating === 0 || review.trim().length < 100) {
-      alert("Please provide a rating and a review with at least 100 characters.");
+    if (rating === 0 || review.trim().length < minChars) {
+      alert(
+        `Por favor, proporciona una calificación y una reseña con al menos ${minChars} caracteres.`
+      );
       return;
     }
 
@@ -53,13 +69,14 @@ export default function ReviewForm({ onSubmitReview }: ReviewFormProps) {
       email,
       rating,
       review,
-      images, // optional: depends on your backend or parent component handling
+      images, // opcional: depende de cómo maneje las imágenes tu backend
     };
 
-    console.log("Submitting review:", newReview);
+    console.log("Enviando reseña:", newReview);
 
     onSubmitReview(newReview);
 
+    // Resetear el formulario
     setRating(0);
     setReview("");
     setImages([]);
@@ -67,93 +84,114 @@ export default function ReviewForm({ onSubmitReview }: ReviewFormProps) {
   };
 
   return (
-    <div className="p-6 rounded-lg shadow-sm border">
-      <h3 className="text-lg font-medium mb-4">Write a Review</h3>
-      <div className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="username">Your Name</Label>
-            <Input
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter your name"
-              required
-              className="bg-background dark:bg-background/80"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Your Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              disabled
-              className="bg-background dark:bg-background/80"
-            />
-          </div>
-        </div>
-
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label>Your Rating</Label>
-          <div className="w-full flex justify-center sm:justify-start">
-            <StarRating
-              value={rating}
-              interactive={true}
-              size="large"
-              onChange={setRating}
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="review">Your Review</Label>
-          <Textarea
-            id="review"
-            value={review}
-            onChange={(e) => setReview(e.target.value)}
-            placeholder="Share your experience with this tour..."
-            rows={4}
+          <Label htmlFor="username">Nombre</Label>
+          <Input
+            id="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Ingresa tu nombre"
             required
             className="bg-background dark:bg-background/80"
           />
-          <p className="text-sm text-muted-foreground">
-            {review.length} / 100 characters
-          </p>
         </div>
-
         <div className="space-y-2">
-          <Label htmlFor="images">Upload Photos (max 2)</Label>
+          <Label htmlFor="email">Correo electrónico</Label>
           <Input
-            id="images"
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handleImageUpload}
+            id="email"
+            type="email"
+            value={email}
+            disabled
             className="bg-background dark:bg-background/80"
           />
-          <div className="flex gap-2 mt-2">
-            {images.map((img, idx) => (
-              <div key={idx} className="relative w-20 h-20 border rounded overflow-hidden">
-                <Image
-                  src={URL.createObjectURL(img)}
-                  alt={`preview-${idx}`}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            ))}
-          </div>
         </div>
-
-        <Button
-          onClick={handleSubmitReview}
-          disabled={isSubmitting || rating === 0 || review.trim().length < 100}
-          className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white dark:from-amber-600 dark:to-yellow-500 dark:hover:from-amber-700 dark:hover:to-yellow-600 transition-all duration-300"
-        >
-          {isSubmitting ? "Submitting..." : "Submit Review"}
-        </Button>
       </div>
+
+      <div className="space-y-2">
+        <Label>Calificación</Label>
+        <div className="w-full flex justify-center sm:justify-start">
+          <StarRating
+            value={rating}
+            interactive={true}
+            size="large"
+            onChange={setRating}
+          />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <div className="flex justify-between">
+          <Label htmlFor="review">Reseña</Label>
+          <span
+            className={cn(
+              "text-xs",
+              charCount < minChars
+                ? "text-destructive"
+                : "text-muted-foreground"
+            )}
+          >
+            {charCount}/{minChars} caracteres mínimos
+          </span>
+        </div>
+        <Textarea
+          id="review"
+          value={review}
+          onChange={(e) => setReview(e.target.value)}
+          placeholder="Comparte cómo fue tu experiencia..."
+          rows={4}
+          required
+          className="bg-background dark:bg-background/80"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="images">Subir fotos (máximo 2)</Label>
+        <Input
+          id="images"
+          type="file"
+          accept="image/*"
+          multiple
+          onChange={handleImageUpload}
+          className="bg-background dark:bg-background/80"
+          disabled={images.length >= 2}
+        />
+        <div className="flex gap-2 mt-2">
+          {images.map((img, idx) => (
+            <div
+              key={idx}
+              className="relative w-20 h-20 border rounded overflow-hidden group"
+            >
+              <Image
+                src={URL.createObjectURL(img) || "/placeholder.svg"}
+                alt={`vista previa ${idx + 1}`}
+                fill
+                className="object-cover"
+              />
+              <button
+                type="button"
+                onClick={() => removeImage(idx)}
+                className="absolute top-0 right-0 bg-black/70 p-1 rounded-bl hidden group-hover:block"
+                aria-label="Eliminar imagen"
+              >
+                <X className="h-3 w-3 text-white" />
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <Button
+        variant="default"
+        onClick={handleSubmitReview}
+        disabled={
+          isSubmitting || rating === 0 || review.trim().length < minChars
+        }
+        className="w-full"
+      >
+        {isSubmitting ? "Enviando..." : "Enviar reseña"}
+      </Button>
     </div>
   );
 }
