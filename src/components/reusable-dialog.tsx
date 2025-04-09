@@ -30,7 +30,7 @@ export function ReusableDialog({
   footer,
   open,
   onOpenChange,
-  className = "sm:max-w-[425px]",
+  className = "sm:max-w-[425px] max-w-[95%] md:max-w-[85%] lg:max-w-[75%] xl:max-w-[65%] p-0 overflow-hidden rounded-xl border-none shadow-xl",
 }: ReusableDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

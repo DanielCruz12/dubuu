@@ -24,12 +24,6 @@ const ProductDetails = ({ product }: { product: IProduct }) => {
             Descripción general
           </AccordionTrigger>
           <AccordionContent>
-            {tourData && (
-              <>
-                <span className="font-bold text">Punto de salida:</span>
-                <p>{tourData.departure_point}</p>
-              </>
-            )}
             <div className="space-y-4 font-normal md:text-base text-muted-foreground">
               <p>{product?.description}</p>
             </div>

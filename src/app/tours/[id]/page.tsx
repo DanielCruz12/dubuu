@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MapPin } from "lucide-react";
 import ImageCollage from "@/components/sections/image-collage";
 import Head from "next/head";
@@ -39,7 +39,14 @@ export default function ProductBooking() {
     product_id: string;
   } | null>(null);
 
+  const paymentRef = useRef<HTMLDivElement | null>(null);
   const [showPaymentStep, setShowPaymentStep] = useState(false);
+
+  useEffect(() => {
+    if (showPaymentStep && paymentRef.current) {
+      paymentRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [showPaymentStep]);
 
   const product = data as IProduct;
 
@@ -111,7 +118,7 @@ export default function ProductBooking() {
 
       <section className="flex flex-col lg:flex-row gap-8 mb-12">
         {showPaymentStep ? (
-          <div className="w-full lg:w-2/3">
+          <div ref={paymentRef} className="w-full lg:w-2/3">
             <CheckoutForm bookingData={bookingData} />
           </div>
         ) : (
@@ -153,8 +160,8 @@ export default function ProductBooking() {
                     />
                   </div>
                   <div className="md:hidden block">
-                    <Accordion type="single" collapsible>
-                      <AccordionItem value="item-1">
+                    <Accordion defaultValue={["overview"]} type="multiple">
+                      <AccordionItem value="overview">
                         <AccordionTrigger>
                           <div className="flex flex-row items-center gap-2">
                             <Badge className="">
