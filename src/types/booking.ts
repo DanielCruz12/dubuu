@@ -5,7 +5,6 @@ export interface Booking {
   status?: "in-process" | "completed" | "canceled";
   tickets?: number;
   total?: number;
-
   first_name: string;
   last_name: string;
   email: string;
@@ -15,7 +14,8 @@ export interface Booking {
   zip_code: string;
   paymentMethod: string;
   is_live: boolean;
-
+  created_at: string;
+  updated_at: string;
   idTransaccion: string;
   urlCompletarPago3Ds: string;
 }

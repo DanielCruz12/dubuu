@@ -24,8 +24,15 @@ import { CreditCard } from "lucide-react";
 import { CheckoutFormValues } from "@/schemas/checkout-schema";
 import CreditCardForm from "../payment-methods/credit-card-form";
 import Image from "next/image";
+import Link from "next/link";
 
-export default function PaymentMethodForm({isLoading}: {isLoading: boolean}) {
+export default function PaymentMethodForm({
+  isLoading,
+  setShowPaymentStep
+}: {
+  isLoading: boolean;
+  setShowPaymentStep: (show: boolean) => void;
+}) {
   const { control, watch, setValue } = useFormContext<CheckoutFormValues>();
   const [paymentTab, setPaymentTab] = useState("credit");
 
@@ -39,7 +46,7 @@ export default function PaymentMethodForm({isLoading}: {isLoading: boolean}) {
   }, [paymentMethod]);
 
   return (
-    <Card className="overflow-hidden border-0 shadow-lg">
+    <Card className="overflow-hidden border pb-4">
       <CardHeader className=" pb-8">
         <CardTitle className="text-xl">Método de Pago</CardTitle>
         <CardDescription>
@@ -124,15 +131,35 @@ export default function PaymentMethodForm({isLoading}: {isLoading: boolean}) {
           <TabsContent value="googlepay">google form</TabsContent>
         </Tabs>
       </CardContent>
-      <CardFooter className=" pt-8">
+      <CardFooter className="flex flex-col gap-3 pt-6 sm:pt-8">
         <Button
-          size={"lg"}
+          size="lg"
           disabled={isLoading}
           type="submit"
-          className="w-full text-base transition-all duration-300 py-2"
+          className="w-full text-base py-2"
         >
           {isLoading ? "Procesando..." : "Proceder al pago"}
         </Button>
+
+        <Button
+          onClick={() => setShowPaymentStep(false)}
+          type="button"
+          variant="ghost"
+          className="w-full text-sm text-muted-foreground hover:text-primary transition hover:underline"
+        >
+          Cancelar
+        </Button>
+
+        <p className="text-xs sm:text-sm text-center text-muted-foreground mt-1 px-2 sm:px-6">
+          Al hacer clic en <strong>Proceder al pago</strong>, aceptas nuestros{" "}
+          <Link
+            href="/terms"
+            className="underline underline-offset-4 hover:text-primary"
+          >
+            términos y condiciones
+          </Link>
+          .
+        </p>
       </CardFooter>
     </Card>
   );

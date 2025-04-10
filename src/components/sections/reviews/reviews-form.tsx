@@ -84,7 +84,7 @@ export default function ReviewForm({ onSubmitReview }: ReviewFormProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pb-3">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="username">Nombre</Label>
@@ -111,7 +111,7 @@ export default function ReviewForm({ onSubmitReview }: ReviewFormProps) {
 
       <div className="space-y-2">
         <Label>Calificación</Label>
-        <div className="w-full flex justify-center sm:justify-start">
+        <div className="w-full flex justify-start">
           <StarRating
             value={rating}
             interactive={true}
@@ -128,7 +128,7 @@ export default function ReviewForm({ onSubmitReview }: ReviewFormProps) {
             className={cn(
               "text-xs",
               charCount < minChars
-                ? "text-destructive"
+                ? "dark:text-red-400 text-destructive"
                 : "text-muted-foreground"
             )}
           >
@@ -140,7 +140,7 @@ export default function ReviewForm({ onSubmitReview }: ReviewFormProps) {
           value={review}
           onChange={(e) => setReview(e.target.value)}
           placeholder="Comparte cómo fue tu experiencia..."
-          rows={4}
+          rows={2}
           required
           className="bg-background dark:bg-background/80"
         />

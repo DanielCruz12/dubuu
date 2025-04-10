@@ -6,6 +6,7 @@ import ImageCollage from "@/components/sections/image-collage";
 import Head from "next/head";
 import { useParams } from "next/navigation";
 import { useGetProductQuery } from "@/redux/slices/product/product-slice";
+import { useGetBookingsByUserIdQuery } from "@/redux/slices/booking/booking-slice";
 import ReviewSection from "@/components/sections/reviews/reviews-section";
 import BookingForm from "@/components/sections/booking-form";
 import Rating from "@/components/rating";
@@ -14,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { SignInButton, useUser } from "@clerk/nextjs";
 import ProductsSkeleton from "@/components/skeletons/product-skeleton";
 import { Badge } from "@/components/ui/badge";
-import { IProduct } from "@/types/product";
+import type { IProduct } from "@/types/product";
 import ProductDetails from "@/components/sections/product-details";
 import TrustSection from "@/components/sections/trust-section";
 import CheckoutForm from "@/components/sections/checkout/checkout-form";
@@ -25,6 +26,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { BookingStatus } from "@/components/booking-status";
+import clsx from "clsx";
 
 export default function ProductBooking() {
   const { user } = useUser();
@@ -38,6 +41,10 @@ export default function ProductBooking() {
     user_id: string;
     product_id: string;
   } | null>(null);
+
+  const { data: userBookings } = useGetBookingsByUserIdQuery(user?.id ?? "", {
+    skip: !user?.id,
+  });
 
   const paymentRef = useRef<HTMLDivElement | null>(null);
   const [showPaymentStep, setShowPaymentStep] = useState(false);
@@ -68,6 +75,10 @@ export default function ProductBooking() {
 
   if (isLoading) return <ProductsSkeleton />;
   if (isError || !product) return <>Producto no encontrado</>;
+
+  const existingBooking = userBookings?.find(
+    (b) => b.product_id === product.id
+  );
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
@@ -119,7 +130,10 @@ export default function ProductBooking() {
       <section className="flex flex-col lg:flex-row gap-8 mb-12">
         {showPaymentStep ? (
           <div ref={paymentRef} className="w-full lg:w-2/3">
-            <CheckoutForm bookingData={bookingData} />
+            <CheckoutForm
+              setShowPaymentStep={setShowPaymentStep}
+              bookingData={bookingData}
+            />
           </div>
         ) : (
           <div className="w-full lg:w-2/3">
@@ -148,22 +162,46 @@ export default function ProductBooking() {
               top: `${headerHeight + 4}px`,
             }}
           >
-            <div className="rounded-lg border mb-10 p-6">
+            <div
+              className={clsx(
+                "rounded-lg mb-10",
+                existingBooking?.status === "completed"
+                  ? "p-0 "
+                  : "p-3 md:p-5 sm:p-6 border"
+              )}
+            >
               {user ? (
                 <div>
-                  <div className="md:block hidden">
-                    <BookingForm
-                      setBookingData={setBookingData}
-                      showPaymentStep={showPaymentStep}
-                      setShowPaymentStep={() => setShowPaymentStep(true)}
-                      product={product}
-                    />
+                  <div className="hidden md:block">
+                    {existingBooking &&
+                    existingBooking.status === "completed" ? (
+                      <BookingStatus
+                        status="completed"
+                        productName={product.name}
+                        created_at={existingBooking.created_at}
+                        tickets={{
+                          adult: Number(existingBooking.tickets),
+                        }}
+                        total={Number(existingBooking.total)}
+                        onViewDetails={() => alert("Ver detalles")}
+                        onRebook={() => {
+                          setShowPaymentStep(false);
+                        }}
+                      />
+                    ) : (
+                      <BookingForm
+                        setBookingData={setBookingData}
+                        showPaymentStep={showPaymentStep}
+                        setShowPaymentStep={() => setShowPaymentStep(true)}
+                        product={product}
+                      />
+                    )}
                   </div>
-                  <div className="md:hidden block">
+                  <div className="block md:hidden">
                     <Accordion defaultValue={["overview"]} type="multiple">
                       <AccordionItem value="overview">
                         <AccordionTrigger>
-                          <div className="flex flex-row items-center gap-2">
+                          <div className="flex flex-row items-center gap-2 p-2">
                             <Badge className="">
                               {product.product_type.name}
                             </Badge>
@@ -171,12 +209,31 @@ export default function ProductBooking() {
                           </div>
                         </AccordionTrigger>
                         <AccordionContent>
-                          <BookingForm
-                            setBookingData={setBookingData}
-                            showPaymentStep={showPaymentStep}
-                            setShowPaymentStep={() => setShowPaymentStep(true)}
-                            product={product}
-                          />
+                          {existingBooking &&
+                          existingBooking.status === "completed" ? (
+                            <BookingStatus
+                              status="completed"
+                              productName={product.name}
+                              created_at={existingBooking.created_at}
+                              tickets={{
+                                adult: Number(existingBooking.tickets),
+                              }}
+                              total={Number(existingBooking.total)}
+                              onViewDetails={() => alert("Ver detalles")}
+                              onRebook={() => {
+                                setShowPaymentStep(false);
+                              }}
+                            />
+                          ) : (
+                            <BookingForm
+                              setBookingData={setBookingData}
+                              showPaymentStep={showPaymentStep}
+                              setShowPaymentStep={() =>
+                                setShowPaymentStep(true)
+                              }
+                              product={product}
+                            />
+                          )}
                         </AccordionContent>
                       </AccordionItem>
                     </Accordion>

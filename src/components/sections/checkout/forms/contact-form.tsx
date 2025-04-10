@@ -23,7 +23,7 @@ export default function ContactForm() {
   const { control } = useFormContext<CheckoutFormValues>();
 
   return (
-    <Card className="overflow-hidden border-0 shadow-lg">
+    <Card className="overflow-hidden border pb-4">
       <CardHeader className="pb-8">
         <CardTitle className="text-xl">Información de Contacto</CardTitle>
         <CardDescription>

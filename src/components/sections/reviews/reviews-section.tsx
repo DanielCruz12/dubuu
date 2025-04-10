@@ -56,9 +56,7 @@ export default function ReviewSection({ productId }: { productId: string }) {
                 <p className="text-sm text-muted-foreground">
                   Por favor, asegúrate de que tu reseña cumpla con nuestras
                   políticas de contenido. No se permiten comentarios ofensivos,
-                  difamatorios o inapropiados. Nos reservamos el derecho de
-                  moderar y eliminar cualquier contenido que no cumpla con estas
-                  pautas.
+                  difamatorios o inapropiados.
                 </p>
               </PopoverContent>
             </Popover>
@@ -69,22 +67,20 @@ export default function ReviewSection({ productId }: { productId: string }) {
             Agradecemos tu tiempo y comentarios.
           </p>
 
-          <div className="py-4">
-            <ReusableDialog
-              trigger={
-                <Button variant="outline" className="text-sm">
-                  Puedes dejar una reseña
-                </Button>
-              }
-              title="Escribe tu reseña"
-              description="Comparte tu experiencia con otros viajeros"
-              open={dialogOpen}
-              onOpenChange={setDialogOpen}
-              className="sm:max-w-[600px]"
-            >
-              <ReviewForm onSubmitReview={addReview} />
-            </ReusableDialog>
-          </div>
+          <ReusableDialog
+            trigger={
+              <Button variant="outline" className="text-sm mt-2">
+                Puedes dejar una reseña
+              </Button>
+            }
+            title="Escribe tu reseña"
+            description="Comparte tu experiencia con otros viajeros"
+            open={dialogOpen}
+            onOpenChange={setDialogOpen}
+            className=""
+          >
+            <ReviewForm onSubmitReview={addReview} />
+          </ReusableDialog>
         </div>
       )}
     </div>

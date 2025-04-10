@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { useCreateBookingMutation } from "@/redux/slices/booking/booking-slice";
 
 export default function CheckoutForm({
+  setShowPaymentStep,
   bookingData,
 }: {
   bookingData: {
@@ -27,6 +28,7 @@ export default function CheckoutForm({
     user_id: string;
     product_id: string;
   } | null;
+  setShowPaymentStep: (show: boolean) => void;
 }) {
   const methods = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutFormSchema),
@@ -72,8 +74,6 @@ export default function CheckoutForm({
       ...values,
       phone: parsedPhone.nationalNumber,
     };
-
-    console.log("Payload:", payload, parsedPhone);
 
     toast.promise(
       (async () => {
@@ -132,7 +132,10 @@ export default function CheckoutForm({
       <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-8">
         <ContactForm />
         <ShippingForm />
-        <PaymentMethodForm isLoading={isLoading || redirecting} />
+        <PaymentMethodForm
+          setShowPaymentStep={setShowPaymentStep}
+          isLoading={isLoading || redirecting}
+        />
       </form>
     </FormProvider>
   );

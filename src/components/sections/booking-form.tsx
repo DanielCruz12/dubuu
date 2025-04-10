@@ -15,22 +15,14 @@ import {
 } from "@/components/ui/select";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
-/* import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"; */
 import { Info, Users } from "lucide-react";
 import type { IProduct } from "@/types/product";
 import { Separator } from "../ui/separator";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { useGetBookingsByUserIdQuery } from "@/redux/slices/booking/booking-slice";
 import { calculateTotal, isProductType } from "@/utils";
+import { useRef } from "react";
 
 moment.locale("es");
 
@@ -66,18 +58,8 @@ export default function BookingForm({
   showPaymentStep: boolean;
 }) {
   const { user } = useUser();
-  const { data: userBookings } = useGetBookingsByUserIdQuery(user?.id ?? "", {
-    skip: !user?.id,
-  });
-  console.log(userBookings);
 
-  /*    const existingBooking = userBookings?.find(
-    (b) => b.product_id === product.id
-  ); 
-
-  const isCompleted= existingBooking?.status === "completed";
-  const isInProcess= existingBooking?.status === "in-process";
-  const isCanceled= existingBooking?.status === "canceled"; */
+  const datetimeRef = useRef<HTMLDivElement>(null);
 
   const isTour = isProductType(product, "tour");
 
@@ -122,10 +104,20 @@ export default function BookingForm({
     setShowPaymentStep();
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleError = (errors: any) => {
+    if (errors.datetime) {
+      datetimeRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  };
+
   const handleReserveClick = () => {
     if (showPaymentStep) {
     } else {
-      handleSubmit(onSubmit)();
+      handleSubmit(onSubmit, handleError)();
     }
   };
 
@@ -136,7 +128,7 @@ export default function BookingForm({
       </h2>
 
       <form className="space-y-6">
-        <div>
+        <div ref={datetimeRef}>
           <Label>Fecha y hora:</Label>
           <Controller
             control={control}

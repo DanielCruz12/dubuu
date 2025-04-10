@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React, { useState } from "react";
 import {
   Accordion,
@@ -9,13 +9,11 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { DatePickerWithRange } from "../date-picker";
 import { Star } from "lucide-react";
 const FiltersContent = () => {
-
   const [priceRange, setPriceRange] = useState([50, 300]);
   const defaultAccordionValues = ["amenities"];
 
