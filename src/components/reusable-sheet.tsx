@@ -24,7 +24,7 @@ export function ReviewSheet({
       </SheetTrigger>
       <SheetContent side={"left"} className="w-full sm:max-w-[450px]">
         <SheetHeader>
-          <SheetTitle>Comentarios</SheetTitle>
+          <SheetTitle>Reseñas</SheetTitle>
           <SheetDescription>
             Opiniones verificadas de nuestros clientes.
           </SheetDescription>

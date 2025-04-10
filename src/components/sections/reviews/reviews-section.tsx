@@ -23,14 +23,8 @@ export default function ReviewSection({ productId }: { productId: string }) {
   const userId = user?.id as string;
   const { data: reviews = [], isLoading } = useGetReviewsQuery(productId);
   const { data: booking = [] } = useGetBookingsByUserIdQuery(userId);
+  const [openDialogReview, setOpenDialogReview] = useState(false);
 
-  const [dialogOpen, setDialogOpen] = useState(false);
-
-  const addReview = (review: any) => {
-    // Aquí iría la lógica para enviar la reseña
-    console.log("Reseña enviada:", review);
-    setDialogOpen(false);
-  };
   if (isLoading) {
     return <div className="animate-pulse">Loading...</div>;
   }
@@ -75,11 +69,14 @@ export default function ReviewSection({ productId }: { productId: string }) {
             }
             title="Escribe tu reseña"
             description="Comparte tu experiencia con otros viajeros"
-            open={dialogOpen}
-            onOpenChange={setDialogOpen}
             className=""
+            open={openDialogReview}
+            onOpenChange={setOpenDialogReview}
           >
-            <ReviewForm onSubmitReview={addReview} />
+            <ReviewForm
+              setOpenDialogReview={setOpenDialogReview}
+              productId={productId}
+            />
           </ReusableDialog>
         </div>
       )}

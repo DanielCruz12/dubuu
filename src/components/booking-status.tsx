@@ -24,7 +24,7 @@ import moment from "moment";
 type BookingStatusProps = {
   id: string;
   status: "completed" | "in-process" | "canceled";
-  productName: string;
+  productName?: string;
   paymentMethod: string;
   phone: string;
   created_at: string;
@@ -41,7 +41,6 @@ export function BookingStatus({
   paymentMethod,
   phone,
   created_at,
-  productName,
   tickets,
   total,
   onRebook,
@@ -108,7 +107,7 @@ export function BookingStatus({
       <CardContent className="pb-3">
         <div className="space-y-3">
           <div className="flex flex-col p-2 rounded">
-            <h3 className="text-base font-semibold mb-4">{productName}</h3>
+            <h3 className="text-base font-semibold mb-4">Información</h3>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-500">Nº de Reserva</span>

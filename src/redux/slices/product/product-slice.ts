@@ -7,7 +7,7 @@ export const productsApiSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "/backend",
   }),
-  tagTypes: ["Products"],
+  tagTypes: ["Products", "Reviews"],
   endpoints: (builder) => {
     return {
       getProducts: builder.query<
@@ -51,7 +51,10 @@ export const productsApiSlice = createApi({
           method: "POST",
           body: post,
         }),
-        invalidatesTags: [{ type: "Products", id: "LIST" } as const],
+        invalidatesTags: [
+          { type: "Reviews", id: "LIST" } as const,
+          { type: "Products", id: "LIST" } as const,
+        ],
       }),
 
       getProduct: builder.query<IProduct, string>({
@@ -68,7 +71,10 @@ export const productsApiSlice = createApi({
           method: "PATCH",
           body: data,
         }),
-        invalidatesTags: (result, error, { id }) => [{ type: "Products", id }],
+        invalidatesTags: [
+          { type: "Reviews", id: "LIST" } as const,
+          { type: "Products", id: "LIST" } as const,
+        ],
       }),
 
       deleteProduct: builder.mutation<{ success: boolean }, string>({
@@ -76,9 +82,9 @@ export const productsApiSlice = createApi({
           url: `/api/v1/products/${id}`,
           method: "DELETE",
         }),
-        invalidatesTags: (result, error, id) => [
-          { type: "Products", id },
-          { type: "Products", id: "LIST" },
+        invalidatesTags: [
+          { type: "Reviews", id: "LIST" } as const,
+          { type: "Products", id: "LIST" } as const,
         ],
       }),
     };

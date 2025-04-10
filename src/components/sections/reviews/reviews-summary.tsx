@@ -54,7 +54,7 @@ export default function ReviewSummary({ reviews }: ReviewSummaryProps) {
         <h3 className="text-base font-medium mb-4">
           Desglose de la calificación
         </h3>
-        {displayedBreakdown.map(({ star, count, percentage }) => (
+        {displayedBreakdown.map(({ star, percentage }) => (
           <div key={star} className="flex items-center gap-2 mb-3 group">
             <div className="flex items-center w-8">
               <span className="text-sm font-medium">{star}</span>
@@ -65,9 +65,7 @@ export default function ReviewSummary({ reviews }: ReviewSummaryProps) {
                 style={{ width: `${percentage}%` }}
               />
             </div>
-            <span className="text-sm text-muted-foreground w-10 text-right">
-              {count}
-            </span>
+           
           </div>
         ))}
       </div>
