@@ -41,6 +41,8 @@ export default function Home() {
       <div className="mx-auto px-3 max-w-7xl">
         <UpTop />
         <HeroSection />
+        {/*  <TourReceipt /> */}
+
         <SearchSection products={filteredProducts} />
         <TourSection products={filteredProducts} isLoading={isLoading} />
         <PopularDestinations />

@@ -60,9 +60,9 @@ export const ratingOptions = [
 ];
 
 export const productTypes = [
-  { description: "Tours", name: "tour", id: 1 },
-  { description: "Properties", name: "properties", id: 2 },
-  { description: "Rental", name: "rental", id: 3 },
+  { description: "Viajes", name: "tour", id: 1 },
+  { description: "Propiedades", name: "properties", id: 2 },
+  { description: "Alquiler", name: "rental", id: 3 },
 ];
 
 export const countries: Country[] = [

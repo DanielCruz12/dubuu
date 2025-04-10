@@ -1,6 +1,12 @@
 "use client";
 
-import { CheckCircle, Clock, AlertTriangle, RefreshCcw } from "lucide-react";
+import {
+  CheckCircle,
+  Clock,
+  AlertTriangle,
+  RefreshCcw,
+  Download,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,10 +19,14 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import moment from "moment";
 
 type BookingStatusProps = {
+  id: string;
   status: "completed" | "in-process" | "canceled";
   productName: string;
+  paymentMethod: string;
+  phone: string;
   created_at: string;
   tickets: { adult: number };
   total: number;
@@ -26,7 +36,11 @@ type BookingStatusProps = {
 };
 
 export function BookingStatus({
+  id,
   status,
+  paymentMethod,
+  phone,
+  created_at,
   productName,
   tickets,
   total,
@@ -38,8 +52,9 @@ export function BookingStatus({
     completed: {
       icon: CheckCircle,
       title: "Reserva Completada",
-      description: "Tu reserva ha sido confirmada y está lista para disfrutar.",
-      color: "text-green-500",
+      description:
+        "Tu reserva ha sido confirmada, porfavor verifica los datos de la reserva.",
+      color: "text-green-500 dark:text-green-200",
       bgColor: "bg-green-50 dark:bg-green-950/20",
       borderColor: "border-green-200 dark:border-green-800",
       badgeVariant: "success" as const,
@@ -79,16 +94,39 @@ export function BookingStatus({
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-2">
             <Icon className={cn("h-5 w-5", config.color)} />
-            <CardTitle className="text-base">{config.title}</CardTitle>
+            <CardTitle className="text-base">
+              <div className="flex items-center">
+                <Badge className="bg-green-100 dark:bg-green-200 text-green-900 flex items-center gap-1 font-normal">
+                  {config.title}
+                </Badge>
+              </div>
+            </CardTitle>
           </div>
-          <Badge variant={"default"}>{config.badgeText}</Badge>
         </div>
         <CardDescription>{config.description}</CardDescription>
       </CardHeader>
       <CardContent className="pb-3">
         <div className="space-y-3">
-          <div>
-            <h3 className="font-medium text-sm pl-2">{productName}</h3>
+          <div className="flex flex-col p-2 rounded">
+            <h3 className="text-base font-semibold mb-4">{productName}</h3>
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between">
+                <span className="text-gray-500">Nº de Reserva</span>
+                <span className="font-normal">#{id.slice(0, 13)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Fecha de Reserva</span>
+                <span className="font-normal">{moment(created_at).format("LLL")}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Teléfono</span>
+                <span className="font-normal">{phone}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Método de Pago</span>
+                <span className="font-normal">{paymentMethod}</span>
+              </div>
+            </div>
           </div>
 
           <div className="bg-muted/50 rounded-md p-3 space-y-2">
@@ -117,8 +155,8 @@ export function BookingStatus({
           <Button
             variant={status === "canceled" ? "default" : "outline"}
             className="w-full"
-            onClick={onViewDetails}
           >
+            <Download className="h-4 w-4 mr-2" />
             Descargar recibo
           </Button>
         )}

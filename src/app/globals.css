@@ -137,3 +137,20 @@ body {
     background-color: #141414; /* Dark background for thumb */
   }
 }
+
+@media print {
+  body {
+    background: white;
+  }
+
+  button {
+    display: none !important;
+  }
+
+  #receipt-container {
+    box-shadow: none !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}

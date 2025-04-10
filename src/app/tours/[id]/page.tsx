@@ -176,12 +176,15 @@ export default function ProductBooking() {
                     {existingBooking &&
                     existingBooking.status === "completed" ? (
                       <BookingStatus
+                        id={existingBooking.id}
                         status="completed"
                         productName={product.name}
                         created_at={existingBooking.created_at}
                         tickets={{
                           adult: Number(existingBooking.tickets),
                         }}
+                        paymentMethod={existingBooking.paymentMethod}
+                        phone={existingBooking.phone}
                         total={Number(existingBooking.total)}
                         onViewDetails={() => alert("Ver detalles")}
                         onRebook={() => {
@@ -212,12 +215,15 @@ export default function ProductBooking() {
                           {existingBooking &&
                           existingBooking.status === "completed" ? (
                             <BookingStatus
+                              id={existingBooking.id}
                               status="completed"
                               productName={product.name}
                               created_at={existingBooking.created_at}
                               tickets={{
                                 adult: Number(existingBooking.tickets),
                               }}
+                              paymentMethod={existingBooking.paymentMethod}
+                              phone={existingBooking.phone}
                               total={Number(existingBooking.total)}
                               onViewDetails={() => alert("Ver detalles")}
                               onRebook={() => {
