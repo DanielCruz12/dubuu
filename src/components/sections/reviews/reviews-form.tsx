@@ -125,45 +125,6 @@ export default function ReviewForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pb-3">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nombre</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    placeholder="Ingresa tu nombre"
-                    className="bg-background dark:bg-background/80"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Correo electrónico</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type="email"
-                    disabled
-                    className="bg-background dark:bg-background/80"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
         <FormField
           control={form.control}
           name="rating"
@@ -200,7 +161,7 @@ export default function ReviewForm({
                       : "text-muted-foreground"
                   )}
                 >
-                  {field.value.length}/1000 caracteres mínimos
+                  {field.value.length}/100 caracteres mínimos
                 </span>
               </div>
               <FormControl>
@@ -252,14 +213,16 @@ export default function ReviewForm({
           </div>
         </div>
 
-        <Button
-          type="submit"
-          variant="default"
-          disabled={isLoading}
-          className="w-full"
-        >
-          {isLoading ? "Enviando..." : "Enviar reseña"}
-        </Button>
+        <div className="flex justify-end">
+          <Button
+            type="submit"
+            variant="default"
+            disabled={isLoading}
+            className=""
+          >
+            {isLoading ? "Enviando..." : "Enviar reseña"}
+          </Button>
+        </div>
       </form>
     </Form>
   );

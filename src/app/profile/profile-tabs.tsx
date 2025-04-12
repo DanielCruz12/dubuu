@@ -17,8 +17,8 @@ export default function ProfileTabs() {
   return (
     <Tabs defaultValue="personal" className="w-full">
       <TabsList className="grid w-full grid-cols-3 mb-8">
-        <TabsTrigger value="personal">Personal Info</TabsTrigger>
-        <TabsTrigger value="security">Security</TabsTrigger>
+        <TabsTrigger value="personal">Información Personal</TabsTrigger>
+        <TabsTrigger value="security">Seguridad</TabsTrigger>
         <TabsTrigger value="preferences">Preferences</TabsTrigger>
       </TabsList>
       <TabsContent value="personal">

@@ -67,25 +67,8 @@ export default function ContactForm() {
             )}
           />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField
-            control={control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="juan.perez@ejemplo.com"
-                    type="email"
-                    {...field}
-                    className="transition-all duration-200 "
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        <div className="grid grid-cols-1 gap-4">
+          
           <FormField
             control={control}
             name="phone"

@@ -1,5 +1,6 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useState } from "react";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, FormProvider } from "react-hook-form";
@@ -12,9 +13,13 @@ import ShippingForm from "./forms/shipping-form";
 import PaymentMethodForm from "./forms/payment-form";
 import { useCreate3DSTransactionMutation } from "@/redux/slices/payment/payment-link";
 import confetti from "canvas-confetti";
-import { useState } from "react";
 import { toast } from "sonner";
 import { useCreateBookingMutation } from "@/redux/slices/booking/booking-slice";
+import {
+  useGetUserQuery,
+  useUpdateUserMutation,
+} from "@/redux/slices/user/user-slice";
+import { useUser } from "@clerk/nextjs";
 
 export default function CheckoutForm({
   setShowPaymentStep,
@@ -30,12 +35,13 @@ export default function CheckoutForm({
   } | null;
   setShowPaymentStep: (show: boolean) => void;
 }) {
+  const user = useUser();
   const methods = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutFormSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
-      email: "",
+      email: user.user?.emailAddresses[0]?.emailAddress ?? "",
       phone: "",
       address: "",
       city: "",
@@ -51,12 +57,37 @@ export default function CheckoutForm({
     mode: "onChange",
   });
 
+  const [updateUser] = useUpdateUserMutation(); // hook para actualizar el usuario
   const [redirecting, setRedirecting] = useState(false);
-  // ✅ Hook correcto fuera de onSubmit
   const [create3DSTransaction, { isLoading }] =
     useCreate3DSTransactionMutation();
 
   const [createBooking] = useCreateBookingMutation();
+
+  const { data: currentUser } = useGetUserQuery(bookingData?.user_id ?? "", {
+    skip: !bookingData?.user_id,
+  });
+
+  useEffect(() => {
+    if (currentUser) {
+      methods.reset({
+        firstName: currentUser.first_name ?? "",
+        lastName: currentUser.last_name ?? "",
+        email: user.user?.emailAddresses[0]?.emailAddress ?? "",
+        phone: currentUser.phone_number ?? "",
+        address: currentUser.address ?? "",
+        city: currentUser.city ?? "",
+        state: currentUser.id_region ?? "",
+        zipCode: currentUser.zip_code ?? "",
+        country: currentUser.country ?? "SV",
+        paymentMethod: "credit",
+        cardNumber: "",
+        cardName: "",
+        cardExpiry: "",
+        cardCvc: "",
+      });
+    }
+  }, [currentUser, methods, user.user?.emailAddresses]);
 
   async function onSubmit(values: any) {
     if (!bookingData) {
@@ -83,34 +114,53 @@ export default function CheckoutForm({
           ...bookingData,
           user_id: bookingData.user_id,
           product_id: bookingData.product_id,
+          is_live: true,
           tickets: bookingData.tickets.adult,
           total: bookingData.total,
-          first_name: values.firstName,
-          last_name: values.lastName,
-          email: values.email,
-          phone: values.phone,
-          id_region: values.state,
-          country: values.country,
-          zip_code: values.zipCode,
+          selected_dates: [bookingData.datetime],
           paymentMethod: values.paymentMethod,
-          is_live: true,
-          idTransaccion: response.idTransaccion,
-          urlCompletarPago3Ds: response.urlCompletarPago3Ds,
+          idTransaccion: response.idTransaccion ?? "",
         };
 
         await createBooking(bookingPayload).unwrap();
 
         if (response?.urlCompletarPago3Ds) {
-          setRedirecting(true);
-          setTimeout(() => {
-            window.location.href = response.urlCompletarPago3Ds;
-          }, 1500);
+          if (currentUser) {
+            const updates = {
+              first_name: values.firstName,
+              last_name: values.lastName,
+              email: values.email,
+              phone_number: parsedPhone.number,
+              id_region: values.state,
+              country: values.country,
+              zip_code: values.zipCode,
+              city: values.city,
+              address: values.address,
+            };
 
-          confetti({
-            particleCount: 100,
-            spread: 70,
-            origin: { y: 0.6 },
-          });
+            const hasChanges = Object.entries(updates).some(
+              ([key, value]) =>
+                currentUser[key as keyof typeof updates] !== value
+            );
+
+            if (hasChanges) {
+              await updateUser({
+                id: bookingData.user_id,
+                data: updates,
+              }).unwrap();
+            }
+
+            setRedirecting(true);
+            setTimeout(() => {
+              window.location.href = response?.urlCompletarPago3Ds ?? "";
+            }, 1500);
+
+            confetti({
+              particleCount: 100,
+              spread: 70,
+              origin: { y: 0.6 },
+            });
+          }
         } else {
           throw new Error("No se pudo obtener la URL de redirección");
         }

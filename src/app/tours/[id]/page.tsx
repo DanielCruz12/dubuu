@@ -184,7 +184,6 @@ export default function ProductBooking() {
                           adult: Number(existingBooking.tickets),
                         }}
                         paymentMethod={existingBooking.paymentMethod}
-                        phone={existingBooking.phone}
                         total={Number(existingBooking.total)}
                         onViewDetails={() => alert("Ver detalles")}
                         onRebook={() => {
@@ -223,7 +222,6 @@ export default function ProductBooking() {
                                 adult: Number(existingBooking.tickets),
                               }}
                               paymentMethod={existingBooking.paymentMethod}
-                              phone={existingBooking.phone}
                               total={Number(existingBooking.total)}
                               onViewDetails={() => alert("Ver detalles")}
                               onRebook={() => {

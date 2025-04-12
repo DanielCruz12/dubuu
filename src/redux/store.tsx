@@ -31,6 +31,7 @@ import { paymentApiSlice } from "@/redux/slices/payment/payment-link";
 import { reviewsApiSlice } from "@/redux/slices/product/review-slice";
 import { productTypesApiSlice } from "@/redux/slices/product/product-types";
 import { bookingsApiSlice } from "@/redux/slices/booking/booking-slice";
+import { usersApiSlice } from "@/redux/slices/user/user-slice";
 
 // Función para crear un almacenamiento "inerte" en entornos sin window (server-side)
 const createNoopStorage = () => {
@@ -65,6 +66,7 @@ const rootReducer = combineReducers({
   [reviewsApiSlice.reducerPath]: reviewsApiSlice.reducer,
   [productTypesApiSlice.reducerPath]: productTypesApiSlice.reducer,
   [bookingsApiSlice.reducerPath]: bookingsApiSlice.reducer,
+  [usersApiSlice.reducerPath]: usersApiSlice.reducer,
   filters: filtersReducer,
 });
 
@@ -84,7 +86,8 @@ export const makeStore = () =>
         reviewsApiSlice.middleware,
         paymentApiSlice.middleware,
         productTypesApiSlice.middleware,
-        bookingsApiSlice.middleware
+        bookingsApiSlice.middleware,
+        usersApiSlice.middleware
       ),
   });
 

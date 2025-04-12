@@ -26,7 +26,6 @@ type BookingStatusProps = {
   status: "completed" | "in-process" | "canceled";
   productName?: string;
   paymentMethod: string;
-  phone: string;
   created_at: string;
   tickets: { adult: number };
   total: number;
@@ -39,7 +38,6 @@ export function BookingStatus({
   id,
   status,
   paymentMethod,
-  phone,
   created_at,
   tickets,
   total,
@@ -115,11 +113,9 @@ export function BookingStatus({
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Fecha de Reserva</span>
-                <span className="font-normal">{moment(created_at).format("LLL")}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Teléfono</span>
-                <span className="font-normal">{phone}</span>
+                <span className="font-normal">
+                  {moment(created_at).format("LLL")}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Método de Pago</span>
