@@ -123,42 +123,41 @@ export default function CheckoutForm({
 
         await createBooking(bookingPayload).unwrap();
 
-        if (response?.urlCompletarPago3Ds) {
-          if (currentUser) {
-            const updates = {
-              first_name: values.firstName,
-              last_name: values.lastName,
-              email: values.email,
-              phone_number: parsedPhone.number,
-              id_region: values.state,
-              country: values.country,
-              zip_code: values.zipCode,
-              city: values.city,
-              address: values.address,
-            };
+        if (currentUser) {
+          const updates = {
+            first_name: values.firstName,
+            last_name: values.lastName,
+            email: values.email,
+            phone_number: parsedPhone.number,
+            id_region: values.state,
+            country: values.country,
+            zip_code: values.zipCode,
+            city: values.city,
+            address: values.address,
+          };
 
-            const hasChanges = Object.entries(updates).some(
-              ([key, value]) =>
-                currentUser[key as keyof typeof updates] !== value
-            );
+          const hasChanges = Object.entries(updates).some(
+            ([key, value]) => currentUser[key as keyof typeof updates] !== value
+          );
 
-            if (hasChanges) {
-              await updateUser({
-                id: bookingData.user_id,
-                data: updates,
-              }).unwrap();
-            }
-
-            setTimeout(() => {
-              window.location.href = response?.urlCompletarPago3Ds ?? "";
-            }, 1000);
-
-            confetti({
-              particleCount: 100,
-              spread: 70,
-              origin: { y: 0.6 },
-            });
+          if (hasChanges) {
+            await updateUser({
+              id: bookingData.user_id,
+              data: updates,
+            }).unwrap();
           }
+        }
+
+        if (response?.urlCompletarPago3Ds) {
+          setTimeout(() => {
+            window.location.href = response?.urlCompletarPago3Ds ?? "";
+          }, 1000);
+
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 },
+          });
         } else {
           throw new Error("No se pudo obtener la URL de redirección");
         }
