@@ -66,22 +66,6 @@ export const bookingsApiSlice = createApi({
       invalidatesTags: [{ type: "Bookings", id: "LIST" }],
     }),
 
-    // 🔹 Update booking
-    updateBooking: builder.mutation<
-      Booking,
-      { id: string; data: Partial<CreateBookingInput> }
-    >({
-      query: ({ id, data }) => ({
-        url: `/api/v1/bookings/${id}`,
-        method: "PUT",
-        body: data,
-      }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: "Bookings", id },
-        { type: "Bookings", id: "LIST" },
-      ],
-    }),
-
     // 🔹 Delete booking
     deleteBooking: builder.mutation<{ success: boolean }, string>({
       query: (id) => ({
@@ -102,6 +86,5 @@ export const {
   useGetBookingsByUserIdQuery,
   useGetBookingsByProductIdQuery,
   useCreateBookingMutation,
-  useUpdateBookingMutation,
   useDeleteBookingMutation,
 } = bookingsApiSlice;

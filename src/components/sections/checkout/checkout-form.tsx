@@ -125,6 +125,7 @@ export default function CheckoutForm({
         await createBooking(bookingPayload).unwrap();
 
         if (response?.urlCompletarPago3Ds) {
+          setRedirecting(true);
           if (currentUser) {
             const updates = {
               first_name: values.firstName,
@@ -150,10 +151,9 @@ export default function CheckoutForm({
               }).unwrap();
             }
 
-            setRedirecting(true);
             setTimeout(() => {
               window.location.href = response?.urlCompletarPago3Ds ?? "";
-            }, 1500);
+            }, 1000);
 
             confetti({
               particleCount: 100,
