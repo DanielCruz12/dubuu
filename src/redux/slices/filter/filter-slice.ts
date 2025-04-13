@@ -9,7 +9,7 @@ interface FiltersState {
 export const initialFilterState: FiltersState = {
   rating: "2",
   pricing: 100,
-  productType: "tour",
+  productType: "tours",
 };
 
 const filtersSlice = createSlice({

@@ -60,7 +60,7 @@ export const ratingOptions = [
 ];
 
 export const productTypes = [
-  { description: "Viajes", name: "tour", id: 1 },
+  { description: "Viajes", name: "tours", id: 1 },
   { description: "Propiedades", name: "properties", id: 2 },
   { description: "Alquiler", name: "rental", id: 3 },
 ];
