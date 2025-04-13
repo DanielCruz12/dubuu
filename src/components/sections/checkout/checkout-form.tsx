@@ -15,10 +15,7 @@ import { useCreate3DSTransactionMutation } from "@/redux/slices/payment/payment-
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
 import { useCreateBookingMutation } from "@/redux/slices/booking/booking-slice";
-import {
-  useGetUserQuery,
-  useUpdateUserMutation,
-} from "@/redux/slices/user/user-slice";
+import { useGetUserQuery } from "@/redux/slices/user/user-slice";
 import { useUser } from "@clerk/nextjs";
 
 export default function CheckoutForm({
@@ -57,7 +54,6 @@ export default function CheckoutForm({
     mode: "onChange",
   });
 
-  const [updateUser] = useUpdateUserMutation(); // hook para actualizar el usuario
   const [create3DSTransaction, { isLoading }] =
     useCreate3DSTransactionMutation();
 
@@ -122,31 +118,6 @@ export default function CheckoutForm({
         };
 
         await createBooking(bookingPayload).unwrap();
-
-        if (currentUser) {
-          const updates = {
-            first_name: values.firstName,
-            last_name: values.lastName,
-            email: values.email,
-            phone_number: parsedPhone.number,
-            id_region: values.state,
-            country: values.country,
-            zip_code: values.zipCode,
-            city: values.city,
-            address: values.address,
-          };
-
-          const hasChanges = Object.entries(updates).some(
-            ([key, value]) => currentUser[key as keyof typeof updates] !== value
-          );
-
-          if (hasChanges) {
-            await updateUser({
-              id: bookingData.user_id,
-              data: updates,
-            }).unwrap();
-          }
-        }
 
         if (response?.urlCompletarPago3Ds) {
           setTimeout(() => {
