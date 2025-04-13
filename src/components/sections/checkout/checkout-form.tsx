@@ -15,7 +15,10 @@ import { useCreate3DSTransactionMutation } from "@/redux/slices/payment/payment-
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
 import { useCreateBookingMutation } from "@/redux/slices/booking/booking-slice";
-import { useGetUserQuery } from "@/redux/slices/user/user-slice";
+import {
+  useGetUserQuery,
+  useUpdateUserMutation,
+} from "@/redux/slices/user/user-slice";
 import { useUser } from "@clerk/nextjs";
 
 export default function CheckoutForm({
@@ -33,6 +36,7 @@ export default function CheckoutForm({
   setShowPaymentStep: (show: boolean) => void;
 }) {
   const user = useUser();
+
   const methods = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutFormSchema),
     defaultValues: {
@@ -56,6 +60,7 @@ export default function CheckoutForm({
 
   const [create3DSTransaction, { isLoading }] =
     useCreate3DSTransactionMutation();
+  const [updateUser] = useUpdateUserMutation();
 
   const [createBooking] = useCreateBookingMutation();
 
@@ -100,6 +105,25 @@ export default function CheckoutForm({
       ...values,
       phone: parsedPhone.nationalNumber,
     };
+
+    try {
+      await updateUser({
+        id: bookingData.user_id,
+        data: {
+          email: values.email,
+          username: user.user?.username ?? "",
+          first_name: values.firstName,
+          last_name: values.lastName,
+          phone_number: parsedPhone.number,
+        },
+      }).unwrap();
+    } catch (err: any) {
+      console.error("Error al actualizar usuario", err);
+      toast.error(
+        err?.data?.message || "No se pudo actualizar la información del usuario"
+      );
+      return;
+    }
 
     toast.promise(
       (async () => {
