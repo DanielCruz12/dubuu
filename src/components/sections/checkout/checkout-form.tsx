@@ -115,6 +115,11 @@ export default function CheckoutForm({
           first_name: values.firstName,
           last_name: values.lastName,
           phone_number: parsedPhone.number,
+          address: values.address,
+          city: values.city,
+          id_region: values.state,
+          zip_code: values.zipCode,
+          country: values.country,
         },
       }).unwrap();
     } catch (err: any) {
