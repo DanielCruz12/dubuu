@@ -1,6 +1,6 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, FormProvider } from "react-hook-form";
@@ -58,7 +58,6 @@ export default function CheckoutForm({
   });
 
   const [updateUser] = useUpdateUserMutation(); // hook para actualizar el usuario
-  const [redirecting, setRedirecting] = useState(false);
   const [create3DSTransaction, { isLoading }] =
     useCreate3DSTransactionMutation();
 
@@ -125,7 +124,6 @@ export default function CheckoutForm({
         await createBooking(bookingPayload).unwrap();
 
         if (response?.urlCompletarPago3Ds) {
-          setRedirecting(true);
           if (currentUser) {
             const updates = {
               first_name: values.firstName,
@@ -184,7 +182,7 @@ export default function CheckoutForm({
         <ShippingForm />
         <PaymentMethodForm
           setShowPaymentStep={setShowPaymentStep}
-          isLoading={isLoading || redirecting}
+          isLoading={isLoading}
         />
       </form>
     </FormProvider>
