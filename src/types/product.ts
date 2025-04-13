@@ -21,7 +21,7 @@ export interface IProductBase<T extends string = string> {
   product_type: { name: T };
 }
 
-export interface ITourProduct extends IProductBase<"tour"> {
+export interface ITourProduct extends IProductBase<"tours"> {
   tour: {
     departure_point: string;
     max_people: number;

@@ -9,7 +9,7 @@ import { isProductType } from "@/utils";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ProductDetails = ({ product }: { product: IProduct }) => {
-  const isTour = isProductType(product, "tour");
+  const isTour = isProductType(product, "tours");
   const tourData = isTour ? product.tour : null;
 
   return (

@@ -22,7 +22,7 @@ export default function LocationMap({
   longitude,
   zoom = 14,
 }: LocationMapProps) {
-  const isTour = isProductType(product, "tour");
+  const isTour = isProductType(product, "tours");
   const tourData = isTour ? product.tour : null;
   const [mapLoaded, setMapLoaded] = useState(false);
 

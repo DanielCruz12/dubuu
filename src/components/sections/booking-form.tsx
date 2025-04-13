@@ -61,7 +61,7 @@ export default function BookingForm({
 
   const datetimeRef = useRef<HTMLDivElement>(null);
 
-  const isTour = isProductType(product, "tour");
+  const isTour = isProductType(product, "tours");
 
   const availableDates = isTour
     ? product.tour.available_dates.map((date) => ({
@@ -69,6 +69,8 @@ export default function BookingForm({
         label: moment(date).format("dddd, D [de] MMMM - h:mm A"),
       }))
     : [];
+
+    console.log(availableDates, "ava")
 
   const {
     control,

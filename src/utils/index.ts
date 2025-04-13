@@ -2,7 +2,7 @@ import { IProduct, ITourProduct } from "@/types/product";
 
 // Type guard para tours
 export function isTourProduct(product: IProduct): product is ITourProduct {
-  return product.product_type?.name === "tour";
+  return product.product_type?.name === "tours";
 }
 
 // Type guard para rentals
