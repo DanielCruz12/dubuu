@@ -1,7 +1,6 @@
 import { Inter } from "next/font/google";
 import GlobalProviders from "../components/providers/global-providers";
 import { ClerkProvider } from "@clerk/nextjs";
-
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -11,7 +10,7 @@ export const metadata = {
   description: "Discover amazing destinations and book your next adventure",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -20,14 +19,16 @@ export default function RootLayout({
     <ClerkProvider
       afterSignOutUrl={"/"}
       appearance={{
+        variables: {
+          colorPrimary: "hsl(264, 6%, 50%)",
+        },
         layout: {
           socialButtonsPlacement: "bottom",
-          socialButtonsVariant: "iconButton",
         },
       }}
     >
       <html lang="en" suppressHydrationWarning>
-        <body className={`${inter.className} h-full flex flex-col`}>
+        <body className={`${inter.className} flex min-h-screen flex-col`}>
           <GlobalProviders>{children}</GlobalProviders>
         </body>
       </html>

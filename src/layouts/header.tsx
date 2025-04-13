@@ -6,7 +6,7 @@ export function Header() {
   return (
     <header className="z-50 ">
       <nav>
-        <div className=" max-w-7xl px-3 mx-auto flex justify-between items-center h-16">
+        <div className=" max-w-7xl mx-auto flex justify-between items-center h-16">
           <div className="flex items-center gap-8">
             <Link
               href="/"
