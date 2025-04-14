@@ -1,12 +1,13 @@
+// app/home/layout.tsx
 export const metadata = {
-  title: "dantour - Your Travel Companion",
-  description: "Discover amazing destinations and book your next adventure",
+  title: "Home - dantour",
+  description: "Your personalized travel dashboard",
 };
 
-export default async function RootLayout({
+export default function HomeLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <div className="flex min-h-screen flex-col">{children}</div>;
+  return <div className="flex flex-col min-h-screen">{children}</div>;
 }
