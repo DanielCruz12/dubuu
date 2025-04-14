@@ -4,8 +4,9 @@ export interface Booking {
   product_id: string;
   status?: "in-process" | "completed" | "canceled";
   tickets?: number;
-  total?: number;
+  total: number;
   paymentMethod: string;
+  selected_dates?: string[]
   is_live: boolean;
   created_at: string;
   updated_at: string;

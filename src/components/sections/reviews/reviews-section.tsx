@@ -1,38 +1,36 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+"use client"
 
-import { useState } from "react";
-import { Separator } from "@/components/ui/separator";
-import ReviewSummary from "./reviews-summary";
-import ReviewList from "./review-list";
-import { useGetReviewsQuery } from "@/redux/slices/product/review-slice";
-import ReviewForm from "./reviews-form";
-import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Info } from "lucide-react";
-import { ReusableDialog } from "@/components/reusable-dialog";
+import { useState } from "react"
+import { Separator } from "@/components/ui/separator"
+import ReviewSummary from "./reviews-summary"
+import ReviewList from "./review-list"
+import ReviewForm from "./reviews-form"
+import { Button } from "@/components/ui/button"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Info } from "lucide-react"
+import { ReusableDialog } from "@/components/reusable-dialog"
+import type { Booking } from "@/types/booking"
+import type { Review } from "@/types/review" // Assuming you have a Review type
 
-export default function ReviewSection({
-  productId,
-  existingBooking,
-}: {
-  productId: string;
-  existingBooking: any;
-}) {
-  const { data: reviews = [], isLoading } = useGetReviewsQuery(productId);
-  const [openDialogReview, setOpenDialogReview] = useState(false);
+interface ReviewSectionProps {
+  productId: string
+  existingBooking?: Booking
+  reviews: Review[]
+  isLoading: boolean
+}
+
+export default function ReviewSection({ productId, existingBooking, reviews, isLoading }: ReviewSectionProps) {
+  const [openDialogReview, setOpenDialogReview] = useState(false)
 
   if (isLoading) {
-    return <div className="animate-pulse">Loading...</div>;
+    return <div className="animate-pulse">Loading...</div>
   }
 
-  const alreadyHadAReview = reviews.some(
-    (review) => existingBooking.user_id === review.user_id
-  );
+  // Check if user has a booking
+  const hasBooking = !!existingBooking
+
+  // Check if user already left a review
+  const alreadyHadAReview = hasBooking && reviews.some((review) => existingBooking.user_id === review.user_id)
 
   return (
     <div className="mt-12 space-y-8">
@@ -50,29 +48,25 @@ export default function ReviewSection({
             </PopoverTrigger>
             <PopoverContent className="max-w-xs">
               <p className="text-sm text-muted-foreground">
-                Por favor, asegúrate de que tu reseña cumpla con nuestras
-                políticas de contenido. No se permiten comentarios ofensivos,
-                difamatorios o inapropiados.
+                Por favor, asegúrate de que tu reseña cumpla con nuestras políticas de contenido. No se permiten
+                comentarios ofensivos, difamatorios o inapropiados.
               </p>
             </PopoverContent>
           </Popover>
         </div>
         <p className="text-sm text-muted-foreground px-3">
-          Tu opinión es importante para nosotros y ayudan a otros viajeros a
-          tomar decisiones informadas y mejoran nuestros servicios. Agradecemos
-          tu tiempo y comentarios.
+          Tu opinión es importante para nosotros y ayudan a otros viajeros a tomar decisiones informadas y mejoran
+          nuestros servicios. Agradecemos tu tiempo y comentarios.
         </p>
 
         <ReusableDialog
           trigger={
-            <Button
-              disabled={alreadyHadAReview}
-              variant="outline"
-              className="text-sm mt-2 ml-2"
-            >
-              {alreadyHadAReview
-                ? "¡Gracias por tu reseña!"
-                : "Puedes dejar una reseña"}
+            <Button disabled={!hasBooking || alreadyHadAReview} variant="outline" className="text-sm mt-2 ml-2">
+              {!hasBooking
+                ? "Necesitas una reserva para dejar una reseña"
+                : alreadyHadAReview
+                  ? "¡Gracias por tu reseña!"
+                  : "Puedes dejar una reseña"}
             </Button>
           }
           title="Escribe tu reseña"
@@ -81,12 +75,9 @@ export default function ReviewSection({
           open={openDialogReview}
           onOpenChange={setOpenDialogReview}
         >
-          <ReviewForm
-            setOpenDialogReview={setOpenDialogReview}
-            productId={productId}
-          />
+          <ReviewForm setOpenDialogReview={setOpenDialogReview} productId={productId} />
         </ReusableDialog>
       </div>
     </div>
-  );
+  )
 }

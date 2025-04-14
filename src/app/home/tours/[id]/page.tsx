@@ -1,89 +1,87 @@
-"use client";
+"use client"
 
-import { useEffect, useRef, useState } from "react";
-import { MapPin } from "lucide-react";
-import ImageCollage from "@/components/sections/image-collage";
-import Head from "next/head";
-import { useParams } from "next/navigation";
-import { useGetProductQuery } from "@/redux/slices/product/product-slice";
-import { useGetBookingsByUserIdQuery } from "@/redux/slices/booking/booking-slice";
-import ReviewSection from "@/components/sections/reviews/reviews-section";
-import BookingForm from "@/components/sections/booking-form";
-import Rating from "@/components/rating";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Button } from "@/components/ui/button";
-import { SignInButton, useUser } from "@clerk/nextjs";
-import ProductsSkeleton from "@/components/skeletons/product-skeleton";
-import { Badge } from "@/components/ui/badge";
-import type { IProduct } from "@/types/product";
-import ProductDetails from "@/components/sections/product-details";
-import TrustSection from "@/components/sections/trust-section";
-import CheckoutForm from "@/components/sections/checkout/checkout-form";
-import LocationMap from "@/components/location";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { BookingStatus } from "@/components/booking-status";
-import clsx from "clsx";
+import { useEffect, useRef, useState } from "react"
+import { MapPin } from "lucide-react"
+import ImageCollage from "@/components/sections/image-collage"
+import { useParams } from "next/navigation"
+import { useGetProductQuery } from "@/redux/slices/product/product-slice"
+import { useGetBookingsByUserIdQuery } from "@/redux/slices/booking/booking-slice"
+import ReviewSection from "@/components/sections/reviews/reviews-section"
+import BookingForm from "@/components/sections/booking-form"
+import Rating from "@/components/rating"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { Button } from "@/components/ui/button"
+import { SignInButton, useUser } from "@clerk/nextjs"
+import ProductsSkeleton from "@/components/skeletons/product-skeleton"
+import { Badge } from "@/components/ui/badge"
+import type { IProduct } from "@/types/product"
+import ProductDetails from "@/components/sections/product-details"
+import TrustSection from "@/components/sections/trust-section"
+import CheckoutForm from "@/components/sections/checkout/checkout-form"
+import LocationMap from "@/components/location"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { BookingStatus } from "@/components/booking-status"
+import clsx from "clsx"
+import type { Booking } from "@/types/booking"
+import { useGetReviewsQuery } from "@/redux/slices/product/review-slice"
 
 export default function ProductBooking() {
-  const { user } = useUser();
-  const { id } = useParams();
-  const { data, isLoading, isError } = useGetProductQuery(id as string);
+  const { user } = useUser()
+  const { id } = useParams()
+  const { data, isLoading, isError } = useGetProductQuery(id as string)
+
   const [bookingData, setBookingData] = useState<{
-    datetime: string;
-    tickets: { adult: number };
-    addons: string[];
-    total: number;
-    user_id: string;
-    product_id: string;
-  } | null>(null);
+    datetime: string
+    tickets: { adult: number }
+    addons: string[]
+    total: number
+    user_id: string
+    product_id: string
+  } | null>(null)
 
-  const { data: userBookings } = useGetBookingsByUserIdQuery(user?.id ?? "", {
+  const { data: userBookings, isLoading: isLoadingBooking } = useGetBookingsByUserIdQuery(user?.id ?? "", {
     skip: !user?.id,
-  });
+  })
 
-  const paymentRef = useRef<HTMLDivElement | null>(null);
-  const [showPaymentStep, setShowPaymentStep] = useState(false);
+  // Fetch reviews using the product ID from the URL params instead of bookingData
+  const { data: reviews = [], isLoading: isLoadingReviews } = useGetReviewsQuery(id as string, {
+    skip: !id,
+  })
+
+  const paymentRef = useRef<HTMLDivElement | null>(null)
+  const [showPaymentStep, setShowPaymentStep] = useState(false)
 
   useEffect(() => {
     if (showPaymentStep && paymentRef.current) {
-      paymentRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      paymentRef.current.scrollIntoView({ behavior: "smooth", block: "start" })
     }
-  }, [showPaymentStep]);
+  }, [showPaymentStep])
 
-  const product = data as IProduct;
+  const product = data as IProduct
 
-  const [headerHeight, setHeaderHeight] = useState(0);
+  const [headerHeight, setHeaderHeight] = useState(0)
 
   useEffect(() => {
-    const header = document.querySelector("header");
+    const header = document.querySelector("header")
     if (header) {
-      setHeaderHeight(header.offsetHeight);
+      setHeaderHeight(header.offsetHeight)
     }
     const handleResize = () => {
       if (header) {
-        setHeaderHeight(header.offsetHeight);
+        setHeaderHeight(header.offsetHeight)
       }
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    }
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
 
-  if (isLoading) return <ProductsSkeleton />;
-  if (isError || !product) return <>Producto no encontrado</>;
+  if (isLoading || isLoadingBooking) return <ProductsSkeleton />
+  if (isError || !product) return <div className="h-screen">Producto no encontrado</div>
 
-  const existingBooking = userBookings?.find(
-    (b) => b.product_id === product.id
-  );
+  const existingBooking: Booking | undefined = userBookings?.find((b) => b.product_id === product.id)
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
-      <Head>{product.name}</Head>
-
       <section className="w-full mb-8">
         <div className="mb-6">
           <div className="flex flex-col md:flex-row items-start gap-2 text-sm">
@@ -114,11 +112,7 @@ export default function ProductBooking() {
         <ScrollArea type="always" className="w-full pt-2">
           <div className="flex flex-wrap gap-2 md:gap-4 mt-3">
             {product.amenities?.map((service, index) => (
-              <Badge
-                key={index}
-                variant="outline"
-                className="text-sm md:text-[1rem] rounded-lg p-2 mt-2"
-              >
+              <Badge key={index} variant="outline" className="text-sm md:text-[1rem] rounded-lg p-2 mt-2">
                 {service.name}
               </Badge>
             ))}
@@ -130,10 +124,7 @@ export default function ProductBooking() {
       <section className="flex flex-col lg:flex-row gap-8 mb-12">
         {showPaymentStep ? (
           <div ref={paymentRef} className="w-full lg:w-2/3">
-            <CheckoutForm
-              setShowPaymentStep={setShowPaymentStep}
-              bookingData={bookingData}
-            />
+            <CheckoutForm setShowPaymentStep={setShowPaymentStep} bookingData={bookingData} />
           </div>
         ) : (
           <div className="w-full lg:w-2/3">
@@ -150,7 +141,13 @@ export default function ProductBooking() {
               />
             </div>
             <div className="hidden md:block">
-              <ReviewSection existingBooking={existingBooking} productId={product.id} />
+              {/* Pass reviews data to ReviewSection */}
+              <ReviewSection
+                existingBooking={existingBooking}
+                productId={product.id}
+                reviews={reviews}
+                isLoading={isLoadingReviews}
+              />
             </div>
           </div>
         )}
@@ -165,16 +162,13 @@ export default function ProductBooking() {
             <div
               className={clsx(
                 "rounded-lg mb-10",
-                existingBooking?.status === "completed"
-                  ? "p-0 "
-                  : "p-3 md:p-5 sm:p-6 border"
+                existingBooking?.status === "completed" ? "p-0 " : "p-3 md:p-5 sm:p-6 border",
               )}
             >
               {user ? (
                 <div>
                   <div className="hidden md:block">
-                    {existingBooking &&
-                    existingBooking.status === "completed" ? (
+                    {existingBooking && existingBooking.status === "completed" ? (
                       <BookingStatus
                         id={existingBooking.id}
                         status="completed"
@@ -187,7 +181,7 @@ export default function ProductBooking() {
                         total={Number(existingBooking.total)}
                         onViewDetails={() => alert("Ver detalles")}
                         onRebook={() => {
-                          setShowPaymentStep(false);
+                          setShowPaymentStep(false)
                         }}
                       />
                     ) : (
@@ -204,15 +198,12 @@ export default function ProductBooking() {
                       <AccordionItem value="overview">
                         <AccordionTrigger>
                           <div className="flex flex-row items-center gap-2 p-2">
-                            <Badge className="">
-                              {product.product_type.name}
-                            </Badge>
+                            <Badge className="">{product.product_type.name}</Badge>
                             {product.name}
                           </div>
                         </AccordionTrigger>
                         <AccordionContent>
-                          {existingBooking &&
-                          existingBooking.status === "completed" ? (
+                          {existingBooking && existingBooking.status === "completed" ? (
                             <BookingStatus
                               id={existingBooking.id}
                               status="completed"
@@ -225,16 +216,14 @@ export default function ProductBooking() {
                               total={Number(existingBooking.total)}
                               onViewDetails={() => alert("Ver detalles")}
                               onRebook={() => {
-                                setShowPaymentStep(false);
+                                setShowPaymentStep(false)
                               }}
                             />
                           ) : (
                             <BookingForm
                               setBookingData={setBookingData}
                               showPaymentStep={showPaymentStep}
-                              setShowPaymentStep={() =>
-                                setShowPaymentStep(true)
-                              }
+                              setShowPaymentStep={() => setShowPaymentStep(true)}
                               product={product}
                             />
                           )}
@@ -245,12 +234,9 @@ export default function ProductBooking() {
                 </div>
               ) : (
                 <div className="text-center">
-                  <h2 className="text-xl font-semibold mb-4">
-                    Necesitas iniciar sesión para realizar la reserva
-                  </h2>
+                  <h2 className="text-xl font-semibold mb-4">Necesitas iniciar sesión para realizar la reserva</h2>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Inicia sesión o crea una cuenta para poder reservar y
-                    disfrutar de nuestras promociones exclusivas.
+                    Inicia sesión o crea una cuenta para poder reservar y disfrutar de nuestras promociones exclusivas.
                     <br />
                   </p>
                   <SignInButton>
@@ -277,9 +263,15 @@ export default function ProductBooking() {
       </div>
       {!showPaymentStep && (
         <div className="md:hidden block">
-          <ReviewSection existingBooking={existingBooking} productId={product.id} />
+          {/* Pass reviews data to ReviewSection in mobile view */}
+          <ReviewSection
+            existingBooking={existingBooking}
+            productId={product.id}
+            reviews={reviews}
+            isLoading={isLoadingReviews}
+          />
         </div>
       )}
     </div>
-  );
+  )
 }
