@@ -10,7 +10,7 @@ interface ReviewListProps {
 export default function ReviewList({ reviews }: ReviewListProps) {
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 px-3">
         <h3 className="text-lg font-medium">Reseñas ({reviews.length})</h3>
 
         <ReviewSheet triggerText="Ver todas las reseñas">
@@ -19,7 +19,7 @@ export default function ReviewList({ reviews }: ReviewListProps) {
               Aún no hay reseñas. ¡Sé el primero en dejar una!
             </p>
           ) : (
-            <div className=" space-y-4 pr-2">
+            <div className=" space-y-4">
               {reviews.map((review) => (
                 <ReviewCard key={review.id} review={review} />
               ))}

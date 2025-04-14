@@ -21,14 +21,23 @@ export interface IProductBase<T extends string = string> {
   product_type: { name: T };
 }
 
+export interface ITourProductDates {
+  id: string;
+  date: string;
+  max_people: number;
+  people_booked: number;
+  available_spots?: number;
+}
+
 export interface ITourProduct extends IProductBase<"tours"> {
   tour: {
     departure_point: string;
-    max_people: number;
-    available_dates: Date[];
+    tour_dates: ITourProductDates[];
     itinerary: string[];
     highlight: string;
     included: string;
+    lat: number;
+    long: number;
     duration: number;
   };
 }

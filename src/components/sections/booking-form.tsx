@@ -22,17 +22,14 @@ import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { calculateTotal, isProductType } from "@/utils";
-import { useRef } from "react";
+import { useState, useRef } from "react";
 
 moment.locale("es");
 
 const schema = z.object({
   datetime: z.string().min(1, "Selecciona una fecha y hora"),
   tickets: z.object({
-    adult: z.coerce
-      .number()
-      .min(1, "Mínimo 1 entrada")
-      .max(15, "Máximo 15 entradas"),
+    adult: z.coerce.number().min(1, "Mínimo 1 entrada"),
   }),
   addons: z.array(z.enum(["lunch", "transport"])),
 });
@@ -61,16 +58,23 @@ export default function BookingForm({
 
   const datetimeRef = useRef<HTMLDivElement>(null);
 
+  const [selectedDateAvailability, setSelectedDateAvailability] = useState<{
+    maxPeople: number;
+    peopleBooked: number;
+    availableSpots: number;
+  } | null>(null);
+
   const isTour = isProductType(product, "tours");
 
   const availableDates = isTour
-    ? product.tour.available_dates.map((date) => ({
-        value: date,
-        label: moment(date).format("dddd, D [de] MMMM - h:mm A"),
+    ? product.tour.tour_dates.map((dateObj) => ({
+        value: dateObj.id,
+        label: moment(dateObj.date).format("dddd, D [de] MMMM - h:mm A"),
+        maxPeople: dateObj.max_people,
+        peopleBooked: dateObj.people_booked,
+        availableSpots: dateObj.max_people - dateObj.people_booked,
       }))
     : [];
-
-    console.log(availableDates, "ava")
 
   const {
     control,
@@ -118,9 +122,21 @@ export default function BookingForm({
 
   const handleReserveClick = () => {
     if (showPaymentStep) {
-    } else {
-      handleSubmit(onSubmit, handleError)();
+      return;
     }
+
+    // Verificar si hay suficientes lugares disponibles
+    if (
+      selectedDateAvailability &&
+      watchData.tickets.adult > selectedDateAvailability.availableSpots
+    ) {
+      toast.error(
+        `Solo hay ${selectedDateAvailability.availableSpots} lugares disponibles`
+      );
+      return;
+    }
+
+    handleSubmit(onSubmit, handleError)();
   };
 
   return (
@@ -136,20 +152,48 @@ export default function BookingForm({
             control={control}
             name="datetime"
             render={({ field }) => (
-              <Select onValueChange={field.onChange} value={field.value}>
+              <Select
+                onValueChange={(value) => {
+                  field.onChange(value);
+                  const selectedDate = availableDates.find(
+                    (d) => d.value === value
+                  );
+                  if (selectedDate) {
+                    setSelectedDateAvailability({
+                      maxPeople: selectedDate.maxPeople,
+                      peopleBooked: selectedDate.peopleBooked,
+                      availableSpots: selectedDate.availableSpots,
+                    });
+                  }
+                }}
+                value={field.value}
+              >
                 <SelectTrigger className="mt-1 w-full mx-auto">
                   <SelectValue placeholder="Selecciona una fecha y hora" />
                 </SelectTrigger>
                 <SelectContent>
-                  {availableDates.map((d) => (
-                    <SelectItem
-                      key={d.value.toString()}
-                      value={d.value.toString()}
-                      disabled={showPaymentStep}
-                    >
-                      {d.label}
+                  {availableDates.length > 0 ? (
+                    availableDates.map((d) => (
+                      <SelectItem
+                        key={d.value.toString()}
+                        value={d.value.toString()}
+                        disabled={showPaymentStep || d.availableSpots <= 0}
+                      >
+                        <div className="flex justify-between w-full">
+                          <span>{d.label}</span>
+                          <span
+                            className={`ml-2 ${d.availableSpots <= 3 && d.availableSpots > 0 ? "text-amber-500 font-semibold" : d.availableSpots <= 0 ? "text-red-500 font-semibold" : "text-emerald-400"}`}
+                          >
+                            {d.availableSpots > 0 ? `(${d.availableSpots} disp.)` : "(Agotado)"}
+                          </span>
+                        </div>
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="no-dates" disabled>
+                      No hay fechas disponibles
                     </SelectItem>
-                  ))}
+                  )}
                 </SelectContent>
               </Select>
             )}
@@ -173,7 +217,7 @@ export default function BookingForm({
                     <Button
                       type="button"
                       variant="outline"
-                      disabled={showPaymentStep}
+                      disabled={showPaymentStep || field.value <= 1}
                       onClick={() =>
                         field.onChange(Math.max(field.value - 1, 1))
                       }
@@ -184,10 +228,17 @@ export default function BookingForm({
                     <Button
                       type="button"
                       variant="outline"
-                      disabled={showPaymentStep}
-                      onClick={() =>
-                        field.onChange(Math.min(field.value + 1, 15))
+                      disabled={
+                        showPaymentStep ||
+                        !selectedDateAvailability ||
+                        field.value >= selectedDateAvailability.availableSpots
                       }
+                      onClick={() => {
+                        if (!selectedDateAvailability) return;
+                        const max = selectedDateAvailability.availableSpots;
+                        const newValue = Math.min(field.value + 1, max);
+                        field.onChange(newValue);
+                      }}
                     >
                       +
                     </Button>
@@ -280,68 +331,6 @@ export default function BookingForm({
           </button>
         </div>
       </form>
-      {/* 
-      {paymentResult && (
-        <Dialog
-          open={isDialogOpen}
-          onOpenChange={(open) => !open && setIsDialogOpen(false)}
-        >
-          <DialogContent className="sm:max-w-[425px] max-w-[95%] md:max-w-[85%] lg:max-w-[75%] xl:max-w-[65%] p-0 overflow-hidden rounded-xl border-none shadow-xl">
-            <div className="bg-gradient-to-r dark:from-black dark:to-primary/5 border-none px-4 md:px-0">
-              <DialogHeader className="text-center">
-                <DialogTitle className="text-center pt-6">
-                  Pago con QR
-                </DialogTitle>
-                <DialogDescription className="text-center pb-2">
-                  Escanea el código QR o usa el enlace para completar tu pago
-                </DialogDescription>
-              </DialogHeader>
-
-              <div className="flex flex-col items-center justify-center">
-                <div className="bg-white rounded-lg shadow-sm mb-4">
-                  <img
-                    src={paymentResult.urlQrCodeEnlace}
-                    alt="QR Code"
-                    className="w-48 h-48 md:w-64 md:h-64 object-contain"
-                  />
-                </div>
-
-                <div className="text-center space-y-2">
-                  <p className="text-sm text-muted-foreground">
-                    Total a pagar:{" "}
-                    <span className="font-semibold">${calculateTotal()}</span>
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    ¿Cambiaste de idea? Puedes contactarnos para modificar o
-                    cancelar tu reserva.
-                  </p>
-                </div>
-              </div>
-
-              <DialogFooter className="flex flex-col sm:flex-row gap-3 sm:gap-2 py-2 pb-3">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsDialogOpen(false)}
-                  className="w-full sm:w-auto order-2 sm:order-1"
-                >
-                  Cancelar
-                </Button>
-
-                 <Button asChild className="w-full sm:w-auto order-1 sm:order-2">
-                  <a
-                    href={paymentResult.urlEnlace}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Ir a pago
-                  </a>
-                </Button>
-              </DialogFooter>
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
-      */}
     </div>
   );
 }

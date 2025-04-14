@@ -4,7 +4,7 @@ import { Skeleton } from "../ui/skeleton";
 
 export default function ProductsSkeleton() {
   return (
-    <section className=" animate-pulse px-3">
+    <section className=" animate-pulse px-3 md:px-0 py-4">
       <div className="animate-pulse">
         {/* Rating Skeleton */}
         <div className="animate-pulse flex items-center gap-2 mb-2">

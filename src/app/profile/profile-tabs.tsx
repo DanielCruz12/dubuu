@@ -17,7 +17,7 @@ export default function ProfileTabs() {
   return (
     <Tabs defaultValue="personal" className="w-full">
       <TabsList className="grid w-full grid-cols-3 mb-8">
-        <TabsTrigger value="personal">Información Personal</TabsTrigger>
+        <TabsTrigger value="personal">Información</TabsTrigger>
         <TabsTrigger value="security">Seguridad</TabsTrigger>
         <TabsTrigger value="preferences">Preferences</TabsTrigger>
       </TabsList>
@@ -32,7 +32,7 @@ export default function ProfileTabs() {
 
 function ProfileTabsSkeleton() {
   return (
-    <div className="w-full space-y-8">
+    <div className="w-full space-y-8 px-3 md:px-0">
       <div className="grid w-full grid-cols-3 gap-2">
         <Skeleton className="h-10" />
         <Skeleton className="h-10" />

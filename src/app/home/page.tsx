@@ -34,8 +34,8 @@ export default function Home() {
   });
 
   return (
-    <div>
-      <div className="mx-auto px-3">
+    <div className="px-3 md:px-0">
+      <div className="mx-auto">
         <UpTop />
         <HeroSection />
         {/*  <TourReceipt /> */}
