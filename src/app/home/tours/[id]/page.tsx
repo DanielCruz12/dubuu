@@ -150,7 +150,7 @@ export default function ProductBooking() {
               />
             </div>
             <div className="hidden md:block">
-              <ReviewSection productId={product.id} />
+              <ReviewSection existingBooking={existingBooking} productId={product.id} />
             </div>
           </div>
         )}
@@ -277,7 +277,7 @@ export default function ProductBooking() {
       </div>
       {!showPaymentStep && (
         <div className="md:hidden block">
-          <ReviewSection productId={product.id} />
+          <ReviewSection existingBooking={existingBooking} productId={product.id} />
         </div>
       )}
     </div>

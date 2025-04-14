@@ -108,7 +108,7 @@ export function TourCard(product: IProduct) {
         </Button>
       </div>
 
-      <Link href={`/tours/${id}`} className="block">
+      <Link href={`/home/tours/${id}`} className="block">
         <CardContent className="pt-3">
           <Rating
             averageRating={average_rating}

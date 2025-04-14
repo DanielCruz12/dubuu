@@ -35,7 +35,7 @@ export default function Home() {
 
   return (
     <div>
-      <div className="mx-auto px-3 max-w-7xl">
+      <div className="mx-auto px-3">
         <UpTop />
         <HeroSection />
         {/*  <TourReceipt /> */}

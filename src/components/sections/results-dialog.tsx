@@ -102,7 +102,7 @@ export function ResultDialog({
                 {filteredProducts.map((tour) => {
                   return (
                     <Link
-                      href={`/tours/${tour.id}`}
+                      href={`/home/tours/${tour.id}`}
                       key={tour.id}
                       className="group p-4 md:p-6 border border-primary/10 rounded-xl hover:shadow-md transition-all duration-300 cursor-pointer hover:border-primary/30 flex flex-col sm:flex-row gap-5"
                     >

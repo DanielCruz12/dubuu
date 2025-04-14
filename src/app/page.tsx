@@ -1,6 +1,3 @@
-import TestimonialsSection from "@/components/sections/testimonials";
-import RecentPosts from "./blog/page";
-
 export default function Home() {
   return (
     <section className="container py-8">
@@ -10,11 +7,6 @@ export default function Home() {
         This is an empty page with a fixed header and footer. The content area
         will adapt to fill the available space between them.
       </p>
-
-      <div>
-        <TestimonialsSection />
-        <RecentPosts />
-      </div>
     </section>
   );
 }
