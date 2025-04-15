@@ -22,7 +22,7 @@ const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
         <div className="flex flex-col min-h-screen">
           <Header />
           <main className="flex-1">
-            <section className="max-w-7xl mx-auto py-6">{children}</section>
+            <section className="max-w-screen-xl mx-auto py-6">{children}</section>
           </main>
           <Footer />
         </div>

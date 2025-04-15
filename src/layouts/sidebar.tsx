@@ -15,8 +15,8 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Menu,
-  BookOpen,
-  Handshake,
+  // BookOpen,
+  // Handshake,
   Facebook,
   Twitter,
   Instagram,
@@ -25,7 +25,7 @@ import {
   LogOut,
   Home,
   Bookmark,
-  User,
+  LayoutDashboard,
 } from "lucide-react";
 import Link from "next/link";
 import { useClerk, useUser } from "@clerk/nextjs";
@@ -36,17 +36,17 @@ export function MenuProfileSheet() {
   const { user, isLoaded } = useUser();
 
   const authenticatedMenuItems = [
-    { label: "Perfil", icon: User, href: "/profile" },
+    { label: "Panel", icon: LayoutDashboard, href: "/dashboard" },
     { label: "Guardados", icon: Bookmark, href: "/saved" },
-    { label: "¿Quieres ser parte?", icon: Handshake, href: "/investment" },
-    { label: "Términos y Condiciones", icon: BookOpen, href: "/terms" },
+    // { label: "¿Quieres ser parte?", icon: Handshake, href: "/investment" },
+    // { label: "Términos y Condiciones", icon: BookOpen, href: "/terms" },
     { label: "Ayuda y Soporte", icon: HelpCircle, href: "/support" },
   ];
 
   const guestMenuItems = [
     { label: "Inicio", icon: Home, href: "/" },
-    { label: "¿Quieres ser parte?", icon: Handshake, href: "/investment" },
-    { label: "Términos y Condiciones", icon: BookOpen, href: "/terms" },
+    // { label: "¿Quieres ser parte?", icon: Handshake, href: "/investment" },
+    // { label: "Términos y Condiciones", icon: BookOpen, href: "/terms" },
     { label: "Ayuda y Soporte", icon: HelpCircle, href: "/support" },
   ];
 

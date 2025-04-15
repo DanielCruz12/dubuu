@@ -76,11 +76,11 @@ export default function PersonalInfoForm() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pt-5 px-1">
       <div>
         <h3 className="text-lg font-medium">Información personal</h3>
         <p className="text-sm text-muted-foreground">
-          Actualiza tu información.
+          Actualiza tu información personal y de contacto
         </p>
       </div>
 
