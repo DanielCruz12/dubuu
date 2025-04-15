@@ -58,13 +58,13 @@ export default function PersonalInfoForm() {
         username: data.username,
       });
 
-      toast.success("Profile updated successfully!", {
-        description: "Your personal information has been updated.",
+      toast.success("¡Perfil actualizado!", {
+        description: "Tu información personal ha sido actualizada",
       });
     } catch (error) {
       console.error(error);
-      toast.error("Failed to update profile", {
-        description: "There was an error updating your profile.",
+      toast.error("Error al actualizar información", {
+        description: "Hubo un error actualizando tu información.",
       });
     } finally {
       setIsUpdating(false);
@@ -72,15 +72,15 @@ export default function PersonalInfoForm() {
   }
 
   if (!isLoaded) {
-    return <div>Loading...</div>;
+    return <div>Cargando...</div>;
   }
 
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-medium">Personal Information</h3>
+        <h3 className="text-lg font-medium">Información personal</h3>
         <p className="text-sm text-muted-foreground">
-          Update your personal details.
+          Actualiza tu información.
         </p>
       </div>
 
@@ -92,7 +92,7 @@ export default function PersonalInfoForm() {
               name="firstName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>First name</FormLabel>
+                  <FormLabel>Nombre</FormLabel>
                   <FormControl>
                     <Input placeholder="John" {...field} />
                   </FormControl>
@@ -105,7 +105,7 @@ export default function PersonalInfoForm() {
               name="lastName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Last name</FormLabel>
+                  <FormLabel>Apellido</FormLabel>
                   <FormControl>
                     <Input placeholder="Doe" {...field} />
                   </FormControl>
@@ -120,13 +120,11 @@ export default function PersonalInfoForm() {
             name="username"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Username</FormLabel>
+                <FormLabel>Nombre de usuario</FormLabel>
                 <FormControl>
                   <Input placeholder="johndoe" {...field} />
                 </FormControl>
-                <FormDescription>
-                  This is your public display name.
-                </FormDescription>
+                <FormDescription>Este es su nombre público.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -134,7 +132,7 @@ export default function PersonalInfoForm() {
 
           <Button type="submit" disabled={isUpdating}>
             {isUpdating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Save changes
+            Guardar cambios
           </Button>
         </form>
       </Form>

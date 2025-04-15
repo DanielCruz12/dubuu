@@ -70,9 +70,9 @@ export default function PopularDestinations() {
   return (
     <section className="py-12">
       <div className="space-y-3">
-        <h2 className="text-xl md:text-3xl font-bold">Popular Destinations</h2>
+        <h2 className="text-xl md:text-3xl font-bold">Destinos populares</h2>
         <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">
-          Favorite destinations based on customer reviews
+          Los mejores destinos turisticos preferidos por la comunidad
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
@@ -103,7 +103,7 @@ export default function PopularDestinations() {
                   <ChevronRight className="h-6 w-6 text-gray-400" />
                 </div>
                 <p className="text-muted-foreground mt-2">
-                  {destination.tours} Tours, {destination.activities} Activities
+                  {destination.tours} Viajes, {destination.activities} Actividades
                 </p>
               </div>
             </Link>

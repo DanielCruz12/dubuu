@@ -1,11 +1,11 @@
 export default function Footer() {
   return (
-    <footer className="border-t bg-background text-center px-3 md:px-0">
-      <div className="max-w-7xl mx-auto w-full flex md:flex-col h-16 items-center justify-between">
+    <footer className="border-t bg-background w-full mt-auto">
+      <div className="max-w-7xl mx-auto w-full py-4 px-3 md:px-6">
         <div className="text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Dantour&lsquo;s. All rights reserved.
+          © {new Date().getFullYear()} Dantour&lsquo;s. Todos los derechos reservados.
         </div>
       </div>
     </footer>
-  );
+  )
 }

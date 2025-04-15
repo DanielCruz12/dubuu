@@ -1,4 +1,7 @@
 "use client";
+
+import type React from "react";
+
 import StoreProvider from "@/redux/store";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
@@ -16,11 +19,13 @@ const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
         enableSystem
         disableTransitionOnChange
       >
-        <Header />
-        <main className="flex-1">
-          <section className="max-w-7xl mx-auto w-full">{children}</section>
-        </main>
-        <Footer />
+        <div className="flex flex-col min-h-screen">
+          <Header />
+          <main className="flex-1">
+            <section className="max-w-7xl mx-auto py-6">{children}</section>
+          </main>
+          <Footer />
+        </div>
         <Toaster richColors />
       </ThemeProvider>
     </StoreProvider>
