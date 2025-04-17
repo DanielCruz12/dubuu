@@ -1,16 +1,27 @@
-"use client";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { Booking } from "@/types/booking";
+"use client"
 
-export type CreateBookingInput = Omit<
-  Booking,
-  "id" | "created_at" | "updated_at"
->;
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
+import type { Booking } from "@/types/booking"
 
+export type CreateBookingInput = Omit<Booking, "id" | "created_at" | "updated_at">
+
+// Definimos el API slice sin depender de hooks de React
 export const bookingsApiSlice = createApi({
   reducerPath: "bookingsApi",
   baseQuery: fetchBaseQuery({
     baseUrl: "/backend",
+    prepareHeaders: async (headers, { getState }) => {
+      // Obtenemos el token del estado de Redux (lo añadiremos después)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const token = (getState() as any).auth?.token
+
+      // Si tenemos un token, lo añadimos al header
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`)
+      }
+
+      return headers
+    },
   }),
   tagTypes: ["Bookings"],
   endpoints: (builder) => ({
@@ -19,10 +30,7 @@ export const bookingsApiSlice = createApi({
       query: () => "/api/v1/bookings/",
       providesTags: (result) =>
         result
-          ? [
-              { type: "Bookings", id: "LIST" },
-              ...result.map(({ id }) => ({ type: "Bookings" as const, id })),
-            ]
+          ? [{ type: "Bookings", id: "LIST" }, ...result.map(({ id }) => ({ type: "Bookings" as const, id }))]
           : [{ type: "Bookings", id: "LIST" }],
     }),
 
@@ -37,10 +45,7 @@ export const bookingsApiSlice = createApi({
       query: (userId) => `/api/v1/bookings/user/${userId}`,
       providesTags: (result) =>
         result
-          ? [
-              { type: "Bookings", id: "USER_LIST" },
-              ...result.map(({ id }) => ({ type: "Bookings" as const, id })),
-            ]
+          ? [{ type: "Bookings", id: "USER_LIST" }, ...result.map(({ id }) => ({ type: "Bookings" as const, id }))]
           : [{ type: "Bookings", id: "USER_LIST" }],
     }),
 
@@ -49,10 +54,7 @@ export const bookingsApiSlice = createApi({
       query: (productId) => `/api/v1/bookings/product/${productId}`,
       providesTags: (result) =>
         result
-          ? [
-              { type: "Bookings", id: "PRODUCT_LIST" },
-              ...result.map(({ id }) => ({ type: "Bookings" as const, id })),
-            ]
+          ? [{ type: "Bookings", id: "PRODUCT_LIST" }, ...result.map(({ id }) => ({ type: "Bookings" as const, id }))]
           : [{ type: "Bookings", id: "PRODUCT_LIST" }],
     }),
 
@@ -78,8 +80,9 @@ export const bookingsApiSlice = createApi({
       ],
     }),
   }),
-});
+})
 
+// Exportamos los hooks generados por RTK Query
 export const {
   useGetBookingsQuery,
   useGetBookingByIdQuery,
@@ -87,4 +90,4 @@ export const {
   useGetBookingsByProductIdQuery,
   useCreateBookingMutation,
   useDeleteBookingMutation,
-} = bookingsApiSlice;
+} = bookingsApiSlice

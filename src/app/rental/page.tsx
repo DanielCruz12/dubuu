@@ -1,3 +1,3 @@
 export default function PackageDetail() {
-  return <div className="container min-h-screen mx-auto px-4">rental page</div>;
+  return <div className="px-5 md:px-20 mx-auto">rental page</div>;
 }

@@ -38,17 +38,17 @@ export default function TermsAndConditionsPage() {
   ];
 
   return (
-    <div className="max-w-7xl min-h-screen mx-auto px-4 py-12 ">
-      <h2 className="text-xl md:text-4xl font-semibold mb-4">
+    <div className="px-5 md:px-20">
+      <h2 className="text-xl md:text-2xl font-semibold mb-4">
         Términos y Condiciones
       </h2>
       <div className="prose prose-sm">
         {terms.map((term, index) => (
           <div className="py-1" key={index}>
-            <h2 className="text-sm md:text-lg font-medium mb-1">
+            <h2 className="text-sm md:text-base font-medium mb-1">
               {term.title}
             </h2>
-            <p className="pb-3 text-sm md:text-base">{term.content}</p>
+            <p className="pb-3 text-sm ">{term.content}</p>
           </div>
         ))}
       </div>

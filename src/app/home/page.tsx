@@ -34,16 +34,12 @@ export default function Home() {
   });
 
   return (
-    <div className="px-3 md:px-0">
-      <div className="mx-auto">
-        <UpTop />
-        <HeroSection />
-        {/*  <TourReceipt /> */}
-
-        <SearchSection products={filteredProducts} />
-        <TourSection products={filteredProducts} isLoading={isLoading} />
-        <PopularDestinations />
-      </div>
-    </div>
+    <>
+      <UpTop />
+      <HeroSection />
+      <SearchSection products={filteredProducts} />
+      <TourSection products={filteredProducts} isLoading={isLoading} />
+      <PopularDestinations />
+    </>
   );
 }

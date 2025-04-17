@@ -14,7 +14,7 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-8 px-3 md:px-0">
       <DashboardTitle
-        heading="Dashboard"
+        heading="Panel"
         description="Bienvenido a tu panel de control"
       />
 

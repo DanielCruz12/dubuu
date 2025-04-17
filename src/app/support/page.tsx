@@ -36,8 +36,10 @@ export default function HelpAndSupportPage() {
   ];
 
   return (
-    <div className="max-w-7xl min-h-screen mx-auto py-12 px-4 ">
-      <h2 className="text-xl md:text-4xl font-semibold mb-4">Preguntas Frecuentes</h2>
+    <div className="px-5 md:px-20 ">
+      <h2 className="text-xl md:text-2xl font-semibold mb-4">
+        Preguntas Frecuentes
+      </h2>
       <Input
         type="search"
         placeholder="Buscar en las FAQ..."
