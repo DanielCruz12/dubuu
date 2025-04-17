@@ -16,6 +16,7 @@ import {
 import { BookingCard } from "./(components)/booking-card"
 import { bookings } from "@/utils/data"
 import { BookingDetails } from "./(components)/booking-details"
+import { DashboardTitle } from "../(components)/dashboard-title"
 
 export default function BookingsPage() {
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
@@ -47,7 +48,11 @@ export default function BookingsPage() {
 
   return (
     <div>
-      <div className="flex flex-col sm:flex-row gap-3 mb-6 items-start">
+      <DashboardTitle
+        heading="Reservas"
+        description="Gestiona tus reservas"
+      />
+      <div className="flex flex-col sm:flex-row gap-3 mb-6 pt-1 items-start">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input

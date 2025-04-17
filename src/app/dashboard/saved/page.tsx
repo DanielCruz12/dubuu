@@ -1,10 +1,14 @@
+import { DashboardTitle } from "../(components)/dashboard-title";
+
 const Saved = () => {
   return (
     <div className="">
-      <h1 className="text-2xl font-bold mb-4">Saved Items</h1>
-      <p className="text-muted-foreground">Your saved items will appear here.</p>
+      <DashboardTitle
+        heading="Guardados"
+        description="Vuelve a ver los productos que guardaste anteriormente"
+      />
     </div>
-  )
-}
+  );
+};
 
-export default Saved
+export default Saved;

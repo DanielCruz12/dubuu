@@ -1,7 +1,8 @@
 import React from "react";
+import { PaymentForm } from "./(forms)/deposit-form";
 
 const Payments = () => {
-  return <div>Payments</div>;
+  return <PaymentForm />;
 };
 
 export default Payments;

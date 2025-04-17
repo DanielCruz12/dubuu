@@ -134,8 +134,8 @@ export function Header() {
   if (isDashboard) {
     return (
       <header className="top-0 z-40 w-full">
-        <div className="flex h-16 items-center md:px-14 px-4">
-        <Sheet open={open} onOpenChange={setOpen}>
+        <div className="flex h-16 items-center px-5 md:px-20">
+          <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button
                 variant="ghost"
@@ -147,12 +147,12 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="pr-0">
-              <div className="mb-4 flex items-center gap-2 px-2">
+              <div className="mb-4 flex items-center">
                 <MapPin className="h-5 w-5 text-primary" />
                 <span className="font-bold">Dan&apos;s Tours</span>
               </div>
               <ScrollArea className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
-                <div className="flex flex-col space-y-3">
+                <div className="flex flex-col space-y-6">
                   {dashboardNavItems.map((item) => {
                     // Ocultar elementos de administrador si el usuario no es admin
                     if (item.adminOnly && !isAdmin) return null;
@@ -179,7 +179,7 @@ export function Header() {
             </SheetContent>
           </Sheet>
 
-          <div className="ml-1">
+          <div className="">
             <Link href="/home" className="flex items-center gap-1">
               <MapPin className="h-5 w-5 text-primary" />
               <span className="font-bold">Dan&apos;s Tours</span>
@@ -211,7 +211,7 @@ export function Header() {
                 </Button>
               </DropdownMenuTrigger>
 
-              <DropdownMenuContent align="center" className="w-56">
+              <DropdownMenuContent align="start" className="w-56">
                 {user ? (
                   <>
                     <DropdownMenuLabel className="font-normal">
@@ -224,6 +224,25 @@ export function Header() {
                         </p>
                       </div>
                     </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild className="cursor-pointer py-3">
+                      <Link href="/home">
+                        <Home className="mr-2 h-4 w-4" />
+                        <span>Inicio</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild className="cursor-pointer py-3">
+                      <Link href="/investment">
+                        <Handshake className="mr-2 h-4 w-4" />
+                        <span>¿Quieres ser parte?</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild className="cursor-pointer py-3">
+                      <Link href="/blog">
+                        <Rss className="mr-2 h-4 w-4" />
+                        <span>Blog</span>
+                      </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={() => signOut()}
@@ -251,7 +270,7 @@ export function Header() {
   return (
     <header className="top-0 z-50 w-full">
       <div className="flex h-16 items-center md:px-20 px-4">
-      <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
           <Link href={"/home"} className="flex items-center gap-1">
             <MapPin className="h-5 w-5 text-primary" />
             <span className="font-bold">Dan&apos;s Tours</span>
@@ -280,7 +299,7 @@ export function Header() {
               </Button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="end" className="w-60 p-2">
+            <DropdownMenuContent align="start" className="w-60 p-2">
               {user ? (
                 <>
                   <DropdownMenuLabel className="font-normal">
