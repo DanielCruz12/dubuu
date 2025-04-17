@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, MapPin, Users, Clock, Download, Info } from "lucide-react";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 interface BookingDetailsProps {
   booking: any;
@@ -43,6 +43,9 @@ export function BookingDetails({
         <span></span>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] max-w-[95%] md:max-w-[85%] lg:max-w-[75%] xl:max-w-[55%] p-0 overflow-hidden rounded-xl border-none shadow-xl">
+        
+        <DialogTitle></DialogTitle>
+        <DialogDescription></DialogDescription>
         <div className="bg-gradient-to-r dark:from-black dark:to-primary/5 border-none">
           <div className="relative h-48 sm:h-64 w-full">
             <img

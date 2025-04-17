@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  CheckCircle,
-  Clock,
-  AlertTriangle,
-  RefreshCcw,
-  Download,
-} from "lucide-react";
+import { CheckCircle, Clock, AlertTriangle, RefreshCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,11 +14,14 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import moment from "moment";
+import PDFButton from "./pdf/pdf-button";
+import { ReceiptProps } from "./pdf/pdf-template";
 
 type BookingStatusProps = {
   id: string;
   status: "completed" | "in-process" | "canceled";
   productName?: string;
+  productId: string;
   paymentMethod: string;
   created_at: string;
   tickets: { adult: number };
@@ -38,6 +35,7 @@ export function BookingStatus({
   id,
   status,
   paymentMethod,
+  productId,
   created_at,
   tickets,
   total,
@@ -45,6 +43,49 @@ export function BookingStatus({
   onViewDetails,
   className,
 }: BookingStatusProps) {
+  const receiptData: ReceiptProps = {
+    receiptNumber: "INV-2023-001",
+    date: "17/04/2023",
+    dueDate: "17/05/2023",
+    customerName: "Juan Pérez",
+    customerEmail: "juan.perez@ejemplo.com",
+    customerAddress: "Calle Principal 123, Madrid, España",
+    items: [
+      {
+        id: "1",
+        description: "Desarrollo de sitio web",
+        quantity: 1,
+        price: 1200,
+      },
+      {
+        id: "2",
+        description: "Diseño de logo",
+        quantity: 1,
+        price: 300,
+      },
+      {
+        id: "3",
+        description: "Mantenimiento mensual",
+        quantity: 3,
+        price: 100,
+      },
+    ],
+    subtotal: 1800,
+    tax: 0.21,
+    total: 2178,
+    notes:
+      "El pago debe realizarse en un plazo de 30 días. Gracias por confiar en nuestros servicios.",
+    companyName: "Mi Empresa S.L.",
+    companyLogo: "/abstract-geometric-logo.png",
+    companyAddress: "Avenida Empresarial 456, Barcelona, España",
+    companyPhone: "+34 612 345 678",
+    companyEmail: "info@miempresa.com",
+    companyWebsite: "www.miempresa.com",
+    qrValue: "https://miempresa.com/verificar/INV-2023-001",
+    paymentMethod: "Transferencia Bancaria",
+    paymentStatus: "Paid",
+  };
+
   const statusConfig = {
     completed: {
       icon: CheckCircle,
@@ -85,7 +126,10 @@ export function BookingStatus({
   const Icon = config.icon;
 
   return (
-    <Card className={cn("overflow-hidden", config.borderColor, className)}>
+    <Card
+      id={`booking-status-${id}`}
+      className={cn("overflow-hidden", config.borderColor, className)}
+    >
       <div className={cn("h-2", config.bgColor)} />
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
@@ -141,19 +185,22 @@ export function BookingStatus({
       </CardContent>
       <CardFooter className="flex gap-2 pt-0">
         {status === "canceled" && onRebook && (
-          <Button variant="outline" className="w-full" onClick={onRebook}>
+          <Button
+            variant="outline"
+            className="w-full hide-for-pdf"
+            onClick={onRebook}
+          >
             <RefreshCcw className="h-4 w-4 mr-2" />
             Reservar de nuevo
           </Button>
         )}
         {onViewDetails && (
-          <Button
-            variant={status === "canceled" ? "default" : "outline"}
-            className="w-full"
-          >
-            <Download className="h-4 w-4 mr-2" />
-            Descargar recibo
-          </Button>
+          <PDFButton
+            receiptData={receiptData}
+            buttonVariant="outline"
+            buttonText="Descargar Recibo"
+            fileName={`Recibo-${productId.slice(0, 8)}`}
+          />
         )}
       </CardFooter>
     </Card>

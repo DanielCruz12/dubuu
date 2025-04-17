@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Check,
   CreditCard,
   Building,
   ChevronRight,
@@ -45,6 +44,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { toast } from "sonner";
 
 // Definir tipos de métodos de pago
 type PaymentMethod = "bank" | "visa" | "mastercard";
@@ -97,11 +97,9 @@ const cardSchema = z.object({
     .regex(/^\d+$/, {
       message: "El número de tarjeta debe contener solo números",
     }),
-  expiryDate: z
-    .string()
-    .regex(/^(0[1-9]|1[0-2])\/([0-9]{2})$/, {
-      message: "Formato inválido. Use MM/AA",
-    }),
+  expiryDate: z.string().regex(/^(0[1-9]|1[0-2])\/([0-9]{2})$/, {
+    message: "Formato inválido. Use MM/AA",
+  }),
   cvv: z
     .string()
     .min(3, { message: "El CVV debe tener 3 o 4 dígitos" })
@@ -119,12 +117,11 @@ type CardFormValues = z.infer<typeof cardSchema>;
 
 export function PaymentForm() {
   // Estado para controlar si estamos mostrando datos existentes o el formulario
-  const [showExistingData, setShowExistingData] = useState(true);
+  const [showExistingData, setShowExistingData] = useState(false);
   const [step, setStep] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
     existingData.paymentMethod
   );
-  const [isComplete, setIsComplete] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
   // Formulario para transferencia bancaria
@@ -154,7 +151,12 @@ export function PaymentForm() {
       paymentMethod,
       ...data,
     });
-    setIsComplete(true);
+    toast.success("Información recibida", {
+      description: "Hemos registrado tu información de pago correctamente.",
+    });
+    setShowExistingData(true);
+    setIsUpdating(false);
+    bankForm.reset(existingData.bankData);
   };
 
   const onCardSubmit = (data: CardFormValues) => {
@@ -162,7 +164,12 @@ export function PaymentForm() {
       paymentMethod,
       ...data,
     });
-    setIsComplete(true);
+    toast.success("Información recibida", {
+      description: "Hemos registrado tu información de pago correctamente.",
+    });
+    setShowExistingData(true);
+    setIsUpdating(false);
+    cardForm.reset(existingData.cardData);
   };
 
   const startUpdate = () => {
@@ -208,18 +215,9 @@ export function PaymentForm() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
       >
-        <Card className="border border-gray-200 dark:border-gray-800">
-          <CardHeader>
-            <CardTitle className="text-xl font-medium">
-              Información de pago existente
-            </CardTitle>
-            <CardDescription>
-              Ya tienes un método de pago configurado. Puedes continuar con
-              estos datos o actualizarlos.
-            </CardDescription>
-          </CardHeader>
+        <Card>
           <CardContent className="space-y-4">
-            <div className="flex items-center space-x-2 p-3 border border-gray-200 dark:border-gray-800 rounded-md">
+            <div className="flex items-center space-x-2 p-3  rounded-md">
               {getPaymentMethodIcon(existingData.paymentMethod)}
               <span className="font-medium">
                 {getPaymentMethodName(existingData.paymentMethod)}
@@ -228,7 +226,7 @@ export function PaymentForm() {
 
             {existingData.paymentMethod === "bank" && (
               <div className="space-y-3">
-                <div className="flex items-start space-x-3 p-3 border border-gray-200 dark:border-gray-800 rounded-md">
+                <div className="flex items-start space-x-3 p-3  rounded-md">
                   <Building className="h-5 w-5 mt-0.5" />
                   <div>
                     <p className="font-medium">
@@ -248,7 +246,7 @@ export function PaymentForm() {
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-3 p-3 border border-gray-200 dark:border-gray-800 rounded-md">
+                <div className="flex items-start space-x-3 p-3  rounded-md">
                   <User className="h-5 w-5 mt-0.5" />
                   <div>
                     <p className="font-medium">
@@ -258,7 +256,7 @@ export function PaymentForm() {
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-3 p-3 border border-gray-200 dark:border-gray-800 rounded-md">
+                <div className="flex items-start space-x-3 p-3  rounded-md">
                   <Mail className="h-5 w-5 mt-0.5" />
                   <div>
                     <p className="font-medium">{existingData.bankData.email}</p>
@@ -268,16 +266,10 @@ export function PaymentForm() {
               </div>
             )}
           </CardContent>
-          <CardFooter className="flex flex-col space-y-3">
-            <Button
-              className="w-full bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
-              onClick={() => setIsComplete(true)}
-            >
-              Continuar con estos datos
-            </Button>
+          <CardFooter className="flex justify-end space-y-3">
             <Button
               variant="outline"
-              className="w-full border-gray-200 dark:border-gray-800"
+              className="border-gray-200 dark:border-gray-800"
               onClick={startUpdate}
             >
               <Edit className="h-4 w-4 mr-2" />
@@ -297,71 +289,13 @@ export function PaymentForm() {
     );
   }
 
-  if (isComplete) {
-    return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.3 }}
-      >
-        <Card className="border border-gray-200 dark:border-gray-800">
-          <CardHeader>
-            <CardTitle className="text-xl font-medium text-center">
-              {isUpdating ? "Información actualizada" : "Información recibida"}
-            </CardTitle>
-            <CardDescription className="text-center">
-              {isUpdating
-                ? "Hemos actualizado tu información de pago correctamente."
-                : "Hemos registrado tu información de pago correctamente."}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col items-center justify-center py-8">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{
-                type: "spring",
-                stiffness: 200,
-                damping: 15,
-                delay: 0.1,
-              }}
-              className="rounded-full border border-gray-200 dark:border-gray-800 p-3 mb-4"
-            >
-              <Check className="h-8 w-8" />
-            </motion.div>
-            <p className="text-center text-sm text-gray-500 dark:text-gray-400 max-w-xs">
-              Los datos han sido {isUpdating ? "actualizados" : "enviados"} y
-              mostrados en la consola.
-            </p>
-          </CardContent>
-          <CardFooter>
-            <Button
-              className="w-full bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
-              onClick={() => {
-                setStep(1);
-                setPaymentMethod(existingData.paymentMethod);
-                setShowExistingData(true);
-                setIsUpdating(false);
-                setIsComplete(false);
-                bankForm.reset(existingData.bankData);
-                cardForm.reset(existingData.cardData);
-              }}
-            >
-              Volver al inicio
-            </Button>
-          </CardFooter>
-        </Card>
-      </motion.div>
-    );
-  }
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
     >
-      <Card className="border border-gray-200 dark:border-gray-800">
+      <Card className="">
         {/* Progress indicator */}
         <div className="px-6 pt-6">
           <div className="flex items-center justify-between mb-4">
@@ -534,7 +468,7 @@ export function PaymentForm() {
                 transition={{ duration: 0.2 }}
                 className="space-y-4"
               >
-                <div className="flex items-center space-x-2 p-2 border border-gray-200 dark:border-gray-800 rounded-md">
+                <div className="flex items-center space-x-2 p-2  rounded-md">
                   {getPaymentMethodIcon()}
                   <span className="text-sm">{getPaymentMethodName()}</span>
                 </div>
@@ -545,117 +479,119 @@ export function PaymentForm() {
                       onSubmit={bankForm.handleSubmit(onBankSubmit)}
                       className="space-y-4"
                     >
-                      <FormField
-                        control={bankForm.control}
-                        name="bankName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Nombre del banco</FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Ingrese el nombre del banco"
-                                className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
-                              />
-                            </FormControl>
-                            <FormMessage className="text-xs text-red-500" />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={bankForm.control}
-                        name="accountType"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Tipo de cuenta</FormLabel>
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                            >
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={bankForm.control}
+                          name="bankName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Nombre del banco</FormLabel>
                               <FormControl>
-                                <SelectTrigger className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white">
-                                  <SelectValue placeholder="Seleccione el tipo de cuenta" />
-                                </SelectTrigger>
+                                <Input
+                                  {...field}
+                                  placeholder="Ingrese el nombre del banco"
+                                  className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
+                                />
                               </FormControl>
-                              <SelectContent>
-                                <SelectItem value="ahorro">
-                                  Cuenta de Ahorro
-                                </SelectItem>
-                                <SelectItem value="corriente">
-                                  Cuenta Corriente
-                                </SelectItem>
-                                <SelectItem value="nomina">
-                                  Cuenta de Nómina
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage className="text-xs text-red-500" />
-                          </FormItem>
-                        )}
-                      />
+                              <FormMessage className="text-xs text-red-500" />
+                            </FormItem>
+                          )}
+                        />
 
-                      <FormField
-                        control={bankForm.control}
-                        name="accountNumber"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Número de cuenta</FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Ingrese el número de cuenta"
-                                className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
-                              />
-                            </FormControl>
-                            <FormMessage className="text-xs text-red-500" />
-                          </FormItem>
-                        )}
-                      />
+                        <FormField
+                          control={bankForm.control}
+                          name="accountType"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Tipo de cuenta</FormLabel>
+                              <Select
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                              >
+                                <FormControl>
+                                  <SelectTrigger className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white">
+                                    <SelectValue placeholder="Seleccione el tipo de cuenta" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="ahorro">
+                                    Cuenta de Ahorro
+                                  </SelectItem>
+                                  <SelectItem value="corriente">
+                                    Cuenta Corriente
+                                  </SelectItem>
+                                  <SelectItem value="nomina">
+                                    Cuenta de Nómina
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage className="text-xs text-red-500" />
+                            </FormItem>
+                          )}
+                        />
 
-                      <FormField
-                        control={bankForm.control}
-                        name="holderName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Nombre completo (titular)</FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Ingrese el nombre del titular"
-                                className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
-                              />
-                            </FormControl>
-                            <FormMessage className="text-xs text-red-500" />
-                          </FormItem>
-                        )}
-                      />
+                        <FormField
+                          control={bankForm.control}
+                          name="accountNumber"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Número de cuenta</FormLabel>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  placeholder="Ingrese el número de cuenta"
+                                  className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
+                                />
+                              </FormControl>
+                              <FormMessage className="text-xs text-red-500" />
+                            </FormItem>
+                          )}
+                        />
 
-                      <FormField
-                        control={bankForm.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Correo electrónico</FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="email"
-                                placeholder="ejemplo@correo.com"
-                                className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
-                              />
-                            </FormControl>
-                            <FormMessage className="text-xs text-red-500" />
-                          </FormItem>
-                        )}
-                      />
+                        <FormField
+                          control={bankForm.control}
+                          name="holderName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Nombre completo (titular)</FormLabel>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  placeholder="Ingrese el nombre del titular"
+                                  className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
+                                />
+                              </FormControl>
+                              <FormMessage className="text-xs text-red-500" />
+                            </FormItem>
+                          )}
+                        />
 
-                      <div className="flex justify-between pt-2">
+                        <FormField
+                          control={bankForm.control}
+                          name="email"
+                          render={({ field }) => (
+                            <FormItem className="md:col-span-2">
+                              <FormLabel>Correo electrónico</FormLabel>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  type="email"
+                                  placeholder="ejemplo@correo.com"
+                                  className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
+                                />
+                              </FormControl>
+                              <FormMessage className="text-xs text-red-500" />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="flex justify-end pt-2">
                         <Button
                           type="button"
                           variant="outline"
                           onClick={() => setStep(1)}
-                          className="border-gray-200 dark:border-gray-800 hover:bg-transparent hover:text-black dark:hover:text-white"
+                          className="border-gray-200 dark:border-gray-800 hover:bg-transparent hover:text-black dark:hover:text-white mr-2"
                         >
                           <ArrowLeft className="mr-2 h-4 w-4" />
                           Atrás
@@ -677,25 +613,25 @@ export function PaymentForm() {
                       onSubmit={cardForm.handleSubmit(onCardSubmit)}
                       className="space-y-4"
                     >
-                      <FormField
-                        control={cardForm.control}
-                        name="cardNumber"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Número de tarjeta</FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="XXXX XXXX XXXX XXXX"
-                                className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
-                              />
-                            </FormControl>
-                            <FormMessage className="text-xs text-red-500" />
-                          </FormItem>
-                        )}
-                      />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={cardForm.control}
+                          name="cardNumber"
+                          render={({ field }) => (
+                            <FormItem className="md:col-span-2">
+                              <FormLabel>Número de tarjeta</FormLabel>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  placeholder="XXXX XXXX XXXX XXXX"
+                                  className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
+                                />
+                              </FormControl>
+                              <FormMessage className="text-xs text-red-500" />
+                            </FormItem>
+                          )}
+                        />
 
-                      <div className="grid grid-cols-2 gap-4">
                         <FormField
                           control={cardForm.control}
                           name="expiryDate"
@@ -731,58 +667,58 @@ export function PaymentForm() {
                             </FormItem>
                           )}
                         />
+
+                        <FormField
+                          control={cardForm.control}
+                          name="holderName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Nombre completo (titular)</FormLabel>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  placeholder="Ingrese el nombre del titular"
+                                  className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
+                                />
+                              </FormControl>
+                              <FormMessage className="text-xs text-red-500" />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={cardForm.control}
+                          name="email"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Correo electrónico</FormLabel>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  type="email"
+                                  placeholder="ejemplo@correo.com"
+                                  className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
+                                />
+                              </FormControl>
+                              <FormMessage className="text-xs text-red-500" />
+                            </FormItem>
+                          )}
+                        />
                       </div>
 
-                      <FormField
-                        control={cardForm.control}
-                        name="holderName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Nombre completo (titular)</FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Ingrese el nombre del titular"
-                                className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
-                              />
-                            </FormControl>
-                            <FormMessage className="text-xs text-red-500" />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={cardForm.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Correo electrónico</FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="email"
-                                placeholder="ejemplo@correo.com"
-                                className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
-                              />
-                            </FormControl>
-                            <FormMessage className="text-xs text-red-500" />
-                          </FormItem>
-                        )}
-                      />
-
-                      <div className="flex justify-between pt-2">
+                      <div className="flex justify-end pt-2">
                         <Button
                           type="button"
                           variant="outline"
                           onClick={() => setStep(1)}
-                          className="border-gray-200 dark:border-gray-800 hover:bg-transparent hover:text-black dark:hover:text-white px-3 py-1 h-9 text-sm"
+                          className="border-gray-200 dark:border-gray-800 hover:bg-transparent hover:text-black dark:hover:text-white mr-2"
                         >
-                          <ArrowLeft className="mr-1 h-3.5 w-3.5" />
+                          <ArrowLeft className="mr-2 h-4 w-4" />
                           Atrás
                         </Button>
                         <Button
                           type="submit"
-                          className="bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200 px-3 py-1 h-9 text-sm"
+                          className="bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
                         >
                           {isUpdating
                             ? "Actualizar información"
@@ -799,16 +735,18 @@ export function PaymentForm() {
 
         {step === 1 && (
           <CardFooter>
-            <Button
-              className="w-full bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
-              onClick={handleContinue}
-              disabled={!paymentMethod}
-            >
-              <span className="flex items-center">
-                Continuar
-                <ChevronRight className="ml-2 h-4 w-4" />
-              </span>
-            </Button>
+            <div className="flex justify-end w-full">
+              <Button
+                className="bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
+                onClick={handleContinue}
+                disabled={!paymentMethod}
+              >
+                <span className="flex items-center">
+                  Continuar
+                  <ChevronRight className="ml-2 h-4 w-4" />
+                </span>
+              </Button>
+            </div>
           </CardFooter>
         )}
 

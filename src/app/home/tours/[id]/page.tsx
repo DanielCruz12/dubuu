@@ -154,8 +154,8 @@ export default function ProductBooking() {
                 title="Ubicación"
                 locationName="Galar Gdański - Tourist Cruises"
                 address="Dokowa 1, Gdansk, 80-863"
-                latitude={54.352}
-                longitude={18.6566}
+                latitude={isTour ? product.tour.lat : 0}
+                longitude={isTour ? product.tour.long : 0}
                 zoom={15}
               />
             </div>
@@ -199,6 +199,7 @@ export default function ProductBooking() {
                         tickets={{
                           adult: Number(existingBooking.tickets),
                         }}
+                        productId={product.id}
                         paymentMethod={existingBooking.paymentMethod}
                         total={Number(existingBooking.total)}
                         onViewDetails={() => alert("Ver detalles")}
@@ -237,6 +238,7 @@ export default function ProductBooking() {
                               tickets={{
                                 adult: Number(existingBooking.tickets),
                               }}
+                              productId={product.id}
                               paymentMethod={existingBooking.paymentMethod}
                               total={Number(existingBooking.total)}
                               onViewDetails={() => alert("Ver detalles")}

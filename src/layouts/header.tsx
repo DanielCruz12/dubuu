@@ -22,7 +22,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -147,6 +147,8 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="pr-0">
+              <SheetTitle></SheetTitle>
+              <SheetDescription></SheetDescription>
               <div className="mb-4 flex items-center">
                 <MapPin className="h-5 w-5 text-primary" />
                 <span className="font-bold">Dan&apos;s Tours</span>
