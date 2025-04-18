@@ -4,14 +4,13 @@ import { DashboardTitle } from "../(components)/dashboard-title";
 
 const Payments = () => {
   return (
-    <>
+    <div className="px-3 md:px-0">
       <DashboardTitle
-        heading="Información de pago existente"
-        description="Ya tienes un método de pago configurado. Puedes continuar con
-              estos datos o actualizarlos."
+        heading="Información de pago"
+        description="Para recibir pagos, debes decirnos a dónde enviar el dinero."
       />
       <PaymentForm />
-    </>
+    </div>
   );
 };
 

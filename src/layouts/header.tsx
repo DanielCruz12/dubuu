@@ -13,16 +13,13 @@ import {
   Info,
   LayoutDashboard,
   Home,
-  Menu,
   CalendarDays,
   User,
   CreditCard,
   List,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,98 +31,15 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useClerk } from "@clerk/nextjs";
-
-interface NavItem {
-  title: string;
-  href: string;
-  icon: React.ReactNode;
-  adminOnly?: boolean;
-}
+import { MenuProfileSheet } from "./sidebar";
+import { NavItem } from "@/types/dashboard-nav";
 
 export function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-
   const { user, signOut } = useClerk();
-
-  // Check if we're in the dashboard section
   const isDashboard = pathname?.startsWith("/dashboard");
-
-  // Simular que el usuario es admin para mostrar todas las opciones
-  const isAdmin = true;
-
-  // Dashboard navigation items
-  const dashboardNavItems: NavItem[] = [
-    {
-      title: "Dashboard",
-      href: "/dashboard",
-      icon: <LayoutDashboard className="h-4 w-4 mr-2" />,
-    },
-    {
-      title: "Mis Reservas",
-      href: "/dashboard/bookings",
-      icon: <CalendarDays className="h-4 w-4 mr-2" />,
-    },
-    {
-      title: "Perfil",
-      href: "/dashboard/profile",
-      icon: <User className="h-4 w-4 mr-2" />,
-    },
-    {
-      title: "Pagos",
-      href: "/dashboard/payments",
-      icon: <CreditCard className="h-4 w-4 mr-2" />,
-    },
-    {
-      title: "Productos",
-      href: "/dashboard/admin/product-list",
-      icon: <List className="h-4 w-4 mr-2" />,
-      adminOnly: true,
-    },
-  ];
-
-  // Menu items for authenticated users
-  const authenticatedMenuItems = [
-    {
-      icon: LayoutDashboard,
-      label: "Panel",
-      href: "/dashboard",
-    },
-    {
-      icon: Handshake,
-      label: "¿Quieres ser parte?",
-      href: "/investment",
-    },
-    {
-      icon: Info,
-      label: "Centro de ayuda",
-      href: "/support",
-    },
-    {
-      icon: Rss,
-      label: "Blog",
-      href: "/blog",
-    },
-  ];
-
-  // Menu items for guests
-  const guestMenuItems = [
-    {
-      icon: Home,
-      label: "Inicio",
-      href: "/home",
-    },
-    {
-      icon: Info,
-      label: "Centro de ayuda",
-      href: "/support",
-    },
-    {
-      icon: Rss,
-      label: "Blog",
-      href: "/blog",
-    },
-  ];
+  const isAdmin = true; //! modified for role
 
   // Choose which menu to render based on authentication status
   const menuToRender = user ? authenticatedMenuItems : guestMenuItems;
@@ -134,52 +48,14 @@ export function Header() {
   if (isDashboard) {
     return (
       <header className="top-0 z-40 w-full">
-        <div className="flex h-16 items-center px-5 md:px-20">
-          <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="md:hidden mr-2"
-                aria-label="Open menu"
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="pr-0">
-              <SheetTitle></SheetTitle>
-              <SheetDescription></SheetDescription>
-              <div className="mb-4 flex items-center">
-                <MapPin className="h-5 w-5 text-primary" />
-                <span className="font-bold">Dan&apos;s Tours</span>
-              </div>
-              <ScrollArea className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
-                <div className="flex flex-col space-y-6">
-                  {dashboardNavItems.map((item) => {
-                    // Ocultar elementos de administrador si el usuario no es admin
-                    if (item.adminOnly && !isAdmin) return null;
-
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className={cn(
-                          "flex items-center text-sm font-medium",
-                          pathname === item.href
-                            ? "text-primary"
-                            : "text-muted-foreground"
-                        )}
-                        onClick={() => setOpen(false)}
-                      >
-                        {item.icon}
-                        {item.title}
-                      </Link>
-                    );
-                  })}
-                </div>
-              </ScrollArea>
-            </SheetContent>
-          </Sheet>
+        <div className="flex h-16 items-center px-4 md:px-20">
+          <MenuProfileSheet
+            dashboardNavItems={dashboardNavItems}
+            isAdmin={isAdmin}
+            open={open}
+            setOpen={setOpen}
+            pathname={pathname}
+          />
 
           <div className="">
             <Link href="/home" className="flex items-center gap-1">
@@ -354,3 +230,75 @@ export function Header() {
     </header>
   );
 }
+
+// Menu items for authenticated users
+const authenticatedMenuItems = [
+  {
+    icon: LayoutDashboard,
+    label: "Panel",
+    href: "/dashboard",
+  },
+  {
+    icon: Handshake,
+    label: "¿Quieres ser parte?",
+    href: "/contact",
+  },
+  {
+    icon: Info,
+    label: "Centro de ayuda",
+    href: "/support",
+  },
+  {
+    icon: Rss,
+    label: "Blog",
+    href: "/blog",
+  },
+];
+
+// Menu items for guests
+const guestMenuItems = [
+  {
+    icon: Home,
+    label: "Inicio",
+    href: "/home",
+  },
+  {
+    icon: Info,
+    label: "Centro de ayuda",
+    href: "/support",
+  },
+  {
+    icon: Rss,
+    label: "Blog",
+    href: "/blog",
+  },
+];
+
+export const dashboardNavItems: NavItem[] = [
+  {
+    title: "Dashboard",
+    href: "/dashboard",
+    icon: <LayoutDashboard className="h-4 w-4 mr-2" />,
+  },
+  {
+    title: "Mis Reservas",
+    href: "/dashboard/bookings",
+    icon: <CalendarDays className="h-4 w-4 mr-2" />,
+  },
+  {
+    title: "Perfil",
+    href: "/dashboard/profile",
+    icon: <User className="h-4 w-4 mr-2" />,
+  },
+  {
+    title: "Pagos",
+    href: "/dashboard/payments",
+    icon: <CreditCard className="h-4 w-4 mr-2" />,
+  },
+  {
+    title: "Productos",
+    href: "/dashboard/admin/product-list",
+    icon: <List className="h-4 w-4 mr-2" />,
+    adminOnly: true,
+  },
+];

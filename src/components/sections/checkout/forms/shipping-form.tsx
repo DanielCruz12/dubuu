@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckoutFormValues } from "@/schemas/checkout-schema"
-import { countries, getCountryById, getRegionById } from "@/utils/data"
+import { countries } from "@/utils/data"
+import { getCountryById, getRegionById } from "@/utils"
 
 export default function ShippingForm() {
   const { control, watch, setValue } = useFormContext<CheckoutFormValues>()

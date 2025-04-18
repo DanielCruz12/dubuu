@@ -1,3 +1,5 @@
+import { Country } from "@/types/payment-types";
+
 export const blogData = [
   {
     id: 1,
@@ -118,41 +120,29 @@ export const countries: Country[] = [
   },
 ];
 
-export type Region = {
-  id: string;
-  nombre: string;
-  codigoPostal: string | null;
+export const statusColors = {
+  confirmado: "bg-green-50 text-green-700 border-green-200",
+  pendiente: "bg-amber-50 text-amber-700 border-amber-200",
+  completado: "bg-blue-50 text-blue-700 border-blue-200",
+  cancelado: "bg-red-50 text-red-700 border-red-200",
 };
 
-export type Country = {
-  id: string;
-  nombre: string;
-  orden: number;
-  regiones: Region[];
-};
-
-export const getCountryById = (id: string): Country | undefined => {
-  return countries.find((country) => country.id === id);
-};
-
-export const getRegionById = (
-  countryId: string,
-  regionId: string
-): Region | undefined => {
-  const country = getCountryById(countryId);
-  if (!country) return undefined;
-  return country.regiones.find((region) => region.id === regionId);
+export const statusText = {
+  confirmado: "Confirmado",
+  pendiente: "Pendiente",
+  completado: "Completado",
+  cancelado: "Cancelado",
 };
 
 export const bookings = [
-  
   {
     id: "1",
     bookingNumber: "TUR-2023-0002",
     tourName: "Aventura en los Alpes Suizos",
     description:
       "Una experiencia inolvidable en los Alpes Suizos con actividades de montaña, visitas a pueblos pintorescos y degustación de gastronomía local.",
-    tourImage: "https://images.unsplash.com/photo-1531210483974-4f8c1f33fd35?q=80&w=1000&auto=format&fit=crop",
+    tourImage:
+      "https://images.unsplash.com/photo-1531210483974-4f8c1f33fd35?q=80&w=1000&auto=format&fit=crop",
     startDate: "2024-01-10",
     endDate: "2024-01-17",
     duration: "8 días, 7 noches",
@@ -187,7 +177,12 @@ export const bookings = [
     ],
     paymentSchedule: [
       { description: "Reserva", amount: 1540, date: "10 Nov 2023", paid: true },
-      { description: "Pago final", amount: 1540, date: "10 Dic 2023", paid: false },
+      {
+        description: "Pago final",
+        amount: 1540,
+        date: "10 Dic 2023",
+        paid: false,
+      },
     ],
   },
   {
@@ -196,7 +191,8 @@ export const bookings = [
     tourName: "Safari en el Serengeti",
     description:
       "Vive la experiencia única de un safari en el Parque Nacional del Serengeti, observando la vida salvaje en su hábitat natural.",
-    tourImage: "https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=1000&auto=format&fit=crop",
+    tourImage:
+      "https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=1000&auto=format&fit=crop",
     startDate: "2023-09-05",
     endDate: "2023-09-12",
     duration: "8 días, 7 noches",
@@ -236,7 +232,8 @@ export const bookings = [
     tourName: "Crucero por las Islas Griegas",
     description:
       "Navega por el Mar Egeo visitando las islas más hermosas de Grecia, con paradas en Santorini, Mykonos y Creta.",
-    tourImage: "https://images.unsplash.com/photo-1533105079780-92b9be482077?q=80&w=1000&auto=format&fit=crop",
+    tourImage:
+      "https://images.unsplash.com/photo-1533105079780-92b9be482077?q=80&w=1000&auto=format&fit=crop",
     startDate: "2023-07-20",
     endDate: "2023-07-27",
     duration: "8 días, 7 noches",
@@ -275,7 +272,8 @@ export const bookings = [
     tourName: "Ruta del Vino en La Rioja",
     description:
       "Recorre las mejores bodegas de La Rioja, con catas de vino, visitas a viñedos y experiencias gastronómicas.",
-    tourImage: "https://images.unsplash.com/photo-1566903026052-36e4e1bd803a?q=80&w=1000&auto=format&fit=crop",
+    tourImage:
+      "https://images.unsplash.com/photo-1566903026052-36e4e1bd803a?q=80&w=1000&auto=format&fit=crop",
     startDate: "2024-03-15",
     endDate: "2024-03-19",
     duration: "5 días, 4 noches",
@@ -306,7 +304,12 @@ export const bookings = [
     ],
     paymentSchedule: [
       { description: "Reserva", amount: 750, date: "15 Ene 2024", paid: true },
-      { description: "Pago final", amount: 750, date: "15 Feb 2024", paid: false },
+      {
+        description: "Pago final",
+        amount: 750,
+        date: "15 Feb 2024",
+        paid: false,
+      },
     ],
   },
   {
@@ -315,7 +318,8 @@ export const bookings = [
     tourName: "Escapada a Bali",
     description:
       "Descubre la isla de los dioses con esta escapada que incluye playas, templos y la vibrante cultura balinesa.",
-    tourImage: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?q=80&w=1000&auto=format&fit=crop",
+    tourImage:
+      "https://images.unsplash.com/photo-1537996194471-e657df975ab4?q=80&w=1000&auto=format&fit=crop",
     startDate: "2024-02-10",
     endDate: "2024-02-18",
     duration: "9 días, 8 noches",
@@ -349,6 +353,13 @@ export const bookings = [
       "Día libre para compras o relax en la playa.",
       "Traslado al aeropuerto para vuelo de regreso.",
     ],
-    paymentSchedule: [{ description: "Pago completo", amount: 1980, date: "10 Dic 2023", paid: true }],
+    paymentSchedule: [
+      {
+        description: "Pago completo",
+        amount: 1980,
+        date: "10 Dic 2023",
+        paid: true,
+      },
+    ],
   },
-]
+];
