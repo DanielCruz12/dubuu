@@ -3,4 +3,5 @@ export interface NavItem {
   href: string;
   icon: React.ReactNode;
   adminOnly?: boolean;
+  hostOnly?: boolean;
 }

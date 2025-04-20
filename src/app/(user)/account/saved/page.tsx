@@ -1,4 +1,4 @@
-import { DashboardTitle } from "../(components)/dashboard-title";
+import { DashboardTitle } from "@/components/dashboard-title";
 
 const Saved = () => {
   return (

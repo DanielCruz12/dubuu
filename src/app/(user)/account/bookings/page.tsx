@@ -16,7 +16,7 @@ import {
 import { BookingCard } from "./(components)/booking-card";
 import { bookings } from "@/utils/data";
 import { BookingDetails } from "./(components)/booking-details";
-import { DashboardTitle } from "../(components)/dashboard-title";
+import { DashboardTitle } from "@/components/dashboard-title";
 
 export default function BookingsPage() {
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);

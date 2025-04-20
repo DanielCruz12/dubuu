@@ -8,13 +8,13 @@ import { Toaster } from "@/components/ui/sonner";
 import Footer from "@/layouts/footer";
 import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/captions.css";
-import ClerkTokenProvider from "./auth-provider";
 import { Header } from "@/layouts/header";
+import { AuthProvider } from "./auth-provider";
 
 const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
   return (
     <StoreProvider>
-      <ClerkTokenProvider>
+      <AuthProvider>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -22,7 +22,7 @@ const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
           disableTransitionOnChange
         >
           <div className="flex flex-col min-h-screen">
-            <Header/>
+            <Header />
             <main className="flex-1">
               <section className="h-full">{children}</section>
             </main>
@@ -30,7 +30,7 @@ const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
           </div>
           <Toaster richColors />
         </ThemeProvider>
-      </ClerkTokenProvider>
+      </AuthProvider>
     </StoreProvider>
   );
 };

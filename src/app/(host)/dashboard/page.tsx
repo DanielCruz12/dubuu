@@ -6,9 +6,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CalendarDays, CreditCard, MapPin, Users } from "lucide-react";
-import { DashboardTitle } from "./(components)/dashboard-title";
 import { Overview } from "./(components)/overview";
 import { RecentBookings } from "./(components)/recent-bookings";
+import { DashboardTitle } from "@/components/dashboard-title";
 
 export default function DashboardPage() {
   return (

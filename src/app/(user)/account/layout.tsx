@@ -1,7 +1,7 @@
 import type React from "react";
-import { SideNav } from "./(components)/side-nav";
+import { SideNav } from "@/layouts/side-nav";
 
-export default function DashboardLayout({
+export default async function UserLayout({
   children,
 }: {
   children: React.ReactNode;

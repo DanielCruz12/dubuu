@@ -16,12 +16,10 @@ import { cn } from "@/lib/utils";
 export interface MenuProfileSheetProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  isAdmin: boolean;
   dashboardNavItems: {
     title: string;
     href: string;
     icon: React.ReactNode;
-    adminOnly?: boolean;
   }[];
   pathname: string;
 }
@@ -29,7 +27,6 @@ export interface MenuProfileSheetProps {
 export function MenuProfileSheet({
   open,
   setOpen,
-  isAdmin,
   dashboardNavItems,
   pathname,
 }: MenuProfileSheetProps) {
@@ -55,9 +52,6 @@ export function MenuProfileSheet({
         <ScrollArea className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
           <div className="flex flex-col space-y-6">
             {dashboardNavItems.map((item) => {
-              // Ocultar elementos de administrador si el usuario no es admin
-              if (item.adminOnly && !isAdmin) return null;
-
               return (
                 <Link
                   key={item.href}

@@ -1,42 +1,68 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useAuth } from "@clerk/nextjs"
-import { useEffect } from "react"
-import { useDispatch } from "react-redux"
-import { clearToken, setToken } from "@/redux/slices/auth/auth-slice"
+import { useUser } from "@clerk/nextjs";
+import { createContext, useContext, useEffect, useState } from "react";
 
-// Este componente se encarga de sincronizar el token de Clerk con Redux
-export default function ClerkTokenProvider({ children }: { children: React.ReactNode }) {
-  const { getToken, isSignedIn } = useAuth()
-  const dispatch = useDispatch()
+type UserRole = "user" | "host" | "admin";
+
+interface AuthContextType {
+  role: UserRole;
+  roles: UserRole[];
+  isLoadingRole: boolean;
+  hasRole: (role: UserRole) => boolean;
+}
+
+const AuthContext = createContext<AuthContextType>({
+  role: "user",
+  roles: ["user"],
+  isLoadingRole: true,
+  hasRole: () => false,
+});
+
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const { user, isLoaded } = useUser();
+  const [roles, setRoles] = useState<UserRole[]>(["user"]);
+  const [isLoadingRole, setIsLoadingRole] = useState(true);
 
   useEffect(() => {
-    // Función para actualizar el token en Redux
-    const updateToken = async () => {
-      if (isSignedIn) {
-        try {
-          const token = await getToken()
-          dispatch(setToken(token))
-        } catch (error) {
-          console.error("Error al obtener el token:", error)
-          dispatch(clearToken())
-        }
-      } else {
-        dispatch(clearToken())
-      }
+    if (isLoaded && user) {
+      // Get roles from publicMetadata
+      const userRoles = (user.publicMetadata.roles as UserRole[]) || ["user"];
+      setRoles(userRoles);
+      setIsLoadingRole(false);
+    } else if (isLoaded) {
+      // User is loaded but not authenticated
+      setRoles(["user"]);
+      setIsLoadingRole(false);
     }
+  }, [isLoaded, user]);
 
-    // Actualizamos el token inmediatamente
-    updateToken()
+  // Get the highest priority role for backwards compatibility
+  const getPrimaryRole = (): UserRole => {
+    if (roles.includes("admin")) return "admin";
+    if (roles.includes("host")) return "host";
+    return "user";
+  };
 
-    // Configuramos un intervalo para refrescar el token periódicamente
-    // (los tokens de Clerk pueden expirar)
-    const intervalId = setInterval(updateToken, 10 * 60 * 1000) // cada 10 minutos
+  // Check if user has a specific role
+  const hasRole = (role: UserRole): boolean => {
+    return roles.includes(role);
+  };
 
-    return () => clearInterval(intervalId)
-  }, [getToken, isSignedIn, dispatch])
+  return (
+    <AuthContext.Provider
+      value={{
+        role: getPrimaryRole(),
+        roles,
+        isLoadingRole,
+        hasRole,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};
 
-  return <>{children}</>
-}
+export const useClerkToken = () => useContext(AuthContext);

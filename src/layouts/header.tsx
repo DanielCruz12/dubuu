@@ -17,6 +17,9 @@ import {
   User,
   CreditCard,
   List,
+  Bookmark,
+  Settings,
+  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -32,26 +35,78 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useClerk } from "@clerk/nextjs";
 import { MenuProfileSheet } from "./sidebar";
-import { NavItem } from "@/types/dashboard-nav";
+import { useClerkToken } from "@/components/providers/auth-provider";
+
+// TypeScript interfaces for navigation items
+export interface NavItem {
+  title: string;
+  href: string;
+  icon: React.ReactNode;
+}
+
+export interface RoleNavItem extends NavItem {
+  adminOnly?: boolean;
+  hostOnly?: boolean;
+}
+
+export interface MenuNavItem {
+  icon: React.ElementType;
+  label: string;
+  href: string;
+}
 
 export function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const { user, signOut } = useClerk();
-  const isDashboard = pathname?.startsWith("/dashboard");
-  const isAdmin = true; //! modified for role
+  const { role, hasRole } = useClerkToken();
 
-  // Choose which menu to render based on authentication status
-  const menuToRender = user ? authenticatedMenuItems : guestMenuItems;
+  // Fix: Check exact path for /account as well as paths that start with /account/ or /dashboard/
+  const isDashboard =
+    pathname === "/account" ||
+    pathname?.startsWith("/account/") ||
+    pathname === "/dashboard" ||
+    pathname?.startsWith("/dashboard/");
+
+  // Determine which menu items to show
+  let menuToRender = guestMenuItems;
+
+  if (user) {
+    if (role === "admin" || role === "host") {
+      menuToRender = authenticatedHostOrAdminMenuItems;
+    } else {
+      menuToRender = authenticatedUserMenuItems;
+    }
+  }
 
   // For dashboard routes, we'll use a simplified header with the mobile sidebar
   if (isDashboard) {
+    // Generate navigation items based on role
+    let navItemsToUse: RoleNavItem[] = [];
+
+    if (pathname === "/dashboard" || pathname?.startsWith("/dashboard/")) {
+      // Start with common items
+      navItemsToUse = [...commonDashboardItems];
+
+      // Add admin items if user is admin
+      if (hasRole("admin")) {
+        navItemsToUse = [...navItemsToUse, ...adminDashboardItems];
+      }
+
+      // Add host items if user is host
+      if (hasRole("host")) {
+        navItemsToUse = [...navItemsToUse, ...hostDashboardItems];
+      }
+    } else {
+      // For account routes
+      navItemsToUse = accountNavItems;
+    }
+
     return (
       <header className="top-0 z-40 w-full">
         <div className="flex h-16 items-center px-4 md:px-20">
           <MenuProfileSheet
-            dashboardNavItems={dashboardNavItems}
-            isAdmin={isAdmin}
+            dashboardNavItems={navItemsToUse}
             open={open}
             setOpen={setOpen}
             pathname={pathname}
@@ -78,6 +133,11 @@ export function Header() {
                       <AvatarImage
                         src={user.imageUrl || "/placeholder.svg"}
                         alt={user.fullName || "User"}
+                        onError={(e) => {
+                          // Fallback if image fails to load
+                          const target = e.target as HTMLImageElement;
+                          target.src = "/placeholder.svg";
+                        }}
                       />
                     ) : (
                       <AvatarImage src="/placeholder.svg" alt="Guest" />
@@ -145,6 +205,7 @@ export function Header() {
     );
   }
 
+  // Rest of the component remains the same...
   return (
     <header className="top-0 z-50 w-full">
       <div className="flex h-16 items-center md:px-20 px-4">
@@ -166,6 +227,11 @@ export function Header() {
                     <AvatarImage
                       src={user.imageUrl || "/placeholder.svg"}
                       alt={user.fullName || "User"}
+                      onError={(e) => {
+                        // Fallback if image fails to load
+                        const target = e.target as HTMLImageElement;
+                        target.src = "/placeholder.svg";
+                      }}
                     />
                   ) : (
                     <AvatarImage src="/placeholder.svg" alt="Guest" />
@@ -231,12 +297,31 @@ export function Header() {
   );
 }
 
-// Menu items for authenticated users
-const authenticatedMenuItems = [
+// Menu items for guests
+export const guestMenuItems: MenuNavItem[] = [
+  {
+    icon: Home,
+    label: "Inicio",
+    href: "/home",
+  },
+  {
+    icon: Info,
+    label: "Centro de ayuda",
+    href: "/support",
+  },
+  {
+    icon: Rss,
+    label: "Blog",
+    href: "/blog",
+  },
+];
+
+// Menu items for authenticated users (Dropdown)
+export const authenticatedUserMenuItems: MenuNavItem[] = [
   {
     icon: LayoutDashboard,
-    label: "Panel",
-    href: "/dashboard",
+    label: "Cuenta",
+    href: "/account",
   },
   {
     icon: Handshake,
@@ -255,12 +340,12 @@ const authenticatedMenuItems = [
   },
 ];
 
-// Menu items for guests
-const guestMenuItems = [
+// Menu items for hosts/admins (Dropdown)
+export const authenticatedHostOrAdminMenuItems: MenuNavItem[] = [
   {
-    icon: Home,
-    label: "Inicio",
-    href: "/home",
+    icon: LayoutDashboard,
+    label: "Panel",
+    href: "/dashboard",
   },
   {
     icon: Info,
@@ -274,21 +359,54 @@ const guestMenuItems = [
   },
 ];
 
-export const dashboardNavItems: NavItem[] = [
+// SideNav for normal users (/account)
+export const accountNavItems: NavItem[] = [
   {
-    title: "Dashboard",
-    href: "/dashboard",
-    icon: <LayoutDashboard className="h-4 w-4 mr-2" />,
+    title: "Perfil",
+    href: "/account/profile",
+    icon: <User className="h-4 w-4 mr-2" />,
   },
   {
-    title: "Mis Reservas",
-    href: "/dashboard/bookings",
+    title: "Mis reservas",
+    href: "/account/bookings",
     icon: <CalendarDays className="h-4 w-4 mr-2" />,
   },
+  {
+    title: "Guardados",
+    href: "/account/saved",
+    icon: <Bookmark className="h-4 w-4 mr-2" />,
+  },
+];
+
+// Common dashboard items for all roles
+export const commonDashboardItems: NavItem[] = [
   {
     title: "Perfil",
     href: "/dashboard/profile",
     icon: <User className="h-4 w-4 mr-2" />,
+  },
+];
+
+// Admin-only dashboard items
+export const adminDashboardItems: NavItem[] = [
+  {
+    title: "Usuarios",
+    href: "/dashboard/users",
+    icon: <Users className="h-4 w-4 mr-2" />,
+  },
+  {
+    title: "Configuración",
+    href: "/dashboard/settings",
+    icon: <Settings className="h-4 w-4 mr-2" />,
+  },
+];
+
+// Host-only dashboard items
+export const hostDashboardItems: NavItem[] = [
+  {
+    title: "Mis Reservas",
+    href: "/dashboard/bookings",
+    icon: <CalendarDays className="h-4 w-4 mr-2" />,
   },
   {
     title: "Pagos",
@@ -297,8 +415,14 @@ export const dashboardNavItems: NavItem[] = [
   },
   {
     title: "Productos",
-    href: "/dashboard/admin/product-list",
+    href: "/dashboard/products",
     icon: <List className="h-4 w-4 mr-2" />,
-    adminOnly: true,
   },
+];
+
+// Combined dashboard items with role flags (for backward compatibility)
+export const dashboardNavItems: RoleNavItem[] = [
+  ...commonDashboardItems,
+  ...adminDashboardItems.map((item) => ({ ...item, adminOnly: true })),
+  ...hostDashboardItems.map((item) => ({ ...item, hostOnly: true })),
 ];

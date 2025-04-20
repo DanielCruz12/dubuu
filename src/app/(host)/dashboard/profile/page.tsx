@@ -1,5 +1,5 @@
-import PersonalInfoForm from "./personal-info-form";
-import { DashboardTitle } from "../(components)/dashboard-title";
+import { DashboardTitle } from "@/components/dashboard-title";
+import PersonalInfoForm from "@/components/personal-info-form";
 
 export default function ProfilePage() {
   return (

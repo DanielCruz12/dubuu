@@ -1,6 +1,6 @@
 import React from "react";
 import { PaymentForm } from "./(forms)/deposit-form";
-import { DashboardTitle } from "../(components)/dashboard-title";
+import { DashboardTitle } from "@/components/dashboard-title";
 
 const Payments = () => {
   return (
