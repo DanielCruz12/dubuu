@@ -36,24 +36,7 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { useClerk } from "@clerk/nextjs";
 import { MenuProfileSheet } from "./sidebar";
 import { useClerkToken } from "@/components/providers/auth-provider";
-
-// TypeScript interfaces for navigation items
-export interface NavItem {
-  title: string;
-  href: string;
-  icon: React.ReactNode;
-}
-
-export interface RoleNavItem extends NavItem {
-  adminOnly?: boolean;
-  hostOnly?: boolean;
-}
-
-export interface MenuNavItem {
-  icon: React.ElementType;
-  label: string;
-  href: string;
-}
+import { MenuNavItem, NavItem, RoleNavItem } from "@/types/dashboard-nav";
 
 export function Header() {
   const pathname = usePathname();
