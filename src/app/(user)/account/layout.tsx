@@ -11,7 +11,7 @@ export default async function UserLayout({
       <aside className="fixed z-30 hidden w-full shrink-0 md:sticky md:block">
         <SideNav />
       </aside>
-      <main className="flex w-full flex-col overflow-hidden">
+      <main className="flex w-full flex-col overflow-hidden pb-6">
         <div>{children}</div>
       </main>
     </div>

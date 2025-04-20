@@ -96,6 +96,44 @@ export default function DashboardPage() {
             <RecentBookings />
           </CardContent>
         </Card>
+
+        {/*   <Card>
+          <CardContent className="p-6">
+            <h2 className="text-xl font-semibold mb-4">
+              Resumen de Asistencia
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-green-50 p-4 rounded-lg">
+                <div className="text-sm text-green-600 font-medium">
+                  Total de Reservas
+                </div>
+                <div className="text-3xl font-bold">{bookings.length}</div>
+              </div>
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="text-sm text-blue-600 font-medium">
+                  Total de Asistentes
+                </div>
+                <div className="text-3xl font-bold">
+                  {bookings.reduce((sum, booking) => sum + booking.tickets, 0)}
+                </div>
+              </div>
+              <div className="bg-purple-50 p-4 rounded-lg">
+                <div className="text-sm text-purple-600 font-medium">
+                  Ingresos Totales
+                </div>
+                <div className="text-3xl font-bold">
+                  $
+                  {bookings
+                    .reduce(
+                      (sum, booking) => sum + Number.parseFloat(booking.total),
+                      0
+                    )
+                    .toFixed(2)}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card> */}
       </div>
     </div>
   );

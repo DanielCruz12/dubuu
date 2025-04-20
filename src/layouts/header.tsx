@@ -112,22 +112,8 @@ export function Header() {
                   className="relative h-8 w-8 rounded-full"
                 >
                   <Avatar className="h-8 w-8">
-                    {user ? (
-                      <AvatarImage
-                        src={user.imageUrl || "/placeholder.svg"}
-                        alt={user.fullName || "User"}
-                        onError={(e) => {
-                          // Fallback if image fails to load
-                          const target = e.target as HTMLImageElement;
-                          target.src = "/placeholder.svg";
-                        }}
-                      />
-                    ) : (
-                      <AvatarImage src="/placeholder.svg" alt="Guest" />
-                    )}
-                    <AvatarFallback>
-                      {user ? user.firstName?.[0] : "G"}
-                    </AvatarFallback>
+                    <AvatarImage src={user ? user.imageUrl : ""} />
+                    <AvatarFallback>CN</AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
@@ -206,22 +192,8 @@ export function Header() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                 <Avatar className="h-8 w-8">
-                  {user ? (
-                    <AvatarImage
-                      src={user.imageUrl || "/placeholder.svg"}
-                      alt={user.fullName || "User"}
-                      onError={(e) => {
-                        // Fallback if image fails to load
-                        const target = e.target as HTMLImageElement;
-                        target.src = "/placeholder.svg";
-                      }}
-                    />
-                  ) : (
-                    <AvatarImage src="/placeholder.svg" alt="Guest" />
-                  )}
-                  <AvatarFallback>
-                    {user ? user.firstName?.[0] : "G"}
-                  </AvatarFallback>
+                  <AvatarImage src={user ? user.imageUrl : ""} />
+                  <AvatarFallback>CN</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
