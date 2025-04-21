@@ -1,194 +1,191 @@
 "use client";
-import React, { useState } from "react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+
+import { useState, useEffect } from "react";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { DatePickerWithRange } from "../date-picker";
-import { Star } from "lucide-react";
-const FiltersContent = () => {
-  const [priceRange, setPriceRange] = useState([50, 300]);
-  const defaultAccordionValues = ["amenities"];
+import type { FilterState } from "@/app/home/[category]/page";
+
+interface FiltersContentProps {
+  filters: FilterState;
+  updateFilters: (filters: Partial<FilterState>) => void;
+}
+
+export default function FiltersContent({
+  filters,
+  updateFilters,
+}: FiltersContentProps) {
+  // Local state to track checkbox selections
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    filters.categories
+  );
+  const [selectedDurations, setSelectedDurations] = useState<string[]>(
+    filters.durations
+  );
+  const [priceRange, setPriceRange] = useState<[number, number]>(
+    filters.priceRange
+  );
+
+  // Sync local state with parent filters when they change
+  useEffect(() => {
+    setSelectedCategories(filters.categories);
+    setSelectedDurations(filters.durations);
+    setPriceRange(filters.priceRange);
+  }, [filters]);
+
+  // Handle price range change
+  const handlePriceChange = (value: number[]) => {
+    const newRange: [number, number] = [value[0], value[1]];
+    setPriceRange(newRange);
+    updateFilters({ priceRange: newRange });
+  };
+
+  // Handle category checkbox change
+  const handleCategoryChange = (category: string, checked: boolean) => {
+    let newCategories: string[];
+
+    if (checked) {
+      newCategories = [...selectedCategories, category];
+    } else {
+      newCategories = selectedCategories.filter((c) => c !== category);
+    }
+
+    setSelectedCategories(newCategories);
+    updateFilters({ categories: newCategories });
+  };
+
+  // Handle duration checkbox change
+  const handleDurationChange = (duration: string, checked: boolean) => {
+    let newDurations: string[];
+
+    if (checked) {
+      newDurations = [...selectedDurations, duration];
+    } else {
+      newDurations = selectedDurations.filter((d) => d !== duration);
+    }
+
+    setSelectedDurations(newDurations);
+    updateFilters({ durations: newDurations });
+  };
 
   return (
     <div className="space-y-6">
-      <div className="space-y-4">
-        <h3 className="text-sm font-medium">Fechas</h3>
-        <DatePickerWithRange />
+      <div>
+        <h3 className="text-sm font-semibold mb-2">Precio</h3>
+        <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
+          <span>${priceRange[0]}</span>
+          <span>${priceRange[1]}</span>
+        </div>
+        <Slider
+          min={0}
+          max={100}
+          step={1}
+          value={priceRange}
+          onValueChange={handlePriceChange}
+          className="my-4"
+        />
       </div>
 
-      <Separator />
+      <div>
+        <h3 className="text-sm font-semibold mb-2">Categorías</h3>
+        <div className="space-y-2">
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="aventura"
+              checked={selectedCategories.includes("aventura")}
+              onCheckedChange={(checked) =>
+                handleCategoryChange("aventura", checked === true)
+              }
+            />
+            <label
+              htmlFor="aventura"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Aventura
+            </label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="cultural"
+              checked={selectedCategories.includes("cultural")}
+              onCheckedChange={(checked) =>
+                handleCategoryChange("cultural", checked === true)
+              }
+            />
+            <label
+              htmlFor="cultural"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Cultural
+            </label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="relajacion"
+              checked={selectedCategories.includes("relajacion")}
+              onCheckedChange={(checked) =>
+                handleCategoryChange("relajacion", checked === true)
+              }
+            />
+            <label
+              htmlFor="relajacion"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Relajación
+            </label>
+          </div>
+        </div>
+      </div>
 
-      <Accordion
-        type="multiple"
-        defaultValue={defaultAccordionValues}
-        className="w-full"
-      >
-        <AccordionItem value="price" className="border-none">
-          <AccordionTrigger className="py-2 text-sm font-medium">
-            Precio por noche
-          </AccordionTrigger>
-          <AccordionContent>
-            <div className="space-y-4 py-2">
-              <Slider
-                defaultValue={priceRange}
-                max={500}
-                step={10}
-                onValueChange={setPriceRange}
-                className="mt-6"
-              />
-              <div className="flex justify-between items-center mt-2">
-                <div className="bg-background border rounded-md px-3 py-1">
-                  <span className="text-sm font-medium">€{priceRange[0]}</span>
-                </div>
-                <div className="text-sm text-muted-foreground">hasta</div>
-                <div className="bg-background border rounded-md px-3 py-1">
-                  <span className="text-sm font-medium">€{priceRange[1]}</span>
-                </div>
-              </div>
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-
-        <AccordionItem value="property-type" className="border-none">
-          <AccordionTrigger className="py-2 text-sm font-medium">
-            Tipo de alojamiento
-          </AccordionTrigger>
-          <AccordionContent>
-            <ScrollArea className="h-48 pr-4">
-              <div className="space-y-3">
-                {[
-                  "Hotel",
-                  "Apartamento",
-                  "Resort",
-                  "Villa",
-                  "Hostal",
-                  "Casa de huéspedes",
-                  "Bed & Breakfast",
-                ].map((type, index) => (
-                  <div key={index} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`type-${index}`}
-                      defaultChecked={index === 1}
-                    />
-                    <Label htmlFor={`type-${index}`} className="text-sm">
-                      {type}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
-          </AccordionContent>
-        </AccordionItem>
-
-        <AccordionItem value="amenities" className="border-none">
-          <AccordionTrigger className="py-2 text-sm font-medium">
-            Servicios
-          </AccordionTrigger>
-          <AccordionContent>
-            <ScrollArea className="h-48 pr-4">
-              <div className="space-y-3">
-                {[
-                  "WiFi gratis",
-                  "Desayuno incluido",
-                  "Estacionamiento",
-                  "Piscina",
-                  "Aire acondicionado",
-                  "Restaurante",
-                  "Spa",
-                  "Gimnasio",
-                  "Admite mascotas",
-                ].map((amenity, index) => (
-                  <div key={index} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`amenity-${index}`}
-                      defaultChecked={index < 2}
-                    />
-                    <Label htmlFor={`amenity-${index}`} className="text-sm">
-                      {amenity}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
-          </AccordionContent>
-        </AccordionItem>
-
-        <AccordionItem value="rating" className="border-none">
-          <AccordionTrigger className="py-2 text-sm font-medium">
-            Calificación
-          </AccordionTrigger>
-          <AccordionContent>
-            <div className="space-y-3">
-              {[5, 4, 3, 2].map((stars, index) => (
-                <div key={index} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`stars-${stars}`}
-                    defaultChecked={stars === 4}
-                  />
-                  <Label
-                    htmlFor={`stars-${stars}`}
-                    className="flex items-center"
-                  >
-                    <div className="flex text-amber-400">
-                      {Array(stars)
-                        .fill(0)
-                        .map((_, i) => (
-                          <Star key={i} className="w-4 h-4 fill-current" />
-                        ))}
-                    </div>
-                    {stars < 5 && (
-                      <span className="text-muted-foreground text-xs ml-1">
-                        o más
-                      </span>
-                    )}
-                  </Label>
-                </div>
-              ))}
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-
-        <AccordionItem value="location" className="border-none">
-          <AccordionTrigger className="py-2 text-sm font-medium">
-            Ubicación
-          </AccordionTrigger>
-          <AccordionContent>
-            <ScrollArea className="h-48 pr-4">
-              <div className="space-y-3">
-                {[
-                  "Centro de la ciudad",
-                  "Playa",
-                  "Cerca del aeropuerto",
-                  "Suburbios",
-                  "Cerca de Sagrada Familia",
-                  "Cerca de La Rambla",
-                  "Cerca de La Boquería",
-                ].map((location, index) => (
-                  <div key={index} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`location-${index}`}
-                      defaultChecked={index === 0}
-                    />
-                    <Label htmlFor={`location-${index}`} className="text-sm">
-                      {location}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+      <div>
+        <h3 className="text-sm font-semibold mb-2">Duración</h3>
+        <div className="space-y-2">
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="1-dia"
+              checked={selectedDurations.includes("1-dia")}
+              onCheckedChange={(checked) =>
+                handleDurationChange("1-dia", checked === true)
+              }
+            />
+            <label
+              htmlFor="1-dia"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              1 día
+            </label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="2-3-dias"
+              checked={selectedDurations.includes("2-3-dias")}
+              onCheckedChange={(checked) =>
+                handleDurationChange("2-3-dias", checked === true)
+              }
+            />
+            <label
+              htmlFor="2-3-dias"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              2-3 días
+            </label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="mas-de-3-dias"
+              checked={selectedDurations.includes("mas-de-3-dias")}
+              onCheckedChange={(checked) =>
+                handleDurationChange("mas-de-3-dias", checked === true)
+              }
+            />
+            <label
+              htmlFor="mas-de-3-dias"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Más de 3 días
+            </label>
+          </div>
+        </div>
+      </div>
     </div>
   );
-};
-
-export default FiltersContent;
+}
