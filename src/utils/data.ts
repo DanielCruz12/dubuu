@@ -64,7 +64,7 @@ export const ratingOptions = [
 export const productTypes = [
   { description: "Viajes", name: "tours", id: 1 },
   { description: "Propiedades", name: "properties", id: 2 },
-  { description: "Alquiler", name: "rental", id: 3 },
+  { description: "Alquileres", name: "rental", id: 3 },
 ];
 
 export const countries: Country[] = [
@@ -363,3 +363,258 @@ export const bookings = [
     ],
   },
 ];
+
+// Define the tour type
+export interface Tour {
+  id: string
+  name: string
+  user_id: string
+  description: string
+  price: string
+  address: string
+  country: string
+  is_approved: boolean
+  images: string[]
+  files: string[]
+  videos: string[]
+  banner: string
+  is_active: boolean
+  average_rating: string
+  total_reviews: number
+  target_product_audience_id: string
+  product_category_id: string
+  product_type_id: string
+  created_at: string
+  updated_at: string
+  product_category: {
+    id: string
+    name: string
+  }
+  target_audience: {
+    id: string
+    name: string
+  }
+  product_type: {
+    id: string
+    name: string
+  }
+  tour: {
+    duration: number
+  }
+}
+
+// Sample data with more countries
+export const sampleTours: Tour[] = [
+  {
+    id: "e9cbb500-8c57-4225-a3de-5673423b438c",
+    name: "Exploración Volcán de Santa Ana",
+    user_id: "user_2veqnkB4eeA75VaFcmN9YgQlX6H",
+    description:
+      "Ascenso guiado al majestuoso volcán Ilamatepec, disfrutando vistas panorámicas y un merecido descanso en aguas termales al finalizar.",
+    price: "20.99",
+    address: "Volcán de Santa Ana, Cerro Verde",
+    country: "El Salvador",
+    is_approved: true,
+    images: [
+      "https://picsum.photos/id/1015/1000/600.jpg",
+      "https://picsum.photos/id/1011/1000/600.jpg",
+      "https://picsum.photos/id/1016/1000/600.jpg",
+      "https://picsum.photos/id/1020/1000/500.jpg",
+    ],
+    files: ["https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"],
+    videos: ["https://samplelib.com/lib/preview/mp4/sample-5s.mp4"],
+    banner: "https://picsum.photos/id/1035/1000/600.jpg",
+    is_active: true,
+    average_rating: "4.00",
+    total_reviews: 1,
+    target_product_audience_id: "23995798-bd50-467d-ad2a-f2eaa780f1e9",
+    product_category_id: "a040faa5-5987-4011-b549-3ea0ffbaf862",
+    product_type_id: "c732fe6e-324d-40bb-a629-9cc0e26c0253",
+    created_at: "2025-04-14T23:03:48.832Z",
+    updated_at: "2025-04-14T23:03:48.832Z",
+    product_category: {
+      id: "a040faa5-5987-4011-b549-3ea0ffbaf862",
+      name: "Aventura",
+    },
+    target_audience: {
+      id: "23995798-bd50-467d-ad2a-f2eaa780f1e9",
+      name: "familiar",
+    },
+    product_type: {
+      id: "c732fe6e-324d-40bb-a629-9cc0e26c0253",
+      name: "tours",
+    },
+    tour: {
+      duration: 1,
+    },
+  },
+  {
+    id: "f8dbb600-9c57-4225-b3de-6783423b439d",
+    name: "Tour por la Ciudad Colonial",
+    user_id: "user_3veqnkB4eeA75VaFcmN9YgQlX6H",
+    description:
+      "Recorrido por las calles históricas de la ciudad colonial, visitando monumentos y edificios emblemáticos.",
+    price: "15.99",
+    address: "Centro Histórico",
+    country: "Guatemala",
+    is_approved: true,
+    images: [
+      "https://picsum.photos/id/1025/1000/600.jpg",
+      "https://picsum.photos/id/1026/1000/600.jpg",
+      "https://picsum.photos/id/1027/1000/600.jpg",
+    ],
+    files: [],
+    videos: [],
+    banner: "https://picsum.photos/id/1036/1000/600.jpg",
+    is_active: true,
+    average_rating: "4.50",
+    total_reviews: 2,
+    target_product_audience_id: "23995798-bd50-467d-ad2a-f2eaa780f1e9",
+    product_category_id: "a040faa5-5987-4011-b549-3ea0ffbaf862",
+    product_type_id: "c732fe6e-324d-40bb-a629-9cc0e26c0253",
+    created_at: "2025-04-14T23:03:48.832Z",
+    updated_at: "2025-04-14T23:03:48.832Z",
+    product_category: {
+      id: "a040faa5-5987-4011-b549-3ea0ffbaf862",
+      name: "Cultural",
+    },
+    target_audience: {
+      id: "23995798-bd50-467d-ad2a-f2eaa780f1e9",
+      name: "familiar",
+    },
+    product_type: {
+      id: "c732fe6e-324d-40bb-a629-9cc0e26c0253",
+      name: "tours",
+    },
+    tour: {
+      duration: 3,
+    },
+  },
+  {
+    id: "g7ebb700-7d57-4225-c3de-7893423b440e",
+    name: "Aventura en Cenotes",
+    user_id: "user_4veqnkB4eeA75VaFcmN9YgQlX6H",
+    description:
+      "Explora los misteriosos cenotes de la península de Yucatán, nadando en aguas cristalinas y descubriendo formaciones subterráneas.",
+    price: "35.99",
+    address: "Riviera Maya",
+    country: "México",
+    is_approved: true,
+    images: [
+      "https://picsum.photos/id/1035/1000/600.jpg",
+      "https://picsum.photos/id/1036/1000/600.jpg",
+      "https://picsum.photos/id/1037/1000/600.jpg",
+    ],
+    files: [],
+    videos: [],
+    banner: "https://picsum.photos/id/1037/1000/600.jpg",
+    is_active: true,
+    average_rating: "4.80",
+    total_reviews: 5,
+    target_product_audience_id: "23995798-bd50-467d-ad2a-f2eaa780f1e9",
+    product_category_id: "a040faa5-5987-4011-b549-3ea0ffbaf862",
+    product_type_id: "c732fe6e-324d-40bb-a629-9cc0e26c0253",
+    created_at: "2025-04-14T23:03:48.832Z",
+    updated_at: "2025-04-14T23:03:48.832Z",
+    product_category: {
+      id: "a040faa5-5987-4011-b549-3ea0ffbaf862",
+      name: "Aventura",
+    },
+    target_audience: {
+      id: "23995798-bd50-467d-ad2a-f2eaa780f1e9",
+      name: "familiar",
+    },
+    product_type: {
+      id: "c732fe6e-324d-40bb-a629-9cc0e26c0253",
+      name: "tours",
+    },
+    tour: {
+      duration: 2,
+    },
+  },
+  {
+    id: "h8fcc800-8e57-4225-d3de-8903423b441f",
+    name: "Templos de Kioto",
+    user_id: "user_5veqnkB4eeA75VaFcmN9YgQlX6H",
+    description:
+      "Visita los templos más importantes de Kioto, incluyendo Kinkaku-ji (Pabellón Dorado) y Fushimi Inari con sus miles de torii rojos.",
+    price: "45.99",
+    address: "Kioto",
+    country: "Japón",
+    is_approved: true,
+    images: [
+      "https://picsum.photos/id/1040/1000/600.jpg",
+      "https://picsum.photos/id/1041/1000/600.jpg",
+      "https://picsum.photos/id/1042/1000/600.jpg",
+    ],
+    files: [],
+    videos: [],
+    banner: "https://picsum.photos/id/1040/1000/600.jpg",
+    is_active: true,
+    average_rating: "4.90",
+    total_reviews: 8,
+    target_product_audience_id: "23995798-bd50-467d-ad2a-f2eaa780f1e9",
+    product_category_id: "a040faa5-5987-4011-b549-3ea0ffbaf862",
+    product_type_id: "c732fe6e-324d-40bb-a629-9cc0e26c0253",
+    created_at: "2025-04-14T23:03:48.832Z",
+    updated_at: "2025-04-14T23:03:48.832Z",
+    product_category: {
+      id: "a040faa5-5987-4011-b549-3ea0ffbaf862",
+      name: "Cultural",
+    },
+    target_audience: {
+      id: "23995798-bd50-467d-ad2a-f2eaa780f1e9",
+      name: "familiar",
+    },
+    product_type: {
+      id: "c732fe6e-324d-40bb-a629-9cc0e26c0253",
+      name: "tours",
+    },
+    tour: {
+      duration: 2,
+    },
+  },
+  {
+    id: "i9gdd900-9f57-4225-e3de-9913423b442g",
+    name: "Monte Fuji y Hakone",
+    user_id: "user_6veqnkB4eeA75VaFcmN9YgQlX6H",
+    description:
+      "Excursión de un día para admirar el majestuoso Monte Fuji y relajarse en las aguas termales de Hakone.",
+    price: "55.99",
+    address: "Tokio",
+    country: "Japón",
+    is_approved: true,
+    images: [
+      "https://picsum.photos/id/1043/1000/600.jpg",
+      "https://picsum.photos/id/1044/1000/600.jpg",
+      "https://picsum.photos/id/1045/1000/600.jpg",
+    ],
+    files: [],
+    videos: [],
+    banner: "https://picsum.photos/id/1043/1000/600.jpg",
+    is_active: true,
+    average_rating: "4.70",
+    total_reviews: 6,
+    target_product_audience_id: "23995798-bd50-467d-ad2a-f2eaa780f1e9",
+    product_category_id: "a040faa5-5987-4011-b549-3ea0ffbaf862",
+    product_type_id: "c732fe6e-324d-40bb-a629-9cc0e26c0253",
+    created_at: "2025-04-14T23:03:48.832Z",
+    updated_at: "2025-04-14T23:03:48.832Z",
+    product_category: {
+      id: "a040faa5-5987-4011-b549-3ea0ffbaf862",
+      name: "Naturaleza",
+    },
+    target_audience: {
+      id: "23995798-bd50-467d-ad2a-f2eaa780f1e9",
+      name: "familiar",
+    },
+    product_type: {
+      id: "c732fe6e-324d-40bb-a629-9cc0e26c0253",
+      name: "tours",
+    },
+    tour: {
+      duration: 1,
+    },
+  },
+]
+

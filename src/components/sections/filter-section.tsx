@@ -1,13 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect } from "react";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
-import type { FilterState } from "@/app/home/[category]/page";
 
 interface FiltersContentProps {
-  filters: FilterState;
-  updateFilters: (filters: Partial<FilterState>) => void;
+  filters: any;
+  updateFilters: (filters: Partial<any>) => void;
 }
 
 export default function FiltersContent({

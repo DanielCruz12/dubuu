@@ -1,27 +1,34 @@
-// This handles /home/tours/spain or /home/rental/italy
+import { notFound } from "next/navigation";
+import { findCountryFromNormalizedName, getAvailableCountries } from "@/utils";
+import { sampleTours } from "@/utils/data";
+import ToursPage from "@/components/modules/tours";
+
+// This handles /home/tours/japan or any other country
 export default function CountryPage({
   params,
 }: {
   params: { category: string; country: string };
 }) {
-  const { category, country } = params;
+  const { country: normalizedCountry } = params;
 
-  // Handle "all" as a special case
-  if (country === "all") {
-    return (
-      <div>
-        <h1>All {category} from all countries</h1>
-        {/* List all items */}
-      </div>
-    );
+  // Special case for 'all' to show all countries
+  if (normalizedCountry === "all") {
+    return <ToursPage />;
   }
 
-  return (
-    <div>
-      <h1>
-        {category} in {country}
-      </h1>
-      {/* List items filtered by country */}
-    </div>
+  // Get all available countries from our data
+  const availableCountries = getAvailableCountries(sampleTours);
+
+  // Find the original country name from the normalized URL version
+  const countryName = findCountryFromNormalizedName(
+    normalizedCountry,
+    availableCountries
   );
+
+  // If we can't find a matching country, return 404
+  if (!countryName) {
+    return notFound();
+  }
+
+  return <ToursPage countryFilter={countryName} />;
 }

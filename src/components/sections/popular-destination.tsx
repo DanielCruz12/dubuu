@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { ChevronRight } from "lucide-react";
-import Link from "next/link";
+import { normalizeCountryForUrl } from "@/utils";
+import { useRouter } from "next/navigation";
 
 interface Destination {
   id: string;
@@ -18,8 +19,8 @@ interface Destination {
 const destinations: Destination[] = [
   {
     id: "1",
-    name: "Paris",
-    country: "France",
+    name: "México",
+    country: "México",
     image: "/paris.jpeg",
     tours: 156,
     activities: 248,
@@ -30,8 +31,8 @@ const destinations: Destination[] = [
   },
   {
     id: "2",
-    name: "Tokyo",
-    country: "Japan",
+    name: "Japón",
+    country: "Japón",
     image: "/tokyo.jpg",
     tours: 143,
     activities: 200,
@@ -42,8 +43,8 @@ const destinations: Destination[] = [
   },
   {
     id: "3",
-    name: "Rome",
-    country: "Italy",
+    name: "Guatemala",
+    country: "Guatemala",
     image: "/roma.jpg",
     tours: 132,
     activities: 220,
@@ -67,6 +68,14 @@ const destinations: Destination[] = [
 ];
 
 export default function PopularDestinations() {
+  const router = useRouter();
+
+  const navigateToTour = (tourCountry: string) => {
+    // Normalize the country name for the URL
+    const normalizedCountry = normalizeCountryForUrl(tourCountry);
+    router.push(`/home/tours/${normalizedCountry}`);
+  };
+
   return (
     <section className="py-12">
       <div className="space-y-3">
@@ -77,8 +86,8 @@ export default function PopularDestinations() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
           {destinations.map((destination) => (
-            <Link
-              href={`/tours/${destination.country.trim()}`}
+            <div
+              onClick={() => navigateToTour(destination.country)}
               key={destination.id}
               className="rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
             >
@@ -103,10 +112,11 @@ export default function PopularDestinations() {
                   <ChevronRight className="h-6 w-6 text-gray-400" />
                 </div>
                 <p className="text-muted-foreground mt-2">
-                  {destination.tours} Viajes, {destination.activities} Actividades
+                  {destination.tours} Viajes, {destination.activities}{" "}
+                  Actividades
                 </p>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       </div>

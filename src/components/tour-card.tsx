@@ -1,14 +1,14 @@
 "use client";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, MapPin, Star } from "lucide-react";
+import { ChevronLeft, ChevronRight, Heart, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import Link from "next/link";
 import { IProduct } from "@/types/product";
 import Rating from "./rating";
 import { Badge } from "./ui/badge";
-import { isTourProduct } from "@/utils";
+import { isTourProduct, normalizeCountryForUrl } from "@/utils";
+import { useRouter } from "next/navigation";
 
 export function TourCard(product: IProduct) {
   const {
@@ -25,8 +25,9 @@ export function TourCard(product: IProduct) {
   } = product;
 
   const duration = isTourProduct(product) ? product.tour.duration : null;
-
+  const [favorites, setFavorites] = useState<string[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const router = useRouter();
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -36,6 +37,20 @@ export function TourCard(product: IProduct) {
   const prevImage = (e: React.MouseEvent) => {
     e.stopPropagation();
     setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  };
+
+  const toggleFavorite = (id: string) => {
+    if (favorites.includes(id)) {
+      setFavorites(favorites.filter((item) => item !== id));
+    } else {
+      setFavorites([...favorites, id]);
+    }
+  };
+
+  const navigateToTour = (tourId: string, tourCountry: string) => {
+    // Normalize the country name for the URL
+    const normalizedCountry = normalizeCountryForUrl(tourCountry);
+    router.push(`/home/tours/${normalizedCountry}/${tourId}`);
   };
 
   return (
@@ -55,7 +70,7 @@ export function TourCard(product: IProduct) {
               }`}
             >
               <Image
-                src={image || "/placeholder.svg"}
+                src={image || "/tour.jpg"}
                 alt={`${name} - Image ${index + 1}`}
                 fill
                 className="object-cover"
@@ -99,16 +114,21 @@ export function TourCard(product: IProduct) {
           {product_category.name}
         </Badge>
         <Button
-          size="icon"
           variant="ghost"
-          className="absolute top-2 right-2 rounded-full bg-white/90 dark:bg-black hover:text-rose-500 transition-colors z-10"
-          onClick={(e) => e.stopPropagation()}
+          size="icon"
+          className="absolute top-2 right-2 bg-background/80 hover:bg-background/90 rounded-full h-8 w-8"
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleFavorite(id);
+          }}
         >
-          <Star className="w-4 h-4" />
+          <Heart
+            className={`h-4 w-4 ${favorites.includes(id) ? "fill-primary text-primary" : "text-muted-foreground"}`}
+          />
         </Button>
       </div>
 
-      <Link href={`/home/tours/${id}`} className="block">
+      <div className="block">
         <CardContent className="pt-3">
           <Rating
             averageRating={average_rating}
@@ -140,9 +160,14 @@ export function TourCard(product: IProduct) {
         </CardContent>
         <CardFooter className="flex items-center justify-between">
           <div className="font-semibold">${price}</div>
-          <Button className="rounded-full">Reservar</Button>
+          <Button
+            className="rounded-full"
+            onClick={() => navigateToTour(id, country)}
+          >
+            Ver detalles
+          </Button>
         </CardFooter>
-      </Link>
+      </div>
     </Card>
   );
 }
