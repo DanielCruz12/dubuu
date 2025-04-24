@@ -3,6 +3,8 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ActionCell } from "../(components)/action-cell";
 
 // Define el tipo para los datos de tour
 export type Tour = {
@@ -14,11 +16,11 @@ export type Tour = {
   address: string;
   country: string;
   is_active?: boolean;
-  max_people?: number;
+  current_date?: string; // Fecha actual seleccionada
   dates?: {
     id: string;
     date: string;
-    available_spots: number;
+    available_spots: number | string;
   }[];
 };
 
@@ -65,10 +67,18 @@ export const toursColumns: ColumnDef<Tour>[] = [
     },
   },
   {
+    accessorKey: "current_date",
+    header: "Fecha del Tour",
+    cell: ({ row }) => {
+      const date = row.getValue("current_date") as string;
+      return <div>{date || "No disponible"}</div>;
+    },
+  },
+  {
     accessorKey: "departure_point",
     header: "Punto de Salida",
     cell: ({ row }) => {
-      return <div>{row.getValue("departure_point")}</div>;
+      return <div>{row.getValue("departure_point") || "No especificado"}</div>;
     },
   },
   {
@@ -89,74 +99,43 @@ export const toursColumns: ColumnDef<Tour>[] = [
       return <div className="text-center">{maxPeople}</div>;
     },
   },
-  /* {
+  {
+    accessorKey: "available_spots",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Plazas Disponibles
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const availableSpots = (row.getValue("available_spots") as number) || 0;
+      return <div className="text-center">{availableSpots}</div>;
+    },
+  },
+  {
     accessorKey: "is_active",
     header: "Estado",
     cell: ({ row }) => {
       const isActive = row.getValue("is_active") as boolean;
-
-      // Esta función simula la actualización del estado
-      const handleToggle = (checked: boolean) => {
-        console.log(
-          `Cambiando estado del tour ${row.original.id} a ${checked ? "activo" : "inactivo"}`
-        );
-        // Aquí iría la lógica para actualizar el estado en la base de datos
-      };
-
       return (
         <div className="flex items-center gap-2">
-          <Switch
-            checked={isActive}
-            onCheckedChange={handleToggle}
-            aria-label="Toggle tour status"
-          />
           <Badge variant={isActive ? "default" : "outline"}>
             {isActive ? "Activo" : "Inactivo"}
           </Badge>
         </div>
       );
     },
-  }, */
-  /*  {
+  },
+  {
     id: "actions",
     cell: ({ row }) => {
-      const tour = row.original;
-      const [showEditModal, setShowEditModal] = useState(false);
-
-      return (
-        <>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Abrir menú</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(tour.id)}
-              >
-                Copiar ID
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setShowEditModal(true)}>
-                Editar
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <EditTourModal
-            tour={tour}
-            open={showEditModal}
-            onOpenChange={setShowEditModal}
-            onSave={(updatedTour) => {
-              console.log("Tour actualizado:", updatedTour);
-              // Aquí iría la lógica para guardar los cambios
-              setShowEditModal(false);
-            }}
-          />
-        </>
-      );
+      // Usamos el componente ActionCell en lugar de definir la lógica aquí
+      return <ActionCell tour={row.original} />;
     },
-  }, */
+  },
 ];

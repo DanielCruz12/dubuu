@@ -1,3 +1,4 @@
+import { RootState } from "@/redux/store";
 import { IUser } from "@/types/user";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
@@ -5,6 +6,13 @@ export const usersApiSlice = createApi({
   reducerPath: "users",
   baseQuery: fetchBaseQuery({
     baseUrl: "/backend",
+    prepareHeaders: (headers, { getState }) => {
+      const token = (getState() as RootState).auth.token;
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+      return headers;
+    },
   }),
   tagTypes: ["Users"],
   endpoints: (builder) => ({

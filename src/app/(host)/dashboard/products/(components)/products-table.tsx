@@ -1,13 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DownloadIcon, PlusCircle, SearchIcon } from "lucide-react";
-import { mockTours, mockTourDates } from "@/utils/mock-data";
 import { type Tour, toursColumns } from "../(columns)/columns";
 import {
   Select,
@@ -18,76 +16,108 @@ import {
 } from "@/components/ui/select";
 import { exportToExcel } from "@/lib/excelFn";
 import { DataTable } from "@/components/data-table/datatable";
+import { useUser } from "@clerk/nextjs";
+import { useGetProductsByUserIdQuery } from "@/redux/slices/product/product-slice";
+import { isProductType } from "@/utils";
+import type { IProduct, ITourProduct } from "@/types/product";
+import { ActionCell } from "./action-cell";
 
 export function ProductsDataTable() {
-  // Preparar los datos de tours con campos adicionales
-  const [tours, setTours] = useState<Tour[]>(() => {
-    return mockTours.map((tour) => ({
-      ...tour,
-      is_active: Math.random() > 0.2, // Simular que algunos tours están inactivos
-      max_people: Math.floor(Math.random() * 20) + 10, // Simular capacidad entre 10-30 personas
-      dates: mockTourDates.filter((date) => date.product_id === tour.id),
-    }));
+  const { user } = useUser();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedTourId, setSelectedTourId] = useState("all");
+  const [selectedDateId, setSelectedDateId] = useState("");
+  const [filteredTours, setFilteredTours] = useState<Tour[]>([]);
+  const [availableTours, setAvailableTours] = useState<ITourProduct[]>([]);
+
+  const { data, isLoading } = useGetProductsByUserIdQuery(user?.id as string, {
+    skip: !user?.id,
   });
 
-  const [filteredTours, setFilteredTours] = useState<Tour[]>(tours);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedTourId, setSelectedTourId] = useState("");
-  const [selectedDateId, setSelectedDateId] = useState("");
+  const handleUpdateTour = useCallback((updatedTour: Partial<Tour>) => {
+    console.log("Actualizando tour en la tabla:", updatedTour);
+    // Aquí podrías llamar a una mutación para actualizar el tour en el backend
+    // Y luego actualizar el estado local o refrescar los datos
+  }, []);
 
-  // Obtener fechas disponibles para el tour seleccionado
-  const [availableDates, setAvailableDates] = useState<any[]>([]);
+  // Función para convertir un ITourProduct a Tour
+  const mapTourProductToTour = (product: ITourProduct): Tour => ({
+    id: product.id,
+    name: product.name,
+    description: product.description,
+    price: product.price,
+    country: product.country,
+    is_active: product.is_approved,
+    address: product.address || "",
+    departure_point: product.tour?.departure_point || "",
+    dates:
+      product.tour.tour_dates?.map((date: any) => ({
+        id: date.id,
+        available_spots: date.available_spots,
+        date: new Date(date.date).toLocaleDateString(),
+      })) || [],
+  });
 
-  // Actualizar fechas disponibles cuando cambia el tour seleccionado
+  // Procesar los datos cuando se reciben
   useEffect(() => {
-    if (selectedTourId && selectedTourId !== "all") {
-      const dates = mockTourDates.filter(
-        (date) => date.product_id === selectedTourId
-      );
-      setAvailableDates(
-        dates.map((date) => ({
-          id: date.id,
-          date: new Date(date.date).toLocaleDateString(),
-        }))
-      );
+    if (!data) return;
 
-      // Limpiar la fecha seleccionada
-      setSelectedDateId("");
-    } else {
-      setAvailableDates([]);
-      setSelectedDateId("");
-    }
-  }, [selectedTourId]);
+    // Filtrar solo los productos de tipo "tours" usando isProductType
+    const tourProducts: ITourProduct[] = [];
 
-  // Filtrar tours basados en búsqueda, tour y fecha seleccionada
+    // Iterar sobre cada producto y verificar si es un tour
+    data.forEach((product: IProduct) => {
+      if (isProductType(product, "tours")) {
+        // Ahora TypeScript sabe que product es un ITourProduct
+        tourProducts.push(product);
+      }
+    });
+
+    setAvailableTours(tourProducts);
+
+    // Convertir al formato esperado por la tabla usando nuestra función de mapeo
+    const formattedTours = tourProducts.map(mapTourProductToTour);
+
+    setFilteredTours(formattedTours);
+  }, [data]);
+
+  // Filtrar tours según búsqueda
   useEffect(() => {
-    let filtered = [...tours];
+    if (!availableTours.length) return;
 
-    // Filtrar por término de búsqueda
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (tour) =>
-          tour.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          tour.description.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Filtrar por tour seleccionado
-    if (selectedTourId && selectedTourId !== "all") {
-      filtered = filtered.filter((tour) => tour.id === selectedTourId);
-    }
-
-    // Filtrar por fecha seleccionada
-    if (selectedDateId) {
-      const tourIds = mockTourDates
-        .filter((date) => date.id === selectedDateId)
-        .map((date) => date.product_id);
-
-      filtered = filtered.filter((tour) => tourIds.includes(tour.id));
-    }
+    const filtered = availableTours
+      .filter(
+        (product) =>
+          product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          product.description.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+      .map(mapTourProductToTour);
 
     setFilteredTours(filtered);
-  }, [searchTerm, selectedTourId, selectedDateId, tours]);
+  }, [searchTerm, availableTours]);
+
+  // Filtrar por tour específico
+  useEffect(() => {
+    if (selectedTourId === "all" || !availableTours.length) {
+      // Si se selecciona "todos", aplicar solo el filtro de búsqueda
+      const filtered = availableTours
+        .filter(
+          (product) =>
+            product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            product.description.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .map(mapTourProductToTour);
+
+      setFilteredTours(filtered);
+    } else {
+      // Filtrar por ID de tour específico
+      const filtered = availableTours
+        .filter((product) => product.id === selectedTourId)
+        .map(mapTourProductToTour);
+
+      setFilteredTours(filtered);
+    }
+  }, [selectedTourId, availableTours, searchTerm]);
 
   // Exportar a Excel
   const handleExport = () => {
@@ -96,16 +126,39 @@ export function ProductsDataTable() {
       Nombre: tour.name,
       Descripción: tour.description,
       Precio: tour.price,
-      "Punto de Salida": tour.departure_point,
-      Dirección: tour.address,
       País: tour.country,
+      Dirección: tour.address,
+      "Punto de Partida": tour.departure_point,
+      "Máximo de Personas": tour.dates?.[0]?.available_spots,
       Estado: tour.is_active ? "Activo" : "Inactivo",
-      "Capacidad Máxima": tour.max_people || 0,
-      "Fechas Disponibles": tour.dates?.length || 0,
     }));
 
     exportToExcel(dataToExport, "Tours");
   };
+
+  if (isLoading || !user) {
+    return <div>Loading...</div>;
+  }
+
+  // Obtener fechas disponibles para el tour seleccionado
+  const selectedTour =
+    selectedTourId !== "all"
+      ? availableTours.find((tour) => tour.id === selectedTourId)
+      : null;
+
+  // CORRECCIÓN: Accedemos a tour_dates directamente desde el tour seleccionado
+  const availableDates = selectedTour?.tour.tour_dates || [];
+
+  const columnsWithActions = [...toursColumns];
+  // Reemplazamos la última columna (acciones) con nuestra versión personalizada
+  if (columnsWithActions[columnsWithActions.length - 1].id === "actions") {
+    columnsWithActions[columnsWithActions.length - 1] = {
+      id: "actions",
+      cell: ({ row }) => (
+        <ActionCell tour={row.original} onUpdate={handleUpdateTour} />
+      ),
+    };
+  }
 
   return (
     <div className="space-y-4">
@@ -133,7 +186,7 @@ export function ProductsDataTable() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos los tours</SelectItem>
-                  {tours.map((tour) => (
+                  {availableTours.map((tour) => (
                     <SelectItem key={tour.id} value={tour.id}>
                       {tour.name}
                     </SelectItem>
@@ -156,7 +209,7 @@ export function ProductsDataTable() {
                   {availableDates.length > 0 ? (
                     availableDates.map((date) => (
                       <SelectItem key={date.id} value={date.id}>
-                        {date.date}
+                        {new Date(date.date).toLocaleDateString()}
                       </SelectItem>
                     ))
                   ) : (
