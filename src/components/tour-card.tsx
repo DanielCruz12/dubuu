@@ -7,7 +7,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { IProduct } from "@/types/product";
 import Rating from "./rating";
 import { Badge } from "./ui/badge";
-import { isTourProduct, normalizeCountryForUrl } from "@/utils";
+import { normalizeCountryForUrl } from "@/utils";
 import { useRouter } from "next/navigation";
 
 export function TourCard(product: IProduct) {
@@ -24,7 +24,6 @@ export function TourCard(product: IProduct) {
     product_category,
   } = product;
 
-  const duration = isTourProduct(product) ? product.tour.duration : null;
   const [favorites, setFavorites] = useState<string[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const router = useRouter();
@@ -149,13 +148,8 @@ export function TourCard(product: IProduct) {
               {country} /
             </div>
             <span className="text-sm text-muted-foreground">
-              {target_audience?.name} /
+              {target_audience?.name}
             </span>
-            {duration && (
-              <span className="text-sm text-muted-foreground">
-                {duration} {duration > 1 ? "días" : "día"}
-              </span>
-            )}
           </div>
         </CardContent>
         <CardFooter className="flex items-center justify-between">

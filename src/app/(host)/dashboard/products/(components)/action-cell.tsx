@@ -26,10 +26,8 @@ export function ActionCell({
 }: ActionCellProps) {
   const [showEditModal, setShowEditModal] = useState(false);
 
-  // Función para manejar la actualización del tour
   const handleSaveTour = (updatedTour: Partial<Tour>) => {
     console.log("Tour actualizado:", updatedTour);
-    // Llamar al callback de actualización si existe
     if (onUpdate) {
       onUpdate(updatedTour);
     }
@@ -40,7 +38,7 @@ export function ActionCell({
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0">
+          <Button variant="secondary" className="h-8 w-8 p-0">
             <span className="sr-only">Abrir menú</span>
             <MoreHorizontal className="h-4 w-4" />
           </Button>

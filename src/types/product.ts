@@ -1,24 +1,34 @@
 import { IRentalProduct } from "./rental";
 
+export interface IProductTypes {
+  id: string;
+  name: string;
+  description: string;
+}
+
 export interface IProductBase<T extends string = string> {
   id: string;
   name: string;
+  user_id: string;
   description: string;
   price: number;
   address: string;
   country: string;
+  is_approved?: boolean;
+  is_active?: boolean;
   images: string[];
   videos: string[];
   files: string[];
   banner: string;
-  product_category: { name: string };
-  target_audience?: { name: string };
-  average_rating: number;
-  amenities: { name: string }[];
+  average_rating: number | string;
   total_reviews: number;
-  user_id: string;
-  is_approved?: boolean;
+  product_category: { id: string; name: string };
+  target_audience?: { id: string; name: string };
+  amenities?: { id: string; name: string }[];
+  user?: { id: string; username: string; email: string }[];
   product_type: { name: T };
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ITourProductDates {
@@ -26,7 +36,6 @@ export interface ITourProductDates {
   date: string;
   max_people: number;
   people_booked: number;
-  available_spots?: number;
 }
 
 export interface ITourProduct extends IProductBase<"tours"> {
@@ -43,9 +52,3 @@ export interface ITourProduct extends IProductBase<"tours"> {
 }
 
 export type IProduct = ITourProduct | IRentalProduct;
-
-export interface IProductTypes {
-  id: string;
-  name: string;
-  description: string;
-}
