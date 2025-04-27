@@ -1,12 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { DownloadIcon, PlusCircle, SearchIcon } from "lucide-react";
-import { type Tour, toursColumns } from "../(columns)/columns";
+import { toursColumns } from "../(columns)/columns";
 import {
   Select,
   SelectContent,
@@ -20,43 +18,69 @@ import { useUser } from "@clerk/nextjs";
 import { useGetProductsByUserIdQuery } from "@/redux/slices/product/product-slice";
 import { isProductType } from "@/utils";
 import type { IProduct, ITourProduct } from "@/types/product";
-import { ActionCell } from "./action-cell";
+import { format } from "date-fns";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Check } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function ProductsDataTable() {
   const { user } = useUser();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedTourId, setSelectedTourId] = useState("all");
-  const [selectedDateId, setSelectedDateId] = useState("");
-  const [filteredTours, setFilteredTours] = useState<Tour[]>([]);
+  const [selectedTourId, setSelectedTourId] = useState<string>("");
+  const [selectedDateId, setSelectedDateId] = useState<string>("");
+  const [filteredTours, setFilteredTours] = useState<
+    (ITourProduct & { selectedDateId?: string })[]
+  >([]);
   const [availableTours, setAvailableTours] = useState<ITourProduct[]>([]);
+  const [openTourSelect, setOpenTourSelect] = useState(false);
 
   const { data, isLoading } = useGetProductsByUserIdQuery(user?.id as string, {
     skip: !user?.id,
   });
 
-  const handleUpdateTour = useCallback((updatedTour: Partial<Tour>) => {
-    console.log("Actualizando tour en la tabla:", updatedTour);
+  // Obtener fechas disponibles para el tour seleccionado
+  const availableDates = useMemo(() => {
+    if (!selectedTourId) return [];
+    const selectedTour = availableTours.find(
+      (tour) => tour.id === selectedTourId
+    );
+    return selectedTour?.tour.tour_dates || [];
+  }, [selectedTourId, availableTours]);
+
+  // Manejar el cambio de producto seleccionado
+  const handleTourChange = useCallback(
+    (tourId: string) => {
+      setSelectedTourId(tourId);
+
+      // Encontrar el tour seleccionado
+      const selectedTour = availableTours.find((tour) => tour.id === tourId);
+
+      // Establecer la primera fecha como predeterminada si está disponible
+      if (selectedTour && selectedTour.tour.tour_dates.length > 0) {
+        setSelectedDateId(selectedTour.tour.tour_dates[0].id);
+      } else {
+        setSelectedDateId("");
+      }
+    },
+    [availableTours]
+  );
+
+  /*   const handleUpdateTour = useCallback((updatedTour: Partial<ITourProduct>) => {
+    console.log("Actualizando tour en la tabla:", updatedTour)
     // Aquí podrías llamar a una mutación para actualizar el tour en el backend
     // Y luego actualizar el estado local o refrescar los datos
-  }, []);
-
-  // Función para convertir un ITourProduct a Tour
-  const mapTourProductToTour = (product: ITourProduct): Tour => ({
-    id: product.id,
-    name: product.name,
-    description: product.description,
-    price: product.price,
-    country: product.country,
-    is_active: product.is_approved,
-    address: product.address || "",
-    departure_point: product.tour?.departure_point || "",
-    dates:
-      product.tour.tour_dates?.map((date: any) => ({
-        id: date.id,
-        available_spots: date.available_spots,
-        date: new Date(date.date).toLocaleDateString(),
-      })) || [],
-  });
+  }, []) */
 
   // Procesar los datos cuando se reciben
   useEffect(() => {
@@ -68,70 +92,82 @@ export function ProductsDataTable() {
     // Iterar sobre cada producto y verificar si es un tour
     data.forEach((product: IProduct) => {
       if (isProductType(product, "tours")) {
-        // Ahora TypeScript sabe que product es un ITourProduct
+        // TypeScript sabe que product es un ITourProduct
         tourProducts.push(product);
       }
     });
 
     setAvailableTours(tourProducts);
 
-    // Convertir al formato esperado por la tabla usando nuestra función de mapeo
-    const formattedTours = tourProducts.map(mapTourProductToTour);
+    // Seleccionar automáticamente el primer tour y su primera fecha
+    if (tourProducts.length > 0) {
+      const firstTour = tourProducts[0];
+      setSelectedTourId(firstTour.id);
 
-    setFilteredTours(formattedTours);
+      if (firstTour.tour.tour_dates.length > 0) {
+        setSelectedDateId(firstTour.tour.tour_dates[0].id);
+      }
+    }
   }, [data]);
 
-  // Filtrar tours según búsqueda
+  // Actualizar los tours filtrados cuando cambian los criterios de filtrado
   useEffect(() => {
     if (!availableTours.length) return;
 
-    const filtered = availableTours
-      .filter(
-        (product) =>
-          product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.description.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-      .map(mapTourProductToTour);
+    let filtered = availableTours;
 
-    setFilteredTours(filtered);
-  }, [searchTerm, availableTours]);
-
-  // Filtrar por tour específico
-  useEffect(() => {
-    if (selectedTourId === "all" || !availableTours.length) {
-      // Si se selecciona "todos", aplicar solo el filtro de búsqueda
-      const filtered = availableTours
-        .filter(
-          (product) =>
-            product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            product.description.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-        .map(mapTourProductToTour);
-
-      setFilteredTours(filtered);
-    } else {
-      // Filtrar por ID de tour específico
-      const filtered = availableTours
-        .filter((product) => product.id === selectedTourId)
-        .map(mapTourProductToTour);
-
-      setFilteredTours(filtered);
+    // Si hay un tour seleccionado, filtrar solo ese tour
+    if (selectedTourId) {
+      filtered = filtered.filter((product) => product.id === selectedTourId);
     }
-  }, [selectedTourId, availableTours, searchTerm]);
+
+    // Añadir el selectedDateId a cada tour para que las columnas puedan acceder a él
+    const toursWithSelectedDate = filtered.map((tour) => {
+      // Verificar que el selectedDateId pertenezca a este tour
+      const dateExists = tour.tour.tour_dates.some(
+        (date) => date.id === selectedDateId
+      );
+
+      return {
+        ...tour,
+        selectedDateId: dateExists
+          ? selectedDateId
+          : tour.tour.tour_dates.length > 0
+            ? tour.tour.tour_dates[0].id
+            : undefined,
+      };
+    });
+
+    setFilteredTours(toursWithSelectedDate);
+  }, [selectedTourId, selectedDateId, availableTours]);
 
   // Exportar a Excel
   const handleExport = () => {
-    const dataToExport = filteredTours.map((tour) => ({
-      ID: tour.id,
-      Nombre: tour.name,
-      Descripción: tour.description,
-      Precio: tour.price,
-      País: tour.country,
-      Dirección: tour.address,
-      "Punto de Partida": tour.departure_point,
-      "Máximo de Personas": tour.dates?.[0]?.available_spots,
-      Estado: tour.is_active ? "Activo" : "Inactivo",
-    }));
+    const dataToExport = filteredTours.map((tour) => {
+      // Encontrar la fecha seleccionada
+      const selectedDate = tour.tour.tour_dates.find(
+        (date) => date.id === tour.selectedDateId
+      );
+
+      return {
+        ID: tour.id,
+        Nombre: tour.name,
+        Descripción: tour.description,
+        Precio: tour.price,
+        País: tour.country,
+        Dirección: tour.address,
+        "Punto de Partida": tour.tour.departure_point,
+        Fecha: selectedDate
+          ? format(new Date(selectedDate.date), "dd/MM/yyyy HH:mm")
+          : "",
+        "Máximo de Personas": selectedDate?.max_people || "",
+        "Personas Reservadas": selectedDate?.people_booked || "",
+        "Plazas Disponibles": selectedDate
+          ? selectedDate.max_people - selectedDate.people_booked
+          : "",
+        Estado: tour.is_active ? "Activo" : "Inactivo",
+      };
+    });
 
     exportToExcel(dataToExport, "Tours");
   };
@@ -140,87 +176,94 @@ export function ProductsDataTable() {
     return <div>Loading...</div>;
   }
 
-  // Obtener fechas disponibles para el tour seleccionado
-  const selectedTour =
-    selectedTourId !== "all"
-      ? availableTours.find((tour) => tour.id === selectedTourId)
-      : null;
-
-  // CORRECCIÓN: Accedemos a tour_dates directamente desde el tour seleccionado
-  const availableDates = selectedTour?.tour.tour_dates || [];
-
-  const columnsWithActions = [...toursColumns];
-  // Reemplazamos la última columna (acciones) con nuestra versión personalizada
-  if (columnsWithActions[columnsWithActions.length - 1].id === "actions") {
-    columnsWithActions[columnsWithActions.length - 1] = {
-      id: "actions",
-      cell: ({ row }) => (
-        <ActionCell tour={row.original} onUpdate={handleUpdateTour} />
-      ),
-    };
-  }
-
   return (
     <div className="space-y-4">
       <Card>
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row gap-4 items-end mb-6">
             <div className="w-full md:w-1/3">
-              <label className="text-sm font-medium mb-1 block">Buscar</label>
-              <div className="relative">
-                <SearchIcon className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Buscar por nombre o descripción..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-8"
-                />
-              </div>
+              <label className="text-sm font-medium mb-1 block">Producto</label>
+              <Popover open={openTourSelect} onOpenChange={setOpenTourSelect}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={openTourSelect}
+                    className="w-full justify-between"
+                  >
+                    {selectedTourId
+                      ? availableTours.find(
+                          (tour) => tour.id === selectedTourId
+                        )?.name
+                      : "Seleccionar producto..."}
+                    <SearchIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Buscar producto..." />
+                    <CommandList>
+                      <CommandEmpty>No se encontraron productos.</CommandEmpty>
+                      <CommandGroup className="max-h-64 overflow-y-auto">
+                        {availableTours.map((tour) => (
+                          <CommandItem
+                            key={tour.id}
+                            value={tour.id}
+                            onSelect={() => {
+                              handleTourChange(tour.id);
+                              setOpenTourSelect(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                selectedTourId === tour.id
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                            {tour.name}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
 
-            <div className="w-full md:w-1/4">
-              <label className="text-sm font-medium mb-1 block">Tour</label>
-              <Select value={selectedTourId} onValueChange={setSelectedTourId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Todos los tours" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos los tours</SelectItem>
-                  {availableTours.map((tour) => (
-                    <SelectItem key={tour.id} value={tour.id}>
-                      {tour.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="w-full md:w-1/4">
-              <label className="text-sm font-medium mb-1 block">Fecha</label>
-              <Select
-                value={selectedDateId}
-                onValueChange={setSelectedDateId}
-                disabled={!selectedTourId || selectedTourId === "all"}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar fecha" />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableDates.length > 0 ? (
-                    availableDates.map((date) => (
-                      <SelectItem key={date.id} value={date.id}>
-                        {new Date(date.date).toLocaleDateString()}
+            <div className="w-full md:w-1/3">
+              <label className="text-sm font-medium mb-1 block">
+                Fecha del producto
+              </label>
+              {!selectedTourId ? (
+                <div className="flex h-10 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm text-muted-foreground">
+                  Seleccione un producto primero
+                </div>
+              ) : (
+                <Select
+                  value={selectedDateId}
+                  onValueChange={setSelectedDateId}
+                  disabled={availableDates.length === 0}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar fecha" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableDates.length > 0 ? (
+                      availableDates.map((date) => (
+                        <SelectItem key={date.id} value={date.id}>
+                          {format(new Date(date.date), "dd/MM/yyyy HH:mm")}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="no-dates" disabled>
+                        No hay fechas disponibles
                       </SelectItem>
-                    ))
-                  ) : (
-                    <SelectItem value="no-dates" disabled>
-                      {selectedTourId && selectedTourId !== "all"
-                        ? "No hay fechas disponibles"
-                        : "Seleccione un tour primero"}
-                    </SelectItem>
-                  )}
-                </SelectContent>
-              </Select>
+                    )}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
 
             <div className="flex gap-2 ml-auto">

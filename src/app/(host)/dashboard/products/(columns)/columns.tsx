@@ -5,27 +5,12 @@ import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ActionCell } from "../(components)/action-cell";
-
-// Define el tipo para los datos de tour
-export type Tour = {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  departure_point: string;
-  address: string;
-  country: string;
-  is_active?: boolean;
-  current_date?: string; // Fecha actual seleccionada
-  dates?: {
-    id: string;
-    date: string;
-    available_spots: number | string;
-  }[];
-};
+import type { ITourProduct } from "@/types/product";
 
 // Define las columnas para la tabla de tours
-export const toursColumns: ColumnDef<Tour>[] = [
+export const toursColumns: ColumnDef<
+  ITourProduct & { selectedDateId?: string }
+>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => {
@@ -67,22 +52,47 @@ export const toursColumns: ColumnDef<Tour>[] = [
     },
   },
   {
-    accessorKey: "current_date",
-    header: "Fecha del Tour",
+    id: "current_date",
+    header: "Fecha",
     cell: ({ row }) => {
-      const date = row.getValue("current_date") as string;
-      return <div>{date || "No disponible"}</div>;
+      const tour = row.original;
+      const selectedDateId = tour.selectedDateId;
+
+      if (!selectedDateId || !tour.tour.tour_dates) {
+        return <div>No disponible</div>;
+      }
+
+      const selectedDate = tour.tour.tour_dates.find(
+        (date) => date.id === selectedDateId
+      );
+
+      if (!selectedDate) {
+        return <div>No disponible</div>;
+      }
+
+      return (
+        <div>
+          {new Date(selectedDate.date).toLocaleDateString("es-SV", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </div>
+      );
     },
   },
   {
-    accessorKey: "departure_point",
+    id: "departure_point",
     header: "Punto de Salida",
     cell: ({ row }) => {
-      return <div>{row.getValue("departure_point") || "No especificado"}</div>;
+      const tour = row.original;
+      return <div>{tour.tour.departure_point || "No especificado"}</div>;
     },
   },
   {
-    accessorKey: "max_people",
+    id: "max_people",
     header: ({ column }) => {
       return (
         <Button
@@ -95,25 +105,77 @@ export const toursColumns: ColumnDef<Tour>[] = [
       );
     },
     cell: ({ row }) => {
-      const maxPeople = (row.getValue("max_people") as number) || 0;
-      return <div className="text-center">{maxPeople}</div>;
+      const tour = row.original;
+      const selectedDateId = tour.selectedDateId;
+
+      if (!selectedDateId || !tour.tour.tour_dates) {
+        return <div className="text-center">0</div>;
+      }
+
+      const selectedDate = tour.tour.tour_dates.find(
+        (date) => date.id === selectedDateId
+      );
+
+      if (!selectedDate) {
+        return <div className="text-center">0</div>;
+      }
+
+      return <div className="text-center">{selectedDate.max_people}</div>;
     },
   },
   {
-    accessorKey: "available_spots",
+    id: "people_booked",
+    header: "Reservas",
+    cell: ({ row }) => {
+      const tour = row.original;
+      const selectedDateId = tour.selectedDateId;
+
+      if (!selectedDateId || !tour.tour.tour_dates) {
+        return <div className="text-center">0</div>;
+      }
+
+      const selectedDate = tour.tour.tour_dates.find(
+        (date) => date.id === selectedDateId
+      );
+
+      if (!selectedDate) {
+        return <div className="text-center">0</div>;
+      }
+
+      return <div className="text-center">{selectedDate.people_booked}</div>;
+    },
+  },
+  {
+    id: "available_spots",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Plazas Disponibles
+          Plazas Disp.
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
     cell: ({ row }) => {
-      const availableSpots = (row.getValue("available_spots") as number) || 0;
+      const tour = row.original;
+      const selectedDateId = tour.selectedDateId;
+
+      if (!selectedDateId || !tour.tour.tour_dates) {
+        return <div className="text-center">0</div>;
+      }
+
+      const selectedDate = tour.tour.tour_dates.find(
+        (date) => date.id === selectedDateId
+      );
+
+      if (!selectedDate) {
+        return <div className="text-center">0</div>;
+      }
+
+      const availableSpots =
+        selectedDate.max_people - selectedDate.people_booked;
       return <div className="text-center">{availableSpots}</div>;
     },
   },
@@ -135,7 +197,12 @@ export const toursColumns: ColumnDef<Tour>[] = [
     id: "actions",
     cell: ({ row }) => {
       // Usamos el componente ActionCell en lugar de definir la lógica aquí
-      return <ActionCell tour={row.original} />;
+      return (
+        <ActionCell
+          tour={row.original}
+          selectedDateId={row.original.selectedDateId}
+        />
+      );
     },
   },
 ];

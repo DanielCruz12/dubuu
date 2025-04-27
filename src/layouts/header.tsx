@@ -359,19 +359,19 @@ export const adminDashboardItems: NavItem[] = [
 // Host-only dashboard items
 export const hostDashboardItems: NavItem[] = [
   {
-    title: "Mis Reservas",
+    title: "Reservas",
     href: "/dashboard/bookings",
     icon: <CalendarDays className="h-4 w-4 mr-2" />,
-  },
-  {
-    title: "Pagos",
-    href: "/dashboard/payments",
-    icon: <CreditCard className="h-4 w-4 mr-2" />,
   },
   {
     title: "Productos",
     href: "/dashboard/products",
     icon: <List className="h-4 w-4 mr-2" />,
+  },
+  {
+    title: "Pagos",
+    href: "/dashboard/payments",
+    icon: <CreditCard className="h-4 w-4 mr-2" />,
   },
 ];
 

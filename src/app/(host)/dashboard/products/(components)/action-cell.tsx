@@ -10,12 +10,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Tour } from "../(columns)/columns";
 import { EditProductModal } from "./edit-product-modal";
+import type { ITourProduct } from "@/types/product";
+import { toast } from "sonner";
 
 interface ActionCellProps {
-  tour: Tour;
-  onUpdate?: (updatedTour: Partial<Tour>) => void;
+  tour: ITourProduct & { selectedDateId?: string };
+  onUpdate?: (updatedTour: Partial<ITourProduct>) => void;
   selectedDateId?: string;
 }
 
@@ -26,7 +27,15 @@ export function ActionCell({
 }: ActionCellProps) {
   const [showEditModal, setShowEditModal] = useState(false);
 
-  const handleSaveTour = (updatedTour: Partial<Tour>) => {
+  // Usar el selectedDateId del tour si no se proporciona explícitamente
+  const dateId = selectedDateId || tour.selectedDateId;
+
+  // Encontrar la fecha seleccionada para mostrar información relevante
+  const selectedDate = dateId
+    ? tour.tour.tour_dates.find((date) => date.id === dateId)
+    : undefined;
+
+  const handleSaveTour = (updatedTour: Partial<ITourProduct>) => {
     console.log("Tour actualizado:", updatedTour);
     if (onUpdate) {
       onUpdate(updatedTour);
@@ -46,13 +55,28 @@ export function ActionCell({
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Acciones</DropdownMenuLabel>
           <DropdownMenuItem
-            onClick={() => navigator.clipboard.writeText(tour.id)}
+            onClick={() => {
+              navigator.clipboard.writeText(tour.id);
+              toast.success("ID copiado al portapapeles");
+            }}
           >
             Copiar ID
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setShowEditModal(true)}>
             Editar
           </DropdownMenuItem>
+          {selectedDate && (
+            <DropdownMenuItem
+              onClick={() => {
+                navigator.clipboard.writeText(
+                  `Fecha: ${new Date(selectedDate.date).toLocaleDateString()}, Max: ${selectedDate.max_people}`
+                );
+                toast.success("Información de fecha copiada al portapapeles");
+              }}
+            >
+              Copiar info de fecha
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -61,7 +85,7 @@ export function ActionCell({
         open={showEditModal}
         onOpenChange={setShowEditModal}
         onSave={handleSaveTour}
-        selectedDateId={selectedDateId}
+        selectedDateId={dateId}
       />
     </>
   );
