@@ -91,7 +91,7 @@ export default function RecentPosts() {
   ];
 
   return (
-    <div className="px-5 md:px-20">
+    <div className="px-5 md:px-20 pb-20">
       <div className="grid gap-8 lg:grid-cols-[1fr,380px]">
         <div>
           <div className="mb-8">

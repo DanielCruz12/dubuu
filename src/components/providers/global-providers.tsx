@@ -15,12 +15,7 @@ const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
   return (
     <StoreProvider>
       <AuthProvider>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+        <ThemeProvider attribute="class" defaultTheme="white">
           <div className="flex flex-col min-h-screen">
             <Header />
             <main className="flex-1">

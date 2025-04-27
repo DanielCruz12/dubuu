@@ -30,6 +30,7 @@ import clsx from "clsx";
 import type { Booking } from "@/types/booking";
 import { useGetReviewsQuery } from "@/redux/slices/product/review-slice";
 import { isProductType } from "@/utils";
+import UpTop from "@/components/up-top";
 
 export default function ProductBooking() {
   const { user } = useUser();
@@ -93,7 +94,8 @@ export default function ProductBooking() {
   const isTour = isProductType(product, "tours");
 
   return (
-    <div className="mx-auto px-3 md:px-0 py-3">
+    <div className="mx-auto md:px-0">
+      <UpTop />
       <section className="w-full mb-8">
         <div className="mb-6">
           <div className="flex flex-col md:flex-row items-start gap-2 text-sm">

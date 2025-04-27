@@ -9,5 +9,5 @@ export default function HomeLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <div className="px-5 md:px-20">{children}</div>;
+  return <div className="px-5 md:px-20 pb-10">{children}</div>;
 }

@@ -618,3 +618,112 @@ export const sampleTours: Tour[] = [
   },
 ]
 
+export const destinations = [
+  {
+    name: "Santorini",
+    description: "Villas exclusivas con vistas al mar Egeo",
+    price: "$4,200",
+    image:
+      "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?q=80&w=2072&auto=format&fit=crop",
+  },
+  {
+    name: "Maldivas",
+    description: "Bungalows privados sobre aguas cristalinas",
+    price: "$5,800",
+    image:
+      "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?q=80&w=2071&auto=format&fit=crop",
+  },
+  {
+    name: "Kioto",
+    description: "Experiencias culturales en ryokans tradicionales",
+    price: "$3,900",
+    image:
+      "https://images.unsplash.com/photo-1528360983277-13d401cdc186?q=80&w=2070&auto=format&fit=crop",
+  },
+];
+
+export const properties = [
+  {
+    title: "Villa Santorini",
+    location: "Grecia",
+    description:
+      "Villa de lujo con piscina infinita y vistas panorámicas al mar Egeo",
+    price: "$1,200/noche",
+    image:
+      "https://images.unsplash.com/photo-1515263487990-61b07816b324?q=80&w=2070&auto=format&fit=crop",
+  },
+  {
+    title: "Penthouse Manhattan",
+    location: "Nueva York",
+    description:
+      "Ático exclusivo con terraza privada y vistas al skyline de Manhattan",
+    price: "$2,500/noche",
+    image:
+      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=2070&auto=format&fit=crop",
+  },
+  {
+    title: "Villa Bali",
+    location: "Indonesia",
+    description:
+      "Villa tropical con piscina privada rodeada de arrozales y selva",
+    price: "$950/noche",
+    image:
+      "https://images.unsplash.com/photo-1582610116397-edb318620f90?q=80&w=2070&auto=format&fit=crop",
+  },
+];
+
+export const carRentals = [
+  {
+    model: "Porsche 911 Carrera",
+    description: "Deportivo icónico con rendimiento excepcional",
+    price: "$450/día",
+    image:
+      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2070&auto=format&fit=crop",
+  },
+  {
+    model: "Range Rover Autobiography",
+    description: "SUV de lujo con capacidades todoterreno y máximo confort",
+    price: "$380/día",
+    image:
+      "https://images.unsplash.com/photo-1550355291-bbee04a92027?q=80&w=2071&auto=format&fit=crop",
+  },
+  {
+    model: "Mercedes-Benz S-Class",
+    description:
+      "Sedán de lujo con tecnología de vanguardia y confort superior",
+    price: "$320/día",
+    image:
+      "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=2071&auto=format&fit=crop",
+  },
+];
+
+export const tours = [
+  {
+    title: "Toscana Exclusiva",
+    duration: "7 días",
+    description:
+      "Recorrido privado por viñedos, villas históricas y pueblos medievales",
+    price: "$9,800",
+    image:
+      "https://images.unsplash.com/photo-1568822617270-2c1579f8dfe2?q=80&w=2080&auto=format&fit=crop",
+  },
+  {
+    title: "Japón Imperial",
+    duration: "10 días",
+    description:
+      "Experiencia cultural con acceso VIP a templos, jardines privados y ceremonias tradicionales",
+    price: "$12,500",
+    image:
+      "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=2070&auto=format&fit=crop",
+  },
+  {
+    title: "Maravillas de Marruecos",
+    duration: "8 días",
+    description:
+      "Viaje sensorial por ciudades imperiales, desierto y montañas del Atlas",
+    price: "$8,900",
+    image:
+      "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=2070&auto=format&fit=crop",
+  },
+];
+

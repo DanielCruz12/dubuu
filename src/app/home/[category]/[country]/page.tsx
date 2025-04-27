@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { findCountryFromNormalizedName, getAvailableCountries } from "@/utils";
 import { sampleTours } from "@/utils/data";
 import ToursPage from "@/components/modules/tours";
+import UpTop from "@/components/up-top";
 
 // This handles /home/tours/japan or any other country
 export default function CountryPage({
@@ -30,5 +31,10 @@ export default function CountryPage({
     return notFound();
   }
 
-  return <ToursPage countryFilter={countryName} />;
+  return (
+    <>
+      <UpTop />
+      <ToursPage countryFilter={countryName} />
+    </>
+  );
 }

@@ -36,7 +36,7 @@ export default function HelpAndSupportPage() {
   ];
 
   return (
-    <div className="px-5 md:px-20 ">
+    <div className="px-5 md:px-20 h-screen">
       <h2 className="text-xl md:text-2xl font-semibold mb-4">
         Preguntas Frecuentes
       </h2>
