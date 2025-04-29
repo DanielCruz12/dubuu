@@ -39,7 +39,7 @@ export default function ReviewSection({ productId, existingBooking, reviews, isL
       <Separator className="dark:border-muted" />
       <ReviewList reviews={reviews} />
       <div>
-        <div className="flex items-center mb-2 px-3">
+        <div className="flex items-center mb-2 px-2">
           <h3 className="text-lg md:text-xl font-semibold">Deja una reseña</h3>
           <Popover>
             <PopoverTrigger className="px-2 ml-2 ">
@@ -54,14 +54,14 @@ export default function ReviewSection({ productId, existingBooking, reviews, isL
             </PopoverContent>
           </Popover>
         </div>
-        <p className="text-sm text-muted-foreground px-3">
+        <p className="text-sm text-muted-foreground px-2">
           Tu opinión es importante para nosotros y ayudan a otros viajeros a tomar decisiones informadas y mejoran
           nuestros servicios. Agradecemos tu tiempo y comentarios.
         </p>
 
         <ReusableDialog
           trigger={
-            <Button disabled={!hasBooking || alreadyHadAReview} variant="outline" className="text-sm mt-2 ml-2">
+            <Button disabled={!hasBooking || alreadyHadAReview} variant="outline" className="text-sm mt-2 ">
               {!hasBooking
                 ? "Necesitas una reserva para dejar una reseña"
                 : alreadyHadAReview

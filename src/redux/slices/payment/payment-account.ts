@@ -24,7 +24,26 @@ export const paymentAccountApiSlice = createApi({
       }),
       invalidatesTags: [{ type: "Payments", id: "LIST" }],
     }),
+    getPaymentAccountByUserId: builder.query({
+      query: (userId) => ({
+        url: `/api/v1/payments/user/${userId}`,
+        method: "GET",
+      }),
+      providesTags: [{ type: "Payments", id: "LIST" }],
+    }),
+    updatePaymentAccount: builder.mutation({
+      query: ({ userId, paymentId, body }) => ({
+        url: `/api/v1/payments/${userId}/${paymentId}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: [{ type: "Payments", id: "LIST" }],
+    }),
   }),
 });
 
-export const { useCreatePaymentAccountMutation } = paymentAccountApiSlice;
+export const {
+  useCreatePaymentAccountMutation,
+  useGetPaymentAccountByUserIdQuery,
+  useUpdatePaymentAccountMutation,
+} = paymentAccountApiSlice;

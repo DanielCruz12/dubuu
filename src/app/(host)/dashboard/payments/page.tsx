@@ -1,5 +1,5 @@
 import React from "react";
-import { PaymentForm } from "./(forms)/deposit-form";
+import { PaymentForm } from "./(forms)/payment-form";
 import { DashboardTitle } from "@/components/dashboard-title";
 
 const Payments = () => {

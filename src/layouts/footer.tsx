@@ -33,7 +33,7 @@ export default function Footer() {
   return (
     <footer className="border py-8">
       {/* Main Footer Content */}
-      <div className="px-4 md:px-20 mt-8">
+      <div className="px-6 md:px-20 mt-8">
         {/* Top Section with Logo and Tagline */}
         <div className="mb-12  text-left">
           <h2 className="text-2xl font-bold tracking-tight mb-3">DANTOUR</h2>
@@ -122,11 +122,11 @@ export default function Footer() {
           </div>
         </div>
 
-<Separator className=""/>
+        <Separator className="" />
 
         {/* Bottom Section */}
         <div className="mb-4 flex flex-col md:flex-row justify-between items-center text-xs">
-          <p className="py-4"> 
+          <p className="py-4">
             © {new Date().getFullYear()} Dantour. Todos los derechos
             reservados.
           </p>

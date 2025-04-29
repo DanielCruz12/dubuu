@@ -33,7 +33,7 @@ import { reviewsApiSlice } from "@/redux/slices/product/review-slice";
 import { productTypesApiSlice } from "@/redux/slices/product/product-types";
 import { bookingsApiSlice } from "@/redux/slices/booking/booking-slice";
 import { usersApiSlice } from "@/redux/slices/user/user-slice";
-import authReducer from "./slices/auth/auth-slice"
+import authReducer from "./slices/auth/auth-slice";
 
 // Función para crear un almacenamiento "inerte" en entornos sin window (server-side)
 const createNoopStorage = () => {
@@ -58,7 +58,20 @@ const storage =
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["filters", "auth"], // Aquí puedes indicar qué reducers deseas persistir
+  whitelist: [
+    "filters",
+    "auth",
+    "paymentAccountApiSlice",
+    "payments",
+    // Aquí puedes indicar qué reducers deseas persistir
+    // "productsApiSlice", // Si deseas persistir el slice de productos
+    // "paymentApiSlice", // Si deseas persistir el slice de pagos
+    // "paymentAccountApiSlice", // Si deseas persistir el slice de cuentas de pago
+    // "reviewsApiSlice", // Si deseas persistir el slice de reseñas
+    // "productTypesApiSlice", // Si deseas persistir el slice de tipos de productos
+    // "bookingsApiSlice", // Si deseas persistir el slice de reservas
+    // "usersApiSlice", // Si deseas persistir el slice de usuarios
+  ], // Aquí puedes indicar qué reducers deseas persistir
 };
 
 const rootReducer = combineReducers({
@@ -70,7 +83,7 @@ const rootReducer = combineReducers({
   [productTypesApiSlice.reducerPath]: productTypesApiSlice.reducer,
   [bookingsApiSlice.reducerPath]: bookingsApiSlice.reducer,
   [usersApiSlice.reducerPath]: usersApiSlice.reducer,
-  auth: authReducer, 
+  auth: authReducer,
   filters: filtersReducer,
 });
 
