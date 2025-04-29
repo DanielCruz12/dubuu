@@ -15,7 +15,8 @@ import { Badge } from "@/components/ui/badge";
 import { Search } from "lucide-react";
 import type { IProduct } from "@/types/product";
 import { Input } from "../ui/input";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { normalizeCountryForUrl } from "@/utils";
 import Rating from "../rating";
 
 export function ResultDialog({
@@ -29,6 +30,7 @@ export function ResultDialog({
 }) {
   const [inputValue, setInputValue] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const router = useRouter();
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.trim();
@@ -39,6 +41,12 @@ export function ResultDialog({
     } else {
       setSearchTerm("");
     }
+  };
+
+  const navigateToTour = (tourId: string, tourCountry: string) => {
+    // Normalize the country name for the URL
+    const normalizedCountry = normalizeCountryForUrl(tourCountry);
+    router.push(`/home/${normalizedCountry}/tours/${tourId}`);
   };
 
   const filteredProducts =
@@ -101,10 +109,10 @@ export function ResultDialog({
                 </h3>
                 {filteredProducts.map((tour) => {
                   return (
-                    <Link
-                      href={`/home/tours/${tour.id}`}
+                    <div
                       key={tour.id}
                       className="group p-4 md:p-6 border border-primary/10 rounded-xl hover:shadow-md transition-all duration-300 cursor-pointer hover:border-primary/30 flex flex-col sm:flex-row gap-5"
+                      onClick={() => navigateToTour(tour.id, tour.country)}
                     >
                       <div className="w-full sm:w-28 h-36 md:h-28 relative rounded-lg overflow-hidden flex-shrink-0">
                         <div className="absolute inset-0 bg-gradient-to-t dark:from-black/60 dark:to-transparent z-10" />
@@ -142,7 +150,7 @@ export function ResultDialog({
                           {tour.description}
                         </p>
                       </div>
-                    </Link>
+                    </div>
                   );
                 })}
               </div>

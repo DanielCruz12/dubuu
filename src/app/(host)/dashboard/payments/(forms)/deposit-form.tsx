@@ -45,6 +45,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { toast } from "sonner";
+import { useUser } from "@clerk/nextjs";
+import { useCreatePaymentAccountMutation } from "@/redux/slices/payment/payment-account";
 
 // Definir tipos de métodos de pago
 type PaymentMethod = "bank" | "visa" | "mastercard";
@@ -53,18 +55,11 @@ type PaymentMethod = "bank" | "visa" | "mastercard";
 const existingData = {
   paymentMethod: "bank" as PaymentMethod,
   bankData: {
-    bankName: "Bancolombia",
+    bankName: "Banco Agrícola",
     accountType: "ahorro",
     accountNumber: "123456789",
     holderName: "Juan Pérez",
     email: "juan.perez@ejemplo.com",
-  },
-  cardData: {
-    cardNumber: "",
-    expiryDate: "",
-    cvv: "",
-    holderName: "",
-    email: "",
   },
 };
 
@@ -122,6 +117,12 @@ export function PaymentForm() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
     existingData.paymentMethod
   );
+  const { user } = useUser();
+
+  const [createPaymentAccount, { isLoading }] = useCreatePaymentAccountMutation()
+
+  const userId = user?.id;
+
   const [isUpdating, setIsUpdating] = useState(false);
 
   // Formulario para transferencia bancaria
@@ -133,7 +134,7 @@ export function PaymentForm() {
   // Formulario para tarjetas
   const cardForm = useForm<CardFormValues>({
     resolver: zodResolver(cardSchema),
-    defaultValues: existingData.cardData,
+    defaultValues: existingData.bankData,
   });
 
   const handlePaymentMethodSelect = (value: PaymentMethod) => {
@@ -146,30 +147,36 @@ export function PaymentForm() {
     }
   };
 
-  const onBankSubmit = (data: BankFormValues) => {
-    console.log("Datos del formulario bancario:", {
-      paymentMethod,
-      ...data,
-    });
-    toast.success("Información recibida", {
-      description: "Hemos registrado tu información de pago correctamente.",
-    });
-    setShowExistingData(true);
-    setIsUpdating(false);
-    bankForm.reset(existingData.bankData);
-  };
+  const onBankSubmit = async (data: BankFormValues) => {
+    console.log("Datos del formulario bancario:", data)
 
-  const onCardSubmit = (data: CardFormValues) => {
-    console.log("Datos del formulario de tarjeta:", {
-      paymentMethod,
-      ...data,
-    });
-    toast.success("Información recibida", {
-      description: "Hemos registrado tu información de pago correctamente.",
-    });
-    setShowExistingData(true);
-    setIsUpdating(false);
-    cardForm.reset(existingData.cardData);
+    const dataToSend = {
+      user_id: userId,
+      bank_name: data.bankName,
+      account_type: data.accountType,
+      account_number: data.accountNumber,
+      holder_name: data.holderName,
+      email: data.email,
+      payment_method: "bank",
+    }
+
+    try {
+      const result = await createPaymentAccount(dataToSend).unwrap()
+      console.log("Respuesta del servidor:", result)
+      toast.success("Información enviada con éxito")
+      setShowExistingData(true)
+      setStep(1)
+      setIsUpdating(false)
+      setPaymentMethod(null)
+      bankForm.reset()
+    } catch (error) {
+      console.error("Error al enviar los datos:", error)
+      toast.error("Error al enviar la información. Inténtelo de nuevo más tarde.")
+    }
+  }
+
+  const onCardSubmit = () => {
+    console.log("Datos del formulario de tarjeta:");
   };
 
   const startUpdate = () => {
@@ -198,10 +205,7 @@ export function PaymentForm() {
     switch (method) {
       case "bank":
         return "Transferencia bancaria";
-      case "visa":
-        return "Visa";
-      case "mastercard":
-        return "Mastercard";
+
       default:
         return "";
     }
@@ -391,68 +395,6 @@ export function PaymentForm() {
                         <ul className="list-disc pl-4 space-y-1">
                           <li>De 1 a 3 días hábiles</li>
                           <li>Es posible que se te cobre alguna tarifa</li>
-                        </ul>
-                      </motion.div>
-                    )}
-                  </div>
-
-                  <div
-                    className={`border rounded-md p-3 transition-all ${
-                      paymentMethod === "visa"
-                        ? "border-black dark:border-white"
-                        : "border-gray-200 dark:border-gray-800"
-                    }`}
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="visa" id="visa" />
-                      <Label
-                        htmlFor="visa"
-                        className="flex items-center cursor-pointer"
-                      >
-                        <CreditCard className="h-4 w-4 mr-2" />
-                        <span>Visa</span>
-                      </Label>
-                    </div>
-                    {paymentMethod === "visa" && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        className="mt-2 pl-6 text-xs text-gray-500 dark:text-gray-400"
-                      >
-                        <ul className="list-disc pl-4 space-y-1">
-                          <li>Procesamiento inmediato</li>
-                          <li>Tarifa de procesamiento del 2.5%</li>
-                        </ul>
-                      </motion.div>
-                    )}
-                  </div>
-
-                  <div
-                    className={`border rounded-md p-3 transition-all ${
-                      paymentMethod === "mastercard"
-                        ? "border-black dark:border-white"
-                        : "border-gray-200 dark:border-gray-800"
-                    }`}
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="mastercard" id="mastercard" />
-                      <Label
-                        htmlFor="mastercard"
-                        className="flex items-center cursor-pointer"
-                      >
-                        <CreditCard className="h-4 w-4 mr-2" />
-                        <span>Mastercard</span>
-                      </Label>
-                    </div>
-                    {paymentMethod === "mastercard" && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        className="mt-2 pl-6 text-xs text-gray-500 dark:text-gray-400"
-                      >
-                        <ul className="list-disc pl-4 space-y-1">
-                          <li>Procesamiento inmediato</li>
-                          <li>Tarifa de procesamiento del 2.5%</li>
                         </ul>
                       </motion.div>
                     )}
@@ -718,6 +660,7 @@ export function PaymentForm() {
                         </Button>
                         <Button
                           type="submit"
+                          disabled={isLoading}
                           className="bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
                         >
                           {isUpdating

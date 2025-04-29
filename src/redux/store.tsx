@@ -28,6 +28,7 @@ import createWebStorage from "redux-persist/lib/storage/createWebStorage";
 // Importa tus slices modularizados
 import { productsApiSlice } from "@/redux/slices/product/product-slice";
 import { paymentApiSlice } from "@/redux/slices/payment/payment-link";
+import { paymentAccountApiSlice } from "@/redux/slices/payment/payment-account";
 import { reviewsApiSlice } from "@/redux/slices/product/review-slice";
 import { productTypesApiSlice } from "@/redux/slices/product/product-types";
 import { bookingsApiSlice } from "@/redux/slices/booking/booking-slice";
@@ -64,6 +65,7 @@ const rootReducer = combineReducers({
   //global: globalReducer,
   [productsApiSlice.reducerPath]: productsApiSlice.reducer,
   [paymentApiSlice.reducerPath]: paymentApiSlice.reducer,
+  [paymentAccountApiSlice.reducerPath]: paymentAccountApiSlice.reducer,
   [reviewsApiSlice.reducerPath]: reviewsApiSlice.reducer,
   [productTypesApiSlice.reducerPath]: productTypesApiSlice.reducer,
   [bookingsApiSlice.reducerPath]: bookingsApiSlice.reducer,
@@ -87,6 +89,7 @@ export const makeStore = () =>
         productsApiSlice.middleware,
         reviewsApiSlice.middleware,
         paymentApiSlice.middleware,
+        paymentAccountApiSlice.middleware,
         productTypesApiSlice.middleware,
         bookingsApiSlice.middleware,
         usersApiSlice.middleware
