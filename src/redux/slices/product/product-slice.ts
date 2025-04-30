@@ -68,6 +68,11 @@ export const productsApiSlice = createApi({
         providesTags: (result, error, id) => [{ type: "Products", id }],
       }),
 
+      getProductsByUserIdUsersimplified: builder.query<IProduct[], string>({
+        query: (userId) => `/api/v1/products/usersimplified/${userId}`,
+        providesTags: (result, error, id) => [{ type: "Products", id }],
+      }),
+
       updateProduct: builder.mutation<
         IProduct,
         { id: string; data: Partial<IProduct> }
@@ -104,4 +109,5 @@ export const {
   useCreateProductMutation,
   useUpdateProductMutation,
   useDeleteProductMutation,
+  useGetProductsByUserIdUsersimplifiedQuery,
 } = productsApiSlice;

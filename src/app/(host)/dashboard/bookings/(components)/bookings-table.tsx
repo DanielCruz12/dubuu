@@ -1,242 +1,250 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { useState, useEffect, useCallback } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { DownloadIcon, FilterIcon, SearchIcon } from "lucide-react";
-import { mockBookings } from "@/utils/mock-data";
+import { DownloadIcon, SearchIcon } from "lucide-react";
 import { exportToExcel } from "@/lib/excelFn";
 import { DataTable } from "@/components/data-table/datatable";
-import { FilterModal } from "./filter-modal";
-import { bookingsColumns } from "../(columns)/columns";
+import { useGetProductsByUserIdQuery } from "@/redux/slices/product/product-slice";
+import { useGetBookingsByUserIdProductIdQuery } from "@/redux/slices/booking/booking-slice";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Check } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { bookingColumns } from "../(columns)/columns";
 
-export function BookingsDataTable() {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [bookings, setBookings] = useState(mockBookings);
-  const [filteredBookings, setFilteredBookings] = useState(mockBookings);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterModalOpen, setFilterModalOpen] = useState(false);
+interface BookingsDataTableProps {
+  userId: string;
+}
 
-  // Calculate price range from data
-  const [priceRange, setPriceRange] = useState({
-    min: 0,
-    max: 300,
+export function BookingsDataTable({ userId }: BookingsDataTableProps) {
+  const [selectedProductId, setSelectedProductId] = useState<string>("");
+  const [openProductSelect, setOpenProductSelect] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [bookingsData, setBookingsData] = useState<any[]>([]);
+
+  // Fetch products for the user
+  const {
+    data: products,
+    isLoading: isLoadingProducts,
+    error: productsError,
+  } = useGetProductsByUserIdQuery(userId, {
+    skip: !userId,
   });
 
-  // Advanced filters
-  const [advancedFilters, setAdvancedFilters] = useState({
-    minTotal: 0,
-    maxTotal: 300,
-    statuses: [] as string[],
-    paymentMethods: [] as string[],
-    selectedTour: "",
-    selectedDate: "",
-  });
+  // Fetch bookings for the selected product
+  const {
+    data: bookings,
+    isLoading: isLoadingBookings,
+    error: bookingsError,
+  } = useGetBookingsByUserIdProductIdQuery(
+    { userId, productId: selectedProductId },
+    { skip: !selectedProductId }
+  );
 
-  // Calculate dynamic price range on initial load
+  // Set the first product as selected when products load
   useEffect(() => {
-    if (bookings.length > 0) {
-      const prices = bookings.map((booking) =>
-        Number.parseFloat(booking.total)
-      );
-      const minPrice = Math.floor(Math.min(...prices));
-      const maxPrice = Math.ceil(Math.max(...prices));
+    if (products && products.length > 0 && !selectedProductId) {
+      setSelectedProductId(products[0].id);
+    }
+  }, [products, selectedProductId]);
 
-      setPriceRange({
-        min: minPrice,
-        max: maxPrice,
-      });
-
-      // Update advanced filters with the dynamic range
-      setAdvancedFilters((prev) => ({
-        ...prev,
-        minTotal: minPrice,
-        maxTotal: maxPrice,
-      }));
+  // Update bookings data when bookings load
+  useEffect(() => {
+    if (bookings) {
+      setBookingsData(bookings);
     }
   }, [bookings]);
 
-  // Filter bookings based on all filters
-  useEffect(() => {
-    let filtered = [...bookings];
+  // Handle product selection
+  const handleProductChange = useCallback((productId: string) => {
+    setSelectedProductId(productId);
+  }, []);
 
-    // Basic search filter
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (booking) =>
-          booking.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          booking.user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          booking.id.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Tour filter
-    if (advancedFilters.selectedTour) {
-      filtered = filtered.filter(
-        (booking) => booking.product_id === advancedFilters.selectedTour
-      );
-    }
-
-    // Date filter
-    if (advancedFilters.selectedDate) {
-      filtered = filtered.filter(
-        (booking) => booking.tour_date_id === advancedFilters.selectedDate
-      );
-    }
-
-    // Price range filter
-    if (advancedFilters.minTotal > priceRange.min) {
-      filtered = filtered.filter(
-        (booking) =>
-          Number.parseFloat(booking.total) >= advancedFilters.minTotal
-      );
-    }
-
-    if (advancedFilters.maxTotal < priceRange.max) {
-      filtered = filtered.filter(
-        (booking) =>
-          Number.parseFloat(booking.total) <= advancedFilters.maxTotal
-      );
-    }
-
-    // Status filter
-    if (advancedFilters.statuses.length > 0) {
-      filtered = filtered.filter((booking) =>
-        advancedFilters.statuses.includes(booking.status)
-      );
-    }
-
-    // Payment method filter
-    if (advancedFilters.paymentMethods.length > 0) {
-      filtered = filtered.filter((booking) =>
-        advancedFilters.paymentMethods.includes(booking.paymentMethod)
-      );
-    }
-
-    setFilteredBookings(filtered);
-  }, [searchTerm, advancedFilters, bookings, priceRange]);
-
-  // Handle export to Excel
+  // Export to Excel
   const handleExport = () => {
-    const dataToExport = filteredBookings.map((booking) => ({
-      "ID de Reserva": booking.id,
-      "Nombre del Cliente": booking.user.name,
-      Email: booking.user.email,
-      Tour: booking.tour_name,
-      Fecha: new Date(booking.tour_date).toLocaleDateString(),
-      Boletos: booking.tickets,
-      Total: `${booking.total}`,
-      Estado:
-        booking.status === "completed"
-          ? "Completado"
-          : booking.status === "pending"
-            ? "Pendiente"
-            : "Cancelado",
-      "Método de Pago":
-        booking.paymentMethod === "credit"
-          ? "Tarjeta de Crédito"
-          : booking.paymentMethod === "debit"
-            ? "Tarjeta de Débito"
-            : booking.paymentMethod === "paypal"
-              ? "PayPal"
-              : "Efectivo",
-      "ID de Transacción": booking.idTransaccion,
-      "Fecha de Reserva": new Date(booking.created_at).toLocaleDateString(),
-    }));
-
-    exportToExcel(dataToExport, "Reservas_Tours");
-  };
-
-  // Reset all filters
-  const resetFilters = () => {
-    setSearchTerm("");
-    setAdvancedFilters({
-      minTotal: priceRange.min,
-      maxTotal: priceRange.max,
-      statuses: [],
-      paymentMethods: [],
-      selectedTour: "",
-      selectedDate: "",
+    const dataToExport = bookingsData.map((booking) => {
+      return {
+        ID: booking.id,
+        Date: new Date(booking.date).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        Status: booking.status,
+        Tickets: booking.tickets,
+        Total: new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format(Number.parseFloat(booking.total.toString())),
+        "Payment Method": booking.paymentMethod,
+        Created: new Date(booking.created_at).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        }),
+      };
     });
+
+    exportToExcel(dataToExport, "Bookings");
   };
 
-  // Apply advanced filters
-  const handleApplyAdvancedFilters = (filters: any) => {
-    setAdvancedFilters(filters);
-  };
-
-  // Get active filter count for badge
-  const getActiveFilterCount = () => {
-    let count = 0;
-    if (advancedFilters.minTotal > priceRange.min) count++;
-    if (advancedFilters.maxTotal < priceRange.max) count++;
-    if (advancedFilters.statuses.length > 0) count++;
-    if (advancedFilters.paymentMethods.length > 0) count++;
-    if (advancedFilters.selectedTour) count++;
-    if (advancedFilters.selectedDate) count++;
-    return count;
-  };
-
-  const activeFilterCount = getActiveFilterCount();
-
-  return (
-    <div className="space-y-4">
+  // Handle loading states
+  if (isLoadingProducts) {
+    return (
       <Card>
-        <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row gap-4 items-end mb-6">
-            <div className="w-full md:w-2/3">
-              <label className="text-sm font-medium mb-1 block">Buscar</label>
-              <div className="relative">
-                <SearchIcon className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Buscar por nombre, email o ID..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-8"
-                />
-              </div>
-            </div>
-
-            <div className="flex gap-2 ml-auto">
-              <Button
-                variant="outline"
-                onClick={() => setFilterModalOpen(true)}
-                title="Filtros avanzados"
-                className="relative"
-              >
-                <FilterIcon className="h-4 w-4 mr-2" />
-                <span>Filtros</span>
-                {activeFilterCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {activeFilterCount}
-                  </span>
-                )}
-              </Button>
-              <Button onClick={handleExport} title="Exportar a Excel">
-                <DownloadIcon className="h-4 w-4 mr-2" />
-                <span>Exportar</span>
-              </Button>
-            </div>
+        <CardHeader>
+          <CardTitle>Bookings</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[250px]" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-20 w-full" />
           </div>
-
-          <DataTable
-            columns={bookingsColumns}
-            data={filteredBookings}
-            showSearch={false}
-          />
         </CardContent>
       </Card>
+    );
+  }
 
-      <FilterModal
-        open={filterModalOpen}
-        onOpenChange={setFilterModalOpen}
-        filters={advancedFilters}
-        onApplyFilters={handleApplyAdvancedFilters}
-        onResetFilters={resetFilters}
-        priceRange={priceRange}
-      />
-    </div>
+  // Handle error states
+  if (productsError) {
+    return (
+      <Card className="border-red-200">
+        <CardHeader>
+          <CardTitle className="text-red-500">Error Loading Products</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>
+            There was an error loading your products. Please try again later.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Handle no products
+  if (!products || products.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Bookings</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>You dont have any products yet.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex justify-between items-center">
+          <span>Bookings</span>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={handleExport}
+              title="Export to Excel"
+              variant="outline"
+              size="sm"
+            >
+              <DownloadIcon className="h-4 w-4 mr-2" />
+              <span>Export</span>
+            </Button>
+          </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="mb-6">
+          <label className="text-sm font-medium mb-1 block">
+            Select Product
+          </label>
+          <Popover open={openProductSelect} onOpenChange={setOpenProductSelect}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={openProductSelect}
+                className="w-full md:w-[300px] justify-between"
+              >
+                {selectedProductId
+                  ? products.find((product) => product.id === selectedProductId)
+                      ?.name
+                  : "Select a product..."}
+                <SearchIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0" align="start">
+              <Command>
+                <CommandInput placeholder="Search product..." />
+                <CommandList>
+                  <CommandEmpty>No products found.</CommandEmpty>
+                  <CommandGroup className="max-h-64 overflow-y-auto">
+                    {products.map((product) => (
+                      <CommandItem
+                        key={product.id}
+                        value={product.id}
+                        onSelect={() => {
+                          handleProductChange(product.id);
+                          setOpenProductSelect(false);
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            selectedProductId === product.id
+                              ? "opacity-100"
+                              : "opacity-0"
+                          )}
+                        />
+                        {product.name}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </div>
+
+        {isLoadingBookings ? (
+          <div className="space-y-2">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-20 w-full" />
+          </div>
+        ) : bookingsError ? (
+          <div className="text-red-500">
+            <p>There was an error loading bookings. Please try again later.</p>
+          </div>
+        ) : !bookingsData || bookingsData.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            <p>No bookings found for this product.</p>
+          </div>
+        ) : (
+          <DataTable
+            columns={bookingColumns}
+            data={bookingsData}
+            showSearch={true}
+            searchPlaceholder="Search bookings..."
+          />
+        )}
+      </CardContent>
+    </Card>
   );
 }

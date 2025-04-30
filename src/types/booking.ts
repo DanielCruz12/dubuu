@@ -17,3 +17,19 @@ export type CreateBookingInput = Omit<
   Booking,
   "id" | "created_at" | "updated_at"
 >;
+
+
+export interface IBooking {
+  id: string
+  user_id: string
+  product_id: string
+  date: string
+  status: "pending" | "confirmed" | "cancelled" | "completed"
+  tickets: number
+  total: number
+  paymentMethod: string
+  created_at: string
+  updated_at: string
+  // Puedes añadir más campos según sea necesario
+}
+

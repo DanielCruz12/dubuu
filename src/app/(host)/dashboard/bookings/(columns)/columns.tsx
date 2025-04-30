@@ -1,204 +1,144 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { Badge } from "@/components/ui/badge";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-// Define el tipo para los datos de reserva
-export type Booking = {
-  id: string;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-  };
-  product_id: string;
-  tour_name: string;
-  tour_date: string;
-  tour_date_id: string;
-  status: string;
-  is_live: boolean;
-  tickets: number;
-  total: string;
-  paymentMethod: string;
-  idTransaccion: string;
-  created_at: string;
-  updated_at: string;
-};
-
-// Función para renderizar el badge de estado
-function StatusBadge({ status }: { status: string }) {
-  let variant: "default" | "outline" | "secondary" | "destructive" = "outline";
-  let label = status;
-
-  switch (status) {
-    case "completed":
-      variant = "default";
-      label = "Completado";
-      break;
-    case "pending":
-      variant = "secondary";
-      label = "Pendiente";
-      break;
-    case "cancelled":
-      variant = "destructive";
-      label = "Cancelado";
-      break;
-  }
-
-  return <Badge variant={variant}>{label}</Badge>;
-}
+  ArrowUpDown,
+  DollarSign,
+  Users,
+  Calendar,
+  CheckCircle,
+  XCircle,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import type { IBooking } from "@/types/booking";
+import { BookingActionCell } from "../../(components)/booking-action-cell";
 
 // Define las columnas para la tabla de reservas
-export const bookingsColumns: ColumnDef<Booking>[] = [
+export const bookingColumns: ColumnDef<IBooking>[] = [
   {
-    accessorKey: "user",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Cliente
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    accessorKey: "id",
+    header: "Booking ID",
     cell: ({ row }) => {
-      const user = row.getValue("user") as Booking["user"];
-      return (
-        <div>
-          <div className="font-medium">{user.name}</div>
-          <div className="text-sm text-muted-foreground">{user.email}</div>
-        </div>
-      );
-    },
-    sortingFn: (rowA, rowB) => {
-      const userA = rowA.getValue("user") as Booking["user"];
-      const userB = rowB.getValue("user") as Booking["user"];
-      return userA.name.localeCompare(userB.name);
+      const id = row.getValue("id") as string;
+      return <div className="font-medium">{id.substring(0, 8)}...</div>;
     },
   },
   {
-    accessorKey: "tour_name",
+    accessorKey: "date",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Tour
+          Date
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
     cell: ({ row }) => {
-      const tourName = row.getValue("tour_name") as string;
+      const date = row.getValue("date") as string;
       return (
-        <div className="max-w-[200px] truncate" title={tourName}>
-          {tourName}
+        <div className="flex items-center">
+          <Calendar className="w-4 h-4 mr-2 text-muted-foreground" />
+          {new Date(date).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
         </div>
       );
     },
   },
   {
-    accessorKey: "tour_date",
-    header: ({ column }) => {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.getValue("status") as string;
       return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        <Badge
+          variant={
+            status === "confirmed"
+              ? "default"
+              : status === "pending"
+                ? "outline"
+                : status === "cancelled"
+                  ? "destructive"
+                  : "secondary"
+          }
+          className="capitalize"
         >
-          Fecha
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+          {status === "confirmed" ? (
+            <CheckCircle className="w-3 h-3 mr-1" />
+          ) : status === "cancelled" ? (
+            <XCircle className="w-3 h-3 mr-1" />
+          ) : null}
+          {status}
+        </Badge>
       );
     },
-    cell: ({ row }) => {
-      const date = new Date(row.getValue("tour_date"));
-      return <div>{date.toLocaleDateString()}</div>;
-    },
-    sortingFn: "datetime",
   },
   {
     accessorKey: "tickets",
     header: ({ column }) => {
       return (
-        <div className="text-center">
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Boletos
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        </div>
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Tickets
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
       );
     },
     cell: ({ row }) => {
       const tickets = row.getValue("tickets") as number;
-      return <div className="text-center">{tickets}</div>;
+      return (
+        <div className="flex items-center">
+          <Users className="w-4 h-4 mr-2 text-muted-foreground" />
+          {tickets}
+        </div>
+      );
     },
   },
   {
     accessorKey: "total",
     header: ({ column }) => {
       return (
-        <div className="text-right">
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Total
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        </div>
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Total
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
       );
     },
     cell: ({ row }) => {
-      const total = row.getValue("total") as string;
-      return <div className="text-right font-medium">${total}</div>;
-    },
-    sortingFn: (rowA, rowB) => {
-      const totalA = Number.parseFloat(rowA.getValue("total") as string);
-      const totalB = Number.parseFloat(rowB.getValue("total") as string);
-      return totalA - totalB;
-    },
-  },
-  {
-    accessorKey: "status",
-    header: ({ column }) => {
+      const total = Number.parseFloat(row.getValue("total"));
+      const formatted = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(total);
       return (
-        <div className="text-center">
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Estado
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        </div>
-      );
-    },
-    cell: ({ row }) => {
-      const status = row.getValue("status") as string;
-      return (
-        <div className="text-center">
-          <StatusBadge status={status} />
+        <div className="flex items-center">
+          <DollarSign className="w-4 h-4 mr-1 text-muted-foreground" />
+          {formatted}
         </div>
       );
     },
   },
-
+  {
+    accessorKey: "paymentMethod",
+    header: "Payment Method",
+    cell: ({ row }) => {
+      const paymentMethod = row.getValue("paymentMethod") as string;
+      return <div className="capitalize">{paymentMethod}</div>;
+    },
+  },
   {
     accessorKey: "created_at",
     header: ({ column }) => {
@@ -207,43 +147,28 @@ export const bookingsColumns: ColumnDef<Booking>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Fecha de Reserva
+          Created
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
     cell: ({ row }) => {
-      const date = new Date(row.getValue("created_at"));
-      return <div>{date.toLocaleDateString()}</div>;
+      const created_at = row.getValue("created_at") as string;
+      return (
+        <div>
+          {new Date(created_at).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}
+        </div>
+      );
     },
-    sortingFn: "datetime",
   },
   {
     id: "actions",
     cell: ({ row }) => {
-      const booking = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Abrir menú</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(booking.id)}
-            >
-              Copiar ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Ver detalles</DropdownMenuItem>
-            <DropdownMenuItem>Cambiar estado</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
+      return <BookingActionCell booking={row.original} />;
     },
   },
 ];
