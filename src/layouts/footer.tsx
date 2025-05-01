@@ -36,7 +36,7 @@ export default function Footer() {
       <div className="px-6 md:px-20 mt-8">
         {/* Top Section with Logo and Tagline */}
         <div className="mb-12  text-left">
-          <h2 className="text-2xl font-bold tracking-tight mb-3">DANTOUR</h2>
+          <h2 className="text-2xl font-bold tracking-tight mb-3">Dubuu</h2>
           <p className="text-sm">
             Experiencias de viaje exclusivas diseñadas para los viajeros más
             exigentes.
@@ -71,7 +71,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2 text-sm">
                 <Mail className="h-4 w-4 flex-shrink-0" />
-                <span>info@dantour.com</span>
+                <span>info@dubuu.com</span>
               </li>
               <li className="flex items-start gap-2 text-sm">
                 <MapPin className="h-4 w-4 flex-shrink-0 mt-0.5" />
@@ -127,7 +127,7 @@ export default function Footer() {
         {/* Bottom Section */}
         <div className="mb-4 flex flex-col md:flex-row justify-between items-center text-xs">
           <p className="py-4">
-            © {new Date().getFullYear()} Dantour. Todos los derechos
+            © {new Date().getFullYear()} dubuu. Todos los derechos
             reservados.
           </p>
           <div className="flex space-x-6">

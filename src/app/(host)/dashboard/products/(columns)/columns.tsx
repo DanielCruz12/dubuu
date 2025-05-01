@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ActionCell } from "../(components)/action-cell";
 import type { ITourProduct } from "@/types/product";
+import moment from "moment";
+import "moment/locale/es";
 
 // Define las columnas para la tabla de tours
 export const toursColumns: ColumnDef<
@@ -72,13 +74,7 @@ export const toursColumns: ColumnDef<
 
       return (
         <div>
-          {new Date(selectedDate.date).toLocaleDateString("es-SV", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
+          {moment(selectedDate.date).format("dddd, D [de] MMMM - h:mm A")}
         </div>
       );
     },

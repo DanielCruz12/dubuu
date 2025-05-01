@@ -47,7 +47,7 @@ export function MenuProfileSheet({
         <SheetDescription></SheetDescription>
         <div className="mb-4 flex items-center">
           <MapPin className="h-5 w-5 text-primary" />
-          <span className="font-bold">Dan&apos;s Tours</span>
+          <span className="font-bold">Dubuu</span>
         </div>
         <ScrollArea className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
           <div className="flex flex-col space-y-6">

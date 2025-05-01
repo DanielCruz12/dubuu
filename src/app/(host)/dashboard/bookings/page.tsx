@@ -3,6 +3,7 @@
 import { useUser } from "@clerk/nextjs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BookingsDataTable } from "./(components)/bookings-table";
+import { DashboardTitle } from "@/components/dashboard-title";
 
 export default function BookingsPage() {
   const { user, isLoaded } = useUser();
@@ -10,8 +11,8 @@ export default function BookingsPage() {
   if (!isLoaded) {
     return (
       <div className="container mx-auto py-10">
-        <Skeleton className="h-8 w-[200px] mb-6" />
-        <Skeleton className="h-[500px] w-full rounded-lg" />
+        <Skeleton className="h-8 w-[200px] mb-6 animation-pulse" />
+        <Skeleton className="h-[200px] w-full rounded-lg" />
       </div>
     );
   }
@@ -27,8 +28,11 @@ export default function BookingsPage() {
   }
 
   return (
-    <div className="container mx-auto py-10">
-      <h1 className="text-2xl font-bold mb-6">Manage Bookings</h1>
+    <div className="px-3 md:px-0">
+      <DashboardTitle
+        heading="Reservas"
+        description="Lista de todas tus reservas"
+      />
       <BookingsDataTable userId={user.id} />
     </div>
   );

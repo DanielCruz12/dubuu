@@ -6,7 +6,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "dantour - Your Travel Companion",
+  title: "dubuu - Your Travel Companion",
   description: "Discover amazing destinations and book your next adventure",
   keywords: ["Next.js", "Authentication", "User Management"],
   openGraph: {

@@ -223,7 +223,7 @@ export default function ContactForm() {
           {/* <div className="col-span-2 bg-[#c3c3c3] p-6 rounded-lg">
             <div className="space-y-2">
               <p className="text-lg font-semibold">1684 people used</p>
-              <p className="text-xl font-bold">Dantour</p>
+              <p className="text-xl font-bold">dubuu</p>
               <p className="text-lg">in the last 24 hours</p>
               <div className="flex -space-x-2 mt-">
                 <img

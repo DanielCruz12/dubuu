@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/popover";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function ProductsDataTable() {
   const { user } = useUser();
@@ -173,7 +174,12 @@ export function ProductsDataTable() {
   };
 
   if (isLoading || !user) {
-    return <div>Loading...</div>;
+    return (
+      <div className="container mx-auto py-10">
+        <Skeleton className="h-8 w-[200px] mb-6 animation-pulse" />
+        <Skeleton className="h-[200px] w-full rounded-lg" />
+      </div>
+    );
   }
 
   return (

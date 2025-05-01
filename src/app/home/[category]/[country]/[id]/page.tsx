@@ -93,6 +93,8 @@ export default function ProductBooking() {
   );
   const isTour = isProductType(product, "tours");
 
+  console.log(reviews, "reviews");
+
   return (
     <div className="mx-auto md:px-0">
       <UpTop />

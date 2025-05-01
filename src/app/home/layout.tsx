@@ -1,6 +1,6 @@
 // app/home/layout.tsx
 export const metadata = {
-  title: "Home - dantour",
+  title: "Home - dubuu",
   description: "Your personalized travel dashboard",
 };
 

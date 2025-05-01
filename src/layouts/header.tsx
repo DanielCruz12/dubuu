@@ -98,7 +98,7 @@ export function Header() {
           <div className="">
             <Link href="/home" className="flex items-center gap-1">
               <MapPin className="h-5 w-5 text-primary" />
-              <span className="font-bold">Dan&apos;s Tours</span>
+              <span className="font-bold">Dubuu</span>
             </Link>
           </div>
 
@@ -181,7 +181,7 @@ export function Header() {
         <div className="flex items-center gap-2">
           <Link href={"/home"} className="flex items-center gap-1">
             <MapPin className="h-5 w-5 text-primary" />
-            <span className="font-bold">Dan&apos;s Tours</span>
+            <span className="font-bold">Dubuu</span>
           </Link>
         </div>
 

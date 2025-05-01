@@ -6,7 +6,7 @@ export interface Booking {
   tickets?: number;
   total: number;
   paymentMethod: string;
-  selected_dates?: string[]
+  selected_dates?: string[];
   is_live: boolean;
   created_at: string;
   updated_at: string;
@@ -18,18 +18,23 @@ export type CreateBookingInput = Omit<
   "id" | "created_at" | "updated_at"
 >;
 
-
 export interface IBooking {
-  id: string
-  user_id: string
-  product_id: string
-  date: string
-  status: "pending" | "confirmed" | "cancelled" | "completed"
-  tickets: number
-  total: number
-  paymentMethod: string
-  created_at: string
-  updated_at: string
+  id: string;
+  user_id: string;
+  product_id: string;
+  date: string;
+  status: string
+  tickets: number;
+  total: number;
+  paymentMethod: string;
+  created_at: string;
+  updated_at: string;
+  user: {
+    id: string;
+    username: string;
+    fisrt_name: string;
+    last_name: string;
+    email: string;
+  };
   // Puedes añadir más campos según sea necesario
 }
-

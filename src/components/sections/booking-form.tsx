@@ -24,8 +24,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { calculateTotal, isProductType } from "@/utils";
 import { useState, useRef } from "react";
 
-moment.locale("es");
-
+import "moment/locale/es";
 const schema = z.object({
   datetime: z.string().min(1, "Selecciona una fecha y hora"),
   tickets: z.object({
