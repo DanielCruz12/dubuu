@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import type { CheckoutFormValues } from "@/schemas/checkout-schema";
-import Image from "next/image";
 
 // Función para formatear el número de tarjeta con espacios
 const formatCreditCardNumber = (value: string) => {
@@ -48,13 +47,6 @@ export default function CreditCardForm() {
 
   return (
     <div className="rounded-lg p-4 border">
-      <div className="flex justify-between items-center mb-4">
-        <div className="text-sm text-slate-500">Tarjetas aceptadas</div>
-        <div className="flex space-x-2">
-          <Image src={"/tarjetas.svg"} width={60} height={60} alt="tarjetas" />
-        </div>
-      </div>
-
       <FormField
         control={control}
         name="cardNumber"

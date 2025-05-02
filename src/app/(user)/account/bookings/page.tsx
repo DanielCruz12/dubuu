@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Search, Filter } from "lucide-react";
-import type { Booking } from "@/types/booking";
+import type { IBookingUser } from "@/types/booking";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -14,14 +13,26 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { BookingCard } from "./(components)/booking-card";
-import { bookings } from "@/utils/data";
 import { BookingDetails } from "./(components)/booking-details";
 import { DashboardTitle } from "@/components/dashboard-title";
+import { useGetBookingsByUserIdQuery } from "@/redux/slices/booking/booking-slice";
+import { useUser } from "@clerk/nextjs";
 
 export default function BookingsPage() {
-  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [selectedBooking, setSelectedBooking] = useState<IBookingUser | null>(
+    null
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
+  const { user } = useUser();
+  const userId = user?.id as string;
+
+  const { data: bookings = [], isLoading } = useGetBookingsByUserIdQuery(
+    userId,
+    {
+      skip: !userId,
+    }
+  );
 
   const handleStatusFilterChange = (status: string) => {
     setStatusFilter((prev) =>
@@ -31,32 +42,46 @@ export default function BookingsPage() {
     );
   };
 
-  const filteredBookings = bookings.filter((booking: any) => {
+  const mapStatus = (status: string) => {
+    const statusMap: Record<string, string> = {
+      completed: "completado",
+      confirmed: "confirmado",
+      pending: "pendiente",
+      cancelled: "cancelado",
+    };
+    return statusMap[status] || status;
+  };
+
+  const filteredBookings = bookings.filter((booking: IBookingUser) => {
     // Apply search filter
     const matchesSearch =
-      booking.tourName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      booking.location.toLowerCase().includes(searchQuery.toLowerCase());
+      booking.product_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      `${booking.product_address}, ${booking.country}`
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
 
     // Apply status filter if any are selected
+    const uiStatus = mapStatus(booking.status);
     const matchesStatus =
-      statusFilter.length === 0 || statusFilter.includes(booking.status);
+      statusFilter.length === 0 || statusFilter.includes(uiStatus);
 
     return matchesSearch && matchesStatus;
   });
 
-  const upcomingBookings = filteredBookings.filter(
-    (booking: any) =>
-      booking.status === "confirmado" || booking.status === "pendiente"
-  );
-  const pastBookings = filteredBookings.filter(
-    (booking: any) =>
-      booking.status === "completado" || booking.status === "cancelado"
-  );
+  const upcomingBookings = filteredBookings.filter((booking: IBookingUser) => {
+    const uiStatus = mapStatus(booking.status);
+    return uiStatus === "confirmado" || uiStatus === "pendiente";
+  });
+
+  const pastBookings = filteredBookings.filter((booking: IBookingUser) => {
+    const uiStatus = mapStatus(booking.status);
+    return uiStatus === "completado" || uiStatus === "cancelado";
+  });
 
   return (
     <div className="px-3 md:px-0">
       <DashboardTitle heading="Reservas" description="Gestiona tus reservas" />
-      <div className="flex flex-col sm:flex-row gap-3 mb-6 pt-7 items-start">
+      <div className="flex flex-col sm:flex-row gap-3 mb-6 px-1 pt-7 items-start">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -108,8 +133,12 @@ export default function BookingsPage() {
 
         <TabsContent value="upcoming" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {upcomingBookings.length > 0 ? (
-              upcomingBookings.map((booking: any) => (
+            {isLoading ? (
+              <div className="col-span-full text-center py-16">
+                <p className="text-muted-foreground">Cargando reservas...</p>
+              </div>
+            ) : upcomingBookings.length > 0 ? (
+              upcomingBookings.map((booking: IBookingUser) => (
                 <BookingCard
                   key={booking.id}
                   booking={booking}
@@ -128,8 +157,12 @@ export default function BookingsPage() {
 
         <TabsContent value="past" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {pastBookings.length > 0 ? (
-              pastBookings.map((booking: any) => (
+            {isLoading ? (
+              <div className="col-span-full text-center py-16">
+                <p className="text-muted-foreground">Cargando reservas...</p>
+              </div>
+            ) : pastBookings.length > 0 ? (
+              pastBookings.map((booking: IBookingUser) => (
                 <BookingCard
                   key={booking.id}
                   booking={booking}

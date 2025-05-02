@@ -14,10 +14,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { statusColors, statusText } from "@/utils/data";
+import type { IBookingUser } from "@/types/booking";
+import moment from "moment";
+import "moment/locale/es";
 
 interface BookingDetailsProps {
-  booking: any;
+  booking: IBookingUser;
   open: boolean;
   onClose: () => void;
 }
@@ -27,8 +29,34 @@ export function BookingDetails({
   open,
   onClose,
 }: BookingDetailsProps) {
-  const canCancel =
-    booking.status === "confirmado" || booking.status === "pendiente";
+  // Map API status to UI status
+  const mapStatus = (status: string) => {
+    const statusMap: Record<string, string> = {
+      completed: "completado",
+      confirmed: "confirmado",
+      pending: "pendiente",
+      cancelled: "cancelado",
+    };
+    return statusMap[status] || status;
+  };
+
+  const uiStatus = mapStatus(booking.status);
+
+  const statusColors = {
+    confirmado: "bg-green-50 text-green-700 border-green-200",
+    pendiente: "bg-amber-50 text-amber-700 border-amber-200",
+    completado: "bg-blue-50 text-blue-700 border-blue-200",
+    cancelado: "bg-red-50 text-red-700 border-red-200",
+  };
+
+  const statusText = {
+    confirmado: "Confirmado",
+    pendiente: "Pendiente",
+    completado: "Completado",
+    cancelado: "Cancelado",
+  };
+
+  // Format the date from ISO string
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -64,21 +92,23 @@ export function BookingDetails({
         <div className="bg-gradient-to-r dark:from-black border-none">
           <div className="relative h-48 sm:h-64 w-full">
             <img
-              src={booking.tourImage || "/placeholder.svg"}
-              alt={booking.tourName}
+              src={booking.product_banner || "/placeholder.svg"}
+              alt={booking.product_name}
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"></div>
             <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
               <Badge
-                className={`mb-3 font-normal py-1 px-2 ${statusColors[booking.status as keyof typeof statusColors]}`}
+                className={`mb-3 font-normal py-1 px-2 ${statusColors[uiStatus as keyof typeof statusColors]}`}
                 variant="outline"
               >
-                {statusText[booking.status as keyof typeof statusText]}
+                {statusText[uiStatus as keyof typeof statusText]}
               </Badge>
-              <h3 className="text-2xl font-medium mb-1">{booking.tourName}</h3>
+              <h3 className="text-2xl font-medium mb-1">
+                {booking.product_name}
+              </h3>
               <p className="text-sm opacity-90">
-                Reserva #{booking.bookingNumber}
+                Reserva #{booking.id.split("-").pop()}
               </p>
             </div>
           </div>
@@ -101,7 +131,9 @@ export function BookingDetails({
                     <div>
                       <p className="font-medium">Fechas</p>
                       <p className="text-muted-foreground">
-                        del 1 al 3 de marzo, 2025
+                        {moment(booking.tourDate).format(
+                          "dddd, D [de] MMMM - h:mm A"
+                        )}
                       </p>
                     </div>
                   </div>
@@ -109,9 +141,7 @@ export function BookingDetails({
                     <MapPin className="h-4 w-4 mr-3 mt-0.5 text-primary" />
                     <div>
                       <p className="font-medium">Ubicación</p>
-                      <p className="text-muted-foreground">
-                        {booking.location}
-                      </p>
+                      <p className="text-muted-foreground">{`${booking.product_address}, ${booking.country}`}</p>
                     </div>
                   </div>
                   <div className="flex items-start">
@@ -119,8 +149,8 @@ export function BookingDetails({
                     <div>
                       <p className="font-medium">Participantes</p>
                       <p className="text-muted-foreground">
-                        {booking.participants}{" "}
-                        {booking.participants === 1 ? "persona" : "personas"}
+                        {booking.tickets}{" "}
+                        {booking.tickets === 1 ? "persona" : "personas"}
                       </p>
                     </div>
                   </div>
@@ -128,9 +158,7 @@ export function BookingDetails({
                     <Clock className="h-4 w-4 mr-3 mt-0.5 text-primary" />
                     <div>
                       <p className="font-medium">Duración</p>
-                      <p className="text-muted-foreground">
-                        {booking.duration}
-                      </p>
+                      <p className="text-muted-foreground">1 día</p>
                     </div>
                   </div>
                 </div>
@@ -143,7 +171,7 @@ export function BookingDetails({
                     Información del tour
                   </h4>
                   <p className="text-sm text-muted-foreground line-clamp-2">
-                    {booking.description}
+                    {booking.product_description}
                   </p>
                 </div>
               </TabsContent>
@@ -152,12 +180,12 @@ export function BookingDetails({
 
           <div className="px-6 pb-6 pt-4 flex flex-col sm:flex-row gap-2 justify-end w-full">
             <div className="flex gap-2">
-              {canCancel && (
+              {/*  {canCancel && (
                 <Button variant="destructive" size="sm">
                   Cancelar reserva
                 </Button>
-              )}
-              <Button variant="outline" size="sm" className="gap-1.5">
+              )} */}
+              <Button variant="secondary" size="sm" className="gap-1.5">
                 <Download className="h-3.5 w-3.5" />
                 Descargar voucher
               </Button>

@@ -12,16 +12,16 @@ import Link from "next/link";
 // Footer navigation data
 const footerNavigation = {
   experiencias: [
-    { name: "Tours Privados", href: "#" },
-    { name: "Villas Exclusivas", href: "#" },
-    { name: "Yates & Cruceros", href: "#" },
+    { name: "Tours Privados", href: "/" },
+    { name: "Alquileres", href: "/" },
+    { name: "Propiedades", href: "/" },
   ],
   empresa: [
-    { name: "Sobre Nosotros", href: "#" },
-    { name: "Blog", href: "#" },
-    { name: "Contacto", href: "#" },
+    { name: "Sé parte", href: "/investment" },
+    { name: "Blog", href: "/blog" },
+    { name: "Contacto", href: "/contact" },
   ],
-  legal: [{ name: "Términos y Condiciones", href: "#" }],
+  legal: [{ name: "Términos y Condiciones", href: "/terms" }],
   social: [
     { name: "Instagram", icon: Instagram, href: "#" },
     { name: "Facebook", icon: Facebook, href: "#" },
@@ -67,15 +67,15 @@ export default function Footer() {
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-sm">
                 <Phone className="h-4 w-4 flex-shrink-0" />
-                <span>+34 900 123 456</span>
+                <span>+77886116</span>
               </li>
               <li className="flex items-center gap-2 text-sm">
                 <Mail className="h-4 w-4 flex-shrink-0" />
-                <span>info@dubuu.com</span>
+                <span>team@lappsnet.com</span>
               </li>
               <li className="flex items-start gap-2 text-sm">
                 <MapPin className="h-4 w-4 flex-shrink-0 mt-0.5" />
-                <span>Calle Gran Vía 28, Madrid, España</span>
+                <span>El Salvador, La Libertad</span>
               </li>
             </ul>
           </div>
@@ -127,8 +127,7 @@ export default function Footer() {
         {/* Bottom Section */}
         <div className="mb-4 flex flex-col md:flex-row justify-between items-center text-xs">
           <p className="py-4">
-            © {new Date().getFullYear()} dubuu. Todos los derechos
-            reservados.
+            © {new Date().getFullYear()} dubuu. Todos los derechos reservados.
           </p>
           <div className="flex space-x-6">
             {footerNavigation.legal.map((item) => (

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DownloadIcon, SearchIcon } from "lucide-react";
 import { exportToExcel } from "@/lib/excelFn";
@@ -27,33 +27,29 @@ import { cn } from "@/lib/utils";
 import { bookingsColumns } from "../(columns)/columns";
 import moment from "moment";
 import "moment/locale/es";
-interface BookingsDataTableProps {
-  userId: string;
-}
+import { DataTableSkeleton } from "@/components/skeletons/datatable-skeleton";
+import { useUser } from "@clerk/nextjs";
 
-export function BookingsDataTable({ userId }: BookingsDataTableProps) {
+export function BookingsDataTable() {
+  const { user } = useUser();
+  const userId = user?.id as string;
+
   const [selectedProductId, setSelectedProductId] = useState<string>("");
   const [openProductSelect, setOpenProductSelect] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [bookingsData, setBookingsData] = useState<any[]>([]);
 
   // Fetch products for the user
-  const { data: products, error: productsError } = useGetProductsByUserIdQuery(
-    userId,
-    {
-      skip: !userId,
-    }
-  );
+  const { data: products, isLoading } = useGetProductsByUserIdQuery(userId, {
+    skip: !userId,
+  });
 
   // Fetch bookings for the selected product
-  const {
-    data: bookings,
-    isLoading: isLoadingBookings,
-    error: bookingsError,
-  } = useGetBookingsByUserIdProductIdQuery(
-    { userId, productId: selectedProductId },
-    { skip: !selectedProductId }
-  );
+  const { data: bookings, isLoading: isLoadingBookings } =
+    useGetBookingsByUserIdProductIdQuery(
+      { userId, productId: selectedProductId },
+      { skip: !selectedProductId }
+    );
 
   // Set the first product as selected when products load
   useEffect(() => {
@@ -86,7 +82,9 @@ export function BookingsDataTable({ userId }: BookingsDataTableProps) {
         Tickets: booking.tickets,
         Fecha: moment(booking.bookingDate).format("dddd, D [de] MMMM - h:mm A"),
 
-        "Fecha de reserva": moment(booking.createdAt).format("dddd, D [de] MMMM - h:mm A"),
+        "Fecha de reserva": moment(booking.createdAt).format(
+          "dddd, D [de] MMMM - h:mm A"
+        ),
         Total: new Intl.NumberFormat("en-US", {
           style: "currency",
           currency: "USD",
@@ -97,38 +95,23 @@ export function BookingsDataTable({ userId }: BookingsDataTableProps) {
     exportToExcel(dataToExport, "Bookings");
   };
 
-  // Handle error states
-  if (productsError) {
+  if (isLoading || isLoadingBookings || !products || !user) {
     return (
-      <Card className="border-red-200">
-        <CardHeader>
-          <CardTitle className="text-red-500">Error Loading Products</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>
-            There was an error loading your products. Please try again later.
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  // Handle no products
-  if (!products || products.length === 0) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Bookings</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>You dont have any products yet.</p>
-        </CardContent>
-      </Card>
+      <DataTableSkeleton
+        headers={[
+          "Cliente",
+          "Boletos",
+          "Total",
+          "Fecha",
+          "Estado",
+          "Fecha de reserva",
+        ]}
+      />
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pt-6">
       <Card>
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row gap-4 items-end mb-6">
@@ -198,16 +181,6 @@ export function BookingsDataTable({ userId }: BookingsDataTableProps) {
             <div className="space-y-2">
               <Skeleton className="h-10 w-full" />
               <Skeleton className="h-20 w-full" />
-            </div>
-          ) : bookingsError ? (
-            <div className="text-red-500">
-              <p>
-                There was an error loading bookings. Please try again later.
-              </p>
-            </div>
-          ) : !bookingsData || bookingsData.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <p>No bookings found for this product.</p>
             </div>
           ) : (
             <DataTable

@@ -10,12 +10,15 @@ import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/captions.css";
 import { Header } from "@/layouts/header";
 import { AuthProvider } from "./auth-provider";
+import NextTopLoader from "nextjs-toploader";
 
 const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
   return (
     <StoreProvider>
       <AuthProvider>
         <ThemeProvider attribute="class" defaultTheme="white">
+          <NextTopLoader />
+
           <div className="flex flex-col min-h-screen">
             <Header />
             <main className="flex-1">

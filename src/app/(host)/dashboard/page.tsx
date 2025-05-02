@@ -39,7 +39,7 @@ export default function DashboardPage() {
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">€7.780</div>
+            <div className="text-2xl font-bold">$150</div>
             <p className="text-xs text-muted-foreground">
               +12% desde el año pasado
             </p>

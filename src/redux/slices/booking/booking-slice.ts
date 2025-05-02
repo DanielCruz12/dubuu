@@ -1,7 +1,7 @@
 "use client";
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { Booking } from "@/types/booking";
+import type { Booking, IBookingUser } from "@/types/booking";
 
 export type CreateBookingInput = Omit<
   Booking,
@@ -29,7 +29,7 @@ export const bookingsApiSlice = createApi({
   tagTypes: ["Bookings"],
   endpoints: (builder) => ({
     // 🔹 Get bookings by user
-    getBookingsByUserId: builder.query<Booking[], string>({
+    getBookingsByUserId: builder.query<IBookingUser[], string>({
       query: (userId) => `/api/v1/bookings/user/${userId}`,
       providesTags: (result) =>
         result

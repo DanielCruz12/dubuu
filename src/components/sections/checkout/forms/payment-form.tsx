@@ -20,15 +20,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CreditCard } from "lucide-react";
 import { CheckoutFormValues } from "@/schemas/checkout-schema";
 import CreditCardForm from "../payment-methods/credit-card-form";
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function PaymentMethodForm({
   isLoading,
-  setShowPaymentStep
+  setShowPaymentStep,
 }: {
   isLoading: boolean;
   setShowPaymentStep: (show: boolean) => void;
@@ -89,13 +88,19 @@ export default function PaymentMethodForm({
                         htmlFor="credit"
                         className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
                       >
-                        <CreditCard className="mb-3 h-6 w-6" />
-                        Tarjeta de Crédito
+                        <Image
+                          src={"/tarjetas.svg"}
+                          className="mb-3"
+                          width={60}
+                          height={60}
+                          alt="tarjetas"
+                        />
+                        Tarjeta de Crédito/Débito
                       </FormLabel>
                     </FormItem>
                   </div>
 
-                  <div className="col-span-1">
+                  {/*    <div className="col-span-1">
                     <FormItem className="flex flex-col space-y-1">
                       <FormControl>
                         <RadioGroupItem
@@ -116,7 +121,7 @@ export default function PaymentMethodForm({
                         />
                       </FormLabel>
                     </FormItem>
-                  </div>
+                  </div> */}
                 </RadioGroup>
               </FormControl>
               <FormMessage />

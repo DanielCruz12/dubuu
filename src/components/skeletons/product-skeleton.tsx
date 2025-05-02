@@ -22,7 +22,7 @@ export default function ProductsSkeleton() {
       </div>
 
       {/* Desktop view - Grid Skeleton */}
-      <div className="animate-pulse hidden md:grid grid-cols-4 gap-2 container mx-auto h-[450px]">
+      <div className="animate-pulse hidden md:grid grid-cols-4 gap-2 mx-auto h-[450px]">
         {/* Banner skeleton */}
         <div className="col-span-2 row-span-2 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
 

@@ -20,6 +20,7 @@ import {
   Bookmark,
   Settings,
   Users,
+  LayoutDashboardIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -358,6 +359,11 @@ export const adminDashboardItems: NavItem[] = [
 
 // Host-only dashboard items
 export const hostDashboardItems: NavItem[] = [
+  {
+    title: "Panel",
+    href: "/dashboard",
+    icon: <LayoutDashboardIcon className="h-4 w-4 mr-2" />,
+  },
   {
     title: "Reservas",
     href: "/dashboard/bookings",

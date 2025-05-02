@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/popover";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Skeleton } from "@/components/ui/skeleton";
+import { DataTableSkeleton } from "@/components/skeletons/datatable-skeleton";
 
 export function ProductsDataTable() {
   const { user } = useUser();
@@ -175,15 +175,21 @@ export function ProductsDataTable() {
 
   if (isLoading || !user) {
     return (
-      <div className="container mx-auto py-10">
-        <Skeleton className="h-8 w-[200px] mb-6 animation-pulse" />
-        <Skeleton className="h-[200px] w-full rounded-lg" />
-      </div>
+      <DataTableSkeleton
+        headers={[
+          "Nombre",
+          "Precio",
+          "Fecha",
+          "Punto de Partida",
+          "Máx. Personas",
+          "Reservas",
+        ]}
+      />
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pt-6">
       <Card>
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row gap-4 items-end mb-6">

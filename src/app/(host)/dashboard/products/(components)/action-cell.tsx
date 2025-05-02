@@ -30,11 +30,6 @@ export function ActionCell({
   // Usar el selectedDateId del tour si no se proporciona explícitamente
   const dateId = selectedDateId || tour.selectedDateId;
 
-  // Encontrar la fecha seleccionada para mostrar información relevante
-  const selectedDate = dateId
-    ? tour.tour.tour_dates.find((date) => date.id === dateId)
-    : undefined;
-
   const handleSaveTour = (updatedTour: Partial<ITourProduct>) => {
     console.log("Tour actualizado:", updatedTour);
     if (onUpdate) {
@@ -65,18 +60,6 @@ export function ActionCell({
           <DropdownMenuItem onClick={() => setShowEditModal(true)}>
             Editar
           </DropdownMenuItem>
-          {selectedDate && (
-            <DropdownMenuItem
-              onClick={() => {
-                navigator.clipboard.writeText(
-                  `Fecha: ${new Date(selectedDate.date).toLocaleDateString()}, Max: ${selectedDate.max_people}`
-                );
-                toast.success("Información de fecha copiada al portapapeles");
-              }}
-            >
-              Copiar info de fecha
-            </DropdownMenuItem>
-          )}
         </DropdownMenuContent>
       </DropdownMenu>
 

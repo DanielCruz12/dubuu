@@ -13,6 +13,20 @@ export interface Booking {
   idTransaccion: string;
 }
 
+export interface IBookingUser {
+  id: string
+  tickets: number
+  total: string
+  status: string
+  product_id: string
+  product_name: string
+  product_banner: string
+  product_address: string
+  country: string
+  product_description: string
+  tourDate: string
+}
+
 export type CreateBookingInput = Omit<
   Booking,
   "id" | "created_at" | "updated_at"

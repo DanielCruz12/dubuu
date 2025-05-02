@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { PersonalInfoSkeleton } from "./skeletons/personal-info-skeleton";
 
 const personalInfoSchema = z.object({
   firstName: z.string().min(2, {
@@ -72,7 +73,7 @@ export default function PersonalInfoForm() {
   }
 
   if (!isLoaded) {
-    return <div>Cargando...</div>;
+    return <PersonalInfoSkeleton />;
   }
 
   return (

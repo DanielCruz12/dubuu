@@ -1,41 +1,59 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
-import { useFormContext } from "react-hook-form"
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { CheckoutFormValues } from "@/schemas/checkout-schema"
-import { countries } from "@/utils/data"
-import { getCountryById, getRegionById } from "@/utils"
+import { useEffect } from "react";
+import { useFormContext } from "react-hook-form";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { CheckoutFormValues } from "@/schemas/checkout-schema";
+import { countries } from "@/utils/data";
+import { getCountryById, getRegionById } from "@/utils";
 
 export default function ShippingForm() {
-  const { control, watch, setValue } = useFormContext<CheckoutFormValues>()
+  const { control, watch, setValue } = useFormContext<CheckoutFormValues>();
 
-  const selectedCountry = watch("country")
+  const selectedCountry = watch("country");
 
   // Update zipCode when region changes
   useEffect(() => {
     const subscription = watch((value, { name }) => {
       if (name === "state" && value.state && value.country) {
-        const region = getRegionById(value.country, value.state)
+        const region = getRegionById(value.country, value.state);
         if (region && region.codigoPostal) {
-          setValue("zipCode", region.codigoPostal)
+          setValue("zipCode", region.codigoPostal);
         } else {
-          setValue("zipCode", "")
+          setValue("zipCode", "");
         }
       }
-    })
+    });
 
-    return () => subscription.unsubscribe()
-  }, [watch, setValue])
+    return () => subscription.unsubscribe();
+  }, [watch, setValue]);
 
   return (
     <Card className="overflow-hidden pb-4">
       <CardHeader className="pb-8">
-        <CardTitle className="text-xl">Dirección de Envío</CardTitle>
-        <CardDescription>Ingresa tu dirección de envío para la entrega.</CardDescription>
+        <CardTitle className="text-xl">Dirección</CardTitle>
+        <CardDescription>Ingresa tu dirección.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 pt-6">
         <FormField
@@ -64,10 +82,10 @@ export default function ShippingForm() {
                 <FormLabel>País</FormLabel>
                 <Select
                   onValueChange={(value) => {
-                    field.onChange(value)
+                    field.onChange(value);
                     // Reset region when country changes
-                    setValue("state", "")
-                    setValue("zipCode", "")
+                    setValue("state", "");
+                    setValue("zipCode", "");
                   }}
                   defaultValue={field.value}
                 >
@@ -94,7 +112,10 @@ export default function ShippingForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Región</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger className="transition-all duration-200 ">
                       <SelectValue placeholder="Seleccionar región" />
@@ -102,11 +123,14 @@ export default function ShippingForm() {
                   </FormControl>
                   <SelectContent>
                     {selectedCountry &&
-                      getCountryById(selectedCountry)?.regiones.map((region) => (
-                        <SelectItem key={region.id} value={region.id}>
-                          {getCountryById(selectedCountry)?.nombre} - {region.nombre}
-                        </SelectItem>
-                      ))}
+                      getCountryById(selectedCountry)?.regiones.map(
+                        (region) => (
+                          <SelectItem key={region.id} value={region.id}>
+                            {getCountryById(selectedCountry)?.nombre} -{" "}
+                            {region.nombre}
+                          </SelectItem>
+                        )
+                      )}
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -152,6 +176,5 @@ export default function ShippingForm() {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
-

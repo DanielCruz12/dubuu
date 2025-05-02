@@ -27,7 +27,6 @@ import {
 } from "@/components/ui/accordion";
 import { BookingStatus } from "@/components/booking-status";
 import clsx from "clsx";
-import type { Booking } from "@/types/booking";
 import { useGetReviewsQuery } from "@/redux/slices/product/review-slice";
 import { isProductType } from "@/utils";
 import UpTop from "@/components/up-top";
@@ -88,12 +87,11 @@ export default function ProductBooking() {
   if (isError || !product)
     return <div className="h-screen">Producto no encontrado</div>;
 
-  const existingBooking: Booking | undefined = userBookings?.find(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const existingBooking: any = userBookings?.find(
     (b) => b.product_id === product.id
   );
   const isTour = isProductType(product, "tours");
-
-  console.log(reviews, "reviews");
 
   return (
     <div className="mx-auto md:px-0">

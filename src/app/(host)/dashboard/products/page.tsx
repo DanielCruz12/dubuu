@@ -1,5 +1,4 @@
 import { DashboardTitle } from "@/components/dashboard-title";
-import React from "react";
 import { ProductsDataTable } from "./(components)/products-table";
 
 const Products = () => {
