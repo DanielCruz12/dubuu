@@ -33,6 +33,8 @@ import { reviewsApiSlice } from "@/redux/slices/product/review-slice";
 import { productTypesApiSlice } from "@/redux/slices/product/product-types";
 import { bookingsApiSlice } from "@/redux/slices/booking/booking-slice";
 import { usersApiSlice } from "@/redux/slices/user/user-slice";
+import { favoritesApiSlice } from "@/redux/slices/favorite/favorite-slice";
+
 import authReducer from "./slices/auth/auth-slice";
 
 // Función para crear un almacenamiento "inerte" en entornos sin window (server-side)
@@ -63,6 +65,7 @@ const persistConfig = {
     "auth",
     "paymentAccountApiSlice",
     "payments",
+    "favoritesApiSlice",
     // Aquí puedes indicar qué reducers deseas persistir
     // "productsApiSlice", // Si deseas persistir el slice de productos
     // "paymentApiSlice", // Si deseas persistir el slice de pagos
@@ -82,6 +85,7 @@ const rootReducer = combineReducers({
   [reviewsApiSlice.reducerPath]: reviewsApiSlice.reducer,
   [productTypesApiSlice.reducerPath]: productTypesApiSlice.reducer,
   [bookingsApiSlice.reducerPath]: bookingsApiSlice.reducer,
+  [favoritesApiSlice.reducerPath]: favoritesApiSlice.reducer,
   [usersApiSlice.reducerPath]: usersApiSlice.reducer,
   auth: authReducer,
   filters: filtersReducer,
@@ -105,6 +109,7 @@ export const makeStore = () =>
         paymentAccountApiSlice.middleware,
         productTypesApiSlice.middleware,
         bookingsApiSlice.middleware,
+        favoritesApiSlice.middleware,
         usersApiSlice.middleware
       ),
   });
