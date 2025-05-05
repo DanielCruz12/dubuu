@@ -26,6 +26,7 @@ export default function TourSection({
 }) {
   const plugin = useRef(Autoplay({ delay: 2200, stopOnInteraction: true }));
   const showSeeAllButton = products.length > 10;
+  const showCarousel = products.length > 3;
 
   if (isLoading) {
     return <TourCardSkeleton />;
@@ -37,26 +38,38 @@ export default function TourSection({
 
   return (
     <section className="py-6">
-      <Carousel
-        plugins={[plugin.current]}
-        className="w-full"
-        onMouseEnter={plugin.current.stop}
-        onMouseLeave={plugin.current.reset}
-      >
-        <CarouselContent>
-          {products.map((tour) => (
-            <CarouselItem
-              key={tour.id}
-              className="md:basis-1/2 lg:basis-1/3 p-4"
-            >
-              <TourCard {...tour} />
-            </CarouselItem>
-          ))}
-        </CarouselContent>
+      {showCarousel ? (
+        // Show carousel when there are more than 3 products
+        <Carousel
+          plugins={[plugin.current]}
+          className="w-full"
+          onMouseEnter={plugin.current.stop}
+          onMouseLeave={plugin.current.reset}
+        >
+          <CarouselContent>
+            {products.map((tour) => (
+              <CarouselItem
+                key={tour.id}
+                className="md:basis-1/2 lg:basis-1/3 p-4"
+              >
+                <TourCard {...tour} />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
 
-        <CarouselPrevious className="hidden md:flex" />
-        <CarouselNext className="hidden md:flex" />
-      </Carousel>
+          <CarouselPrevious className="hidden md:flex" />
+          <CarouselNext className="hidden md:flex" />
+        </Carousel>
+      ) : (
+        // Show grid layout when there are 3 or fewer products
+        <div className="grid grid-cols-1 md:grid-cols-4 lg-grid-cols-4 gap-4">
+          {products.map((tour) => (
+            <div key={tour.id}>
+              <TourCard {...tour} />
+            </div>
+          ))}
+        </div>
+      )}
 
       {showSeeAllButton && (
         <div className="flex justify-center mt-8">

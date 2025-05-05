@@ -124,6 +124,7 @@ export function TourCard(product: IProduct) {
                 src={image || "/tour.jpg"}
                 alt={`${name} - Image ${index + 1}`}
                 fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover"
               />
             </div>

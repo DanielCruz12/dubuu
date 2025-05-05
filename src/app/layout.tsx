@@ -4,6 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import type { Metadata } from "next";
 import Script from "next/script";
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -151,7 +152,7 @@ export default async function RootLayout({
           />
           <meta property="og:image" content="https://www.dubuu.com/tour.jpg" />
 
-          <meta name="twitter:card" content="summary_large_image" />
+          {/*   <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:site" content="@Daniel_CruzD" />
           <meta name="twitter:creator" content="@Daniel_CruzD" />
           <meta
@@ -162,7 +163,21 @@ export default async function RootLayout({
             name="twitter:description"
             content="Diseñamos experiencias únicas de viaje en El Salvador y Centroamérica. Tours de lujo, alquiler de vehículos premium y propiedades exclusivas para viajeros exigentes."
           />
-          <meta name="twitter:image" content="https://www.dubuu.com/tour.jpg" />
+          <meta name="twitter:image" content="https://www.dubuu.com/tour.jpg" /> */}
+
+        {/*   <meta property="og:type" content="website" />
+          <meta property="og:url" content="https://tusitio.com/" />
+          <meta property="og:title" content="Tu Sitio Web" />
+          <meta
+            property="og:description"
+            content="Descripción atractiva de tu sitio web"
+          />
+          <meta
+            property="og:image"
+            content="https://tusitio.com/og-image.jpg"
+          />
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" /> */}
 
           <Script
             id="metadata"
@@ -209,7 +224,10 @@ export default async function RootLayout({
           </Script>
         </head>
         <body className={`${inter.className} flex min-h-screen flex-col`}>
-          <GlobalProviders>{children}</GlobalProviders>
+          <GlobalProviders>
+            {children}
+            <Toaster richColors />
+          </GlobalProviders>
         </body>
       </html>
     </ClerkProvider>

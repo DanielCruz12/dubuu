@@ -7,8 +7,8 @@ export function TourCardSkeleton() {
     <section className="py-6 w-full">
       <Carousel className="w-full">
         <CarouselContent>
-          {Array.from({ length: 3 }).map((_, index) => (
-            <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3 p-4">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/4 p-4">
               <div className="relative aspect-[16/10] rounded-lg">
                 <Card className="overflow-hidden rounded-xl border-0 shadow-lg">
                   <div className="relative aspect-[16/10] rounded-t-lg overflow-hidden">

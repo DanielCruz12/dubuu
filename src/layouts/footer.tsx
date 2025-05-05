@@ -31,7 +31,7 @@ const footerNavigation = {
 
 export default function Footer() {
   return (
-    <footer className="border py-8">
+    <footer className="border-t py-8">
       {/* Main Footer Content */}
       <div className="px-6 md:px-20 mt-8">
         {/* Top Section with Logo and Tagline */}
@@ -67,7 +67,7 @@ export default function Footer() {
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-sm">
                 <Phone className="h-4 w-4 flex-shrink-0" />
-                <span>+77886116</span>
+                <span>+(503) 77886116</span>
               </li>
               <li className="flex items-center gap-2 text-sm">
                 <Mail className="h-4 w-4 flex-shrink-0" />

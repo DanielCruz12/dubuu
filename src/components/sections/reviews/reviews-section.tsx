@@ -1,36 +1,50 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Separator } from "@/components/ui/separator"
-import ReviewSummary from "./reviews-summary"
-import ReviewList from "./review-list"
-import ReviewForm from "./reviews-form"
-import { Button } from "@/components/ui/button"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Info } from "lucide-react"
-import { ReusableDialog } from "@/components/reusable-dialog"
-import type { Booking } from "@/types/booking"
-import type { Review } from "@/types/review" // Assuming you have a Review type
+import { useState } from "react";
+import { Separator } from "@/components/ui/separator";
+import ReviewSummary from "./reviews-summary";
+import ReviewList from "./review-list";
+import ReviewForm from "./reviews-form";
+import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Info } from "lucide-react";
+import { ReusableDialog } from "@/components/reusable-dialog";
+import type { Booking } from "@/types/booking";
+import type { Review } from "@/types/review"; // Assuming you have a Review type
+import { useUser } from "@clerk/nextjs";
 
 interface ReviewSectionProps {
-  productId: string
-  existingBooking?: Booking
-  reviews: Review[]
-  isLoading: boolean
+  productId: string;
+  existingBooking?: Booking;
+  reviews: Review[];
+  isLoading: boolean;
 }
 
-export default function ReviewSection({ productId, existingBooking, reviews, isLoading }: ReviewSectionProps) {
-  const [openDialogReview, setOpenDialogReview] = useState(false)
+export default function ReviewSection({
+  productId,
+  existingBooking,
+  reviews,
+  isLoading,
+}: ReviewSectionProps) {
+  const [openDialogReview, setOpenDialogReview] = useState(false);
+
+  const { user } = useUser();
 
   if (isLoading) {
-    return <div className="animate-pulse">Loading...</div>
+    return <div className="animate-pulse">Loading...</div>;
   }
 
   // Check if user has a booking
-  const hasBooking = !!existingBooking
+  const hasBooking = !!existingBooking;
 
   // Check if user already left a review
-  const alreadyHadAReview = hasBooking && reviews.some((review) => existingBooking.user_id === review.user_id)
+  const alreadyHadAReview =
+    hasBooking &&
+    reviews.some((review) => existingBooking.user_id === review.user_id);
 
   return (
     <div className="mt-12 space-y-8">
@@ -38,46 +52,60 @@ export default function ReviewSection({ productId, existingBooking, reviews, isL
       <ReviewSummary reviews={reviews} />
       <Separator className="dark:border-muted" />
       <ReviewList reviews={reviews} />
-      <div>
-        <div className="flex items-center mb-2 px-2">
-          <h3 className="text-lg md:text-xl font-semibold">Deja una reseña</h3>
-          <Popover>
-            <PopoverTrigger className="px-2 ml-2 ">
-              <Info className="h-4 w-4" />
-              <span className="sr-only">Información sobre reseñas</span>
-            </PopoverTrigger>
-            <PopoverContent className="max-w-xs">
-              <p className="text-sm text-muted-foreground">
-                Por favor, asegúrate de que tu reseña cumpla con nuestras políticas de contenido. No se permiten
-                comentarios ofensivos, difamatorios o inapropiados.
-              </p>
-            </PopoverContent>
-          </Popover>
-        </div>
-        <p className="text-sm text-muted-foreground px-2">
-          Tu opinión es importante para nosotros y ayudan a otros viajeros a tomar decisiones informadas y mejoran
-          nuestros servicios. Agradecemos tu tiempo y comentarios.
-        </p>
 
-        <ReusableDialog
-          trigger={
-            <Button disabled={!hasBooking || alreadyHadAReview} variant="outline" className="text-sm mt-2 ">
-              {!hasBooking
-                ? "Necesitas una reserva para dejar una reseña"
-                : alreadyHadAReview
-                  ? "¡Gracias por tu reseña!"
-                  : "Puedes dejar una reseña"}
-            </Button>
-          }
-          title="Escribe tu reseña"
-          description="Comparte tu experiencia con otros viajeros"
-          className=""
-          open={openDialogReview}
-          onOpenChange={setOpenDialogReview}
-        >
-          <ReviewForm setOpenDialogReview={setOpenDialogReview} productId={productId} />
-        </ReusableDialog>
-      </div>
+      {user && hasBooking && (
+        <div>
+          <div className="flex items-center mb-2 px-2">
+            <h3 className="text-lg md:text-xl font-semibold">
+              Deja una reseña
+            </h3>
+            <Popover>
+              <PopoverTrigger className="px-2 ml-2 ">
+                <Info className="h-4 w-4" />
+                <span className="sr-only">Información sobre reseñas</span>
+              </PopoverTrigger>
+              <PopoverContent className="max-w-xs">
+                <p className="text-sm text-muted-foreground">
+                  Por favor, asegúrate de que tu reseña cumpla con nuestras
+                  políticas de contenido. No se permiten comentarios ofensivos,
+                  difamatorios o inapropiados.
+                </p>
+              </PopoverContent>
+            </Popover>
+          </div>
+          <p className="text-sm text-muted-foreground px-2">
+            Tu opinión es importante para nosotros y ayudan a otros viajeros a
+            tomar decisiones informadas y mejoran nuestros servicios.
+            Agradecemos tu tiempo y comentarios.
+          </p>
+
+          <ReusableDialog
+            trigger={
+              <Button
+                disabled={!hasBooking || alreadyHadAReview}
+                variant="outline"
+                className="text-sm mt-2 "
+              >
+                {!hasBooking
+                  ? "Necesitas una reserva para dejar una reseña"
+                  : alreadyHadAReview
+                    ? "¡Gracias por tu reseña!"
+                    : "Puedes dejar una reseña"}
+              </Button>
+            }
+            title="Escribe tu reseña"
+            description="Comparte tu experiencia con otros viajeros"
+            className=""
+            open={openDialogReview}
+            onOpenChange={setOpenDialogReview}
+          >
+            <ReviewForm
+              setOpenDialogReview={setOpenDialogReview}
+              productId={productId}
+            />
+          </ReusableDialog>
+        </div>
+      )}
     </div>
-  )
+  );
 }
