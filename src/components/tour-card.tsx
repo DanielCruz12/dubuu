@@ -191,7 +191,7 @@ export function TourCard(product: IProduct) {
                   <Button
                     size="icon"
                     variant="ghost"
-                    className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 dark:bg-black z-10 w-8 h-8 sm:w-10 sm:h-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-[#ffffff6b] dark:bg-black z-10 w-8 h-8 sm:w-10 sm:h-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                     onClick={prevImage}
                   >
                     <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -199,7 +199,7 @@ export function TourCard(product: IProduct) {
                   <Button
                     size="icon"
                     variant="ghost"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 dark:bg-black z-10 w-8 h-8 sm:w-10 sm:h-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-[#ffffff6b] dark:bg-black z-10 w-8 h-8 sm:w-10 sm:h-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                     onClick={nextImage}
                   >
                     <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -225,7 +225,7 @@ export function TourCard(product: IProduct) {
         )}
 
         <button
-          className="absolute top-2 right-2 z-10 p-2 rounded-full transition-colors duration-200"
+          className="absolute top-2 right-2 bg-[#ffffff39] z-10 p-2 rounded-full transition-colors duration-200"
           onClick={(e) => {
             e.stopPropagation();
             toggleFavorite(id);
@@ -236,7 +236,7 @@ export function TourCard(product: IProduct) {
             className={`h-5 w-5 ${
               isFavorited
                 ? "fill-rose-500 text-rose-500"
-                : "text-white stroke-[2.5px] drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)] hover:text-rose-100"
+                : "text-white stroke-[2.5px] drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)] hover:text-rose-400"
             } ${isSaving || isUnsaving ? "opacity-50" : ""}`}
           />
         </button>
@@ -274,6 +274,7 @@ export function TourCard(product: IProduct) {
         <CardFooter className="flex items-center justify-between">
           <div className="font-semibold">${calculatePriceWithTaxes(price)}</div>
           <Button
+            variant="secondary"
             className="rounded-full"
             onClick={() => navigateToTour(id, country || "")}
           >

@@ -26,7 +26,7 @@ export default function TourSection({
 }) {
   const plugin = useRef(Autoplay({ delay: 2200, stopOnInteraction: true }));
   const showSeeAllButton = products.length > 10;
-  const showCarousel = products.length > 3;
+  const showCarousel = products.length > 4;
 
   if (isLoading) {
     return <TourCardSkeleton />;
@@ -50,7 +50,7 @@ export default function TourSection({
             {products.map((tour) => (
               <CarouselItem
                 key={tour.id}
-                className="md:basis-1/2 lg:basis-1/3 p-4"
+                className="md:basis-1/2 lg:basis-1/4 p-4"
               >
                 <TourCard {...tour} />
               </CarouselItem>
@@ -62,7 +62,7 @@ export default function TourSection({
         </Carousel>
       ) : (
         // Show grid layout when there are 3 or fewer products
-        <div className="grid grid-cols-1 md:grid-cols-4 lg-grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {products.map((tour) => (
             <div key={tour.id}>
               <TourCard {...tour} />

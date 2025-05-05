@@ -140,7 +140,7 @@ export function Header() {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild className="cursor-pointer py-3">
-                      <Link href="/investment">
+                      <Link href="/contact">
                         <Handshake className="mr-2 h-4 w-4" />
                         <span>¿Quieres ser parte?</span>
                       </Link>

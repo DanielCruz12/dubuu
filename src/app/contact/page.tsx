@@ -152,16 +152,16 @@ export default function ContactForm() {
   };
 
   return (
-    <div className="w-full bg-white py-12 px-4 sm:px-6 lg:px-8 rounded-xl shadow-sm">
+    <div className="w-full py-12 px-4 sm:px-6 lg:px-8 rounded-xl shadow-sm">
       <div className="max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-5 gap-8">
           <div className="lg:col-span-3">
-            <Card className="border-0 shadow-lg">
-              <CardHeader className="bg-black text-white rounded-t-lg">
+            <Card className="border">
+              <CardHeader className=" rounded-t-lg">
                 <CardTitle className="text-2xl font-bold">
                   Solicitud de Listado - Dubuu
                 </CardTitle>
-                <CardDescription className="text-white/90">
+                <CardDescription>
                   Complete el formulario para listar su producto o servicio en
                   nuestra plataforma
                 </CardDescription>
@@ -170,7 +170,7 @@ export default function ContactForm() {
                 <Form {...form}>
                   <form
                     onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-6"
+                    className="space-y-6 pb-4"
                   >
                     <div className="grid md:grid-cols-2 gap-4">
                       <FormField
@@ -181,7 +181,7 @@ export default function ContactForm() {
                             <FormLabel>Nombre</FormLabel>
                             <FormControl>
                               <div className="relative">
-                                <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                                <User className="absolute left-3 top-3 h-4 w-4" />
                                 <Input
                                   className="pl-9"
                                   placeholder="Ingrese su nombre"
@@ -386,7 +386,7 @@ export default function ContactForm() {
                               </Link>{" "}
                               y la{" "}
                               <Link
-                                href="/terms"
+                                href="/privacy"
                                 className="text-gray-700 hover:underline"
                               >
                                 Política de Privacidad
@@ -413,9 +413,9 @@ export default function ContactForm() {
 
           <div className="lg:col-span-2">
             <div className="space-y-6">
-              <Card className="border-0 shadow-lg p-6 bg-gray-50">
+              <Card className="border p-6">
                 <div className="flex items-start space-x-4">
-                  <div className="bg-gray-200 p-3 rounded-full">
+                  <div className="p-3 rounded-full">
                     <Info className="h-6 w-6 text-gray-700" />
                   </div>
                   <div>

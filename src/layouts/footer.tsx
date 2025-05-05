@@ -12,9 +12,9 @@ import Link from "next/link";
 // Footer navigation data
 const footerNavigation = {
   experiencias: [
-    { name: "Tours Privados", href: "/" },
-    { name: "Alquileres", href: "/" },
-    { name: "Propiedades", href: "/" },
+    { name: "Tours Privados", href: "/home/tours/all" },
+    { name: "Alquileres", href: "/home/rental/all" },
+    { name: "Propiedades", href: "/home/properties/all" },
   ],
   empresa: [
     { name: "Sé parte", href: "/investment" },
