@@ -2,7 +2,7 @@
 "use client";
 import Image from "next/image";
 import type React from "react";
-import { useState } from "react";
+import { useState, useRef, useEffect, type TouchEvent } from "react";
 import { ChevronLeft, ChevronRight, Heart, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -34,6 +34,10 @@ export function TourCard(product: IProduct) {
   } = product;
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const carouselRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { user } = useUser();
 
@@ -51,6 +55,19 @@ export function TourCard(product: IProduct) {
   const [saveProduct, { isLoading: isSaving }] = useSaveProductMutation();
   const [unsaveProduct, { isLoading: isUnsaving }] = useUnsaveProductMutation();
 
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkIfMobile();
+    window.addEventListener("resize", checkIfMobile);
+
+    return () => {
+      window.removeEventListener("resize", checkIfMobile);
+    };
+  }, []);
+
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (images && images.length > 0) {
@@ -67,6 +84,38 @@ export function TourCard(product: IProduct) {
         prev === 0 ? images.length - 1 : prev - 1
       );
     }
+  };
+
+  const handleTouchStart = (e: TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe && images && images.length > 0) {
+      setCurrentImageIndex((prev) =>
+        prev === images.length - 1 ? 0 : prev + 1
+      );
+    }
+
+    if (isRightSwipe && images && images.length > 0) {
+      setCurrentImageIndex((prev) =>
+        prev === 0 ? images.length - 1 : prev - 1
+      );
+    }
+
+    // Reset values
+    setTouchStart(0);
+    setTouchEnd(0);
   };
 
   const toggleFavorite = async (productId: string) => {
@@ -107,8 +156,12 @@ export function TourCard(product: IProduct) {
   return (
     <Card className="overflow-hidden rounded-xl border-none shadow-lg">
       <div
+        ref={carouselRef}
         className="relative aspect-[16/10] rounded-t-lg overflow-hidden group"
         onClick={(e) => e.stopPropagation()}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         <div className="relative w-full h-full">
           {productImages.map((image, index) => (
@@ -132,22 +185,26 @@ export function TourCard(product: IProduct) {
 
           {productImages.length > 1 && (
             <>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 dark:bg-black z-10 w-8 h-8 sm:w-10 sm:h-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                onClick={prevImage}
-              >
-                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-              </Button>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 dark:bg-black z-10 w-8 h-8 sm:w-10 sm:h-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                onClick={nextImage}
-              >
-                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-              </Button>
+              {!isMobile && (
+                <>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 dark:bg-black z-10 w-8 h-8 sm:w-10 sm:h-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    onClick={prevImage}
+                  >
+                    <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 dark:bg-black z-10 w-8 h-8 sm:w-10 sm:h-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    onClick={nextImage}
+                  >
+                    <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </Button>
+                </>
+              )}
               <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
                 {productImages.map((_, index) => (
                   <div

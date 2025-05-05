@@ -1,4 +1,4 @@
-import { Search } from "lucide-react";
+import { ArrowDownUp, Search } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -31,7 +31,10 @@ export function DataTableSkeleton({ headers }: { headers: string[] }) {
             <TableRow>
               {headers.map((header, index) => (
                 <TableHead key={index} className="w-[250px]">
-                  {header} <span className="ml-1 text-gray-400">↕</span>
+                  <div className="flex items-center gap-2">
+                    {header}
+                    <ArrowDownUp className="ml-2 h-4 w-4" />
+                  </div>
                 </TableHead>
               ))}
             </TableRow>
