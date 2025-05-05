@@ -21,7 +21,10 @@ const footerNavigation = {
     { name: "Blog", href: "/blog" },
     { name: "Contacto", href: "/contact" },
   ],
-  legal: [{ name: "Términos y Condiciones", href: "/terms" }],
+  legal: [
+    { name: "Términos y Condiciones", href: "/terms" },
+    { name: "Política de Privacidad", href: "/privacy" },
+  ],
   social: [
     { name: "Instagram", icon: Instagram, href: "#" },
     { name: "Facebook", icon: Facebook, href: "#" },
@@ -129,7 +132,7 @@ export default function Footer() {
           <p className="py-4">
             © {new Date().getFullYear()} dubuu. Todos los derechos reservados.
           </p>
-          <div className="flex space-x-6">
+          <div className="flex space-x-6 gap-4">
             {footerNavigation.legal.map((item) => (
               <Link
                 key={item.name}

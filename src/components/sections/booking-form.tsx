@@ -21,8 +21,9 @@ import { Separator } from "../ui/separator";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { calculateTotal, isProductType } from "@/utils";
+import { isProductType } from "@/utils";
 import { useState, useRef } from "react";
+import { calculatePriceWithTaxes, getTaxBreakdown } from "@/lib/price";
 
 import "moment/locale/es";
 const schema = z.object({
@@ -66,13 +67,15 @@ export default function BookingForm({
   const isTour = isProductType(product, "tours");
 
   const availableDates = isTour
-    ? product.tour.tour_dates.map((dateObj) => ({
-        value: dateObj.id,
-        label: moment(dateObj.date).format("dddd, D [de] MMMM - h:mm A"),
-        maxPeople: dateObj.max_people,
-        peopleBooked: dateObj.people_booked,
-        availableSpots: dateObj.max_people - dateObj.people_booked,
-      }))
+    ? product.tour.tour_dates
+        .filter((dateObj) => moment(dateObj.date).isAfter(moment()))
+        .map((dateObj) => ({
+          value: dateObj.id,
+          label: moment(dateObj.date).format("dddd, D [de] MMMM - h:mm A"),
+          maxPeople: dateObj.max_people,
+          peopleBooked: dateObj.people_booked,
+          availableSpots: dateObj.max_people - dateObj.people_booked,
+        }))
     : [];
 
   const {
@@ -101,7 +104,10 @@ export default function BookingForm({
       datetime: watchData.datetime,
       tickets: watchData.tickets,
       addons: watchData.addons,
-      total: calculateTotal({ watchData, product }),
+      total: calculatePriceWithTaxes(product.price, {
+        quantity: watchData.tickets.adult,
+        formatResult: false,
+      }) as number,
       user_id: user.id,
       product_id: product.id,
     });
@@ -183,7 +189,9 @@ export default function BookingForm({
                           <span
                             className={`ml-2 ${d.availableSpots <= 3 && d.availableSpots > 0 ? "text-amber-500 font-semibold" : d.availableSpots <= 0 ? "text-red-500 font-semibold" : "text-emerald-400"}`}
                           >
-                            {d.availableSpots > 0 ? `(${d.availableSpots} disp.)` : "(Agotado)"}
+                            {d.availableSpots > 0
+                              ? `(${d.availableSpots} disp.)`
+                              : "(Agotado)"}
                           </span>
                         </div>
                       </SelectItem>
@@ -258,13 +266,21 @@ export default function BookingForm({
             <div className="flex justify-between text-sm">
               <span>IVA (13%)</span>
               <span>
-                ${(watchData.tickets.adult * product.price * 0.13).toFixed(2)}
+                $
+                {getTaxBreakdown(
+                  product.price,
+                  watchData.tickets.adult
+                ).iva.toFixed(2)}
               </span>
             </div>
             <div className="flex justify-between text-sm">
               <span>Impuesto de Turismo (5%)</span>
               <span>
-                ${(watchData.tickets.adult * product.price * 0.05).toFixed(2)}
+                $
+                {getTaxBreakdown(
+                  product.price,
+                  watchData.tickets.adult
+                ).tourismTax.toFixed(2)}
               </span>
             </div>
             <div className="flex justify-between text-sm mb-3">
@@ -284,7 +300,11 @@ export default function BookingForm({
                 </Popover>
               </div>
               <span>
-                ${(watchData.tickets.adult * product.price * 0.03).toFixed(2)}
+                $
+                {getTaxBreakdown(
+                  product.price,
+                  watchData.tickets.adult
+                ).serviceFee.toFixed(2)}
               </span>
             </div>
           </div>
@@ -293,7 +313,11 @@ export default function BookingForm({
             <div className="flex justify-between text-sm">
               <span>Subtotal</span>
               <span>
-                ${(watchData.tickets.adult * product.price).toFixed(2)}
+                $
+                {getTaxBreakdown(
+                  product.price,
+                  watchData.tickets.adult
+                ).subtotal.toFixed(2)}
               </span>
             </div>
             <Separator className="my-3" />
@@ -302,7 +326,10 @@ export default function BookingForm({
               <span className="text-lg md:text-2xl">Total</span>
               <div className="flex items-center gap-2">
                 <span className="text-lg md:text-2xl">
-                  ${calculateTotal({ watchData, product })}
+                  $
+                  {calculatePriceWithTaxes(product.price, {
+                    quantity: watchData.tickets.adult,
+                  })}
                 </span>
               </div>
             </div>

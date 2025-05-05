@@ -30,6 +30,7 @@ import clsx from "clsx";
 import { useGetReviewsQuery } from "@/redux/slices/product/review-slice";
 import { isProductType } from "@/utils";
 import UpTop from "@/components/up-top";
+import { calculatePriceWithTaxes } from "@/lib/price";
 
 export default function ProductBooking() {
   const { user } = useUser();
@@ -115,9 +116,8 @@ export default function ProductBooking() {
 
           <div className="flex items-center gap-2 mt-2">
             <Badge variant="default" className="text-sm md:text-[1rem]">
-              ${product.price}
+              ${calculatePriceWithTaxes(product.price)}
             </Badge>
-            sin impuestos
           </div>
         </div>
 

@@ -18,6 +18,7 @@ import {
   useGetUserFavoritesQuery,
 } from "@/redux/slices/favorite/favorite-slice";
 import { toast } from "sonner";
+import { calculatePriceWithTaxes } from "@/lib/price";
 
 export function TourCard(product: IProduct) {
   const {
@@ -271,7 +272,7 @@ export function TourCard(product: IProduct) {
           </div>
         </CardContent>
         <CardFooter className="flex items-center justify-between">
-          <div className="font-semibold">${price}</div>
+          <div className="font-semibold">${calculatePriceWithTaxes(price)}</div>
           <Button
             className="rounded-full"
             onClick={() => navigateToTour(id, country || "")}
