@@ -254,7 +254,7 @@ export function TourCard(product: IProduct) {
           <h3 className="text-base md:text-lg font-bold pt-2 text-wrap line-clamp-1">
             {name}
           </h3>
-          <p className="text-sm text-muted-foreground line-clamp-1 mb-2">
+          <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
             {description}
           </p>
           <div className="flex flex-wrap justify-start gap-3 mt-2">

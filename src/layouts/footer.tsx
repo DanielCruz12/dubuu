@@ -7,6 +7,7 @@ import {
   MapPin,
   Phone,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 // Footer navigation data
@@ -39,7 +40,7 @@ export default function Footer() {
       <div className="px-6 md:px-20 mt-8">
         {/* Top Section with Logo and Tagline */}
         <div className="mb-12  text-left">
-          <h2 className="text-2xl font-bold tracking-tight mb-3">Dubuu</h2>
+          <Image src="/logo.svg" alt="Dubuu Logo" width={100} height={40} />
           <p className="text-sm">
             Experiencias de viaje exclusivas diseñadas para los viajeros más
             exigentes.

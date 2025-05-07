@@ -9,9 +9,10 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Menu, MapPin } from "lucide-react";
+import { Menu } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 export interface MenuProfileSheetProps {
   open: boolean;
@@ -46,10 +47,9 @@ export function MenuProfileSheet({
         <SheetTitle></SheetTitle>
         <SheetDescription></SheetDescription>
         <div className="mb-4 flex items-center">
-          <MapPin className="h-5 w-5 text-primary" />
-          <span className="font-bold">Dubuu</span>
+          <Image src="/logo.svg" alt="Dubuu Logo" width={80} height={20} />
         </div>
-        <ScrollArea className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
+        <ScrollArea className="my-4 h-[calc(100vh-8rem)] pb-10 ">
           <div className="flex flex-col space-y-6">
             {dashboardNavItems.map((item) => {
               return (

@@ -1,4 +1,4 @@
-import { Inter } from "next/font/google";
+import { Raleway } from "next/font/google";
 import GlobalProviders from "../components/providers/global-providers";
 import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { Toaster } from "sonner";
 
-const inter = Inter({ subsets: ["latin"] });
+const raleway = Raleway({ weight: "400", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.dubuu.com"),
@@ -64,7 +64,7 @@ export const metadata: Metadata = {
       "Diseñamos experiencias únicas de viaje en El Salvador y Centroamérica. Tours de lujo, alquiler de vehículos premium y propiedades exclusivas para viajeros exigentes.",
     images: [
       {
-        url: "https://www.dubuu.com/tour.jpg",
+        url: "https://www.dubuu.com/logo.png",
         width: 1200,
         height: 630,
         alt: "Dubuu - Experiencias de Viaje Únicas en El Salvador y Centroamérica",
@@ -77,7 +77,7 @@ export const metadata: Metadata = {
       "Dubuu - Experiencias de Viaje Únicas en El Salvador y Centroamérica",
     description:
       "Diseñamos experiencias únicas de viaje en El Salvador y Centroamérica. Tours de lujo, alquiler de vehículos y propiedades exclusivas.",
-    images: ["https://www.dubuu.com/tour.jpg"],
+    images: ["https://www.dubuu.com/logo.png",],
     creator: "@dubuu",
     site: "@dubuu",
   }, */
@@ -125,7 +125,7 @@ export default async function RootLayout({
           name="google-site-verification"
           content="q_nKN4hBrKNgHd0IqIr4to0C-Cxn_L7gtijzxRKmBME"
         /> */}
-          <link rel="icon" href="/tour.jpg" type="image/png" />
+          <link rel="icon" href="/icon.svg" type="image/png" />
           <meta
             name="description"
             content="Diseñamos experiencias únicas de viaje en El Salvador y Centroamérica. Tours de lujo, alquiler de vehículos premium y propiedades exclusivas para viajeros exigentes."
@@ -150,7 +150,7 @@ export default async function RootLayout({
             property="og:description"
             content="Diseñamos experiencias únicas de viaje en El Salvador y Centroamérica. Tours de lujo, alquiler de vehículos premium y propiedades exclusivas para viajeros exigentes."
           />
-          <meta property="og:image" content="https://www.dubuu.com/tour.jpg" />
+          <meta property="og:image" content="https://www.dubuu.com/logo.png" />
 
           {/*   <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:site" content="@Daniel_CruzD" />
@@ -163,9 +163,9 @@ export default async function RootLayout({
             name="twitter:description"
             content="Diseñamos experiencias únicas de viaje en El Salvador y Centroamérica. Tours de lujo, alquiler de vehículos premium y propiedades exclusivas para viajeros exigentes."
           />
-          <meta name="twitter:image" content="https://www.dubuu.com/tour.jpg" /> */}
+          <meta name="twitter:image" content="https://www.dubuu.com/logo.png" /> */}
 
-        {/*   <meta property="og:type" content="website" />
+          {/*   <meta property="og:type" content="website" />
           <meta property="og:url" content="https://tusitio.com/" />
           <meta property="og:title" content="Tu Sitio Web" />
           <meta
@@ -189,7 +189,7 @@ export default async function RootLayout({
               "@type": "Organization",
               "name": "dubuu",
               "url": "https://www.dubuu.com",
-              "logo": "https://www.dubuu.com/tour.jpg",
+              "logo": "https://www.dubuu.com/logo.png",
               "description": "Diseñamos experiencias únicas de viaje en El Salvador y Centroamérica. Tours de lujo, alquiler de vehículos premium y propiedades exclusivas para viajeros exigentes.",
               "location": {
                 "@type": "El Salvador"
@@ -223,7 +223,7 @@ export default async function RootLayout({
             `}
           </Script>
         </head>
-        <body className={`${inter.className} flex min-h-screen flex-col`}>
+        <body className={`${raleway.className} flex min-h-screen flex-col`}>
           <GlobalProviders>
             {children}
             <Toaster richColors />

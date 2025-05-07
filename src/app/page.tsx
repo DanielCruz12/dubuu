@@ -4,14 +4,13 @@ import { useRef } from "react";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { carRentals, destinations, properties, tours } from "@/utils/data";
+import { carRentals, properties, tours } from "@/utils/data";
 import UpTop from "@/components/up-top";
 import Link from "next/link";
 
 export default function Home() {
   const containerRef = useRef(null);
   const aboutRef = useRef(null);
-  const destinationsRef = useRef(null);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -29,23 +28,6 @@ export default function Home() {
 
   const aboutOpacity = useTransform(aboutScrollProgress, [0.1, 0.3], [0, 1]);
   const aboutX = useTransform(aboutScrollProgress, [0.1, 0.3], [-50, 0]);
-
-  const { scrollYProgress: destinationsScrollProgress } = useScroll({
-    target: destinationsRef,
-    offset: ["start end", "end start"],
-  });
-
-  const destinationsOpacity = useTransform(
-    destinationsScrollProgress,
-    [0.1, 0.3],
-    [0, 1]
-  );
-
-  const destinationsY = useTransform(
-    destinationsScrollProgress,
-    [0.1, 0.3],
-    [50, 0]
-  );
 
   return (
     <div ref={containerRef} className="w-full overflow-x-hidden">
@@ -211,67 +193,6 @@ export default function Home() {
                 Ver todos los tours
               </Button>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Destinations Section */}
-      <section
-        ref={destinationsRef}
-        className="py-24 md:py-32 bg-black text-white"
-        id="destinations"
-      >
-        <div className="md:px-20 px-4">
-          <motion.div
-            className="max-w-3xl mx-auto text-center mb-16"
-            style={{ opacity: destinationsOpacity, y: destinationsY }}
-          >
-            <h2 className="text-4xl md:text-5xl font-light tracking-tight mb-6">
-              DESTINOS <span className="font-bold">EXCLUSIVOS</span>
-            </h2>
-            <p className="text-gray-400 text-lg">
-              Descubre lugares extraordinarios seleccionados por nuestros
-              expertos
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {destinations.map((destination, index) => (
-              <motion.div
-                key={index}
-                className="relative group overflow-hidden"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.2 }}
-              >
-                <div className="relative h-[400px] w-full overflow-hidden">
-                  <Image
-                    src={destination.image || "/placeholder.svg"}
-                    alt={destination.name}
-                    fill
-                    className="object-cover transition-transform duration-700 rounded-xl"
-                  />
-                  <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-500"></div>
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 p-8">
-                  <h3 className="text-2xl font-light mb-2">
-                    {destination.name.toUpperCase()}
-                  </h3>
-                  <p className="text-gray-300 mb-4">
-                    {destination.description}
-                  </p>
-                  <p className="font-bold">{destination.price}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-        <div className="text-center mt-16">
-          <div className="inline-block">
-            <Button variant={"default"} className="px-8 py-2 rounded">
-              Ver todos los destinos
-            </Button>
           </div>
         </div>
       </section>

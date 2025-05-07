@@ -152,8 +152,8 @@ export default function ContactForm() {
   };
 
   return (
-    <div className="w-full py-12 px-4 sm:px-6 lg:px-8 rounded-xl shadow-sm">
-      <div className="max-w-7xl mx-auto">
+    <div className="w-full py-12 rounded-xl shadow-sm">
+      <div className="px-4 md:px-20 mx-auto">
         <div className="grid lg:grid-cols-5 gap-8">
           <div className="lg:col-span-3">
             <Card className="border">

@@ -54,11 +54,11 @@ export const blogData = [
 ];
 
 export const ratingOptions = [
-  { label: " 5 stars", value: "5" },
-  { label: "+4 stars", value: "4" },
-  { label: "+3 stars", value: "3" },
-  { label: "+2 stars", value: "2" },
-  { label: "+1 stars", value: "1" },
+  { label: " 5 estrellas", value: "5" },
+  { label: "+4 estrellas", value: "4" },
+  { label: "+3 estrellas", value: "3" },
+  { label: "+2 estrellas", value: "2" },
+  { label: "+1 estrellas", value: "1" },
 ];
 
 export const productTypes = [
@@ -134,273 +134,43 @@ export const statusText = {
   cancelado: "Cancelado",
 };
 
-export const bookings = [
-  {
-    id: "1",
-    bookingNumber: "TUR-2023-0002",
-    tourName: "Aventura en los Alpes Suizos",
-    description:
-      "Una experiencia inolvidable en los Alpes Suizos con actividades de montaña, visitas a pueblos pintorescos y degustación de gastronomía local.",
-    tourImage:
-      "https://images.unsplash.com/photo-1531210483974-4f8c1f33fd35?q=80&w=1000&auto=format&fit=crop",
-    startDate: "2024-01-10",
-    endDate: "2024-01-17",
-    duration: "8 días, 7 noches",
-    location: "Interlaken, Suiza",
-    participants: 4,
-    status: "pendiente",
-    basePrice: 2800,
-    taxes: 280,
-    discount: 0,
-    totalPrice: 3080,
-    paidAmount: 1540,
-    paymentMethod: "Transferencia bancaria",
-    contactPhone: "+41 33 987 6543",
-    contactEmail: "info@swissalps.com",
-    rating: 5,
-    reviews: 94,
-    includes: [
-      { type: "flight", description: "Vuelos ida y vuelta" },
-      { type: "accommodation", description: "Chalet de montaña" },
-      { type: "meals", description: "Media pensión" },
-      { type: "transport", description: "Pases de tren panorámico" },
-    ],
-    itinerary: [
-      "Llegada a Zúrich y traslado a Interlaken. Check-in en el chalet.",
-      "Excursión a Jungfraujoch - Top of Europe, con vistas impresionantes.",
-      "Visita a Grindelwald y experiencia de senderismo guiado.",
-      "Día libre para esquiar o hacer snowboard (según temporada).",
-      "Excursión al lago de Thun y visita a pueblos tradicionales.",
-      "Visita a una fábrica de quesos y chocolates con degustación.",
-      "Día libre para actividades opcionales o compras.",
-      "Regreso a Zúrich y vuelo de vuelta.",
-    ],
-    paymentSchedule: [
-      { description: "Reserva", amount: 1540, date: "10 Nov 2023", paid: true },
-      {
-        description: "Pago final",
-        amount: 1540,
-        date: "10 Dic 2023",
-        paid: false,
-      },
-    ],
-  },
-  {
-    id: "2",
-    bookingNumber: "TUR-2023-0003",
-    tourName: "Safari en el Serengeti",
-    description:
-      "Vive la experiencia única de un safari en el Parque Nacional del Serengeti, observando la vida salvaje en su hábitat natural.",
-    tourImage:
-      "https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=1000&auto=format&fit=crop",
-    startDate: "2023-09-05",
-    endDate: "2023-09-12",
-    duration: "8 días, 7 noches",
-    location: "Serengeti, Tanzania",
-    participants: 2,
-    status: "completado",
-    basePrice: 3500,
-    taxes: 350,
-    discount: 200,
-    totalPrice: 3650,
-    paidAmount: 3650,
-    paymentMethod: "Tarjeta de crédito",
-    contactPhone: "+255 765 432 109",
-    contactEmail: "safari@serengeti.com",
-    rating: 5,
-    reviews: 76,
-    includes: [
-      { type: "flight", description: "Vuelos internacionales" },
-      { type: "accommodation", description: "Lodges de lujo" },
-      { type: "meals", description: "Pensión completa" },
-      { type: "transport", description: "Vehículos 4x4 con guía" },
-    ],
-    itinerary: [
-      "Llegada a Kilimanjaro y traslado al hotel en Arusha.",
-      "Vuelo a Serengeti y primer safari por la tarde.",
-      "Safari de día completo en Serengeti, buscando los 'Big Five'.",
-      "Visita al cráter del Ngorongoro, un paraíso de vida salvaje.",
-      "Safari en el lago Manyara, famoso por sus leones trepadores.",
-      "Día libre en el lodge con safari opcional al amanecer.",
-      "Último safari y traslado a Arusha.",
-      "Vuelo de regreso a casa.",
-    ],
-  },
-  {
-    id: "3",
-    bookingNumber: "TUR-2023-0004",
-    tourName: "Crucero por las Islas Griegas",
-    description:
-      "Navega por el Mar Egeo visitando las islas más hermosas de Grecia, con paradas en Santorini, Mykonos y Creta.",
-    tourImage:
-      "https://images.unsplash.com/photo-1533105079780-92b9be482077?q=80&w=1000&auto=format&fit=crop",
-    startDate: "2023-07-20",
-    endDate: "2023-07-27",
-    duration: "8 días, 7 noches",
-    location: "Atenas, Grecia",
-    participants: 2,
-    status: "cancelado",
-    basePrice: 2200,
-    taxes: 220,
-    discount: 0,
-    totalPrice: 2420,
-    paidAmount: 605,
-    paymentMethod: "PayPal",
-    contactPhone: "+30 210 876 5432",
-    contactEmail: "cruises@greekislands.com",
-    rating: 4,
-    reviews: 215,
-    includes: [
-      { type: "accommodation", description: "Camarote con balcón" },
-      { type: "meals", description: "Todo incluido" },
-      { type: "transport", description: "Traslados puerto" },
-    ],
-    itinerary: [
-      "Embarque en Atenas (El Pireo) y noche a bordo.",
-      "Día en Mykonos, con tiempo para explorar sus calles blancas.",
-      "Visita a Kusadasi (Turquía) y las ruinas de Éfeso.",
-      "Día en Patmos, con excursión opcional al Monasterio de San Juan.",
-      "Día completo en Rodas, explorando su ciudad medieval.",
-      "Visita a la espectacular Santorini.",
-      "Día en Creta, con excursión opcional al Palacio de Knossos.",
-      "Desembarque en Atenas y traslado al aeropuerto.",
-    ],
-  },
-  {
-    id: "4",
-    bookingNumber: "TUR-2023-0005",
-    tourName: "Ruta del Vino en La Rioja",
-    description:
-      "Recorre las mejores bodegas de La Rioja, con catas de vino, visitas a viñedos y experiencias gastronómicas.",
-    tourImage:
-      "https://images.unsplash.com/photo-1566903026052-36e4e1bd803a?q=80&w=1000&auto=format&fit=crop",
-    startDate: "2024-03-15",
-    endDate: "2024-03-19",
-    duration: "5 días, 4 noches",
-    location: "La Rioja, España",
-    participants: 6,
-    status: "confirmado",
-    basePrice: 1500,
-    taxes: 150,
-    discount: 150,
-    totalPrice: 1500,
-    paidAmount: 750,
-    paymentMethod: "Tarjeta de crédito",
-    contactPhone: "+34 941 234 567",
-    contactEmail: "info@rutavinorioja.com",
-    rating: 4,
-    reviews: 68,
-    includes: [
-      { type: "accommodation", description: "Hotel boutique" },
-      { type: "meals", description: "Desayuno y cenas" },
-      { type: "transport", description: "Minivan privada" },
-    ],
-    itinerary: [
-      "Llegada a Logroño y check-in en el hotel. Cena de bienvenida con maridaje.",
-      "Visita a tres bodegas tradicionales con cata de vinos reserva.",
-      "Experiencia gastronómica y taller de cocina riojana.",
-      "Ruta por los viñedos y pueblos medievales de La Rioja Alta.",
-      "Visita a bodega de diseño y regreso.",
-    ],
-    paymentSchedule: [
-      { description: "Reserva", amount: 750, date: "15 Ene 2024", paid: true },
-      {
-        description: "Pago final",
-        amount: 750,
-        date: "15 Feb 2024",
-        paid: false,
-      },
-    ],
-  },
-  {
-    id: "5",
-    bookingNumber: "TUR-2023-0006",
-    tourName: "Escapada a Bali",
-    description:
-      "Descubre la isla de los dioses con esta escapada que incluye playas, templos y la vibrante cultura balinesa.",
-    tourImage:
-      "https://images.unsplash.com/photo-1537996194471-e657df975ab4?q=80&w=1000&auto=format&fit=crop",
-    startDate: "2024-02-10",
-    endDate: "2024-02-18",
-    duration: "9 días, 8 noches",
-    location: "Bali, Indonesia",
-    participants: 2,
-    status: "confirmado",
-    basePrice: 1800,
-    taxes: 180,
-    discount: 0,
-    totalPrice: 1980,
-    paidAmount: 1980,
-    paymentMethod: "Tarjeta de crédito",
-    contactPhone: "+62 361 123 456",
-    contactEmail: "info@baliescapades.com",
-    rating: 5,
-    reviews: 142,
-    includes: [
-      { type: "flight", description: "Vuelos ida y vuelta" },
-      { type: "accommodation", description: "Villa privada con piscina" },
-      { type: "meals", description: "Desayuno diario" },
-      { type: "transport", description: "Traslados y excursiones" },
-    ],
-    itinerary: [
-      "Llegada a Denpasar y traslado a Ubud. Check-in en villa privada.",
-      "Visita a los arrozales de Tegalalang y templo de Tirta Empul.",
-      "Clase de cocina balinesa y visita al Bosque de los Monos.",
-      "Excursión al templo de Uluwatu y espectáculo de danza Kecak.",
-      "Día libre para explorar Ubud o actividades opcionales.",
-      "Traslado a Seminyak y tarde libre en la playa.",
-      "Excursión al templo de Tanah Lot y puesta de sol.",
-      "Día libre para compras o relax en la playa.",
-      "Traslado al aeropuerto para vuelo de regreso.",
-    ],
-    paymentSchedule: [
-      {
-        description: "Pago completo",
-        amount: 1980,
-        date: "10 Dic 2023",
-        paid: true,
-      },
-    ],
-  },
-];
-
 // Define the tour type
 export interface Tour {
-  id: string
-  name: string
-  user_id: string
-  description: string
-  price: string
-  address: string
-  country: string
-  is_approved: boolean
-  images: string[]
-  files: string[]
-  videos: string[]
-  banner: string
-  is_active: boolean
-  average_rating: string
-  total_reviews: number
-  target_product_audience_id: string
-  product_category_id: string
-  product_type_id: string
-  created_at: string
-  updated_at: string
+  id: string;
+  name: string;
+  user_id: string;
+  description: string;
+  price: string;
+  address: string;
+  country: string;
+  is_approved: boolean;
+  images: string[];
+  files: string[];
+  videos: string[];
+  banner: string;
+  is_active: boolean;
+  average_rating: string;
+  total_reviews: number;
+  target_product_audience_id: string;
+  product_category_id: string;
+  product_type_id: string;
+  created_at: string;
+  updated_at: string;
   product_category: {
-    id: string
-    name: string
-  }
+    id: string;
+    name: string;
+  };
   target_audience: {
-    id: string
-    name: string
-  }
+    id: string;
+    name: string;
+  };
   product_type: {
-    id: string
-    name: string
-  }
+    id: string;
+    name: string;
+  };
   tour: {
-    duration: number
-  }
+    duration: number;
+  };
 }
 
 // Sample data with more countries
@@ -421,7 +191,9 @@ export const sampleTours: Tour[] = [
       "https://picsum.photos/id/1016/1000/600.jpg",
       "https://picsum.photos/id/1020/1000/500.jpg",
     ],
-    files: ["https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"],
+    files: [
+      "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+    ],
     videos: ["https://samplelib.com/lib/preview/mp4/sample-5s.mp4"],
     banner: "https://picsum.photos/id/1035/1000/600.jpg",
     is_active: true,
@@ -616,114 +388,125 @@ export const sampleTours: Tour[] = [
       duration: 1,
     },
   },
-]
-
-export const destinations = [
+];
+export const tours = [
   {
-    name: "Santorini",
-    description: "Villas exclusivas con vistas al mar Egeo",
-    price: "$4,200",
+    title: "El Salvador",
+    duration: "5 días",
+    description: "Explora Surf City, cascadas escondidas y pueblos coloniales",
+    price: "$1,800",
     image:
-      "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?q=80&w=2072&auto=format&fit=crop",
+      "https://firebasestorage.googleapis.com/v0/b/i-strategies-db.firebasestorage.app/o/destinations%2Felsalvador.jpeg?alt=media&token=8415f70e-2ada-43b6-a53f-94b13f14c48d", // Playa de El Salvador
   },
   {
-    name: "Maldivas",
-    description: "Bungalows privados sobre aguas cristalinas",
-    price: "$5,800",
+    title: "Guatemala",
+    duration: "7 días",
+    description: "Viaje cultural por Antigua, Atitlán y Tikal",
+    price: "$2,500",
     image:
-      "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?q=80&w=2071&auto=format&fit=crop",
+      "https://firebasestorage.googleapis.com/v0/b/i-strategies-db.firebasestorage.app/o/destinations%2Fguatemala.jpg?alt=media&token=e59470b5-e2e7-4ab1-a209-a2b738d7cec9", // Antigua Guatemala
   },
   {
-    name: "Kioto",
-    description: "Experiencias culturales en ryokans tradicionales",
-    price: "$3,900",
+    title: "Honduras",
+    duration: "6 días",
+    description: "Descubre Roatán, Copán y su biodiversidad",
+    price: "$2,200",
     image:
-      "https://images.unsplash.com/photo-1528360983277-13d401cdc186?q=80&w=2070&auto=format&fit=crop",
+      "https://firebasestorage.googleapis.com/v0/b/i-strategies-db.firebasestorage.app/o/destinations%2Fhonduras.jpg?alt=media&token=6fd08f65-5eee-496f-a25c-e47e3e172abf", // Roatán, Honduras
   },
 ];
 
 export const properties = [
   {
-    title: "Villa Santorini",
-    location: "Grecia",
-    description:
-      "Villa de lujo con piscina infinita y vistas panorámicas al mar Egeo",
-    price: "$1,200/noche",
+    title: "Villa Surf City",
+    location: "El Salvador",
+    description: "Casa moderna frente al mar en El Tunco, ideal para surfistas",
+    price: "$850/noche",
     image:
-      "https://images.unsplash.com/photo-1515263487990-61b07816b324?q=80&w=2070&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=2070&q=80", // Casa de playa moderna
   },
   {
-    title: "Penthouse Manhattan",
-    location: "Nueva York",
-    description:
-      "Ático exclusivo con terraza privada y vistas al skyline de Manhattan",
-    price: "$2,500/noche",
+    title: "Cabaña Lago Coatepeque",
+    location: "El Salvador",
+    description: "Cabaña privada con muelle y vista al volcán de Santa Ana",
+    price: "$600/noche",
     image:
-      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=2070&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=2070&q=80", // Cabaña tropical junto a lago
   },
   {
-    title: "Villa Bali",
-    location: "Indonesia",
-    description:
-      "Villa tropical con piscina privada rodeada de arrozales y selva",
-    price: "$950/noche",
+    title: "Eco Lodge Nicaragua",
+    location: "Nicaragua",
+    description: "Refugio ecológico rodeado de naturaleza y tranquilidad",
+    price: "$500/noche",
     image:
-      "https://images.unsplash.com/photo-1582610116397-edb318620f90?q=80&w=2070&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=2070&q=80", // Cabaña en entorno tropical
   },
 ];
+
+
 
 export const carRentals = [
   {
-    model: "Porsche 911 Carrera",
-    description: "Deportivo icónico con rendimiento excepcional",
-    price: "$450/día",
+    model: "Toyota RAV4",
+    description: "SUV confiable y cómodo para rutas largas y caminos rurales",
+    price: "$95/día",
     image:
-      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2070&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1581540222194-0def2dda95b8?auto=format&fit=crop&w=2070&q=80", // Toyota RAV4
   },
   {
-    model: "Range Rover Autobiography",
-    description: "SUV de lujo con capacidades todoterreno y máximo confort",
-    price: "$380/día",
+    model: "Mazda 3 Sedán",
+    description: "Diseño elegante y excelente eficiencia de combustible",
+    price: "$80/día",
     image:
-      "https://images.unsplash.com/photo-1550355291-bbee04a92027?q=80&w=2071&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=2070&q=80", // Mazda sedán
   },
   {
-    model: "Mercedes-Benz S-Class",
+    model: "Kia Sportage",
+    description: "Versátil, cómodo y ideal para viajes en familia",
+    price: "$90/día",
+    image:
+      "https://images.unsplash.com/photo-1617469767053-d3b523a0b982?auto=format&fit=crop&w=2070&q=80",
+  }
+];
+export const mockTours = [
+  {
+    id: "e9cbb500-8c57-4225-a3de-5673423b438c",
+    name: "Exploración Volcán de Santa Ana",
     description:
-      "Sedán de lujo con tecnología de vanguardia y confort superior",
-    price: "$320/día",
-    image:
-      "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=2071&auto=format&fit=crop",
+      "Ascenso guiado al majestuoso volcán Ilamatepec, disfrutando vistas panorámicas y un merecido descanso en aguas termales al finalizar.",
+    price: 20.99,
+    departure_point: "Multiplaza, San Salvador",
+    address: "Volcán de Santa Ana, Cerro Verde",
+    country: "El Salvador",
+  },
+  {
+    id: "f7a2b3c4-5d6e-7f8g-9h0i-1j2k3l4m5n6o",
+    name: "Ruta de las Flores",
+    description:
+      "Recorrido por los pintorescos pueblos de la Ruta de las Flores, con visitas a cascadas y degustación de gastronomía local.",
+    price: 35.5,
+    departure_point: "Centro Comercial Galerías, San Salvador",
+    address: "Ruta de las Flores, Sonsonate",
+    country: "El Salvador",
+  },
+  {
+    id: "7p8q9r0s-1t2u-3v4w-5x6y-7z8a9b0c1d2e",
+    name: "Playa El Tunco",
+    description:
+      "Día de playa en El Tunco, con clases de surf para principiantes y tiempo libre para disfrutar del mar y la gastronomía local.",
+    price: 25.0,
+    departure_point: "Metrocentro, San Salvador",
+    address: "Playa El Tunco, La Libertad",
+    country: "El Salvador",
+  },
+  {
+    id: "3f4g5h6i-7j8k-9l0m-1n2o-3p4q5r6s7t8u",
+    name: "Suchitoto Colonial",
+    description:
+      "Visita a la ciudad colonial de Suchitoto, con recorrido por sus calles empedradas, iglesias y talleres artesanales.",
+    price: 18.75,
+    departure_point: "Plaza Mundo, Soyapango",
+    address: "Suchitoto, Cuscatlán",
+    country: "El Salvador",
   },
 ];
-
-export const tours = [
-  {
-    title: "Toscana Exclusiva",
-    duration: "7 días",
-    description:
-      "Recorrido privado por viñedos, villas históricas y pueblos medievales",
-    price: "$9,800",
-    image:
-      "https://images.unsplash.com/photo-1568822617270-2c1579f8dfe2?q=80&w=2080&auto=format&fit=crop",
-  },
-  {
-    title: "Japón Imperial",
-    duration: "10 días",
-    description:
-      "Experiencia cultural con acceso VIP a templos, jardines privados y ceremonias tradicionales",
-    price: "$12,500",
-    image:
-      "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=2070&auto=format&fit=crop",
-  },
-  {
-    title: "Maravillas de Marruecos",
-    duration: "8 días",
-    description:
-      "Viaje sensorial por ciudades imperiales, desierto y montañas del Atlas",
-    price: "$8,900",
-    image:
-      "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=2070&auto=format&fit=crop",
-  },
-];
-

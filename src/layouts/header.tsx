@@ -6,7 +6,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  MapPin,
   LogOut,
   Rss,
   Handshake,
@@ -38,6 +37,7 @@ import { useClerk } from "@clerk/nextjs";
 import { MenuProfileSheet } from "./sidebar";
 import { useClerkToken } from "@/components/providers/auth-provider";
 import { MenuNavItem, NavItem, RoleNavItem } from "@/types/dashboard-nav";
+import Image from "next/image";
 
 export function Header() {
   const pathname = usePathname();
@@ -98,8 +98,7 @@ export function Header() {
 
           <div className="">
             <Link href="/home" className="flex items-center gap-1">
-              <MapPin className="h-5 w-5 text-primary" />
-              <span className="font-bold">Dubuu</span>
+              <Image src="/logo.svg" alt="Dubuu Logo" width={100} height={40} />
             </Link>
           </div>
 
@@ -181,8 +180,7 @@ export function Header() {
       <div className="flex h-16 items-center md:px-20 px-4">
         <div className="flex items-center gap-2">
           <Link href={"/home"} className="flex items-center gap-1">
-            <MapPin className="h-5 w-5 text-primary" />
-            <span className="font-bold">Dubuu</span>
+            <Image src="/logo.svg" alt="Dubuu Logo" width={100} height={40} />
           </Link>
         </div>
 
