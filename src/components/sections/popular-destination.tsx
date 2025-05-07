@@ -19,8 +19,8 @@ interface Destination {
 const destinations: Destination[] = [
   {
     id: "1",
-    name: "México",
-    country: "México",
+    name: "El Salvador",
+    country: "El Salvador",
     image: "/paris.jpeg",
     tours: 156,
     activities: 248,
@@ -31,8 +31,8 @@ const destinations: Destination[] = [
   },
   {
     id: "2",
-    name: "Japón",
-    country: "Japón",
+    name: "Guatemala",
+    country: "Guatemala",
     image: "/tokyo.jpg",
     tours: 143,
     activities: 200,
@@ -43,8 +43,8 @@ const destinations: Destination[] = [
   },
   {
     id: "3",
-    name: "Guatemala",
-    country: "Guatemala",
+    name: "Honduras",
+    country: "Honduras",
     image: "/roma.jpg",
     tours: 132,
     activities: 220,
@@ -55,8 +55,8 @@ const destinations: Destination[] = [
   },
   {
     id: "4",
-    name: "El Salvador",
-    country: "El Salvador",
+    name: "Nicaragua",
+    country: "Nicaragua",
     image: "/elsalvador.jpg",
     tours: 128,
     activities: 180,
