@@ -41,10 +41,12 @@ export function BookingsDataTable() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
 
+  // Fetch products for the user
   const { data: products, isLoading } = useGetProductsByUserIdQuery(userId, {
     skip: !userId,
   });
 
+  // Fetch bookings for the selected product
   const {
     data: bookings,
     isLoading: isLoadingBookings,
@@ -53,6 +55,7 @@ export function BookingsDataTable() {
     { userId, productId: selectedProductId },
     {
       skip: !selectedProductId,
+      refetchOnMountOrArgChange: true,
     }
   );
 

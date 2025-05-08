@@ -4,14 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import {
-  User,
-  Mail,
-  Building,
-  MessageSquare,
-  CheckCircle,
-  Info,
-} from "lucide-react";
+import { User, Mail, Building, MessageSquare, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -114,9 +107,6 @@ export default function ContactForm() {
 
       // Mostrar valores en consola
       console.log("Valores del formulario:", values);
-
-      // Simulación de envío a API
-      await new Promise((resolve) => setTimeout(resolve, 1500));
 
       // Mostrar mensaje de éxito
       toast.success("¡Solicitud enviada con éxito!", {
@@ -415,9 +405,6 @@ export default function ContactForm() {
             <div className="space-y-6">
               <Card className="border p-6">
                 <div className="flex items-start space-x-4">
-                  <div className="p-3 rounded-full">
-                    <Info className="h-6 w-6 text-gray-700" />
-                  </div>
                   <div>
                     <h3 className="text-lg font-semibold mb-2">
                       ¿Por qué listar con Dubuu?

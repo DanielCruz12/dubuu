@@ -6,6 +6,18 @@ export const reviewsApiSlice = createApi({
   reducerPath: "reviews",
   baseQuery: fetchBaseQuery({
     baseUrl: "/backend",
+    prepareHeaders: async (headers, { getState }) => {
+      // Obtenemos el token del estado de Redux (lo añadiremos después)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const token = (getState() as any).auth?.token;
+
+      // Si tenemos un token, lo añadimos al header
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+
+      return headers;
+    },
   }),
   tagTypes: ["Reviews"],
   endpoints: (builder) => {
