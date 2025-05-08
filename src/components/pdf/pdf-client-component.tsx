@@ -256,11 +256,11 @@ const ReceiptPDF = ({ receipt }: { receipt: ReceiptProps }) => {
 
   const getStatusStyle = () => {
     switch (receipt.paymentStatus) {
-      case "Paid":
+      case "Completado":
         return styles.statusPaid;
-      case "Pending":
+      case "En proceso":
         return styles.statusPending;
-      case "Cancelled":
+      case "Cancelado":
         return styles.statusCancelled;
       default:
         return {};

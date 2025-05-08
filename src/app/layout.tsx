@@ -5,6 +5,8 @@ import "./globals.css";
 import type { Metadata } from "next";
 import Script from "next/script";
 import { Toaster } from "sonner";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/react";
 
 const raleway = Raleway({ weight: "400", subsets: ["latin"] });
 
@@ -224,6 +226,8 @@ export default async function RootLayout({
           </Script>
         </head>
         <body className={`${raleway.className} flex min-h-screen flex-col`}>
+          <SpeedInsights />
+          <Analytics />
           <GlobalProviders>
             {children}
             <Toaster richColors />

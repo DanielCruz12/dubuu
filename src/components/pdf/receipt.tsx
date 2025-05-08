@@ -241,11 +241,11 @@ export const ReceiptPDF = ({ receipt }: { receipt: ReceiptProps }) => {
 
   const getStatusStyle = () => {
     switch (receipt.paymentStatus) {
-      case "Paid":
+      case "Completado":
         return styles.statusPaid
-      case "Pending":
+      case "En proceso":
         return styles.statusPending
-      case "Cancelled":
+      case "Cancelado":
         return styles.statusCancelled
       default:
         return {}
@@ -255,7 +255,7 @@ export const ReceiptPDF = ({ receipt }: { receipt: ReceiptProps }) => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("es-ES", {
       style: "currency",
-      currency: "EUR",
+      currency: "USD",
     }).format(amount)
   }
 
@@ -312,7 +312,6 @@ export const ReceiptPDF = ({ receipt }: { receipt: ReceiptProps }) => {
           <Text style={styles.label}>CLIENTE</Text>
           <Text style={styles.customerName}>{receipt.customerName}</Text>
           {receipt.customerEmail && <Text style={styles.customerDetails}>Email: {receipt.customerEmail}</Text>}
-          {receipt.customerAddress && <Text style={styles.customerDetails}>Dirección: {receipt.customerAddress}</Text>}
         </View>
 
         {/* Tabla de productos/servicios */}

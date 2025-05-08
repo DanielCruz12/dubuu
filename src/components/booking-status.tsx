@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { CheckCircle, Clock, AlertTriangle, RefreshCcw } from "lucide-react";
@@ -23,6 +24,7 @@ type BookingStatusProps = {
   productName?: string;
   productId: string;
   paymentMethod: string;
+  user: any;
   created_at: string;
   tickets: { adult: number };
   total: number;
@@ -36,54 +38,42 @@ export function BookingStatus({
   status,
   paymentMethod,
   productId,
+  productName,
   created_at,
   tickets,
+  user,
   total,
   onRebook,
   onViewDetails,
   className,
 }: BookingStatusProps) {
   const receiptData: ReceiptProps = {
-    receiptNumber: "INV-2023-001",
+    receiptNumber: productId,
     date: "17/04/2023",
     dueDate: "17/05/2023",
-    customerName: "Juan Pérez",
-    customerEmail: "juan.perez@ejemplo.com",
-    customerAddress: "Calle Principal 123, Madrid, España",
+    customerName: user.name,
+    customerEmail: user.email,
     items: [
       {
-        id: "1",
+        id: tickets.adult.toString(),
         description: "Desarrollo de sitio web",
-        quantity: 1,
-        price: 1200,
-      },
-      {
-        id: "2",
-        description: "Diseño de logo",
-        quantity: 1,
-        price: 300,
-      },
-      {
-        id: "3",
-        description: "Mantenimiento mensual",
-        quantity: 3,
-        price: 100,
+        quantity: tickets.adult,
+        price: total,
       },
     ],
-    subtotal: 1800,
-    tax: 0.21,
-    total: 2178,
-    notes:
-      "El pago debe realizarse en un plazo de 30 días. Gracias por confiar en nuestros servicios.",
-    companyName: "Mi Empresa S.L.",
-    companyLogo: "/abstract-geometric-logo.png",
-    companyAddress: "Avenida Empresarial 456, Barcelona, España",
-    companyPhone: "+34 612 345 678",
-    companyEmail: "info@miempresa.com",
-    companyWebsite: "www.miempresa.com",
+    subtotal: total,
+    tax: 0.13,
+    total: total,
+    notes: "Gracias por confiar en nuestros servicios.",
+    companyName: "Dubuu",
+    companyLogo: "/logo.png",
+    companyAddress: "El Salvador, La Libertad",
+    companyPhone: "+503 77886116",
+    companyEmail: "team@lappsnet.com",
+    companyWebsite: "https://www.dubuu.com",
     qrValue: "https://miempresa.com/verificar/INV-2023-001",
     paymentMethod: "Transferencia Bancaria",
-    paymentStatus: "Paid",
+    paymentStatus: "Completado",
   };
 
   const statusConfig = {
@@ -199,7 +189,7 @@ export function BookingStatus({
             receiptData={receiptData}
             buttonVariant="outline"
             buttonText="Descargar Recibo"
-            fileName={`Recibo-${productId.slice(0, 8)}`}
+            fileName={`Recibo-${productName?.slice(0, 10)}-${productId.slice(0, 8)}`}
           />
         )}
       </CardFooter>

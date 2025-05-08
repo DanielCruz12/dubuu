@@ -48,7 +48,7 @@ export type ReceiptProps = {
   companyWebsite?: string;
   qrValue?: string;
   paymentMethod?: string;
-  paymentStatus?: "Paid" | "Pending" | "Cancelled";
+  paymentStatus?: "Completado" | "En proceso" | "Cancelado";
   dueDate?: string;
 };
 

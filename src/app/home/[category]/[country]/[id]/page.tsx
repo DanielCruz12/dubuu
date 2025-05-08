@@ -201,6 +201,7 @@ export default function ProductBooking() {
                         tickets={{
                           adult: Number(existingBooking.tickets),
                         }}
+                        user={user}
                         productId={product.id}
                         paymentMethod={existingBooking.paymentMethod}
                         total={Number(existingBooking.total)}
@@ -240,6 +241,7 @@ export default function ProductBooking() {
                               tickets={{
                                 adult: Number(existingBooking.tickets),
                               }}
+                              user={user}
                               productId={product.id}
                               paymentMethod={existingBooking.paymentMethod}
                               total={Number(existingBooking.total)}

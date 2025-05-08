@@ -25,7 +25,7 @@ export type ReceiptItem = {
     companyWebsite?: string
     qrValue?: string
     paymentMethod?: string
-    paymentStatus?: "Paid" | "Pending" | "Cancelled"
+    paymentStatus?: "Completado" | "En proceso" | "Cancelado"
     dueDate?: string
   }
   

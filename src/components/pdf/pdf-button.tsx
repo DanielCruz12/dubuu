@@ -33,7 +33,7 @@ export type ReceiptProps = {
   companyWebsite?: string
   qrValue?: string
   paymentMethod?: string
-  paymentStatus?: "Paid" | "Pending" | "Cancelled"
+  paymentStatus?: "Completado" | "En proceso" | "Cancelado"
   dueDate?: string
 }
 
@@ -77,7 +77,7 @@ export default function PDFButton({
       doc.setFont("helvetica", "normal")
 
       // Colores
-      const primaryColor = [37, 99, 235] // #2563EB en RGB
+      const primaryColor = [37, 99, 235] // #1a1a1a en RGB
       const grayColor = [85, 85, 85] // #555555 en RGB
       const lightGrayColor = [243, 244, 246] // #F3F4F6 en RGB
       const veryLightBlue = [235, 240, 255] // Color muy claro para simular transparencia
@@ -169,13 +169,13 @@ export default function PDFButton({
         // Color según el estado
         let statusColor: [number, number, number] = [0, 0, 0]
         switch (receiptData.paymentStatus) {
-          case "Paid":
+          case "Completado":
             statusColor = [22, 101, 52] // #166534 en RGB
             break
-          case "Pending":
+          case "En proceso":
             statusColor = [146, 64, 14] // #92400E en RGB
             break
-          case "Cancelled":
+          case "Cancelado":
             statusColor = [185, 28, 28] // #B91C1C en RGB
             break
         }
@@ -338,7 +338,7 @@ export default function PDFButton({
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("es-ES", {
       style: "currency",
-      currency: "EUR",
+      currency: "USD",
     }).format(amount)
   }
 
