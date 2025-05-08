@@ -52,7 +52,7 @@ export default function PDFButton({
       doc.setFont("helvetica", "normal");
 
       // Colores
-      const primaryColor = [0, 0, 0]; // #1a1a1a en RGB
+      const primaryColor = [26, 26, 26, 0.47]; // rgba(26, 26, 26, 0.47) en RGB
       const grayColor = [85, 85, 85]; // #555555 en RGB
       const lightGrayColor = [243, 244, 246]; // #F3F4F6 en RGB
       const veryLightGray = [245, 245, 245]; // Color muy claro para simular transparencia
@@ -96,15 +96,15 @@ export default function PDFButton({
 
       // Título del recibo
       try {
-        doc.addImage("/logo.png", "PNG", 155, 15, 45, 22)
+        doc.addImage("/logo.png", "PNG", 155, 15, 45, 22);
       } catch (error) {
-        console.error("Error al cargar el logo:", error)
+        console.error("Error al cargar el logo:", error);
         // Si hay error al cargar el logo, mostramos el texto como fallback
-        doc.setFontSize(24)
-        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
-        doc.text("RECIBO", 200, 25, { align: "right" })
+        doc.setFontSize(24);
+        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+        doc.text("RECIBO", 200, 25, { align: "right" });
       }
-      
+
       // Información del recibo
       doc.setDrawColor(238, 238, 238);
       doc.line(10, 50, 200, 50);
@@ -187,8 +187,8 @@ export default function PDFButton({
       const tableRows = receiptData.items.map((item) => [
         item.description,
         item.quantity.toString(),
-        formatCurrency(item.price),
-        formatCurrency(item.price * item.quantity),
+        formatCurrency(item.price as number),
+        formatCurrency((item.price as number) * item.quantity),
       ]);
 
       autoTable(doc, {
@@ -227,7 +227,7 @@ export default function PDFButton({
       doc.setTextColor(0, 0, 0);
       doc.text("Subtotal", summaryX, yPos);
       doc.text(
-        formatCurrency(receiptData.subtotal),
+        formatCurrency(receiptData.subtotal as number),
         summaryX + summaryWidth,
         yPos,
         { align: "right" }

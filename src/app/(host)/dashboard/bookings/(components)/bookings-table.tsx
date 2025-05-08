@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -36,9 +37,9 @@ export function BookingsDataTable() {
 
   const [selectedProductId, setSelectedProductId] = useState<string>("");
   const [openProductSelect, setOpenProductSelect] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [bookingsData, setBookingsData] = useState<any[]>([]);
-
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
   // Fetch products for the user
   const { data: products, isLoading } = useGetProductsByUserIdQuery(userId, {
     skip: !userId,
@@ -48,27 +49,52 @@ export function BookingsDataTable() {
   const { data: bookings, isLoading: isLoadingBookings } =
     useGetBookingsByUserIdProductIdQuery(
       { userId, productId: selectedProductId },
-      { skip: !selectedProductId }
+      { skip: !selectedProductId || !userId }
     );
 
   // Set the first product as selected when products load
   useEffect(() => {
-    if (products && products.length > 0 && !selectedProductId) {
-      setSelectedProductId(products[0].id);
+    if (products && products.length > 0) {
+      setFilteredProducts(products);
+      if (!selectedProductId) {
+        setSelectedProductId(products[0].id);
+      }
     }
   }, [products, selectedProductId]);
 
   // Update bookings data when bookings load
   useEffect(() => {
     if (bookings) {
-      setBookingsData(bookings);
+      setBookingsData(bookings || []);
     }
   }, [bookings]);
 
   // Handle product selection
   const handleProductChange = useCallback((productId: string) => {
     setSelectedProductId(productId);
+    setBookingsData([]); // Clear current data while loading
   }, []);
+
+  const handleCommandSearch = useCallback(
+    (value: string) => {
+      setSearchTerm(value);
+
+      if (!products) return;
+
+      if (!value.trim()) {
+        setFilteredProducts(products);
+        return;
+      }
+
+      const lowercaseSearch = value.toLowerCase();
+      const filtered = products.filter((product) =>
+        product.name.toLowerCase().includes(lowercaseSearch)
+      );
+
+      setFilteredProducts(filtered);
+    },
+    [products]
+  );
 
   // Export to Excel
   const handleExport = () => {
@@ -138,31 +164,41 @@ export function BookingsDataTable() {
                 </PopoverTrigger>
                 <PopoverContent className="w-full p-0" align="start">
                   <Command>
-                    <CommandInput placeholder="Search product..." />
+                    <CommandInput
+                      placeholder="Buscar producto..."
+                      value={searchTerm}
+                      onValueChange={handleCommandSearch}
+                    />
                     <CommandList>
-                      <CommandEmpty>No products found.</CommandEmpty>
-                      <CommandGroup className="max-h-64 overflow-y-auto">
-                        {products.map((product) => (
-                          <CommandItem
-                            key={product.id}
-                            value={product.id}
-                            onSelect={() => {
-                              handleProductChange(product.id);
-                              setOpenProductSelect(false);
-                            }}
-                          >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                selectedProductId === product.id
-                                  ? "opacity-100"
-                                  : "opacity-0"
-                              )}
-                            />
-                            {product.name}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
+                      {!filteredProducts || filteredProducts.length === 0 ? (
+                        <CommandEmpty>
+                          No hay productos que coincidan con la búsqueda.
+                        </CommandEmpty>
+                      ) : (
+                        <CommandGroup className="max-h-64 overflow-y-auto">
+                          {filteredProducts.map((product) => (
+                            <CommandItem
+                              key={product.id}
+                              value={product.name} // Use name for filtering
+                              onSelect={() => {
+                                handleProductChange(product.id);
+                                setOpenProductSelect(false);
+                                setSearchTerm("");
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  selectedProductId === product.id
+                                    ? "opacity-100"
+                                    : "opacity-0"
+                                )}
+                              />
+                              {product.name}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      )}
                     </CommandList>
                   </Command>
                 </PopoverContent>

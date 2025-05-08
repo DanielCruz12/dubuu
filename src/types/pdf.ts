@@ -2,7 +2,7 @@ export type ReceiptItem = {
     id: string
     description: string
     quantity: number
-    price: number
+    price: number | string 
   }
   
   export type ReceiptProps = {
@@ -12,7 +12,7 @@ export type ReceiptItem = {
     customerEmail?: string
     customerAddress?: string
     items: ReceiptItem[]
-    subtotal: number
+    subtotal: number | string
     tax?: number
     discount?: number
     total: number
