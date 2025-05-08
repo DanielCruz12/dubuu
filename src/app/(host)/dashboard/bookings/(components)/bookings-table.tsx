@@ -41,17 +41,27 @@ export function BookingsDataTable() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
 
+  // Caché local para mantener los datos de bookings por producto
+  const [bookingsCache, setBookingsCache] = useState<Record<string, any[]>>({});
+
   // Fetch products for the user
   const { data: products, isLoading } = useGetProductsByUserIdQuery(userId, {
     skip: !userId,
   });
 
   // Fetch bookings for the selected product
-  const { data: bookings, isLoading: isLoadingBookings } =
-    useGetBookingsByUserIdProductIdQuery(
-      { userId, productId: selectedProductId },
-      { skip: !selectedProductId }
-    );
+  const {
+    data: bookings,
+    isLoading: isLoadingBookings,
+    refetch,
+  } = useGetBookingsByUserIdProductIdQuery(
+    { userId, productId: selectedProductId },
+    {
+      skip: !selectedProductId,
+      // Forzar refetch cuando cambia el producto
+      refetchOnMountOrArgChange: true,
+    }
+  );
 
   // Set the first product as selected when products load
   useEffect(() => {
@@ -63,17 +73,44 @@ export function BookingsDataTable() {
     }
   }, [products, selectedProductId]);
 
-  // Update bookings data when bookings load
+  // Update bookings data and cache when bookings load
   useEffect(() => {
-    if (bookings) {
+    if (bookings && selectedProductId) {
+      console.log("Bookings actualizados:", bookings);
+      // Actualizar el caché local
+      setBookingsCache((prev) => ({
+        ...prev,
+        [selectedProductId]: bookings,
+      }));
+
+      // Actualizar los datos mostrados
       setBookingsData(bookings);
     }
-  }, [bookings]);
+  }, [bookings, selectedProductId]);
 
   // Handle product selection
-  const handleProductChange = useCallback((productId: string) => {
-    setSelectedProductId(productId);
-  }, []);
+  const handleProductChange = useCallback(
+    (productId: string) => {
+      console.log("Cambiando a producto:", productId);
+      setSelectedProductId(productId);
+
+      // Verificar si tenemos datos en caché para este producto
+      if (bookingsCache[productId]) {
+        console.log("Usando datos en caché para:", productId);
+        // Usar datos del caché mientras se carga
+        setBookingsData(bookingsCache[productId]);
+      } else {
+        // Limpiar datos mientras carga
+        setBookingsData([]);
+      }
+
+      // Forzar refetch para este producto
+      setTimeout(() => {
+        refetch();
+      }, 0);
+    },
+    [bookingsCache, refetch]
+  );
 
   // Handle search in Command component
   const handleCommandSearch = useCallback(
@@ -99,6 +136,11 @@ export function BookingsDataTable() {
 
   // Export to Excel
   const handleExport = () => {
+    if (!bookingsData || bookingsData.length === 0) {
+      console.log("No hay datos para exportar");
+      return;
+    }
+
     const dataToExport = bookingsData.map((booking) => {
       return {
         ID: booking.bookingId,
@@ -108,7 +150,6 @@ export function BookingsDataTable() {
         Estado: booking.status,
         Boletos: booking.tickets,
         Fecha: moment(booking.bookingDate).format("dddd, D [de] MMMM - h:mm A"),
-
         "Fecha de reserva": moment(booking.createdAt).format(
           "dddd, D [de] MMMM - h:mm A"
         ),
@@ -122,7 +163,8 @@ export function BookingsDataTable() {
     exportToExcel(dataToExport, "Reservas");
   };
 
-  if (isLoading || isLoadingBookings || !products || !user) {
+  // Solo mostrar skeleton mientras carga los productos iniciales
+  if (isLoading || !products || !user) {
     return (
       <DataTableSkeleton
         headers={[
@@ -136,6 +178,8 @@ export function BookingsDataTable() {
       />
     );
   }
+
+  console.log("Renderizando con bookingsData:", bookingsData?.length);
 
   return (
     <div className="space-y-4 pt-6">
@@ -207,7 +251,11 @@ export function BookingsDataTable() {
             </div>
 
             <div className="flex gap-2 ml-auto">
-              <Button onClick={handleExport} title="Exportar a Excel">
+              <Button
+                onClick={handleExport}
+                title="Exportar a Excel"
+                disabled={!bookingsData || bookingsData.length === 0}
+              >
                 <DownloadIcon className="h-4 w-4 mr-2" />
                 <span>Exportar</span>
               </Button>
@@ -222,7 +270,7 @@ export function BookingsDataTable() {
           ) : (
             <DataTable
               columns={bookingsColumns}
-              data={bookingsData}
+              data={bookingsData || []}
               showSearch={true}
               searchPlaceholder="Buscar reservas..."
             />
