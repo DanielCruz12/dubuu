@@ -41,27 +41,17 @@ export function BookingsDataTable() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
 
-  // Caché local para mantener los datos de bookings por producto
-  const [bookingsCache, setBookingsCache] = useState<Record<string, any[]>>({});
-
   // Fetch products for the user
   const { data: products, isLoading } = useGetProductsByUserIdQuery(userId, {
     skip: !userId,
   });
 
-  // Fetch bookings for the selected product
-  const {
-    data: bookings,
-    isLoading: isLoadingBookings,
-    refetch,
-  } = useGetBookingsByUserIdProductIdQuery(
-    { userId, productId: selectedProductId },
-    {
-      skip: !selectedProductId,
-      // Forzar refetch cuando cambia el producto
-      refetchOnMountOrArgChange: true,
-    }
-  );
+  // Fetch bookings for the selected product - NO forzamos refetch
+  const { data: bookings, isLoading: isLoadingBookings } =
+    useGetBookingsByUserIdProductIdQuery(
+      { userId, productId: selectedProductId },
+      { skip: !selectedProductId }
+    );
 
   // Set the first product as selected when products load
   useEffect(() => {
@@ -73,44 +63,21 @@ export function BookingsDataTable() {
     }
   }, [products, selectedProductId]);
 
-  // Update bookings data and cache when bookings load
+  // Update bookings data when bookings load or when cambia el producto seleccionado
   useEffect(() => {
-    if (bookings && selectedProductId) {
-      console.log("Bookings actualizados:", bookings);
-      // Actualizar el caché local
-      setBookingsCache((prev) => ({
-        ...prev,
-        [selectedProductId]: bookings,
-      }));
-
-      // Actualizar los datos mostrados
+    // Si tenemos datos de bookings, los usamos
+    if (bookings) {
       setBookingsData(bookings);
+    } else if (!isLoadingBookings) {
+      // Si no estamos cargando y no hay datos, mostramos array vacío
+      setBookingsData([]);
     }
-  }, [bookings, selectedProductId]);
+  }, [bookings, isLoadingBookings]);
 
-  // Handle product selection
-  const handleProductChange = useCallback(
-    (productId: string) => {
-      console.log("Cambiando a producto:", productId);
-      setSelectedProductId(productId);
-
-      // Verificar si tenemos datos en caché para este producto
-      if (bookingsCache[productId]) {
-        console.log("Usando datos en caché para:", productId);
-        // Usar datos del caché mientras se carga
-        setBookingsData(bookingsCache[productId]);
-      } else {
-        // Limpiar datos mientras carga
-        setBookingsData([]);
-      }
-
-      // Forzar refetch para este producto
-      setTimeout(() => {
-        refetch();
-      }, 0);
-    },
-    [bookingsCache, refetch]
-  );
+  // Handle product selection - simplemente cambiamos el ID
+  const handleProductChange = useCallback((productId: string) => {
+    setSelectedProductId(productId);
+  }, []);
 
   // Handle search in Command component
   const handleCommandSearch = useCallback(
@@ -137,7 +104,6 @@ export function BookingsDataTable() {
   // Export to Excel
   const handleExport = () => {
     if (!bookingsData || bookingsData.length === 0) {
-      console.log("No hay datos para exportar");
       return;
     }
 
@@ -178,8 +144,6 @@ export function BookingsDataTable() {
       />
     );
   }
-
-  console.log("Renderizando con bookingsData:", bookingsData?.length);
 
   return (
     <div className="space-y-4 pt-6">
