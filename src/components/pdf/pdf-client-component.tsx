@@ -282,7 +282,7 @@ const ReceiptPDF = ({ receipt }: { receipt: ReceiptProps }) => {
           <View style={styles.headerLeft}>
             {receipt.companyLogo && (
               <Image
-                src={receipt.companyLogo || "/placeholder.svg"}
+                src={receipt.companyLogo || "/logo.png"}
                 style={styles.logo}
               />
             )}
@@ -422,7 +422,7 @@ const ReceiptPDF = ({ receipt }: { receipt: ReceiptProps }) => {
           <View style={styles.footerRight}>
             {qrCodeImage && (
               <Image
-                src={qrCodeImage || "/placeholder.svg"}
+                src={qrCodeImage || "/logo.png"}
                 style={styles.qrCode}
               />
             )}

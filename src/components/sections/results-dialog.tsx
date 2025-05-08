@@ -122,7 +122,7 @@ export function ResultDialog({
                         <Image
                           src={
                             tour?.banner ||
-                            "/placeholder.svg?height=400&width=600"
+                            "/logo.png?height=400&width=600"
                           }
                           alt={tour.name}
                           fill

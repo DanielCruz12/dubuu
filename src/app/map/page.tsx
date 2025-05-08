@@ -256,7 +256,7 @@ function LocationCard({
               }`}
             >
               <Image
-                src={image || "/placeholder.svg"}
+                src={image || "/logo.png"}
                 alt={`${location.title} - Image ${index + 1}`}
                 fill
                 className="object-cover"

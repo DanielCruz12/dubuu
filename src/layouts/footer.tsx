@@ -13,7 +13,7 @@ import Link from "next/link";
 // Footer navigation data
 const footerNavigation = {
   experiencias: [
-    { name: "Tours Privados", href: "/home/tours/all" },
+    { name: "Viajes Privados", href: "/home/tours/all" },
     { name: "Alquileres", href: "/home/rental/all" },
     { name: "Propiedades", href: "/home/properties/all" },
   ],

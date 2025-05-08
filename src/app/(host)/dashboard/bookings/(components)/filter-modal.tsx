@@ -180,10 +180,10 @@ export function FilterModal({
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Todos los tours" />
+                <SelectValue placeholder="Todos los viajes" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos los tours</SelectItem>
+                <SelectItem value="all">Todos los viajes</SelectItem>
                 {mockTours.map((tour) => (
                   <SelectItem key={tour.id} value={tour.id}>
                     {tour.name}

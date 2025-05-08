@@ -30,7 +30,7 @@ export function PostCard({
       <div className="relative flex">
         <div className="relative w-full aspect-[2/1] md:aspect-[9/2.5]">
           <Image
-            src={image || "/placeholder.svg"}
+            src={image || "/logo.png"}
             alt={title}
             width={800}
             height={600}

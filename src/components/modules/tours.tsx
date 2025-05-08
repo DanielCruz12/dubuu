@@ -237,15 +237,15 @@ export default function ToursPage({
   // Get page title based on country filter
   const getPageTitle = () => {
     if (!countryFilter || countryFilter === "all") {
-      return "Todos los tours";
+      return "Todos los viajes";
     }
-    return `Tours en ${countryFilter}`;
+    return `Viajes en ${countryFilter}`;
   };
 
   return (
     <div className="pb-4">
       <div className="md:hidden mb-4 flex justify-between items-center">
-        <h2 className="text-lg font-semibold">{filteredTours.length} tours</h2>
+        <h2 className="text-lg font-semibold">{filteredTours.length} viajes</h2>
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="outline" className="flex items-center gap-2">

@@ -1,24 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
-import Image from "next/image";
-import type React from "react";
-import { useState, useRef, useEffect, type TouchEvent } from "react";
-import { ChevronLeft, ChevronRight, Heart, MapPin } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import type { IProduct } from "@/types/product";
-import Rating from "./rating";
-import { Badge } from "./ui/badge";
-import { normalizeCountryForUrl } from "@/utils";
-import { useRouter } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
+"use client"
+import Image from "next/image"
+import type React from "react"
+import { useState, useRef, useEffect, type TouchEvent } from "react"
+import { ChevronLeft, ChevronRight, Heart, MapPin } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardFooter } from "@/components/ui/card"
+import type { IProduct } from "@/types/product"
+import Rating from "./rating"
+import { Badge } from "./ui/badge"
+import { normalizeCountryForUrl } from "@/utils"
+import { useRouter } from "next/navigation"
+import { useUser } from "@clerk/nextjs"
 import {
   useSaveProductMutation,
   useUnsaveProductMutation,
   useGetUserFavoritesQuery,
-} from "@/redux/slices/favorite/favorite-slice";
-import { toast } from "sonner";
-import { calculatePriceWithTaxes } from "@/lib/price";
+} from "@/redux/slices/favorite/favorite-slice"
+import { toast } from "sonner"
+import { calculatePriceWithTaxes } from "@/lib/price"
 
 export function TourCard(product: IProduct) {
   const {
@@ -32,97 +32,85 @@ export function TourCard(product: IProduct) {
     average_rating,
     total_reviews,
     product_category,
-  } = product;
+  } = product
 
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
-  const { user } = useUser();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [touchStart, setTouchStart] = useState(0)
+  const [touchEnd, setTouchEnd] = useState(0)
+  const [isMobile, setIsMobile] = useState(false)
+  const carouselRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
+  const { user } = useUser()
 
   // Get favorites from API
-  const { data: favorites } = useGetUserFavoritesQuery(
-    { userId: user?.id || "" },
-    { skip: !user?.id }
-  );
+  const { data: favorites } = useGetUserFavoritesQuery({ userId: user?.id || "" }, { skip: !user?.id })
 
   // Check if this product is in favorites
-  const isFavorited =
-    favorites?.some((fav: any) => fav.productId === id) || false;
+  const isFavorited = favorites?.some((fav: any) => fav.productId === id) || false
 
   // Mutations for saving/unsaving products
-  const [saveProduct, { isLoading: isSaving }] = useSaveProductMutation();
-  const [unsaveProduct, { isLoading: isUnsaving }] = useUnsaveProductMutation();
+  const [saveProduct, { isLoading: isSaving }] = useSaveProductMutation()
+  const [unsaveProduct, { isLoading: isUnsaving }] = useUnsaveProductMutation()
 
   useEffect(() => {
     const checkIfMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
+      setIsMobile(window.innerWidth <= 768)
+    }
 
-    checkIfMobile();
-    window.addEventListener("resize", checkIfMobile);
+    checkIfMobile()
+    window.addEventListener("resize", checkIfMobile)
 
     return () => {
-      window.removeEventListener("resize", checkIfMobile);
-    };
-  }, []);
+      window.removeEventListener("resize", checkIfMobile)
+    }
+  }, [])
 
   const nextImage = (e: React.MouseEvent) => {
-    e.stopPropagation();
+    e.stopPropagation()
     if (images && images.length > 0) {
-      setCurrentImageIndex((prev) =>
-        prev === images.length - 1 ? 0 : prev + 1
-      );
+      setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
     }
-  };
+  }
 
   const prevImage = (e: React.MouseEvent) => {
-    e.stopPropagation();
+    e.stopPropagation()
     if (images && images.length > 0) {
-      setCurrentImageIndex((prev) =>
-        prev === 0 ? images.length - 1 : prev - 1
-      );
+      setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
     }
-  };
+  }
 
   const handleTouchStart = (e: TouchEvent) => {
-    setTouchStart(e.targetTouches[0].clientX);
-  };
+    setTouchStart(e.targetTouches[0].clientX)
+  }
 
   const handleTouchMove = (e: TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
+    setTouchEnd(e.targetTouches[0].clientX)
+  }
 
   const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
+    if (!touchStart || !touchEnd) return
 
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > 50;
-    const isRightSwipe = distance < -50;
+    const distance = touchStart - touchEnd
+    const isLeftSwipe = distance > 50
+    const isRightSwipe = distance < -50
 
     if (isLeftSwipe && images && images.length > 0) {
-      setCurrentImageIndex((prev) =>
-        prev === images.length - 1 ? 0 : prev + 1
-      );
+      setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
     }
 
     if (isRightSwipe && images && images.length > 0) {
-      setCurrentImageIndex((prev) =>
-        prev === 0 ? images.length - 1 : prev - 1
-      );
+      setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
     }
 
     // Reset values
-    setTouchStart(0);
-    setTouchEnd(0);
-  };
+    setTouchStart(0)
+    setTouchEnd(0)
+  }
 
   const toggleFavorite = async (productId: string) => {
     if (!user?.id) {
-      toast.error("Debes iniciar sesión para guardar productos");
-      return;
+      toast.error("Debes iniciar sesión para guardar productos")
+      return
     }
 
     try {
@@ -130,29 +118,29 @@ export function TourCard(product: IProduct) {
         await unsaveProduct({
           productId,
           userId: user.id,
-        }).unwrap();
-        toast.success("Producto eliminado de tus guardados");
+        }).unwrap()
+        toast.success("Producto eliminado de tus guardados")
       } else {
         await saveProduct({
           productId,
           userId: user.id,
-        }).unwrap();
-        toast.success("Producto guardado exitosamente");
+        }).unwrap()
+        toast.success("Producto guardado exitosamente")
       }
     } catch (error) {
-      toast.error("Ocurrió un error al actualizar tus guardados");
-      console.error("Error toggling favorite:", error);
+      toast.error("Ocurrió un error al actualizar tus guardados")
+      console.error("Error toggling favorite:", error)
     }
-  };
+  }
 
   const navigateToTour = (tourId: string, tourCountry: string) => {
     // Normalize the country name for the URL
-    const normalizedCountry = normalizeCountryForUrl(tourCountry);
-    router.push(`/home/tours/${normalizedCountry}/${tourId}`);
-  };
+    const normalizedCountry = normalizeCountryForUrl(tourCountry)
+    router.push(`/home/tours/${normalizedCountry}/${tourId}`)
+  }
 
   // Safely handle images array
-  const productImages = images && images.length > 0 ? images : ["/tour.jpg"];
+  const productImages = images && images.length > 0 ? images : ["/tour.jpg"]
 
   return (
     <Card className="overflow-hidden rounded-xl border-none shadow-lg">
@@ -163,15 +151,18 @@ export function TourCard(product: IProduct) {
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
+        style={{ perspective: "1000px" }}
       >
         <div className="relative w-full h-full">
           {productImages.map((image, index) => (
             <div
               key={index}
-              className={`absolute inset-0 transition-opacity duration-300 ${
+              className={`absolute inset-0 transition-all duration-500 ease-in-out ${
                 index === currentImageIndex
-                  ? "opacity-100"
-                  : "opacity-0 pointer-events-none"
+                  ? "opacity-100 translate-x-0"
+                  : index < currentImageIndex
+                    ? "opacity-0 -translate-x-full"
+                    : "opacity-0 translate-x-full"
               }`}
             >
               <Image
@@ -227,8 +218,8 @@ export function TourCard(product: IProduct) {
         <button
           className="absolute top-2 right-2 bg-[#ffffff39] z-10 p-2 rounded-full transition-colors duration-200"
           onClick={(e) => {
-            e.stopPropagation();
-            toggleFavorite(id);
+            e.stopPropagation()
+            toggleFavorite(id)
           }}
           disabled={isSaving || isUnsaving}
         >
@@ -251,12 +242,8 @@ export function TourCard(product: IProduct) {
             activeStarClassName="text-yellow-400 fill-yellow-400"
             inactiveStarClassName="text-gray-300"
           />
-          <h3 className="text-base md:text-lg font-bold pt-2 text-wrap line-clamp-1">
-            {name}
-          </h3>
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
-            {description}
-          </p>
+          <h3 className="text-base md:text-lg font-bold pt-2 text-wrap line-clamp-1">{name}</h3>
+          <p className="text-sm text-muted-foreground line-clamp-2 mb-2">{description}</p>
           <div className="flex flex-wrap justify-start gap-3 mt-2">
             {country && (
               <div className="flex items-center text-sm text-muted-foreground">
@@ -264,24 +251,16 @@ export function TourCard(product: IProduct) {
                 {country} {target_audience && "/"}
               </div>
             )}
-            {target_audience && (
-              <span className="text-sm text-muted-foreground">
-                {target_audience.name}
-              </span>
-            )}
+            {target_audience && <span className="text-sm text-muted-foreground">{target_audience.name}</span>}
           </div>
         </CardContent>
         <CardFooter className="flex items-center justify-between">
           <div className="font-semibold">${calculatePriceWithTaxes(price)}</div>
-          <Button
-            variant="secondary"
-            className="rounded-full"
-            onClick={() => navigateToTour(id, country || "")}
-          >
+          <Button variant="secondary" className="rounded-full" onClick={() => navigateToTour(id, country || "")}>
             Ver detalles
           </Button>
         </CardFooter>
       </div>
     </Card>
-  );
+  )
 }

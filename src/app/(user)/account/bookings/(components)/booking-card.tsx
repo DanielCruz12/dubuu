@@ -7,6 +7,7 @@ import { Calendar, MapPin } from "lucide-react";
 import type { IBookingUser } from "@/types/booking";
 import moment from "moment";
 import "moment/locale/es";
+import Image from "next/image";
 
 interface BookingCardProps {
   booking: IBookingUser;
@@ -46,13 +47,16 @@ export function BookingCard({ booking, onClick }: BookingCardProps) {
       className="overflow-hidden hover:shadow-md transition-all cursor-pointer border border-border/40 group"
       onClick={onClick}
     >
-      <div className="relative h-40 overflow-hidden">
-        <img
-          src={booking.product_banner || "/placeholder.svg"}
-          alt={booking.product_name}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+      <div className="relative aspect-[16/10] overflow-hidden">
+        <div className="relative h-full w-full">
+          <Image
+            src={booking.product_banner || "/logo.png"}
+            alt={booking.product_name}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-110"
+          />
+        </div>
         <Badge
           className={`absolute bottom-3 left-3 font-normal py-1 px-2 ${statusColors[uiStatus as keyof typeof statusColors]}`}
           variant="outline"
@@ -61,7 +65,7 @@ export function BookingCard({ booking, onClick }: BookingCardProps) {
         </Badge>
       </div>
       <CardContent className="p-4">
-        <h3 className="font-medium text-base mb-2 line-clamp-1">
+        <h3 className="text-base md:text-lg font-bold pt-2 text-wrap line-clamp-1">
           {booking.product_name}
         </h3>
 
@@ -80,11 +84,11 @@ export function BookingCard({ booking, onClick }: BookingCardProps) {
         </div>
 
         <div className="flex justify-between items-center pt-2 border-t border-border/60">
-          <div className="text-xs text-muted-foreground">
-            Ref: {booking.id.split("-").pop()}
+          <div className="text-start">
+            <p className="font-semibold">${booking.total}</p>
           </div>
-          <div className="text-right">
-            <p className="font-medium">${booking.total}</p>
+          <div className="text-sm text-muted-foreground">
+            Ref: {booking.id.split("-").pop()}
           </div>
         </div>
       </CardContent>

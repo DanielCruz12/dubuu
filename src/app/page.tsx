@@ -3,8 +3,8 @@
 import { useRef } from "react";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { carRentals, properties, tours } from "@/utils/data";
+import { buttonVariants } from "@/components/ui/button";
+import { properties, tours } from "@/utils/data";
 import UpTop from "@/components/up-top";
 import Link from "next/link";
 
@@ -149,7 +149,7 @@ export default function Home() {
             transition={{ duration: 0.5 }}
           >
             <h2 className="text-4xl md:text-5xl font-light tracking-tight mb-6">
-              TOURS <span className="font-bold">PRIVADOS</span>
+              Viajes <span className="font-bold">privados</span>
             </h2>
             <p className="text-gray-400 text-lg">
               Experiencias guiadas con acceso exclusivo y atención personalizada
@@ -168,7 +168,7 @@ export default function Home() {
               >
                 <div className="relative h-[400px] w-full overflow-hidden">
                   <Image
-                    src={tour.image || "/placeholder.svg"}
+                    src={tour.image || "/logo.png"}
                     alt={tour.title}
                     fill
                     className="object-cover transition-transform duration-700 rounded-xl"
@@ -189,9 +189,15 @@ export default function Home() {
 
           <div className="text-center mt-16">
             <div className="inline-block">
-              <Button variant={"secondary"} className="px-8 py-2 rounded">
-                Ver todos los tours
-              </Button>
+              <Link
+                href={"/home"}
+                className={
+                  buttonVariants({ variant: "secondary" }) +
+                  " px-8 py-2 rounded"
+                }
+              >
+                Ver todos los viajes
+              </Link>
             </div>
           </div>
         </div>
@@ -208,7 +214,7 @@ export default function Home() {
             transition={{ duration: 0.5 }}
           >
             <h2 className="text-4xl md:text-5xl font-light tracking-tight mb-6">
-              PROPIEDADES <span className="font-bold">EXCLUSIVAS</span>
+              Propiedades <span className="font-bold">exclusivas</span>
             </h2>
             <p className="text-gray-600 text-lg">
               Residencias de lujo en las ubicaciones más codiciadas del mundo
@@ -227,7 +233,7 @@ export default function Home() {
               >
                 <div className="relative h-[350px] overflow-hidden mb-6">
                   <Image
-                    src={property.image || "/placeholder.svg"}
+                    src={property.image || "/logo.png"}
                     alt={property.title}
                     fill
                     className="object-cover transition-transform duration-700 rounded-xl"
@@ -245,62 +251,15 @@ export default function Home() {
 
           <div className="text-center mt-16">
             <div className="inline-block">
-              <Button variant={"default"} className="px-8 py-2 rounded">
-                Ver todas propiedades
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Car Rentals Section */}
-      <section className="py-24 md:py-32 bg-black text-white">
-        <div className="md:px-20 px-4">
-          <motion.div
-            className="max-w-3xl mx-auto text-center mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <h2 className="text-4xl md:text-5xl font-light tracking-tight mb-6">
-              ALQUILER DE <span className="font-bold">VEHÍCULOS</span>
-            </h2>
-            <p className="text-gray-600 text-lg">
-              Vehículos de lujo para complementar tu experiencia de viaje
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {carRentals.map((car, index) => (
-              <motion.div
-                key={index}
-                className="group"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.2 }}
+              <Link
+                href={"/home"}
+                className={
+                  buttonVariants({ variant: "secondary" }) +
+                  " px-8 py-2 rounded"
+                }
               >
-                <div className="relative h-[350px] overflow-hidden mb-6">
-                  <Image
-                    src={car.image || "/placeholder.svg"}
-                    alt={car.model}
-                    fill
-                    className="object-cover transition-transform duration-700  rounded-xl"
-                  />
-                </div>
-                <h3 className="text-xl font-bold mb-2">{car.model}</h3>
-                <p className="text-gray-600 mb-3">{car.description}</p>
-                <p className="font-bold">{car.price}</p>
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="text-center mt-16">
-            <div className="inline-block">
-              <Button variant={"default"} className="px-8 py-2 rounded">
-                Ver todos los vehículos
-              </Button>
+                Ver todas propiedades
+              </Link>
             </div>
           </div>
         </div>

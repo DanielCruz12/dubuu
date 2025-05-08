@@ -265,7 +265,7 @@ export const ReceiptPDF = ({ receipt }: { receipt: ReceiptProps }) => {
         {/* Encabezado */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            {receipt.companyLogo && <Image src={receipt.companyLogo || "/placeholder.svg"} style={styles.logo} />}
+            {receipt.companyLogo && <Image src={receipt.companyLogo || "/logo.png"} style={styles.logo} />}
             <Text style={styles.companyName}>{receipt.companyName}</Text>
             {receipt.companyAddress && <Text style={styles.companyInfo}>{receipt.companyAddress}</Text>}
             {receipt.companyPhone && <Text style={styles.companyInfo}>Tel: {receipt.companyPhone}</Text>}
@@ -371,7 +371,7 @@ export const ReceiptPDF = ({ receipt }: { receipt: ReceiptProps }) => {
             <Text style={styles.notes}>Gracias por su confianza. Este recibo sirve como comprobante de pago.</Text>
           </View>
           <View style={styles.footerRight}>
-            {qrCodeImage && <Image src={qrCodeImage || "/placeholder.svg"} style={styles.qrCode} />}
+            {qrCodeImage && <Image src={qrCodeImage || "/logo.png"} style={styles.qrCode} />}
           </View>
         </View>
       </Page>
