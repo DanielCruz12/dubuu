@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { CheckCircle, Clock, AlertTriangle, RefreshCcw } from "lucide-react";
+import { RefreshCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,12 +17,14 @@ import { Separator } from "@/components/ui/separator";
 import moment from "moment";
 import { ReceiptProps } from "@/types/pdf";
 import PDFButton from "./pdf/pdf-button";
+import { statusConfig } from "@/utils";
 
 type BookingStatusProps = {
   id: string;
   status: "completed" | "in-process" | "canceled";
   productName?: string;
   productId: string;
+  product: any;
   paymentMethod: string;
   user: any;
   created_at: string;
@@ -39,6 +41,7 @@ export function BookingStatus({
   paymentMethod,
   productId,
   productName,
+  product,
   created_at,
   tickets,
   user,
@@ -61,11 +64,11 @@ export function BookingStatus({
         id: tickets.adult.toString(),
         description: productName as string,
         quantity: tickets.adult,
-        price: total,
+        price: product.price,
       },
     ],
-    subtotal: total,
-    tax: 0.13,
+    subtotal: product.price * tickets.adult,
+    tax: product.price * tickets.adult * 0.13,
     total: total,
     notes:
       "Gracias por confiar en nuestros servicios. Este recibo sirve como comprobante de pago.",
@@ -78,42 +81,6 @@ export function BookingStatus({
     qrValue: "https://miempresa.com/verificar/INV-2023-001",
     paymentMethod: "Transferencia Bancaria",
     paymentStatus: "Completado",
-  };
-
-  const statusConfig = {
-    completed: {
-      icon: CheckCircle,
-      title: "Reserva Completada",
-      description:
-        "Tu reserva ha sido confirmada, porfavor verifica los datos de la reserva.",
-      color: "text-green-500 dark:text-green-200",
-      bgColor: "bg-green-50 dark:bg-green-950/20",
-      borderColor: "border-green-200 dark:border-green-800",
-      badgeVariant: "success" as const,
-      badgeText: "Completada",
-    },
-    "in-process": {
-      icon: Clock,
-      title: "Reserva en Proceso",
-      description:
-        "Tu reserva está siendo procesada. Pronto recibirás confirmación.",
-      color: "text-amber-500",
-      bgColor: "bg-amber-50 dark:bg-amber-950/20",
-      borderColor: "border-amber-200 dark:border-amber-800",
-      badgeVariant: "warning" as const,
-      badgeText: "En Proceso",
-    },
-    canceled: {
-      icon: AlertTriangle,
-      title: "Reserva Cancelada",
-      description:
-        "Esta reserva ha sido cancelada. Puedes realizar una nueva reserva si lo deseas.",
-      color: "text-red-500",
-      bgColor: "bg-red-50 dark:bg-red-950/20",
-      borderColor: "border-red-200 dark:border-red-800",
-      badgeVariant: "destructive" as const,
-      badgeText: "Cancelada",
-    },
   };
 
   const config = statusConfig[status];

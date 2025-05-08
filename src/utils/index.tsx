@@ -1,7 +1,13 @@
 import { Country, Region } from "@/types/payment-types";
 import { IProduct, ITourProduct } from "@/types/product";
 import { countries } from "./data";
-import { CreditCard, Landmark } from "lucide-react";
+import {
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  CreditCard,
+  Landmark,
+} from "lucide-react";
 import type { PaymentMethod } from "@/types/payment-types";
 
 // Type guard para tours
@@ -116,3 +122,39 @@ export function getPaymentMethodName(method: PaymentMethod | null) {
       return "";
   }
 }
+
+export const statusConfig = {
+  completed: {
+    icon: CheckCircle,
+    title: "Reserva Completada",
+    description:
+      "Tu reserva ha sido confirmada, porfavor verifica los datos de la reserva.",
+    color: "text-green-500 dark:text-green-200",
+    bgColor: "bg-green-50 dark:bg-green-950/20",
+    borderColor: "border-green-200 dark:border-green-800",
+    badgeVariant: "success" as const,
+    badgeText: "Completada",
+  },
+  "in-process": {
+    icon: Clock,
+    title: "Reserva en Proceso",
+    description:
+      "Tu reserva está siendo procesada. Pronto recibirás confirmación.",
+    color: "text-amber-500",
+    bgColor: "bg-amber-50 dark:bg-amber-950/20",
+    borderColor: "border-amber-200 dark:border-amber-800",
+    badgeVariant: "warning" as const,
+    badgeText: "En Proceso",
+  },
+  canceled: {
+    icon: AlertTriangle,
+    title: "Reserva Cancelada",
+    description:
+      "Esta reserva ha sido cancelada. Puedes realizar una nueva reserva si lo deseas.",
+    color: "text-red-500",
+    bgColor: "bg-red-50 dark:bg-red-950/20",
+    borderColor: "border-red-200 dark:border-red-800",
+    badgeVariant: "destructive" as const,
+    badgeText: "Cancelada",
+  },
+};

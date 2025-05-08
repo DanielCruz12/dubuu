@@ -94,7 +94,7 @@ export default function ProductBooking() {
   );
   const isTour = isProductType(product, "tours");
 
-  console.log(user)
+  console.log(user);
 
   return (
     <div className="mx-auto md:px-0">
@@ -203,6 +203,7 @@ export default function ProductBooking() {
                         tickets={{
                           adult: Number(existingBooking.tickets),
                         }}
+                        product={product}
                         user={user}
                         productId={product.id}
                         paymentMethod={existingBooking.paymentMethod}
@@ -243,6 +244,7 @@ export default function ProductBooking() {
                               tickets={{
                                 adult: Number(existingBooking.tickets),
                               }}
+                              product={product}
                               user={user}
                               productId={product.id}
                               paymentMethod={existingBooking.paymentMethod}
