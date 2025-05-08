@@ -71,8 +71,12 @@ export function BookingsDataTable() {
 
   // Update bookings data when bookings load
   useEffect(() => {
-    if (bookings) {
+    if (bookings && bookings.length > 0) {
+      // Si hay reservas, actualiza los datos
       setBookingsData(bookings);
+    } else if (bookings && bookings.length === 0) {
+      // Si la respuesta es un array vacío, limpia la tabla
+      setBookingsData([]);
     }
   }, [bookings]);
 
@@ -81,9 +85,9 @@ export function BookingsDataTable() {
     (productId: string) => {
       // Solo actualizar si es un producto diferente
       if (productId !== selectedProductId) {
-        setSelectedProductId(productId);
-        // Limpiar los datos inmediatamente
+        // Limpiar los datos inmediatamente antes de cambiar el producto
         setBookingsData([]);
+        setSelectedProductId(productId);
       }
     },
     [selectedProductId]
@@ -242,12 +246,7 @@ export function BookingsDataTable() {
               <Skeleton className="h-20 w-full" />
             </div>
           ) : (
-            <DataTable
-              columns={bookingsColumns}
-              data={bookingsData || []}
-              showSearch={true}
-              searchPlaceholder="Buscar reservas..."
-            />
+            <DataTable columns={bookingsColumns} data={bookingsData || []} />
           )}
         </CardContent>
       </Card>
