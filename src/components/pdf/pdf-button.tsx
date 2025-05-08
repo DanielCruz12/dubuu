@@ -52,17 +52,17 @@ export default function PDFButton({
       doc.setFont("helvetica", "normal");
 
       // Colores
-      const primaryColor = [37, 99, 235]; // #1a1a1a en RGB
+      const primaryColor = [0, 0, 0]; // #1a1a1a en RGB
       const grayColor = [85, 85, 85]; // #555555 en RGB
       const lightGrayColor = [243, 244, 246]; // #F3F4F6 en RGB
-      const veryLightBlue = [235, 240, 255]; // Color muy claro para simular transparencia
+      const veryLightGray = [245, 245, 245]; // Color muy claro para simular transparencia
 
       // Añadir línea decorativa en la parte superior
       doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       doc.rect(10, 10, 190, 3, "F");
 
       // Añadir esquina decorativa (usando un color muy claro en lugar de transparencia)
-      doc.setFillColor(veryLightBlue[0], veryLightBlue[1], veryLightBlue[2]);
+      doc.setFillColor(veryLightGray[0], veryLightGray[1], veryLightGray[2]);
       doc.circle(200, 10, 30, "F");
 
       // Añadir marca de agua (usando un color muy claro en lugar de transparencia)
@@ -96,14 +96,15 @@ export default function PDFButton({
 
       // Título del recibo
       try {
-        doc.addImage("/logo.png", "PNG", 170, 15, 30, 15);
+        doc.addImage("/logo.png", "PNG", 155, 15, 45, 22)
       } catch (error) {
-        console.error("Error al cargar el logo:", error);
+        console.error("Error al cargar el logo:", error)
         // Si hay error al cargar el logo, mostramos el texto como fallback
-        doc.setFontSize(24);
-        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-        doc.text("RECIBO", 200, 25, { align: "right" });
+        doc.setFontSize(24)
+        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
+        doc.text("RECIBO", 200, 25, { align: "right" })
       }
+      
       // Información del recibo
       doc.setDrawColor(238, 238, 238);
       doc.line(10, 50, 200, 50);
@@ -232,36 +233,6 @@ export default function PDFButton({
         { align: "right" }
       );
       yPos += 6;
-
-      // Impuestos
-      if (receiptData.tax !== undefined) {
-        doc.text(
-          `IVA (${(receiptData.tax * 100).toFixed(0)}%)`,
-          summaryX,
-          yPos
-        );
-        doc.text(
-          formatCurrency(receiptData.subtotal * receiptData.tax),
-          summaryX + summaryWidth,
-          yPos,
-          {
-            align: "right",
-          }
-        );
-        yPos += 6;
-      }
-
-      // Descuento
-      if (receiptData.discount !== undefined) {
-        doc.text("Descuento", summaryX, yPos);
-        doc.text(
-          `-${formatCurrency(receiptData.discount)}`,
-          summaryX + summaryWidth,
-          yPos,
-          { align: "right" }
-        );
-        yPos += 6;
-      }
 
       // Total
       doc.setFillColor(lightGrayColor[0], lightGrayColor[1], lightGrayColor[2]);
