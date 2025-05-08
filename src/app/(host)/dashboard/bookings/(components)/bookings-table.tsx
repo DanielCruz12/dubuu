@@ -63,22 +63,20 @@ export function BookingsDataTable() {
     }
   }, [products, selectedProductId]);
 
-  // IMPORTANTE: Limpiar bookingsData cuando cambia el producto seleccionado
+  // CRÍTICO: Limpiar bookingsData INMEDIATAMENTE cuando cambia el producto seleccionado
   useEffect(() => {
-    // Solo limpiamos temporalmente mientras se carga la nueva data
-    if (selectedProductId) {
-      // Limpiar los datos solo si estamos esperando nueva data
-      if (isLoadingBookings) {
-        setBookingsData([]);
-      }
-    }
-  }, [selectedProductId, isLoadingBookings]);
+    // Siempre limpiamos los datos cuando cambia el producto seleccionado
+    // Esto es crucial para evitar mostrar datos antiguos
+    setBookingsData([]);
+  }, [selectedProductId]);
 
-  // Update bookings data when bookings load
+  // Update bookings data ONLY when bookings load and has data
   useEffect(() => {
-    // Siempre actualiza los datos cuando bookings cambia, incluso si es null o undefined
-    if (bookings !== undefined) {
-      setBookingsData(bookings || []);
+    // Solo actualizamos bookingsData si bookings tiene datos
+    // Si bookings es undefined o null, no hacemos nada (mantenemos el array vacío del efecto anterior)
+    // Si bookings es un array vacío, mantenemos bookingsData como array vacío
+    if (bookings !== undefined && bookings !== null) {
+      setBookingsData(bookings);
     }
   }, [bookings]);
 
@@ -158,6 +156,9 @@ export function BookingsDataTable() {
       />
     );
   }
+
+  // Verificación adicional para asegurar que no se muestren datos antiguos
+  const dataToShow = selectedProductId && bookings ? bookingsData : [];
 
   return (
     <div className="space-y-4 pt-6">
@@ -246,7 +247,7 @@ export function BookingsDataTable() {
               <Skeleton className="h-20 w-full" />
             </div>
           ) : (
-            <DataTable columns={bookingsColumns} data={bookingsData || []} />
+            <DataTable columns={bookingsColumns} data={dataToShow} />
           )}
         </CardContent>
       </Card>
