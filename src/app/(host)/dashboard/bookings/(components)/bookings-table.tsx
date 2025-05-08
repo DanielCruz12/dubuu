@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -37,16 +36,15 @@ export function BookingsDataTable() {
 
   const [selectedProductId, setSelectedProductId] = useState<string>("");
   const [openProductSelect, setOpenProductSelect] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [bookingsData, setBookingsData] = useState<any[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
 
   // Fetch products for the user
   const { data: products, isLoading } = useGetProductsByUserIdQuery(userId, {
     skip: !userId,
   });
 
-  // Fetch bookings for the selected product - NO forzamos refetch
+  // Fetch bookings for the selected product
   const { data: bookings, isLoading: isLoadingBookings } =
     useGetBookingsByUserIdProductIdQuery(
       { userId, productId: selectedProductId },
@@ -55,67 +53,35 @@ export function BookingsDataTable() {
 
   // Set the first product as selected when products load
   useEffect(() => {
-    if (products && products.length > 0) {
-      setFilteredProducts(products);
-      if (!selectedProductId) {
-        setSelectedProductId(products[0].id);
-      }
+    if (products && products.length > 0 && !selectedProductId) {
+      setSelectedProductId(products[0].id);
     }
   }, [products, selectedProductId]);
 
-  // Update bookings data when bookings load or when cambia el producto seleccionado
+  // Update bookings data when bookings load
   useEffect(() => {
-    // Si tenemos datos de bookings, los usamos
     if (bookings) {
       setBookingsData(bookings);
-    } else if (!isLoadingBookings) {
-      // Si no estamos cargando y no hay datos, mostramos array vacío
-      setBookingsData([]);
     }
-  }, [bookings, isLoadingBookings]);
+  }, [bookings]);
 
-  // Handle product selection - simplemente cambiamos el ID
+  // Handle product selection
   const handleProductChange = useCallback((productId: string) => {
     setSelectedProductId(productId);
   }, []);
 
-  // Handle search in Command component
-  const handleCommandSearch = useCallback(
-    (value: string) => {
-      setSearchTerm(value);
-
-      if (!products) return;
-
-      if (!value.trim()) {
-        setFilteredProducts(products);
-        return;
-      }
-
-      const lowercaseSearch = value.toLowerCase();
-      const filtered = products.filter((product) =>
-        product.name.toLowerCase().includes(lowercaseSearch)
-      );
-
-      setFilteredProducts(filtered);
-    },
-    [products]
-  );
-
   // Export to Excel
   const handleExport = () => {
-    if (!bookingsData || bookingsData.length === 0) {
-      return;
-    }
-
     const dataToExport = bookingsData.map((booking) => {
       return {
         ID: booking.bookingId,
-        Usuario: booking.user.username,
+        User: booking.user.username,
         Email: booking.user.email,
-        Producto: booking.name,
-        Estado: booking.status,
-        Boletos: booking.tickets,
+        Product: booking.name,
+        Status: booking.status,
+        Tickets: booking.tickets,
         Fecha: moment(booking.bookingDate).format("dddd, D [de] MMMM - h:mm A"),
+
         "Fecha de reserva": moment(booking.createdAt).format(
           "dddd, D [de] MMMM - h:mm A"
         ),
@@ -126,11 +92,10 @@ export function BookingsDataTable() {
       };
     });
 
-    exportToExcel(dataToExport, "Reservas");
+    exportToExcel(dataToExport, "Bookings");
   };
 
-  // Solo mostrar skeleton mientras carga los productos iniciales
-  if (isLoading || !products || !user) {
+  if (isLoading || isLoadingBookings || !products || !user) {
     return (
       <DataTableSkeleton
         headers={[
@@ -167,47 +132,37 @@ export function BookingsDataTable() {
                       ? products.find(
                           (product) => product.id === selectedProductId
                         )?.name
-                      : "Seleccionar producto..."}
+                      : "Select a product..."}
                     <SearchIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-full p-0" align="start">
                   <Command>
-                    <CommandInput
-                      placeholder="Buscar producto..."
-                      value={searchTerm}
-                      onValueChange={handleCommandSearch}
-                    />
+                    <CommandInput placeholder="Search product..." />
                     <CommandList>
-                      {filteredProducts.length === 0 ? (
-                        <CommandEmpty>
-                          No se encontraron productos.
-                        </CommandEmpty>
-                      ) : (
-                        <CommandGroup className="max-h-64 overflow-y-auto">
-                          {filteredProducts.map((product) => (
-                            <CommandItem
-                              key={product.id}
-                              value={product.name}
-                              onSelect={() => {
-                                handleProductChange(product.id);
-                                setOpenProductSelect(false);
-                                setSearchTerm("");
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  selectedProductId === product.id
-                                    ? "opacity-100"
-                                    : "opacity-0"
-                                )}
-                              />
-                              {product.name}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      )}
+                      <CommandEmpty>No products found.</CommandEmpty>
+                      <CommandGroup className="max-h-64 overflow-y-auto">
+                        {products.map((product) => (
+                          <CommandItem
+                            key={product.id}
+                            value={product.id}
+                            onSelect={() => {
+                              handleProductChange(product.id);
+                              setOpenProductSelect(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                selectedProductId === product.id
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                            {product.name}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
                     </CommandList>
                   </Command>
                 </PopoverContent>
@@ -215,11 +170,7 @@ export function BookingsDataTable() {
             </div>
 
             <div className="flex gap-2 ml-auto">
-              <Button
-                onClick={handleExport}
-                title="Exportar a Excel"
-                disabled={!bookingsData || bookingsData.length === 0}
-              >
+              <Button onClick={handleExport} title="Exportar a Excel">
                 <DownloadIcon className="h-4 w-4 mr-2" />
                 <span>Exportar</span>
               </Button>
@@ -234,9 +185,9 @@ export function BookingsDataTable() {
           ) : (
             <DataTable
               columns={bookingsColumns}
-              data={bookingsData || []}
+              data={bookingsData}
               showSearch={true}
-              searchPlaceholder="Buscar reservas..."
+              searchPlaceholder="Search bookings..."
             />
           )}
         </CardContent>
