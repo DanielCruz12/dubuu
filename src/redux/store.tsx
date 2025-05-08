@@ -34,6 +34,7 @@ import { productTypesApiSlice } from "@/redux/slices/product/product-types";
 import { bookingsApiSlice } from "@/redux/slices/booking/booking-slice";
 import { usersApiSlice } from "@/redux/slices/user/user-slice";
 import { favoritesApiSlice } from "@/redux/slices/favorite/favorite-slice";
+import { contactsApiSlice } from "@/redux/slices/contact/contact-slice";
 
 import authReducer from "./slices/auth/auth-slice";
 
@@ -87,6 +88,7 @@ const rootReducer = combineReducers({
   [bookingsApiSlice.reducerPath]: bookingsApiSlice.reducer,
   [favoritesApiSlice.reducerPath]: favoritesApiSlice.reducer,
   [usersApiSlice.reducerPath]: usersApiSlice.reducer,
+  [contactsApiSlice.reducerPath]: contactsApiSlice.reducer,
   auth: authReducer,
   filters: filtersReducer,
 });
@@ -110,7 +112,8 @@ export const makeStore = () =>
         productTypesApiSlice.middleware,
         bookingsApiSlice.middleware,
         favoritesApiSlice.middleware,
-        usersApiSlice.middleware
+        usersApiSlice.middleware,
+        contactsApiSlice.middleware
       ),
   });
 

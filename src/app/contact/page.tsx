@@ -37,6 +37,8 @@ import {
 import ReCAPTCHA from "react-google-recaptcha";
 import { PhoneInputComponent } from "@/components/phone-input";
 import { verifyRecaptcha } from "@/lib/recaptcha";
+import { useUser } from "@clerk/nextjs";
+import { useSendContactMessageMutation } from "@/redux/slices/contact/contact-slice";
 
 const formSchema = z.object({
   nombre: z.string().min(2, "El nombre es requerido"),
@@ -58,6 +60,9 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function ContactForm() {
+  const { user, isSignedIn: isAuthenticated } = useUser();
+  const [sendContactMessage, { isLoading: isSending }] =
+    useSendContactMessageMutation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [recaptchaValue, setRecaptchaValue] = useState<string | null>(null);
   const [preferredContact, setPreferredContact] = useState<
@@ -79,6 +84,15 @@ export default function ContactForm() {
     },
   });
 
+  // Pre-fill form with user data when authenticated
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      form.setValue("nombre", user.firstName || "");
+      form.setValue("apellido", user.lastName || "");
+      form.setValue("email", user.primaryEmailAddress?.emailAddress || "");
+    }
+  }, [isAuthenticated, user, form]);
+
   // Actualizar el valor del reCAPTCHA en el formulario cuando cambie
   useEffect(() => {
     if (recaptchaValue) {
@@ -87,6 +101,13 @@ export default function ContactForm() {
   }, [recaptchaValue, form]);
 
   async function onSubmit(values: FormValues) {
+    if (!isAuthenticated) {
+      toast.error("Por favor, inicie sesión para enviar su solicitud.", {
+        description: "Debe estar autenticado para enviar el formulario.",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -105,8 +126,19 @@ export default function ContactForm() {
         return;
       }
 
-      // Mostrar valores en consola
-      console.log("Valores del formulario:", values);
+      // Prepare data for API exactly as required
+      const contactMessage = {
+        nombre: values.nombre,
+        apellido: values.apellido,
+        email: values.email,
+        telefono: values.telefono,
+        tipoServicio: values.tipoServicio,
+        mensaje: values.mensaje,
+        terminosCondiciones: values.terminosCondiciones,
+      };
+
+      // Send data to API using Redux Toolkit Query
+      await sendContactMessage(contactMessage).unwrap();
 
       // Mostrar mensaje de éxito
       toast.success("¡Solicitud enviada con éxito!", {
@@ -120,6 +152,13 @@ export default function ContactForm() {
       form.reset();
       setRecaptchaValue(null);
       recaptchaRef.current?.reset();
+
+      // If user is authenticated, pre-fill the form again
+      if (isAuthenticated && user) {
+        form.setValue("nombre", user.firstName || "");
+        form.setValue("apellido", user.lastName || "");
+        form.setValue("email", user.primaryEmailAddress?.emailAddress || "");
+      }
     } catch (err) {
       console.error("Error al enviar el formulario:", err);
       toast.error("Error al enviar el formulario", {
@@ -391,9 +430,11 @@ export default function ContactForm() {
                     <Button
                       type="submit"
                       className="w-full bg-black hover:bg-gray-800 text-white"
-                      disabled={isSubmitting}
+                      disabled={isSubmitting || isSending || !isAuthenticated}
                     >
-                      {isSubmitting ? "Enviando..." : "Enviar solicitud"}
+                      {isSubmitting || isSending
+                        ? "Enviando..."
+                        : "Enviar solicitud"}
                     </Button>
                   </form>
                 </Form>
