@@ -40,7 +40,6 @@ export function BookingsDataTable() {
   const [bookingsData, setBookingsData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
-  const [lastQueriedProductId, setLastQueriedProductId] = useState<string>("");
 
   // Fetch products for the user
   const { data: products, isLoading } = useGetProductsByUserIdQuery(userId, {
@@ -48,15 +47,17 @@ export function BookingsDataTable() {
   });
 
   // Fetch bookings for the selected product
-  const { data: bookings, isLoading: isLoadingBookings } =
-    useGetBookingsByUserIdProductIdQuery(
-      { userId, productId: selectedProductId },
-      {
-        skip: !selectedProductId,
-        // Esta opción es clave: fuerza un refetch cuando cambian los argumentos (productId)
-        refetchOnMountOrArgChange: true,
-      }
-    );
+  const {
+    data: bookings,
+    isLoading: isLoadingBookings,
+    error: bookingsError,
+  } = useGetBookingsByUserIdProductIdQuery(
+    { userId, productId: selectedProductId },
+    {
+      skip: !selectedProductId,
+      refetchOnMountOrArgChange: true,
+    }
+  );
 
   // Set the first product as selected when products load
   useEffect(() => {
@@ -68,33 +69,22 @@ export function BookingsDataTable() {
     }
   }, [products, selectedProductId]);
 
-  // CRÍTICO: Actualizar el ID del último producto consultado
+  // Update bookingsData when bookings change or when there's an error
   useEffect(() => {
-    if (selectedProductId) {
-      setLastQueriedProductId(selectedProductId);
+    if (bookingsError) {
+      // Si hay un error (como 404), establecemos un array vacío
+      setBookingsData([]);
+    } else if (bookings) {
+      // Si hay datos, los usamos
+      setBookingsData(bookings);
     }
-  }, [selectedProductId]);
-
-  // Update bookingsData when bookings change
-  useEffect(() => {
-    // Solo actualizamos los datos si la respuesta corresponde al producto actualmente seleccionado
-    if (bookings !== undefined && lastQueriedProductId === selectedProductId) {
-      setBookingsData(bookings || []);
-    }
-  }, [bookings, selectedProductId, lastQueriedProductId]);
-
-  // Limpiar bookingsData cuando cambia el producto seleccionado
-  useEffect(() => {
-    setBookingsData([]);
-  }, [selectedProductId]);
+  }, [bookings, bookingsError]);
 
   // Handle product selection
   const handleProductChange = useCallback(
     (productId: string) => {
       // Solo actualizar si es un producto diferente
       if (productId !== selectedProductId) {
-        // Limpiar los datos antes de cambiar el producto
-        setBookingsData([]);
         setSelectedProductId(productId);
       }
     },
