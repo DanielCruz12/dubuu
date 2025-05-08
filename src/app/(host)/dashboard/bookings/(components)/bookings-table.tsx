@@ -40,6 +40,10 @@ export function BookingsDataTable() {
   const [bookingsData, setBookingsData] = useState<any[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+
+  // Caché local para mantener los datos de bookings por producto
+  const [bookingsCache, setBookingsCache] = useState<Record<string, any[]>>({});
+
   // Fetch products for the user
   const { data: products, isLoading } = useGetProductsByUserIdQuery(userId, {
     skip: !userId,
@@ -62,18 +66,36 @@ export function BookingsDataTable() {
     }
   }, [products, selectedProductId]);
 
-  // Update bookings data when bookings load
+  // Update bookings data and cache when bookings load
   useEffect(() => {
-    if (bookings) {
-      setBookingsData(bookings || []);
+    if (bookings && selectedProductId) {
+      // Actualizar el caché local
+      setBookingsCache((prev) => ({
+        ...prev,
+        [selectedProductId]: bookings,
+      }));
+
+      // Actualizar los datos mostrados
+      setBookingsData(bookings);
     }
-  }, [bookings]);
+  }, [bookings, selectedProductId]);
 
   // Handle product selection
-  const handleProductChange = useCallback((productId: string) => {
-    setSelectedProductId(productId);
-    setBookingsData([]); // Clear current data while loading
-  }, []);
+  const handleProductChange = useCallback(
+    (productId: string) => {
+      setSelectedProductId(productId);
+
+      // Verificar si tenemos datos en caché para este producto
+      if (bookingsCache[productId]) {
+        // Usar datos del caché
+        setBookingsData(bookingsCache[productId]);
+      } else {
+        // Limpiar datos mientras carga
+        setBookingsData([]);
+      }
+    },
+    [bookingsCache]
+  );
 
   const handleCommandSearch = useCallback(
     (value: string) => {
@@ -98,30 +120,35 @@ export function BookingsDataTable() {
 
   // Export to Excel
   const handleExport = () => {
+    if (!bookingsData.length) return;
+
     const dataToExport = bookingsData.map((booking) => {
       return {
         ID: booking.bookingId,
-        User: booking.user.username,
-        Email: booking.user.email,
-        Product: booking.name,
-        Status: booking.status,
-        Tickets: booking.tickets,
-        Fecha: moment(booking.bookingDate).format("dddd, D [de] MMMM - h:mm A"),
-
-        "Fecha de reserva": moment(booking.createdAt).format(
-          "dddd, D [de] MMMM - h:mm A"
-        ),
-        Total: new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-        }).format(Number.parseFloat(booking.total.toString())),
+        User: booking.user?.username || "N/A",
+        Email: booking.user?.email || "N/A",
+        Product: booking.name || "N/A",
+        Status: booking.status || "N/A",
+        Tickets: booking.tickets || 0,
+        Fecha: booking.bookingDate
+          ? moment(booking.bookingDate).format("dddd, D [de] MMMM - h:mm A")
+          : "N/A",
+        "Fecha de reserva": booking.createdAt
+          ? moment(booking.createdAt).format("dddd, D [de] MMMM - h:mm A")
+          : "N/A",
+        Total: booking.total
+          ? new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+            }).format(Number.parseFloat(booking.total.toString()))
+          : "$0.00",
       };
     });
 
     exportToExcel(dataToExport, "Bookings");
   };
 
-  if (isLoading || isLoadingBookings || !products || !user) {
+  if (isLoading || !user) {
     return (
       <DataTableSkeleton
         headers={[
@@ -154,11 +181,11 @@ export function BookingsDataTable() {
                     aria-expanded={openProductSelect}
                     className="w-full md:w-[300px] justify-between"
                   >
-                    {selectedProductId
+                    {selectedProductId && products
                       ? products.find(
                           (product) => product.id === selectedProductId
-                        )?.name
-                      : "Select a product..."}
+                        )?.name || "Seleccionar producto..."
+                      : "Seleccionar producto..."}
                     <SearchIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
@@ -179,7 +206,7 @@ export function BookingsDataTable() {
                           {filteredProducts.map((product) => (
                             <CommandItem
                               key={product.id}
-                              value={product.name} // Use name for filtering
+                              value={product.name}
                               onSelect={() => {
                                 handleProductChange(product.id);
                                 setOpenProductSelect(false);
@@ -206,7 +233,11 @@ export function BookingsDataTable() {
             </div>
 
             <div className="flex gap-2 ml-auto">
-              <Button onClick={handleExport} title="Exportar a Excel">
+              <Button
+                onClick={handleExport}
+                title="Exportar a Excel"
+                disabled={!bookingsData.length}
+              >
                 <DownloadIcon className="h-4 w-4 mr-2" />
                 <span>Exportar</span>
               </Button>
@@ -221,9 +252,9 @@ export function BookingsDataTable() {
           ) : (
             <DataTable
               columns={bookingsColumns}
-              data={bookingsData}
+              data={bookingsData || []}
               showSearch={true}
-              searchPlaceholder="Search bookings..."
+              searchPlaceholder="Buscar reservas..."
             />
           )}
         </CardContent>
