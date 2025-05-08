@@ -47,10 +47,15 @@ export function BookingsDataTable() {
   });
 
   // Fetch bookings for the selected product
+  // IMPORTANTE: Forzamos refetch cada vez que cambia selectedProductId con refetchOnMountOrArgChange
   const { data: bookings, isLoading: isLoadingBookings } =
     useGetBookingsByUserIdProductIdQuery(
       { userId, productId: selectedProductId },
-      { skip: !selectedProductId }
+      {
+        skip: !selectedProductId,
+        // Esta opción es clave: fuerza un refetch cuando cambian los argumentos (productId)
+        refetchOnMountOrArgChange: true,
+      }
     );
 
   // Set the first product as selected when products load
@@ -63,20 +68,10 @@ export function BookingsDataTable() {
     }
   }, [products, selectedProductId]);
 
-  // CRÍTICO: Limpiar bookingsData INMEDIATAMENTE cuando cambia el producto seleccionado
+  // Update bookingsData when bookings change
   useEffect(() => {
-    // Siempre limpiamos los datos cuando cambia el producto seleccionado
-    // Esto es crucial para evitar mostrar datos antiguos
-    setBookingsData([]);
-  }, [selectedProductId]);
-
-  // Update bookings data ONLY when bookings load and has data
-  useEffect(() => {
-    // Solo actualizamos bookingsData si bookings tiene datos
-    // Si bookings es undefined o null, no hacemos nada (mantenemos el array vacío del efecto anterior)
-    // Si bookings es un array vacío, mantenemos bookingsData como array vacío
-    if (bookings !== undefined && bookings !== null) {
-      setBookingsData(bookings);
+    if (bookings !== undefined) {
+      setBookingsData(bookings || []);
     }
   }, [bookings]);
 
@@ -113,7 +108,7 @@ export function BookingsDataTable() {
     [products]
   );
 
-  // Export to Excel
+  // Export to Excel - Manteniendo la lógica original
   const handleExport = () => {
     if (!bookingsData || bookingsData.length === 0) {
       return;
@@ -156,9 +151,6 @@ export function BookingsDataTable() {
       />
     );
   }
-
-  // Verificación adicional para asegurar que no se muestren datos antiguos
-  const dataToShow = selectedProductId && bookings ? bookingsData : [];
 
   return (
     <div className="space-y-4 pt-6">
@@ -247,7 +239,7 @@ export function BookingsDataTable() {
               <Skeleton className="h-20 w-full" />
             </div>
           ) : (
-            <DataTable columns={bookingsColumns} data={dataToShow} />
+            <DataTable columns={bookingsColumns} data={bookingsData || []} />
           )}
         </CardContent>
       </Card>
