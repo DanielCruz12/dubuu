@@ -40,6 +40,7 @@ export function BookingsDataTable() {
   const [bookingsData, setBookingsData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+  const [lastQueriedProductId, setLastQueriedProductId] = useState<string>("");
 
   // Fetch products for the user
   const { data: products, isLoading } = useGetProductsByUserIdQuery(userId, {
@@ -47,7 +48,6 @@ export function BookingsDataTable() {
   });
 
   // Fetch bookings for the selected product
-  // IMPORTANTE: Forzamos refetch cada vez que cambia selectedProductId con refetchOnMountOrArgChange
   const { data: bookings, isLoading: isLoadingBookings } =
     useGetBookingsByUserIdProductIdQuery(
       { userId, productId: selectedProductId },
@@ -68,18 +68,33 @@ export function BookingsDataTable() {
     }
   }, [products, selectedProductId]);
 
+  // CRÍTICO: Actualizar el ID del último producto consultado
+  useEffect(() => {
+    if (selectedProductId) {
+      setLastQueriedProductId(selectedProductId);
+    }
+  }, [selectedProductId]);
+
   // Update bookingsData when bookings change
   useEffect(() => {
-    if (bookings !== undefined) {
+    // Solo actualizamos los datos si la respuesta corresponde al producto actualmente seleccionado
+    if (bookings !== undefined && lastQueriedProductId === selectedProductId) {
       setBookingsData(bookings || []);
     }
-  }, [bookings]);
+  }, [bookings, selectedProductId, lastQueriedProductId]);
+
+  // Limpiar bookingsData cuando cambia el producto seleccionado
+  useEffect(() => {
+    setBookingsData([]);
+  }, [selectedProductId]);
 
   // Handle product selection
   const handleProductChange = useCallback(
     (productId: string) => {
       // Solo actualizar si es un producto diferente
       if (productId !== selectedProductId) {
+        // Limpiar los datos antes de cambiar el producto
+        setBookingsData([]);
         setSelectedProductId(productId);
       }
     },
