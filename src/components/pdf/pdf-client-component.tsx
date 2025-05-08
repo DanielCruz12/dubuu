@@ -16,7 +16,7 @@ import {
   PDFDownloadLink,
 } from "@react-pdf/renderer";
 import QRCode from "qrcode";
-import { ReceiptProps } from "./pdf-template";
+import { ReceiptProps } from "@/types/pdf";
 
 // Registrar fuentes
 Font.register({
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 700,
     marginBottom: 10,
-    color: "#2563EB",
+    color: "#333333",
   },
   receiptInfo: {
     flexDirection: "row",
@@ -318,12 +318,6 @@ const ReceiptPDF = ({ receipt }: { receipt: ReceiptProps }) => {
             <Text style={styles.value}>{receipt.receiptNumber}</Text>
             <Text style={styles.label}>FECHA DE EMISIÓN</Text>
             <Text style={styles.value}>{receipt.date}</Text>
-            {receipt.dueDate && (
-              <>
-                <Text style={styles.label}>FECHA DE VENCIMIENTO</Text>
-                <Text style={styles.value}>{receipt.dueDate}</Text>
-              </>
-            )}
           </View>
           <View style={styles.receiptInfoRight}>
             {receipt.paymentMethod && (
@@ -421,10 +415,7 @@ const ReceiptPDF = ({ receipt }: { receipt: ReceiptProps }) => {
           </View>
           <View style={styles.footerRight}>
             {qrCodeImage && (
-              <Image
-                src={qrCodeImage || "/logo.png"}
-                style={styles.qrCode}
-              />
+              <Image src={qrCodeImage || "/logo.png"} style={styles.qrCode} />
             )}
           </View>
         </View>

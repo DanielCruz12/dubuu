@@ -1,15 +1,26 @@
 /* eslint-disable jsx-a11y/alt-text */
-"use client"
+"use client";
 
-import React from "react"
-import { Document, Page, Text, View, StyleSheet, Image, Font } from "@react-pdf/renderer"
-import type { ReceiptProps } from "./pdf-template"
+import React from "react";
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  Image,
+  Font,
+} from "@react-pdf/renderer";
+import { ReceiptProps } from "@/types/pdf";
 
 // Registrar fuentes
 Font.register({
   family: "Roboto",
   fonts: [
-    { src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-light-webfont.ttf", fontWeight: 300 },
+    {
+      src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-light-webfont.ttf",
+      fontWeight: 300,
+    },
     {
       src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-regular-webfont.ttf",
       fontWeight: 400,
@@ -18,9 +29,12 @@ Font.register({
       src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-medium-webfont.ttf",
       fontWeight: 500,
     },
-    { src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-bold-webfont.ttf", fontWeight: 700 },
+    {
+      src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-bold-webfont.ttf",
+      fontWeight: 700,
+    },
   ],
-})
+});
 
 // Estilos para el PDF
 const styles = StyleSheet.create({
@@ -212,10 +226,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#FEE2E2",
     color: "#B91C1C",
   },
-})
+});
 
 export const ReceiptPDF = ({ receipt }: { receipt: ReceiptProps }) => {
-  const [qrCodeImage, setQrCodeImage] = React.useState<string | null>(null)
+  const [qrCodeImage, setQrCodeImage] = React.useState<string | null>(null);
 
   // Reemplazar el useEffect para generar el QR
   React.useEffect(() => {
@@ -223,41 +237,41 @@ export const ReceiptPDF = ({ receipt }: { receipt: ReceiptProps }) => {
       const generateQRCode = async () => {
         try {
           // Importar QRCode dinámicamente solo en el cliente
-          const QRCode = (await import("qrcode")).default
-          const qrValue = receipt.qrValue || `RECEIPT:${receipt.receiptNumber}`
+          const QRCode = (await import("qrcode")).default;
+          const qrValue = receipt.qrValue || `RECEIPT:${receipt.receiptNumber}`;
           const qrDataURL = await QRCode.toDataURL(qrValue, {
             margin: 1,
             width: 200,
-          })
-          setQrCodeImage(qrDataURL)
+          });
+          setQrCodeImage(qrDataURL);
         } catch (err) {
-          console.error("Error generando código QR:", err)
+          console.error("Error generando código QR:", err);
         }
-      }
+      };
 
-      generateQRCode()
+      generateQRCode();
     }
-  }, [receipt])
+  }, [receipt]);
 
   const getStatusStyle = () => {
     switch (receipt.paymentStatus) {
       case "Completado":
-        return styles.statusPaid
+        return styles.statusPaid;
       case "En proceso":
-        return styles.statusPending
+        return styles.statusPending;
       case "Cancelado":
-        return styles.statusCancelled
+        return styles.statusCancelled;
       default:
-        return {}
+        return {};
     }
-  }
+  };
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("es-ES", {
       style: "currency",
       currency: "USD",
-    }).format(amount)
-  }
+    }).format(amount);
+  };
 
   return (
     <Document>
@@ -265,15 +279,34 @@ export const ReceiptPDF = ({ receipt }: { receipt: ReceiptProps }) => {
         {/* Encabezado */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            {receipt.companyLogo && <Image src={receipt.companyLogo || "/logo.png"} style={styles.logo} />}
+            {receipt.companyLogo && (
+              <Image
+                src={receipt.companyLogo || "/logo.png"}
+                style={styles.logo}
+              />
+            )}
             <Text style={styles.companyName}>{receipt.companyName}</Text>
-            {receipt.companyAddress && <Text style={styles.companyInfo}>{receipt.companyAddress}</Text>}
-            {receipt.companyPhone && <Text style={styles.companyInfo}>Tel: {receipt.companyPhone}</Text>}
-            {receipt.companyEmail && <Text style={styles.companyInfo}>Email: {receipt.companyEmail}</Text>}
-            {receipt.companyWebsite && <Text style={styles.companyInfo}>Web: {receipt.companyWebsite}</Text>}
+            {receipt.companyAddress && (
+              <Text style={styles.companyInfo}>{receipt.companyAddress}</Text>
+            )}
+            {receipt.companyPhone && (
+              <Text style={styles.companyInfo}>
+                Tel: {receipt.companyPhone}
+              </Text>
+            )}
+            {receipt.companyEmail && (
+              <Text style={styles.companyInfo}>
+                Email: {receipt.companyEmail}
+              </Text>
+            )}
+            {receipt.companyWebsite && (
+              <Text style={styles.companyInfo}>
+                Web: {receipt.companyWebsite}
+              </Text>
+            )}
           </View>
           <View style={styles.headerRight}>
-            <Text style={styles.title}>RECIBO</Text>
+            <Image src={"/logo.png"} style={styles.logo} />
           </View>
         </View>
 
@@ -284,12 +317,6 @@ export const ReceiptPDF = ({ receipt }: { receipt: ReceiptProps }) => {
             <Text style={styles.value}>{receipt.receiptNumber}</Text>
             <Text style={styles.label}>FECHA DE EMISIÓN</Text>
             <Text style={styles.value}>{receipt.date}</Text>
-            {receipt.dueDate && (
-              <>
-                <Text style={styles.label}>FECHA DE VENCIMIENTO</Text>
-                <Text style={styles.value}>{receipt.dueDate}</Text>
-              </>
-            )}
           </View>
           <View style={styles.receiptInfoRight}>
             {receipt.paymentMethod && (
@@ -301,7 +328,9 @@ export const ReceiptPDF = ({ receipt }: { receipt: ReceiptProps }) => {
             {receipt.paymentStatus && (
               <>
                 <Text style={styles.label}>ESTADO</Text>
-                <Text style={{ ...styles.paymentStatus, ...getStatusStyle() }}>{receipt.paymentStatus}</Text>
+                <Text style={{ ...styles.paymentStatus, ...getStatusStyle() }}>
+                  {receipt.paymentStatus}
+                </Text>
               </>
             )}
           </View>
@@ -311,7 +340,11 @@ export const ReceiptPDF = ({ receipt }: { receipt: ReceiptProps }) => {
         <View style={styles.customerInfo}>
           <Text style={styles.label}>CLIENTE</Text>
           <Text style={styles.customerName}>{receipt.customerName}</Text>
-          {receipt.customerEmail && <Text style={styles.customerDetails}>Email: {receipt.customerEmail}</Text>}
+          {receipt.customerEmail && (
+            <Text style={styles.customerDetails}>
+              Email: {receipt.customerEmail}
+            </Text>
+          )}
         </View>
 
         {/* Tabla de productos/servicios */}
@@ -327,7 +360,9 @@ export const ReceiptPDF = ({ receipt }: { receipt: ReceiptProps }) => {
               <Text style={styles.tableCol1}>{item.description}</Text>
               <Text style={styles.tableCol2}>{item.quantity}</Text>
               <Text style={styles.tableCol3}>{formatCurrency(item.price)}</Text>
-              <Text style={styles.tableCol4}>{formatCurrency(item.price * item.quantity)}</Text>
+              <Text style={styles.tableCol4}>
+                {formatCurrency(item.price * item.quantity)}
+              </Text>
             </View>
           ))}
         </View>
@@ -367,13 +402,14 @@ export const ReceiptPDF = ({ receipt }: { receipt: ReceiptProps }) => {
                 <Text style={styles.notes}>{receipt.notes}</Text>
               </>
             )}
-            <Text style={styles.notes}>Gracias por su confianza. Este recibo sirve como comprobante de pago.</Text>
           </View>
           <View style={styles.footerRight}>
-            {qrCodeImage && <Image src={qrCodeImage || "/logo.png"} style={styles.qrCode} />}
+            {qrCodeImage && (
+              <Image src={qrCodeImage || "/logo.png"} style={styles.qrCode} />
+            )}
           </View>
         </View>
       </Page>
     </Document>
-  )
-}
+  );
+};

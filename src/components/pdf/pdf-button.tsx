@@ -4,38 +4,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { FileDown } from "lucide-react"
-
-// Tipos para los datos del recibo
-export type ReceiptItem = {
-  id: string
-  description: string
-  quantity: number
-  price: number
-}
-
-export type ReceiptProps = {
-  receiptNumber: string
-  date: string
-  customerName: string
-  customerEmail?: string
-  customerAddress?: string
-  items: ReceiptItem[]
-  subtotal: number
-  tax?: number
-  discount?: number
-  total: number
-  notes?: string
-  companyName: string
-  companyLogo?: string
-  companyAddress?: string
-  companyPhone?: string
-  companyEmail?: string
-  companyWebsite?: string
-  qrValue?: string
-  paymentMethod?: string
-  paymentStatus?: "Completado" | "En proceso" | "Cancelado"
-  dueDate?: string
-}
+import { ReceiptProps } from "@/types/pdf"
 
 export default function PDFButton({
   receiptData,
@@ -142,14 +111,6 @@ export default function PDFButton({
       doc.setFontSize(11)
       doc.text(receiptData.date, 10, 70)
 
-      if (receiptData.dueDate) {
-        doc.setFontSize(10)
-        doc.setTextColor(grayColor[0], grayColor[1], grayColor[2])
-        doc.text("FECHA DE VENCIMIENTO", 10, 75)
-        doc.setTextColor(0, 0, 0)
-        doc.setFontSize(11)
-        doc.text(receiptData.dueDate, 10, 80)
-      }
 
       // Información de pago (a la derecha)
       if (receiptData.paymentMethod) {
@@ -308,7 +269,6 @@ export default function PDFButton({
       yPos = Math.max(yPos + notesHeight + 5, yPos + 10)
 
       doc.setFontSize(9)
-      doc.text("Gracias por su confianza. Este recibo sirve como comprobante de pago.", 10, yPos)
 
       // Código QR
       try {

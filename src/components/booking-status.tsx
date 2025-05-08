@@ -15,8 +15,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import moment from "moment";
+import { ReceiptProps } from "@/types/pdf";
 import PDFButton from "./pdf/pdf-button";
-import { ReceiptProps } from "./pdf/pdf-template";
 
 type BookingStatusProps = {
   id: string;
@@ -49,14 +49,17 @@ export function BookingStatus({
 }: BookingStatusProps) {
   const receiptData: ReceiptProps = {
     receiptNumber: productId,
-    date: "17/04/2023",
-    dueDate: "17/05/2023",
+    date: new Date().toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }),
     customerName: user?.fullName,
     customerEmail: user.primaryEmailAddress,
     items: [
       {
         id: tickets.adult.toString(),
-        description: "Desarrollo de sitio web",
+        description: productName as string,
         quantity: tickets.adult,
         price: total,
       },
@@ -64,7 +67,8 @@ export function BookingStatus({
     subtotal: total,
     tax: 0.13,
     total: total,
-    notes: "Gracias por confiar en nuestros servicios.",
+    notes:
+      "Gracias por confiar en nuestros servicios. Este recibo sirve como comprobante de pago.",
     companyName: "Dubuu",
     companyLogo: "/logo.png",
     companyAddress: "El Salvador, La Libertad",
