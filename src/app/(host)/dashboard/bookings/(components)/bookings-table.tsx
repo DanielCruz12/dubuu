@@ -65,18 +65,20 @@ export function BookingsDataTable() {
 
   // IMPORTANTE: Limpiar bookingsData cuando cambia el producto seleccionado
   useEffect(() => {
-    // Limpiar los datos inmediatamente cuando cambia el producto
-    setBookingsData([]);
-  }, [selectedProductId]);
+    // Solo limpiamos temporalmente mientras se carga la nueva data
+    if (selectedProductId) {
+      // Limpiar los datos solo si estamos esperando nueva data
+      if (isLoadingBookings) {
+        setBookingsData([]);
+      }
+    }
+  }, [selectedProductId, isLoadingBookings]);
 
   // Update bookings data when bookings load
   useEffect(() => {
-    if (bookings && bookings.length > 0) {
-      // Si hay reservas, actualiza los datos
-      setBookingsData(bookings);
-    } else if (bookings && bookings.length === 0) {
-      // Si la respuesta es un array vacío, limpia la tabla
-      setBookingsData([]);
+    // Siempre actualiza los datos cuando bookings cambia, incluso si es null o undefined
+    if (bookings !== undefined) {
+      setBookingsData(bookings || []);
     }
   }, [bookings]);
 
@@ -85,8 +87,6 @@ export function BookingsDataTable() {
     (productId: string) => {
       // Solo actualizar si es un producto diferente
       if (productId !== selectedProductId) {
-        // Limpiar los datos inmediatamente antes de cambiar el producto
-        setBookingsData([]);
         setSelectedProductId(productId);
       }
     },
