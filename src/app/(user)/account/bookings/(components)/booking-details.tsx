@@ -168,7 +168,7 @@ export function BookingDetails({
                 <div>
                   <h4 className="font-medium mb-1 pt-4 flex items-center">
                     <Info className="h-4 w-4 mr-2 text-primary" />
-                    Información del tour
+                    Información del viaje
                   </h4>
                   <p className="text-sm text-muted-foreground line-clamp-2">
                     {booking.product_description}

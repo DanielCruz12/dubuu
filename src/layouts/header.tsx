@@ -98,7 +98,7 @@ export function Header() {
 
           <div className="">
             <Link href="/home" className="flex items-center gap-1">
-              <Image src="/logo.svg" alt="Dubuu Logo" width={100} height={40} />
+              <Image src="/logo.svg" priority alt="Dubuu Logo" width={100} height={40} />
             </Link>
           </div>
 
@@ -180,7 +180,7 @@ export function Header() {
       <div className="flex h-16 items-center md:px-20 px-4">
         <div className="flex items-center gap-2">
           <Link href={"/home"} className="flex items-center gap-1">
-            <Image src="/logo.svg" alt="Dubuu Logo" width={100} height={40} />
+            <Image src="/logo.svg" priority alt="Dubuu Logo" width={100} height={40} />
           </Link>
         </div>
 

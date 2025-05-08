@@ -47,7 +47,7 @@ export function MenuProfileSheet({
         <SheetTitle></SheetTitle>
         <SheetDescription></SheetDescription>
         <div className="mb-4 flex items-center">
-          <Image src="/logo.svg" alt="Dubuu Logo" width={80} height={20} />
+          <Image src="/logo.svg" priority alt="Dubuu Logo" width={80} height={20} />
         </div>
         <ScrollArea className="my-4 h-[calc(100vh-8rem)] pb-10 ">
           <div className="flex flex-col space-y-6">

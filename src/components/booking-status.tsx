@@ -51,8 +51,8 @@ export function BookingStatus({
     receiptNumber: productId,
     date: "17/04/2023",
     dueDate: "17/05/2023",
-    customerName: user.name,
-    customerEmail: user.email,
+    customerName: user?.fullName,
+    customerEmail: user.primaryEmailAddress,
     items: [
       {
         id: tickets.adult.toString(),

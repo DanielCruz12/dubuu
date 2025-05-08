@@ -40,7 +40,7 @@ export default function Footer() {
       <div className="px-6 md:px-20 mt-8">
         {/* Top Section with Logo and Tagline */}
         <div className="mb-12  text-left">
-          <Image src="/logo.svg" alt="Dubuu Logo" width={100} height={40} />
+          <Image src="/logo.svg" alt="Dubuu Logo" width={100} height={40} priority />
           <p className="text-sm">
             Experiencias de viaje exclusivas diseñadas para los viajeros más
             exigentes.
