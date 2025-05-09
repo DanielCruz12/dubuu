@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import type { CheckoutFormValues } from "@/schemas/checkout-schema";
-import { Calendar, CreditCard, Lock } from "lucide-react";
+import { AlertTriangle, Calendar, CreditCard, Lock } from "lucide-react";
 import {
   formatCreditCardNumber,
   formatExpiryDate,
@@ -89,6 +89,14 @@ export default function CreditCardForm() {
                 )}
               </div>
             </FormControl>
+            {isTestCardWarning && (
+              <div className="flex items-center mt-1 text-red-600 text-sm">
+                <AlertTriangle className="h-4 w-4 mr-1" />
+                <span>
+                  Este número de tarjeta no es válido para pagos reales
+                </span>
+              </div>
+            )}
             <FormMessage />
           </FormItem>
         )}

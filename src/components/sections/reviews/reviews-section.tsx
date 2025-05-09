@@ -35,7 +35,7 @@ export default function ReviewSection({
   const { user } = useUser();
 
   if (isLoading) {
-    return <div className="animate-pulse">Loading...</div>;
+    return <div className="animate-pulse">Cargando...</div>;
   }
 
   // Check if user has a booking
@@ -44,6 +44,7 @@ export default function ReviewSection({
   // Check if user already left a review
   const alreadyHadAReview =
     hasBooking &&
+    existingBooking.status === "completed" &&
     reviews.some((review) => existingBooking.user_id === review.user_id);
 
   return (

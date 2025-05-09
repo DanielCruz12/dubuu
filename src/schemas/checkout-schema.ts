@@ -2,6 +2,7 @@ import {
   validateCardNumber,
   validateExpiryDate,
   validateCVC,
+  isTestCard,
 } from "@/components/sections/checkout/card-validation";
 import { z } from "zod";
 
@@ -38,11 +39,19 @@ export const shippingInfoSchema = z.object({
 export const creditCardSchema = z.object({
   cardNumber: z
     .string()
-    .min(16, "El número de tarjeta debe tener 16 dígitos.")
-    .refine(validateCardNumber, "Número de tarjeta inválido"),
-  cardName: z.string().min(4, {
-    message: "Por favor ingresa el nombre completo como aparece en la tarjeta.",
-  }),
+    .refine((val) => val.replace(/\D/g, "").length === 16, {
+      message: "El número de tarjeta debe tener exactamente 16 dígitos",
+    })
+    .refine(validateCardNumber, "Número de tarjeta inválido")
+    .refine((val) => !isTestCard(val), {
+      message: "Este número de tarjeta no es válido para pagos reales",
+    }),
+
+  cardName: z
+    .string()
+    .min(3, "Por favor ingrese el nombre completo")
+    .max(100, "El nombre es demasiado largo"),
+
   cardExpiry: z
     .string()
     .length(5, "Formato debe ser MM/YY")

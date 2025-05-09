@@ -103,7 +103,7 @@ export default function CheckoutForm({
 
     if (isTestCard(values.cardNumber)) {
       toast.error("Error de pago", {
-        description: "No se permiten tarjetas de prueba en producción.",
+        description: "Este número de tarjeta no es válido para pagos reales.",
       });
       return;
     }
