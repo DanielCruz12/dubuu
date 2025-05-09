@@ -14,7 +14,7 @@ export default function TrendingPostDemo() {
     title: "How to get better agents in New York, USA",
     date: "18 Sep 2024",
     updateDate: "12 January 2024",
-    image: "/logo.png?height=80&width=80",
+    image: "/logo.svg?height=80&width=80",
   };
 
   return (
@@ -35,7 +35,7 @@ export function TrendingPost({
     <Link href="/blog/1" className="flex items-center gap-4 group">
       <div className="relative w-20 h-20 overflow-hidden rounded-lg shrink-0">
         <Image
-          src={image || "/logo.png"}
+          src={image || "/logo.svg"}
           alt={title}
           width={80}
           height={80}

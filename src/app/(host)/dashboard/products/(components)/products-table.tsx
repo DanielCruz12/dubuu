@@ -45,6 +45,8 @@ export function ProductsDataTable() {
   >([]);
   const [availableTours, setAvailableTours] = useState<ITourProduct[]>([]);
   const [openTourSelect, setOpenTourSelect] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredProducts, setFilteredProducts] = useState<ITourProduct[]>([]);
 
   const { data, isLoading } = useGetProductsByUserIdQuery(user?.id as string, {
     skip: !user?.id,
@@ -99,6 +101,7 @@ export function ProductsDataTable() {
     });
 
     setAvailableTours(tourProducts);
+    setFilteredProducts(tourProducts);
 
     // Seleccionar automáticamente el primer tour y su primera fecha
     if (tourProducts.length > 0) {
@@ -141,6 +144,27 @@ export function ProductsDataTable() {
 
     setFilteredTours(toursWithSelectedDate);
   }, [selectedTourId, selectedDateId, availableTours]);
+
+  const handleCommandSearch = useCallback(
+    (value: string) => {
+      setSearchTerm(value);
+
+      if (!availableTours) return;
+
+      if (!value.trim()) {
+        setFilteredProducts(availableTours);
+        return;
+      }
+
+      const lowercaseSearch = value.toLowerCase();
+      const filtered = availableTours.filter((tour) =>
+        tour.name.toLowerCase().includes(lowercaseSearch)
+      );
+
+      setFilteredProducts(filtered);
+    },
+    [availableTours]
+  );
 
   // Exportar a Excel
   const handleExport = () => {
@@ -213,30 +237,37 @@ export function ProductsDataTable() {
                 </PopoverTrigger>
                 <PopoverContent className="w-full p-0" align="start">
                   <Command>
-                    <CommandInput placeholder="Buscar producto..." />
+                    <CommandInput
+                      value={searchTerm}
+                      onValueChange={handleCommandSearch}
+                      placeholder="Buscar producto..."
+                    />
                     <CommandList>
                       <CommandEmpty>No se encontraron productos.</CommandEmpty>
                       <CommandGroup className="max-h-64 overflow-y-auto">
-                        {availableTours.map((tour) => (
-                          <CommandItem
-                            key={tour.id}
-                            value={tour.id}
-                            onSelect={() => {
-                              handleTourChange(tour.id);
-                              setOpenTourSelect(false);
-                            }}
-                          >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                selectedTourId === tour.id
-                                  ? "opacity-100"
-                                  : "opacity-0"
-                              )}
-                            />
-                            {tour.name}
-                          </CommandItem>
-                        ))}
+                        {(searchTerm ? filteredProducts : availableTours).map(
+                          (tour) => (
+                            <CommandItem
+                              key={tour.id}
+                              value={tour.id}
+                              onSelect={() => {
+                                handleTourChange(tour.id);
+                                setOpenTourSelect(false);
+                                setSearchTerm("");
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  selectedTourId === tour.id
+                                    ? "opacity-100"
+                                    : "opacity-0"
+                                )}
+                              />
+                              {tour.name}
+                            </CommandItem>
+                          )
+                        )}
                       </CommandGroup>
                     </CommandList>
                   </Command>

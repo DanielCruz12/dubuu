@@ -148,7 +148,7 @@ export default function CheckoutForm({
           is_live: true,
           tickets: bookingData.tickets.adult,
           total: bookingData.total,
-          selected_dates: [bookingData.datetime],
+          tour_date_id: [bookingData.datetime],
           paymentMethod: values.paymentMethod,
           idTransaccion: response.idTransaccion ?? "",
         };

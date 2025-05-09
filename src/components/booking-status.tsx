@@ -74,7 +74,7 @@ export function BookingStatus({
     notes:
       "Gracias por confiar en nuestros servicios. Este recibo sirve como comprobante de pago.",
     companyName: "Dubuu",
-    companyLogo: "/logo.png",
+    companyLogo: "/logo.svg",
     companyAddress: "El Salvador, La Libertad",
     companyPhone: "+503 77886116",
     companyEmail: "team@lappsnet.com",

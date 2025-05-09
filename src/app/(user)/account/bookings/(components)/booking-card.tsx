@@ -50,7 +50,7 @@ export function BookingCard({ booking, onClick }: BookingCardProps) {
       <div className="relative aspect-[16/10] overflow-hidden">
         <div className="relative h-full w-full">
           <Image
-            src={booking.product_banner || "/logo.png"}
+            src={booking.product_banner || "/logo.svg"}
             alt={booking.product_name}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

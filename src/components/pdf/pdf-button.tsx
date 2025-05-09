@@ -96,7 +96,7 @@ export default function PDFButton({
 
       // Título del recibo
       try {
-        doc.addImage("/logo.png", "PNG", 155, 15, 45, 22);
+        doc.addImage("/logo.svg", "SVG", 155, 15, 45, 22);
       } catch (error) {
         console.error("Error al cargar el logo:", error);
         // Si hay error al cargar el logo, mostramos el texto como fallback

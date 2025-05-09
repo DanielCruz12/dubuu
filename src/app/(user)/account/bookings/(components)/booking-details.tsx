@@ -92,7 +92,7 @@ export function BookingDetails({
         <div className="bg-gradient-to-r dark:from-black border-none">
           <div className="relative h-48 sm:h-64 w-full">
             <img
-              src={booking.product_banner || "/logo.png"}
+              src={booking.product_banner || "/logo.svg"}
               alt={booking.product_name}
               className="w-full h-full object-cover"
             />

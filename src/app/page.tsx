@@ -168,7 +168,7 @@ export default function Home() {
               >
                 <div className="relative h-[400px] w-full overflow-hidden">
                   <Image
-                    src={tour.image || "/logo.png"}
+                    src={tour.image || "/logo.svg"}
                     alt={tour.title}
                     fill
                     className="object-cover transition-transform duration-700 rounded-xl"
@@ -233,7 +233,7 @@ export default function Home() {
               >
                 <div className="relative h-[350px] overflow-hidden mb-6">
                   <Image
-                    src={property.image || "/logo.png"}
+                    src={property.image || "/logo.svg"}
                     alt={property.title}
                     fill
                     className="object-cover transition-transform duration-700 rounded-xl"

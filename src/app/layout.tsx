@@ -66,7 +66,7 @@ export const metadata: Metadata = {
       "Diseñamos experiencias únicas de viaje en El Salvador y Centroamérica. Tours de lujo, alquiler de vehículos premium y propiedades exclusivas para viajeros exigentes.",
     images: [
       {
-        url: "https://www.dubuu.com/logo.png",
+        url: "https://www.dubuu.com/logo.svg",
         width: 1200,
         height: 630,
         alt: "Dubuu - Experiencias de Viaje Únicas en El Salvador y Centroamérica",
@@ -79,7 +79,7 @@ export const metadata: Metadata = {
       "Dubuu - Experiencias de Viaje Únicas en El Salvador y Centroamérica",
     description:
       "Diseñamos experiencias únicas de viaje en El Salvador y Centroamérica. Tours de lujo, alquiler de vehículos y propiedades exclusivas.",
-    images: ["https://www.dubuu.com/logo.png",],
+    images: ["https://www.dubuu.com/logo.svg",],
     creator: "@dubuu",
     site: "@dubuu",
   }, */
@@ -152,7 +152,7 @@ export default async function RootLayout({
             property="og:description"
             content="Diseñamos experiencias únicas de viaje en El Salvador y Centroamérica. Tours de lujo, alquiler de vehículos premium y propiedades exclusivas para viajeros exigentes."
           />
-          <meta property="og:image" content="https://www.dubuu.com/logo.png" />
+          <meta property="og:image" content="https://www.dubuu.com/logo.svg" />
 
           {/*   <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:site" content="@Daniel_CruzD" />
@@ -165,7 +165,7 @@ export default async function RootLayout({
             name="twitter:description"
             content="Diseñamos experiencias únicas de viaje en El Salvador y Centroamérica. Tours de lujo, alquiler de vehículos premium y propiedades exclusivas para viajeros exigentes."
           />
-          <meta name="twitter:image" content="https://www.dubuu.com/logo.png" /> */}
+          <meta name="twitter:image" content="https://www.dubuu.com/logo.svg" /> */}
 
           {/*   <meta property="og:type" content="website" />
           <meta property="og:url" content="https://tusitio.com/" />
@@ -191,7 +191,7 @@ export default async function RootLayout({
               "@type": "Organization",
               "name": "dubuu",
               "url": "https://www.dubuu.com",
-              "logo": "https://www.dubuu.com/logo.png",
+              "logo": "https://www.dubuu.com/logo.svg",
               "description": "Diseñamos experiencias únicas de viaje en El Salvador y Centroamérica. Tours de lujo, alquiler de vehículos premium y propiedades exclusivas para viajeros exigentes.",
               "location": {
                 "@type": "El Salvador"

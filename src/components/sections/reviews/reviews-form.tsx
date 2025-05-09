@@ -195,7 +195,7 @@ export default function ReviewForm({
                 className="relative w-20 h-20 border rounded overflow-hidden group"
               >
                 <Image
-                  src={URL.createObjectURL(img) || "/logo.png"}
+                  src={URL.createObjectURL(img) || "/logo.svg"}
                   alt={`vista previa ${idx + 1}`}
                   fill
                   className="object-cover"

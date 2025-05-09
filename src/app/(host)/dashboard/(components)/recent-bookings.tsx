@@ -62,7 +62,7 @@ export function RecentBookings() {
         <div key={booking.id} className="flex items-center">
           <Avatar className="h-9 w-9">
             <AvatarImage
-              src={booking.tourImage || "/logo.png"}
+              src={booking.tourImage || "/logo.svg"}
               alt={booking.tourName}
             />
             <AvatarFallback>TD</AvatarFallback>

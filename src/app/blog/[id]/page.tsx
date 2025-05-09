@@ -23,7 +23,7 @@ export default function BlogPost({ params }: { params: { id: string } }) {
         <div className="flex items-center justify-center gap-6 text-muted-foreground">
           <div className="flex items-center gap-2">
             <Image
-              src={blog.authorImage || "/logo.png"}
+              src={blog.authorImage || "/logo.svg"}
               alt={blog.author}
               width={40}
               height={40}
@@ -50,7 +50,7 @@ export default function BlogPost({ params }: { params: { id: string } }) {
 
       <div className="relative aspect-[21/7] mb-12 rounded-lg overflow-hidden">
         <Image
-          src={blog.imageUrl || "/logo.png"}
+          src={blog.imageUrl || "/logo.svg"}
           alt={blog.title}
           fill
           className="object-cover"

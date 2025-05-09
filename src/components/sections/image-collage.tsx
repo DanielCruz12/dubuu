@@ -62,7 +62,7 @@ export default function ImageCollage({
               }`}
             >
               <Image
-                src={image || "/logo.png"}
+                src={image || "/logo.svg"}
                 alt={`Image ${index + 1}`}
                 fill
                 className="object-cover"
@@ -117,7 +117,7 @@ export default function ImageCollage({
           }}
         >
           <Image
-            src={banner || "/logo.png"}
+            src={banner || "/logo.svg"}
             alt="Banner image"
             fill
             className="object-cover transition-transform duration-500 hover:scale-105"
@@ -137,7 +137,7 @@ export default function ImageCollage({
             }}
           >
             <Image
-              src={image || "/logo.png"}
+              src={image || "/logo.svg"}
               alt={`Imagen ${index + 2}`}
               fill
               className="object-cover transition-transform duration-500 hover:scale-105"
@@ -157,7 +157,7 @@ export default function ImageCollage({
             }}
           >
             <Image
-              src={image || "/logo.png"}
+              src={image || "/logo.svg"}
               alt={`Imagen ${index + 4}`}
               fill
               className="object-cover transition-transform duration-500 hover:scale-105"
