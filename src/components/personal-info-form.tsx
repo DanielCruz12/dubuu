@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import type React from "react";
+
+import { useState, useRef } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,19 +18,40 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Loader2 } from "lucide-react";
+import {
+  Loader2,
+  Mail,
+  Check,
+  Camera,
+  Upload,
+  X,
+  User,
+  AtSign,
+  Calendar,
+  Shield,
+} from "lucide-react";
 import { toast } from "sonner";
 import { PersonalInfoSkeleton } from "./skeletons/personal-info-skeleton";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const personalInfoSchema = z.object({
   firstName: z.string().min(2, {
-    message: "First name must be at least 2 characters.",
+    message: "El nombre debe tener al menos 2 caracteres.",
   }),
   lastName: z.string().min(2, {
-    message: "Last name must be at least 2 characters.",
+    message: "El apellido debe tener al menos 2 caracteres.",
   }),
   username: z.string().min(3, {
-    message: "Username must be at least 3 characters.",
+    message: "El nombre de usuario debe tener al menos 3 caracteres.",
   }),
 });
 
@@ -37,6 +60,9 @@ type PersonalInfoValues = z.infer<typeof personalInfoSchema>;
 export default function PersonalInfoForm() {
   const { user, isLoaded } = useUser();
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isChangingEmail, setIsChangingEmail] = useState(false);
+  const [isUpdatingPhoto, setIsUpdatingPhoto] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<PersonalInfoValues>({
     resolver: zodResolver(personalInfoSchema),
@@ -52,8 +78,7 @@ export default function PersonalInfoForm() {
 
     setIsUpdating(true);
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (user as any).update({
+      await user.update({
         firstName: data.firstName,
         lastName: data.lastName,
         username: data.username,
@@ -72,71 +97,394 @@ export default function PersonalInfoForm() {
     }
   }
 
+  const handleEmailChange = async (emailAddressId: string) => {
+    if (!user) return;
+
+    setIsChangingEmail(true);
+    try {
+      await user.update({
+        primaryEmailAddressId: emailAddressId,
+      });
+
+      toast.success("¡Email actualizado!", {
+        description: "Tu email principal ha sido actualizado",
+      });
+    } catch (e) {
+      if (e instanceof Error && e.message.includes("verification")) {
+        toast.error("Verificación cancelada", {
+          description: "Has cancelado el proceso de verificación",
+        });
+      } else {
+        toast.error("Error al actualizar email", {
+          description: "Hubo un error actualizando tu email principal",
+        });
+      }
+      console.error(e);
+    } finally {
+      setIsChangingEmail(false);
+    }
+  };
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!user || !e.target.files || e.target.files.length === 0) return;
+
+    const file = e.target.files[0];
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Tipo de archivo no válido", {
+        description: "Por favor, selecciona una imagen.",
+      });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Archivo demasiado grande", {
+        description: "La imagen debe ser menor a 5MB.",
+      });
+      return;
+    }
+
+    setIsUpdatingPhoto(true);
+    try {
+      await user.setProfileImage({ file });
+      toast.success("¡Foto actualizada!", {
+        description: "Tu foto de perfil ha sido actualizada",
+      });
+      // Reset the file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Error al actualizar foto", {
+        description: "Hubo un error actualizando tu foto de perfil.",
+      });
+    } finally {
+      setIsUpdatingPhoto(false);
+    }
+  };
+
+  const handleRemovePhoto = async () => {
+    if (!user) return;
+
+    setIsUpdatingPhoto(true);
+    try {
+      await user.setProfileImage({ file: null });
+      toast.success("¡Foto eliminada!", {
+        description: "Tu foto de perfil ha sido eliminada",
+      });
+    } catch (error) {
+      console.error(error);
+      toast.error("Error al eliminar foto", {
+        description: "Hubo un error eliminando tu foto de perfil.",
+      });
+    } finally {
+      setIsUpdatingPhoto(false);
+    }
+  };
+
+  const triggerFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
   if (!isLoaded) {
     return <PersonalInfoSkeleton />;
   }
 
-  return (
-    <div className="space-y-6 pt-5 px-1">
-      <div>
-        <h3 className="text-lg font-medium">Información personal</h3>
-        <p className="text-sm text-muted-foreground">
-          Actualiza tu información personal y de contacto
-        </p>
-      </div>
+  // Get user initials for avatar fallback
+  const getInitials = () => {
+    const firstName = user?.firstName || "";
+    const lastName = user?.lastName || "";
+    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+  };
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <FormField
-              control={form.control}
-              name="firstName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nombre</FormLabel>
-                  <FormControl>
-                    <Input placeholder="John" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="lastName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Apellido</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Doe" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+  // Format date for profile display
+  const formatDate = (date: Date | null | undefined) => {
+    if (!date) return "No disponible";
+    return new Intl.DateTimeFormat("es-ES", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }).format(date);
+  };
+
+  return (
+    <div className="w-full mx-auto">
+      {/* Profile Header - Responsive */}
+      <div className="relative mb-8 pt-4">
+        <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+          <div className="relative group">
+            <Avatar className="h-24 w-24 md:h-32 md:w-32 border-4 shadow-xl">
+              <AvatarImage
+                src={user?.imageUrl || "/logo.svg"}
+                alt={user?.fullName || "Profile"}
+              />
+              <AvatarFallback className="text-2xl  ">
+                {getInitials()}
+              </AvatarFallback>
+            </Avatar>
+
+            <div
+              className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-full opacity-100 transition-opacity cursor-pointer"
+              onClick={triggerFileInput}
+            >
+              <Camera className="h-6 w-6 md:h-8 md:w-8 text-white" />
+            </div>
+
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              accept="image/*"
+              onChange={handlePhotoUpload}
             />
           </div>
 
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nombre de usuario</FormLabel>
-                <FormControl>
-                  <Input placeholder="johndoe" {...field} />
-                </FormControl>
-                <FormDescription>Este es su nombre público.</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="text-center md:text-left">
+            <h1 className="text-xl md:text-2xl font-bold">
+              {user?.firstName} {user?.lastName}
+            </h1>
+            <p className="text-gray-500 flex items-center justify-center md:justify-start gap-1 mt-1">
+              <AtSign className="h-4 w-4" />
+              {user?.username || "username"}
+            </p>
 
-          <Button type="submit" disabled={isUpdating}>
-            {isUpdating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Guardar cambios
-          </Button>
-        </form>
-      </Form>
+            <div className="flex flex-wrap justify-center md:justify-start gap-2 mt-3">
+              <Badge variant="secondary" className="flex items-center gap-1">
+                <Calendar className="h-3 w-3" />
+                Miembro desde {formatDate(user?.createdAt)}
+              </Badge>
+
+              <Badge variant="success" className="flex items-center gap-1">
+                <Shield className="h-3 w-3" />
+                Cuenta verificada
+              </Badge>
+            </div>
+          </div>
+
+          <div className="flex gap-2 mt-4 md:mt-0 md:ml-auto">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={triggerFileInput}
+              disabled={isUpdatingPhoto}
+              className=""
+            >
+              {isUpdatingPhoto ? (
+                <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+              ) : (
+                <Upload className="mr-2 h-3 w-3" />
+              )}
+              <span className="">Actualizar</span> foto
+            </Button>
+
+            {user?.imageUrl && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleRemovePhoto}
+                disabled={isUpdatingPhoto}
+                className=" text-red-500 hover:text-red-600"
+              >
+                <X className="mr-2 h-3 w-3" />
+                <span className="">Eliminar</span>
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Profile Content - Responsive Tabs */}
+      <Tabs defaultValue="personal" className="mb-8 px-4">
+        <TabsList className="w-full mb-6 grid grid-cols-2">
+          <TabsTrigger
+            value="personal"
+            className="flex items-center justify-center gap-2"
+          >
+            <User className="h-4 w-4" />
+            <span className="hidden sm:inline">Información</span> personal
+          </TabsTrigger>
+          <TabsTrigger
+            value="email"
+            className="flex items-center justify-center gap-2"
+          >
+            <Mail className="h-4 w-4" />
+            <span className="hidden sm:inline">Correos</span> electrónicos
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="personal">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg md:text-xl">
+                Información personal
+              </CardTitle>
+              <CardDescription>
+                Actualiza tu información personal y de contacto
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-6"
+                >
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name="firstName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nombre</FormLabel>
+                          <FormControl>
+                            <Input placeholder="John" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="lastName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Apellido</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Doe" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="username"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nombre de usuario</FormLabel>
+                        <FormControl>
+                          <Input placeholder="johndoe" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          Este es su nombre público.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="flex justify-end">
+                    <Button type="submit" disabled={isUpdating}>
+                      {isUpdating && (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )}
+                      Guardar cambios
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="email">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg md:text-xl">
+                Gestión de correos electrónicos
+              </CardTitle>
+              <CardDescription>
+                Administra tus direcciones de correo electrónico
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className=" p-4 rounded-lg">
+                <h3 className="text-sm font-medium mb-2">Email principal</h3>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3  p-4 rounded-md shadow-sm">
+                  <div className=" p-2 rounded-full">
+                    <Mail className="h-5 w-5 " />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium break-all">
+                      {user?.primaryEmailAddress?.emailAddress}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Esta dirección se usa para inicios de sesión y
+                      notificaciones
+                    </p>
+                  </div>
+                  <Badge className="bg-green-100 text-green-800 hover:bg-green-100 border-0 mt-2 sm:mt-0">
+                    <Check className="h-3 w-3 mr-1" /> Principal
+                  </Badge>
+                </div>
+              </div>
+
+              {user?.emailAddresses && user.emailAddresses.length > 1 && (
+                <div>
+                  <h3 className="text-sm font-medium text-gray-700 mb-3">
+                    Correos adicionales
+                  </h3>
+                  <ul className="space-y-3">
+                    {user.emailAddresses.map(
+                      (email) =>
+                        email.id !== user.primaryEmailAddress?.id && (
+                          <li
+                            key={email.id}
+                            className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4  rounded-lg  transition-colors gap-3"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className=" p-2 rounded-full">
+                                <Mail className="h-5 w-5 text-gray-600" />
+                              </div>
+                              <span className="font-medium break-all">
+                                {email.emailAddress}
+                              </span>
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleEmailChange(email.id)}
+                              disabled={isChangingEmail}
+                              className="   w-full sm:w-auto"
+                            >
+                              {isChangingEmail ? (
+                                <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                              ) : (
+                                <Check className="mr-2 h-3 w-3" />
+                              )}
+                              Hacer principal
+                            </Button>
+                          </li>
+                        )
+                    )}
+                  </ul>
+                </div>
+              )}
+
+              {(!user?.emailAddresses || user.emailAddresses.length <= 1) && (
+                <div className=" p-6 rounded-lg text-center">
+                  <Mail className="h-10 w-10 text-gray-400 mx-auto mb-2" />
+                  <p className="text-gray-600 font-medium">
+                    No tienes correos electrónicos adicionales
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Puedes añadir direcciones de correo adicionales para mayor
+                    seguridad
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
