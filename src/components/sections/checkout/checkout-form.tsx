@@ -12,7 +12,6 @@ import ContactForm from "./forms/contact-form";
 import ShippingForm from "./forms/shipping-form";
 import PaymentMethodForm from "./forms/payment-form";
 import { useCreate3DSTransactionMutation } from "@/redux/slices/payment/payment-link";
-import confetti from "canvas-confetti";
 import { toast } from "sonner";
 import { useCreateBookingMutation } from "@/redux/slices/booking/booking-slice";
 import {
@@ -160,19 +159,13 @@ export default function CheckoutForm({
           setTimeout(() => {
             window.location.href = response?.urlCompletarPago3Ds ?? "";
           }, 1000);
-
-          confetti({
-            particleCount: 100,
-            spread: 70,
-            origin: { y: 0.6 },
-          });
         } else {
           throw new Error("No se pudo obtener la URL de redirección");
         }
       })(),
       {
-        loading: "Procesando pago...",
-        success: "¡Reserva creada! Redirigiendo al banco...",
+        loading: "Procesando pago.",
+        success: "Redirigiendo al banco...",
         error: (err) => err?.data?.message || "Error al procesar el pago",
       }
     );

@@ -49,6 +49,7 @@ export default function ProductBooking() {
   const { data: userBookings, isLoading: isLoadingBooking } =
     useGetBookingsByUserIdQuery(user?.id ?? "", {
       skip: !user?.id,
+      refetchOnMountOrArgChange: true,
     });
 
   // Fetch reviews using the product ID from the URL params instead of bookingData
@@ -93,8 +94,6 @@ export default function ProductBooking() {
     (b) => b.product_id === product.id
   );
   const isTour = isProductType(product, "tours");
-
-  console.log(user);
 
   return (
     <div className="mx-auto md:px-0">
