@@ -38,8 +38,7 @@ export const shippingInfoSchema = z.object({
 export const creditCardSchema = z.object({
   cardNumber: z
     .string()
-    .min(13, "El número de tarjeta es demasiado corto")
-    .max(19, "El número de tarjeta es demasiado largo")
+    .min(16, "El número de tarjeta debe tener 16 dígitos.")
     .refine(validateCardNumber, "Número de tarjeta inválido"),
   cardName: z.string().min(4, {
     message: "Por favor ingresa el nombre completo como aparece en la tarjeta.",
