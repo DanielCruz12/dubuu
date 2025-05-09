@@ -10,6 +10,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import type { CheckoutFormValues } from "@/schemas/checkout-schema";
+import { Calendar, CreditCard, Lock } from "lucide-react";
+import { getCardType } from "../card-validation";
+import { useState } from "react";
 
 // Función para formatear el número de tarjeta con espacios
 const formatCreditCardNumber = (value: string) => {
@@ -43,8 +46,38 @@ const formatExpiryDate = (value: string) => {
 };
 
 export default function CreditCardForm() {
-  const { control, setValue } = useFormContext<CheckoutFormValues>();
+  const { control, setValue, trigger } = useFormContext<CheckoutFormValues>();
+  const [cardType, setCardType] = useState<string>("");
 
+  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const formatted = formatCreditCardNumber(value);
+    setValue("cardNumber", formatted);
+
+    // Identify card type
+    const type = getCardType(value);
+    setCardType(type);
+
+    // Validate after formatting
+    trigger("cardNumber");
+  };
+
+  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const formatted = formatExpiryDate(value);
+    setValue("cardExpiry", formatted);
+
+    // Validate after formatting
+    trigger("cardExpiry");
+  };
+
+  const handleCVCChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, "");
+    setValue("cardCvc", value);
+
+    // Validate after formatting
+    trigger("cardCvc");
+  };
   return (
     <div className="rounded-lg p-4 border">
       <FormField
@@ -54,15 +87,21 @@ export default function CreditCardForm() {
           <FormItem>
             <FormLabel>Número de Tarjeta</FormLabel>
             <FormControl>
-              <Input
-                placeholder="4242 4242 4242 4242"
-                value={field.value}
-                onChange={(e) => {
-                  const formatted = formatCreditCardNumber(e.target.value);
-                  setValue("cardNumber", formatted);
-                }}
-                maxLength={19}
-              />
+              <div className="relative">
+                <Input
+                  placeholder="4242 4242 4242 4242"
+                  value={field.value}
+                  onChange={handleCardNumberChange}
+                  maxLength={19}
+                  className="pl-10"
+                />
+                <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                {cardType && (
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium capitalize">
+                    {cardType}
+                  </span>
+                )}
+              </div>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -89,15 +128,16 @@ export default function CreditCardForm() {
             <FormItem>
               <FormLabel>Fecha de Expiración</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="MM/YY"
-                  value={field.value}
-                  onChange={(e) => {
-                    const formatted = formatExpiryDate(e.target.value);
-                    setValue("cardExpiry", formatted);
-                  }}
-                  maxLength={5}
-                />
+                <div className="relative">
+                  <Input
+                    placeholder="MM/YY"
+                    value={field.value}
+                    onChange={handleExpiryChange}
+                    maxLength={5}
+                    className="pl-10"
+                  />
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -110,15 +150,16 @@ export default function CreditCardForm() {
             <FormItem>
               <FormLabel>CVC</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="123"
-                  value={field.value}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, "");
-                    setValue("cardCvc", value);
-                  }}
-                  maxLength={3}
-                />
+                <div className="relative">
+                  <Input
+                    placeholder="123"
+                    value={field.value}
+                    onChange={handleCVCChange}
+                    maxLength={4}
+                    className="pl-10"
+                  />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>

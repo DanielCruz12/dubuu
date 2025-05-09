@@ -1,3 +1,8 @@
+import {
+  validateCardNumber,
+  validateExpiryDate,
+  validateCVC,
+} from "@/components/sections/checkout/card-validation";
 import { z } from "zod";
 
 // Esquema de validación para el formulario de checkout
@@ -33,40 +38,22 @@ export const shippingInfoSchema = z.object({
 export const creditCardSchema = z.object({
   cardNumber: z
     .string()
-    .min(16, { message: "El número de tarjeta debe tener 16 dígitos." })
-    .refine((val) => /^[0-9]{16}$/.test(val.replace(/\s/g, "")), {
-      message: "Número de tarjeta inválido.",
-    }),
+    .min(13, "El número de tarjeta es demasiado corto")
+    .max(19, "El número de tarjeta es demasiado largo")
+    .refine(validateCardNumber, "Número de tarjeta inválido"),
   cardName: z.string().min(4, {
     message: "Por favor ingresa el nombre completo como aparece en la tarjeta.",
   }),
   cardExpiry: z
     .string()
-    .refine((val) => /^(0[1-9]|1[0-2])\/([0-9]{2})$/.test(val), {
-      message: "Formato de fecha inválido (MM/YY).",
-    })
-    .refine(
-      (val) => {
-        const [month, year] = val.split("/");
-        const expiry = new Date();
-        expiry.setFullYear(
-          2000 + Number.parseInt(year),
-          Number.parseInt(month) - 1,
-          1
-        );
-        return expiry > new Date();
-      },
-      {
-        message: "La tarjeta ha expirado.",
-      }
-    ),
+    .length(5, "Formato debe ser MM/YY")
+    .refine(validateExpiryDate, "Fecha de expiración inválida o vencida"),
+
   cardCvc: z
     .string()
-    .min(3, { message: "El CVC debe tener al menos 3 dígitos." })
-    .max(4, { message: "El CVC no puede tener más de 4 dígitos." })
-    .refine((val) => /^[0-9]{3,4}$/.test(val), {
-      message: "CVC inválido.",
-    }),
+    .min(3, "CVC debe tener al menos 3 dígitos")
+    .max(4, "CVC no puede tener más de 4 dígitos")
+    .refine(validateCVC, "CVC inválido"),
 });
 
 export const paymentMethodSchema = z.object({
