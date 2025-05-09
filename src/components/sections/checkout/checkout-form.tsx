@@ -20,6 +20,7 @@ import {
   useUpdateUserMutation,
 } from "@/redux/slices/user/user-slice";
 import { useUser } from "@clerk/nextjs";
+import { isTestCard } from "./card-validation";
 
 export default function CheckoutForm({
   setShowPaymentStep,
@@ -97,6 +98,13 @@ export default function CheckoutForm({
 
     const parsedPhone = parsePhoneNumberFromString(values.phone);
     if (!parsedPhone) {
+      return;
+    }
+
+    if (isTestCard(values.cardNumber)) {
+      toast.error("Error de pago", {
+        description: "No se permiten tarjetas de prueba en producción.",
+      });
       return;
     }
 

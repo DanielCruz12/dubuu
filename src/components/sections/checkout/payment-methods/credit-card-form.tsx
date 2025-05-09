@@ -11,43 +11,29 @@ import {
 import { Input } from "@/components/ui/input";
 import type { CheckoutFormValues } from "@/schemas/checkout-schema";
 import { Calendar, CreditCard, Lock } from "lucide-react";
-import { getCardType } from "../card-validation";
-import { useState } from "react";
-
-// Función para formatear el número de tarjeta con espacios
-const formatCreditCardNumber = (value: string) => {
-  if (!value) return value;
-  const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
-  const matches = v.match(/\d{4,16}/g);
-  const match = (matches && matches[0]) || "";
-  const parts = [];
-
-  for (let i = 0, len = match.length; i < len; i += 4) {
-    parts.push(match.substring(i, i + 4));
-  }
-
-  if (parts.length) {
-    return parts.join(" ");
-  } else {
-    return value;
-  }
-};
-
-// Función para formatear la fecha de expiración
-const formatExpiryDate = (value: string) => {
-  if (!value) return value;
-  const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
-
-  if (v.length >= 2) {
-    return `${v.substring(0, 2)}/${v.substring(2, 4)}`;
-  }
-
-  return v;
-};
+import {
+  formatCreditCardNumber,
+  formatExpiryDate,
+  getCardType,
+  isTestCard,
+} from "../card-validation";
+import { useEffect, useState } from "react";
 
 export default function CreditCardForm() {
-  const { control, setValue, trigger } = useFormContext<CheckoutFormValues>();
+  const { control, setValue, trigger, watch } =
+    useFormContext<CheckoutFormValues>();
   const [cardType, setCardType] = useState<string>("");
+  const [isTestCardWarning, setIsTestCardWarning] = useState(false);
+
+  const cardNumber = watch("cardNumber");
+  useEffect(() => {
+    // Verificar si es una tarjeta de prueba
+    if (cardNumber) {
+      setIsTestCardWarning(isTestCard(cardNumber));
+    } else {
+      setIsTestCardWarning(false);
+    }
+  }, [cardNumber]);
 
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -93,7 +79,7 @@ export default function CreditCardForm() {
                   value={field.value}
                   onChange={handleCardNumberChange}
                   maxLength={19}
-                  className="pl-10"
+                  className={`pl-10 ${isTestCardWarning ? "border-yellow-500 focus:ring-yellow-500" : ""}`}
                 />
                 <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 {cardType && (

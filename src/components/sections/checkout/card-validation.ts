@@ -99,3 +99,26 @@ export function getCardType(number: string): string {
 
   return "unknown";
 }
+
+export const TEST_CARD_NUMBERS = [
+  "4242424242424242", // Visa (Stripe test card)
+  "4000056655665556", // Visa (Stripe test card)
+  "5555555555554444", // Mastercard (Stripe test card)
+  "2223003122003222", // Mastercard (Stripe test card)
+  "5105105105105100", // Mastercard
+  "378282246310005", // American Express
+  "371449635398431", // American Express
+  "6011111111111117", // Discover
+  "6011000990139424", // Discover
+  "3056930009020004", // Diners Club
+  "36227206271667", // Diners Club
+  "3566002020360505", // JCB
+  "6200000000000005", // UnionPay
+  // Añade más números de prueba según sea necesario
+];
+
+// Verifica si es un número de tarjeta de prueba
+export function isTestCard(number: string): boolean {
+  const cleanNumber = number.replace(/\D/g, "");
+  return TEST_CARD_NUMBERS.includes(cleanNumber);
+}
