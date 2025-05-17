@@ -8,15 +8,17 @@ export const productsApiSlice = createApi({
     baseUrl: "/backend",
   }),
   tagTypes: ["Products", "Reviews"],
+  // Configuración global para evitar refetch automático
+  refetchOnFocus: false,
+  refetchOnReconnect: false,
   endpoints: (builder) => {
     return {
       getProducts: builder.query<
         {
           data: IProduct[];
           pagination: {
-            total: number;
-            totalPages: number;
-            page: number;
+            hasMore: boolean;
+            nextCursor: string | null;
             limit: number;
           };
         },
