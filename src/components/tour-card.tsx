@@ -225,10 +225,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
           {/* Título y ubicación */}
           <div className="flex flex-col gap-0.5">
             <div className="flex items-start justify-between">
-              <div className="text-xs font-medium line-clamp-1">
-                {target_audience ? `${target_audience.name} en ` : ""}
-                {country || ""}
-              </div>
+              <div className="text-xs font-medium line-clamp-1">{name}</div>
               <div className="flex items-center gap-1 text-xs">
                 <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />
                 <span>{formattedRating}</span>
