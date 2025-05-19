@@ -77,7 +77,7 @@ const Saved = () => {
           </div>
           <p className="mt-4 text-gray-500">No tienes productos guardados</p>
           <Link
-            href="/products"
+            href="/home"
             className="mt-4 inline-block text-blue-500 hover:underline"
           >
             Explorar productos

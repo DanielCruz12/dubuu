@@ -45,6 +45,11 @@ export interface ITourProduct extends IProductBase<"tours"> {
     itinerary: string[];
     highlight: string;
     included: string;
+
+    expenses: string[];
+    difficulty: string;
+    packing_list: string[];
+
     lat: number;
     long: number;
     duration: number;
