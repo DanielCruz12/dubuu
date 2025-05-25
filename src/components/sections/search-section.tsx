@@ -4,7 +4,7 @@
 
 import type React from "react";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { type RootState, useAppDispatch, useAppSelector } from "@/redux/store";
 import {
   resetFilters,
@@ -61,16 +61,19 @@ import { PriceRangeHistogram } from "../price-range-histogram";
 interface SearchSectionProps {
   products: IProduct[];
   onSearchResults?: (products: IProduct[]) => void;
+  onSearchLoading?: (loading: boolean) => void;
 }
 
 export default function SearchSection({
   products,
   onSearchResults,
+  onSearchLoading,
 }: SearchSectionProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDialogFilterOpen, setIsDialogFilterOpen] = useState(false);
   const [activeFiltersCount, setActiveFiltersCount] = useState(0);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   // Estado de autenticación
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -96,8 +99,9 @@ export default function SearchSection({
   const [tempDurations, setTempDurations] = useState(durations);
   const [tempPriceRange, setTempPriceRange] = useState(priceRange);
 
-  // Verificar autenticación
+  // Efecto para marcar como montado y verificar autenticación
   useEffect(() => {
+    setIsMounted(true);
     const token =
       localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
     setIsAuthenticated(!!token);
@@ -184,6 +188,13 @@ export default function SearchSection({
     refetchOnReconnect: false,
   });
 
+  // Notificar estado de carga al componente padre
+  useEffect(() => {
+    if (onSearchLoading) {
+      onSearchLoading(isSearching || isSearchFetching);
+    }
+  }, [isSearching, isSearchFetching, onSearchLoading]);
+
   // Función de geolocalización
   const requestLocation = async () => {
     if (!navigator.geolocation) return;
@@ -227,12 +238,14 @@ export default function SearchSection({
 
   // Cargar país guardado
   useEffect(() => {
+    if (!isMounted) return;
+
     const savedCountry = localStorage.getItem("userCountry");
     if (savedCountry && !country) {
       dispatch(setCountry(savedCountry));
       dispatch(setLocationEnabled(true));
     }
-  }, [country, dispatch]);
+  }, [country, dispatch, isMounted]);
 
   // Calcular filtros activos
   useEffect(() => {
@@ -256,13 +269,25 @@ export default function SearchSection({
     country,
   ]);
 
-  // Determinar qué productos mostrar
-  const displayProducts = shouldSearch ? searchResults?.data || [] : products;
+  // Determinar qué productos mostrar con validaciones
+  const displayProducts = useMemo(() => {
+    if (shouldSearch) {
+      // Si estamos buscando, usar resultados de la API
+      const apiResults = searchResults?.data;
+      return Array.isArray(apiResults) ? apiResults : [];
+    } else {
+      // Si no hay búsqueda activa, usar productos originales
+      return Array.isArray(products) ? products : [];
+    }
+  }, [shouldSearch, searchResults?.data, products]);
 
-  // Pasar resultados al componente padre
+  // Pasar resultados al componente padre con validación
   useEffect(() => {
     if (onSearchResults) {
-      onSearchResults(displayProducts);
+      const validResults = Array.isArray(displayProducts)
+        ? displayProducts
+        : [];
+      onSearchResults(validResults);
     }
   }, [displayProducts, onSearchResults]);
 
@@ -285,7 +310,9 @@ export default function SearchSection({
     setTempCategories([]);
     setTempDurations([]);
     setTempPriceRange([0, 1000]);
-    localStorage.removeItem("userCountry");
+    if (isMounted) {
+      localStorage.removeItem("userCountry");
+    }
     setIsDialogFilterOpen(false);
   };
 
@@ -305,7 +332,9 @@ export default function SearchSection({
     if (isLocationEnabled) {
       dispatch(setLocationEnabled(false));
       dispatch(setCountry(null));
-      localStorage.removeItem("userCountry");
+      if (isMounted) {
+        localStorage.removeItem("userCountry");
+      }
     } else {
       if (country) {
         dispatch(setLocationEnabled(true));
@@ -335,18 +364,64 @@ export default function SearchSection({
     [tempDurations]
   );
 
-  // Filtrar productos para el diálogo de búsqueda
-  const filteredForDialog =
-    isAuthenticated && searchTerm.length >= 3
-      ? displayProducts.filter((product) => {
-          const searchLower = searchTerm.toLowerCase();
-          return (
-            product.name.toLowerCase().includes(searchLower) ||
-            product.description?.toLowerCase().includes(searchLower) ||
-            product.country?.toLowerCase().includes(searchLower)
-          );
-        })
-      : [];
+  // Filtrar productos para el diálogo de búsqueda con validación
+  const filteredForDialog = useMemo(() => {
+    if (!isAuthenticated || searchTerm.length < 3) {
+      return [];
+    }
+
+    const validProducts = Array.isArray(displayProducts) ? displayProducts : [];
+    const searchLower = searchTerm.toLowerCase();
+
+    return validProducts.filter((product) => {
+      if (!product || typeof product !== "object") return false;
+
+      const name = product.name || "";
+      const description = product.description || "";
+      const country = product.country || "";
+
+      return (
+        name.toLowerCase().includes(searchLower) ||
+        description.toLowerCase().includes(searchLower) ||
+        country.toLowerCase().includes(searchLower)
+      );
+    });
+  }, [isAuthenticated, searchTerm, displayProducts]);
+
+  // No renderizar hasta que el componente esté montado para evitar hidratación
+  if (!isMounted) {
+    return (
+      <section className="w-full">
+        {/* Skeleton/placeholder durante la hidratación */}
+        <div className="relative mb-3">
+          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <Search className="h-4 w-4 text-muted-foreground" />
+          </div>
+          <Input
+            type="search"
+            placeholder="Cargando..."
+            className="pl-10 pr-4 py-2 h-12 rounded-full border-2 focus-visible:ring-offset-0 focus-visible:ring-1"
+            disabled
+          />
+        </div>
+        <div className="mb-2">
+          <ScrollArea className="w-full">
+            <div className="flex items-center gap-2 pb-1 min-w-max">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled
+                className="flex items-center gap-1.5 whitespace-nowrap rounded-full border-2 px-3 py-1 h-9 flex-shrink-0"
+              >
+                <FilterIcon className="h-3.5 w-3.5" />
+                <span>Filtros</span>
+              </Button>
+            </div>
+          </ScrollArea>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="w-full">
@@ -595,7 +670,7 @@ export default function SearchSection({
                   <div className="flex items-center justify-between px-1">
                     <h3 className="text-sm md:text-base font-medium">
                       {filteredForDialog.length} resultado
-                      {filteredForDialog.length !== 1 ? "s" : ""} para{" "}
+                      {filteredForDialog.length !== 1 ? "s" : ""} para
                       {searchTerm}
                     </h3>
                     <Button
@@ -609,59 +684,70 @@ export default function SearchSection({
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {filteredForDialog.map((tour) => (
-                      <div
-                        key={tour.id}
-                        className="group p-3 border border-primary/10 rounded-xl hover:shadow-md transition-all duration-300 cursor-pointer hover:border-primary/30 flex gap-3"
-                      >
-                        <div className="w-20 h-20 md:w-24 md:h-24 relative rounded-lg overflow-hidden flex-shrink-0">
-                          <Image
-                            src={
-                              tour?.images?.[0] ||
-                              "/placeholder.svg?height=200&width=200" ||
-                              "/placeholder.svg"
-                            }
-                            width={100}
-                            height={100}
-                            alt={tour.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                          {tour.product_category && (
-                            <Badge className="absolute top-1 left-1 z-20 text-[10px] px-1.5 py-0">
-                              {tour.product_category.name}
-                            </Badge>
-                          )}
-                        </div>
+                    {filteredForDialog.map((tour, index) => {
+                      // Asegurar que tour tenga un id válido
+                      const tourId = tour?.id || `tour-${index}`;
+                      const tourName = tour?.name || "Sin nombre";
+                      const tourPrice = tour?.price || 0;
+                      const tourRating = Number(tour?.average_rating) || 0;
+                      const tourReviews = tour?.total_reviews || 0;
+                      const tourCountry = tour?.country || "";
+                      const tourImages = tour?.images || [];
+                      const tourCategory = tour?.product_category;
 
-                        <div className="flex-grow min-w-0">
-                          <h3 className="font-medium text-sm group-hover:text-primary transition-colors line-clamp-1">
-                            {tour.name}
-                          </h3>
-
-                          <div className="flex items-center gap-1 mt-1">
-                            <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                            <span className="text-xs">
-                              {Number(tour.average_rating).toFixed(1)}
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                              ({tour.total_reviews}{" "}
-                              {tour.total_reviews === 1 ? "reseña" : "reseñas"})
-                            </span>
+                      return (
+                        <div
+                          key={tourId}
+                          className="group p-3 border border-primary/10 rounded-xl hover:shadow-md transition-all duration-300 cursor-pointer hover:border-primary/30 flex gap-3"
+                        >
+                          <div className="w-20 h-20 md:w-24 md:h-24 relative rounded-lg overflow-hidden flex-shrink-0">
+                            <Image
+                              src={
+                                tourImages[0] ||
+                                "/placeholder.svg?height=200&width=200"
+                              }
+                              width={100}
+                              height={100}
+                              alt={tourName}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                            {tourCategory && (
+                              <Badge className="absolute top-1 left-1 z-20 text-[10px] px-1.5 py-0">
+                                {tourCategory.name || "Categoría"}
+                              </Badge>
+                            )}
                           </div>
 
-                          {tour.country && (
-                            <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
-                              <MapPin className="w-3 h-3" />
-                              <span className="truncate">{tour.country}</span>
+                          <div className="flex-grow min-w-0">
+                            <h3 className="font-medium text-sm group-hover:text-primary transition-colors line-clamp-1">
+                              {tourName}
+                            </h3>
+
+                            <div className="flex items-center gap-1 mt-1">
+                              <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                              <span className="text-xs">
+                                {tourRating.toFixed(1)}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                ({tourReviews}{" "}
+                                {tourReviews === 1 ? "reseña" : "reseñas"})
+                              </span>
                             </div>
-                          )}
 
-                          <div className="mt-1 font-medium text-sm">
-                            ${tour.price} USD
+                            {tourCountry && (
+                              <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
+                                <MapPin className="w-3 h-3" />
+                                <span className="truncate">{tourCountry}</span>
+                              </div>
+                            )}
+
+                            <div className="mt-1 font-medium text-sm">
+                              ${tourPrice} USD
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}

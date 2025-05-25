@@ -1,32 +1,32 @@
 "use client";
 import { FilterX } from "lucide-react";
 import { Card } from "./ui/card";
-import Link from "next/link";
-import { useAppSelector } from "@/redux/store";
-import type { RootState } from "@/redux/store";
-import { productTypes } from "@/utils/data";
+// import Link from "next/link";
+// import { useAppSelector } from "@/redux/store";
+// import type { RootState } from "@/redux/store";
+// import { productTypes } from "@/utils/data";
 
 export function NoSearchResults() {
-  const { productType } = useAppSelector((state: RootState) => state.filters);
+  //const { productType } = useAppSelector((state: RootState) => state.filters);
 
   // Obtener la información del tipo de producto actual
-  const currentProductTypeInfo = productTypes.find(
-    (type) => type.name === productType
-  );
+  // const currentProductTypeInfo = productTypes.find(
+  //   (type) => type.name === productType
+  // );
 
   // Obtener la descripción y el ID del tipo de producto
-  const displayName = currentProductTypeInfo?.description || productType;
-  const productId = currentProductTypeInfo?.id;
+  // const displayName = currentProductTypeInfo?.description || productType;
+  // const productId = currentProductTypeInfo?.id;
 
   // Determinar el artículo correcto basado en el ID del producto
   // Si el ID es 2 (propiedades), usar "las" en lugar de "los"
-  const article = productId === 2 ? "todas las" : "todos los";
+  //const article = productId === 2 ? "todas las" : "todos los";
 
   // Construir la información de la ruta usando el artículo correcto
-  const routeInfo = {
+  /*  const routeInfo = {
     path: `/home/${productType}/all`,
     label: `Ver ${article} ${displayName} disponibles`,
-  };
+  }; */
 
   return (
     <section className="py-6">
@@ -45,12 +45,12 @@ export function NoSearchResults() {
               nuestra colección completa.
             </p>
 
-            <Link
+            {/*    <Link
               href={routeInfo.path}
               className="text-primary hover:underline mt-2 text-sm font-medium"
             >
               {routeInfo.label.toLowerCase()}
-            </Link>
+            </Link> */}
           </Card>
         </div>
       </div>

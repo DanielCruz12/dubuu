@@ -14,6 +14,7 @@ export default function Home() {
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [shouldFetchMore, setShouldFetchMore] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
   // Consulta inicial sin cursor
   const { data: initialProductsData, isLoading: isLoadingInitial } =
@@ -50,10 +51,13 @@ export default function Home() {
   // Cargar datos iniciales
   useEffect(() => {
     if (initialProductsData && allProducts.length === 0) {
-      setAllProducts(initialProductsData.data);
+      const validData = Array.isArray(initialProductsData.data)
+        ? initialProductsData.data
+        : [];
+      setAllProducts(validData);
       setNextCursor(initialProductsData.pagination.nextCursor);
       // Inicializar searchResults con todos los productos
-      setSearchResults(initialProductsData.data);
+      setSearchResults(validData);
     }
   }, [initialProductsData, allProducts.length]);
 
@@ -85,7 +89,14 @@ export default function Home() {
 
   // Manejar resultados de búsqueda desde SearchSection
   const handleSearchResults = (results: IProduct[]) => {
-    setSearchResults(results);
+    // Asegurar que results sea siempre un array válido
+    const validResults = Array.isArray(results) ? results : [];
+    setSearchResults(validResults);
+  };
+
+  // Manejar estado de búsqueda
+  const handleSearchLoading = (loading: boolean) => {
+    setIsSearching(loading);
   };
 
   // Determinar si hay más productos para cargar
@@ -100,10 +111,11 @@ export default function Home() {
       <SearchSection
         products={allProducts}
         onSearchResults={handleSearchResults}
+        onSearchLoading={handleSearchLoading}
       />
       <TourSection
-        products={searchResults} // Usar searchResults en lugar de filteredProducts
-        isLoading={isLoadingInitial}
+        products={searchResults}
+        isLoading={isLoadingInitial || isSearching}
         onLoadMore={loadMoreProducts}
         hasMore={hasMore}
         isLoadingMore={isLoadingMore}
