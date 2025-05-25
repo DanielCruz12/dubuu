@@ -57,6 +57,7 @@ import { productTypes, ratingOptions } from "@/utils/data";
 import { ScrollArea } from "../ui/scroll-area";
 import Image from "next/image";
 import { PriceRangeHistogram } from "../price-range-histogram";
+import { useUser } from "@clerk/nextjs";
 
 interface SearchSectionProps {
   products: IProduct[];
@@ -76,7 +77,7 @@ export default function SearchSection({
   const [isMounted, setIsMounted] = useState(false);
 
   // Estado de autenticación
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { user } = useUser();
 
   const dispatch = useAppDispatch();
   const { rating, pricing, productType } = useAppSelector(
@@ -102,9 +103,6 @@ export default function SearchSection({
   // Efecto para marcar como montado y verificar autenticación
   useEffect(() => {
     setIsMounted(true);
-    const token =
-      localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
-    setIsAuthenticated(!!token);
   }, []);
 
   // Construir parámetros de búsqueda
@@ -112,7 +110,7 @@ export default function SearchSection({
     const params: Record<string, any> = {};
 
     // Búsqueda por texto - solo si está autenticado
-    if (isAuthenticated && searchTerm && searchTerm.length >= 3) {
+    if (!!user && searchTerm && searchTerm.length >= 3) {
       params.search = searchTerm;
     }
 
@@ -161,13 +159,13 @@ export default function SearchSection({
     priceRange,
     categories,
     durations,
-    isAuthenticated,
+    user,
   ]);
 
   // Query para búsqueda en API
   const searchParams = buildSearchParams();
   const shouldSearch =
-    (isAuthenticated && searchTerm.length >= 3) ||
+    (!!user && searchTerm.length >= 3) ||
     productType !== initialFilterState.productType ||
     (isLocationEnabled && country) ||
     rating !== initialFilterState.rating ||
@@ -317,13 +315,13 @@ export default function SearchSection({
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (isAuthenticated) {
+    if (!!user) {
       dispatch(setSearchTerm(e.target.value));
     }
   };
 
   const handleSearchFocus = () => {
-    if (isAuthenticated) {
+    if (!!user) {
       setIsDialogOpen(true);
     }
   };
@@ -366,7 +364,7 @@ export default function SearchSection({
 
   // Filtrar productos para el diálogo de búsqueda con validación
   const filteredForDialog = useMemo(() => {
-    if (!isAuthenticated || searchTerm.length < 3) {
+    if (!user || searchTerm.length < 3) {
       return [];
     }
 
@@ -386,7 +384,7 @@ export default function SearchSection({
         country.toLowerCase().includes(searchLower)
       );
     });
-  }, [isAuthenticated, searchTerm, displayProducts]);
+  }, [user, searchTerm, displayProducts]);
 
   // No renderizar hasta que el componente esté montado para evitar hidratación
   if (!isMounted) {
@@ -425,6 +423,14 @@ export default function SearchSection({
 
   return (
     <section className="w-full">
+      {/* Mensaje para usuarios no autenticados - solo después de montar */}
+      {!user && (
+        <div className="mb-3 text-sm text-muted-foreground text-center py-2 bg-muted/30 rounded-lg">
+          Debes iniciar sesión para buscar por texto. Los filtros están
+          disponibles.
+        </div>
+      )}
+
       {/* Barra de búsqueda principal */}
       <div className="relative mb-3">
         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -433,7 +439,7 @@ export default function SearchSection({
         <Input
           type="search"
           placeholder={
-            isAuthenticated
+            user
               ? "Buscar destinos, tours, experiencias..."
               : "Inicia sesión para buscar por texto..."
           }
@@ -441,7 +447,7 @@ export default function SearchSection({
           value={searchTerm}
           onChange={handleSearchChange}
           onFocus={handleSearchFocus}
-          disabled={!isAuthenticated}
+          disabled={!user}
         />
         {(isSearching || isSearchFetching) && (
           <div className="absolute inset-y-0 right-0 flex items-center pr-3">
@@ -604,6 +610,21 @@ export default function SearchSection({
         </div>
       )}
 
+      {/* Mostrar estado de resultados */}
+      {shouldSearch && (
+        <div className="mb-4 text-sm text-muted-foreground">
+          {isSearching || isSearchFetching ? (
+            <span>Buscando...</span>
+          ) : (
+            <span>
+              {displayProducts.length === 0
+                ? "No se encontraron resultados con los filtros aplicados"
+                : `${displayProducts.length} resultado${displayProducts.length !== 1 ? "s" : ""} encontrado${displayProducts.length !== 1 ? "s" : ""}`}
+            </span>
+          )}
+        </div>
+      )}
+
       {/* Diálogo de resultados de búsqueda */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[425px] max-w-[95%] md:max-w-[85%] lg:max-w-[75%] xl:max-w-[65%] p-0 overflow-hidden rounded-xl border-none shadow-xl">
@@ -670,7 +691,7 @@ export default function SearchSection({
                   <div className="flex items-center justify-between px-1">
                     <h3 className="text-sm md:text-base font-medium">
                       {filteredForDialog.length} resultado
-                      {filteredForDialog.length !== 1 ? "s" : ""} para
+                      {filteredForDialog.length !== 1 ? "s" : ""} para{" "}
                       {searchTerm}
                     </h3>
                     <Button
