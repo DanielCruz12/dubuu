@@ -253,7 +253,7 @@ export default function PersonalInfoForm() {
               {user?.username || "username"}
             </p>
 
-            <div className="flex flex-wrap justify-center md:justify-start gap-2 mt-3">
+            <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-3">
               <Badge variant="secondary" className="flex items-center gap-1">
                 <Calendar className="h-3 w-3" />
                 Miembro desde {formatDate(user?.createdAt)}
@@ -266,7 +266,7 @@ export default function PersonalInfoForm() {
             </div>
           </div>
 
-          <div className="flex gap-2 mt-4 md:mt-0 md:ml-auto">
+          <div className="hidden md:flex gap-2 mt-4 md:mt-0 md:ml-auto">
             <Button
               type="button"
               variant="outline"
@@ -466,19 +466,6 @@ export default function PersonalInfoForm() {
                         )
                     )}
                   </ul>
-                </div>
-              )}
-
-              {(!user?.emailAddresses || user.emailAddresses.length <= 1) && (
-                <div className=" p-6 rounded-lg text-center">
-                  <Mail className="h-10 w-10 text-gray-400 mx-auto mb-2" />
-                  <p className="text-gray-600 font-medium">
-                    No tienes correos electrónicos adicionales
-                  </p>
-                  <p className="text-sm text-gray-500 mt-1">
-                    Puedes añadir direcciones de correo adicionales para mayor
-                    seguridad
-                  </p>
                 </div>
               )}
             </CardContent>

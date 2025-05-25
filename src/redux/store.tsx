@@ -35,6 +35,7 @@ import { bookingsApiSlice } from "@/redux/slices/booking/booking-slice";
 import { usersApiSlice } from "@/redux/slices/user/user-slice";
 import { favoritesApiSlice } from "@/redux/slices/favorite/favorite-slice";
 import { contactsApiSlice } from "@/redux/slices/contact/contact-slice";
+import searchReducer from "@/redux/slices/product/search/search-slice"; // ← AGREGADO
 
 import authReducer from "./slices/auth/auth-slice";
 
@@ -64,6 +65,7 @@ const persistConfig = {
   whitelist: [
     "filters",
     "auth",
+    "search",
     "paymentAccountApiSlice",
     "payments",
     "favoritesApiSlice",
@@ -90,6 +92,7 @@ const rootReducer = combineReducers({
   [usersApiSlice.reducerPath]: usersApiSlice.reducer,
   [contactsApiSlice.reducerPath]: contactsApiSlice.reducer,
   auth: authReducer,
+  search: searchReducer,
   filters: filtersReducer,
 });
 

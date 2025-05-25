@@ -123,6 +123,27 @@ export function getPaymentMethodName(method: PaymentMethod | null) {
   }
 }
 
+export function calculateRentalPrice(
+  pricePerDay: number,
+  from: Date,
+  to: Date
+): number {
+  const msInHour = 1000 * 60 * 60
+  const totalHours = Math.ceil((to.getTime() - from.getTime()) / msInHour)
+
+  if (totalHours <= 0) throw new Error('El rango de fechas es inválido')
+  if (totalHours > 24 * 15) throw new Error('Máximo de 15 días por alquiler')
+
+  const fullDays = Math.floor(totalHours / 24)
+  const extraHours = totalHours % 24
+
+  const pricePerHour = (pricePerDay / 24) * 1.5 // 50% más caro por hora
+  const total = fullDays * pricePerDay + extraHours * pricePerHour
+
+  return parseFloat(total.toFixed(2))
+}
+
+
 export const statusConfig = {
   completed: {
     icon: CheckCircle,

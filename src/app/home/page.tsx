@@ -6,11 +6,11 @@ import SearchSection from "@/components/sections/search-section";
 import TourSection from "@/components/sections/tour-section";
 import UpTop from "@/components/up-top";
 import { useGetProductsQuery } from "@/redux/slices/product/product-slice";
-import { RootState, useAppSelector } from "@/redux/store";
-import { IProduct } from "@/types/product";
+import type { IProduct } from "@/types/product";
 
 export default function Home() {
   const [allProducts, setAllProducts] = useState<IProduct[]>([]);
+  const [searchResults, setSearchResults] = useState<IProduct[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [shouldFetchMore, setShouldFetchMore] = useState(false);
@@ -52,6 +52,8 @@ export default function Home() {
     if (initialProductsData && allProducts.length === 0) {
       setAllProducts(initialProductsData.data);
       setNextCursor(initialProductsData.pagination.nextCursor);
+      // Inicializar searchResults con todos los productos
+      setSearchResults(initialProductsData.data);
     }
   }, [initialProductsData, allProducts.length]);
 
@@ -81,26 +83,10 @@ export default function Home() {
     setShouldFetchMore(true);
   };
 
-  const { rating, pricing, productType } = useAppSelector(
-    (state: RootState) => state.filters
-  );
-
-  const ratingNumber = Number(rating);
-  const pricingNumber = Number(pricing);
-
-  // Filtrar productos
-  const filteredProducts = allProducts.filter((product) => {
-    const productRating = Number(product.average_rating);
-    const productPrice = Number(product.price);
-    const productTypeName = product.product_type?.name || "";
-
-    const meetsRating = isNaN(ratingNumber) || productRating >= ratingNumber;
-    const meetsPricing = isNaN(pricingNumber) || productPrice <= pricingNumber;
-    const meetsProductType =
-      !productType || productType === "all" || productTypeName === productType;
-
-    return meetsRating && meetsPricing && meetsProductType;
-  });
+  // Manejar resultados de búsqueda desde SearchSection
+  const handleSearchResults = (results: IProduct[]) => {
+    setSearchResults(results);
+  };
 
   // Determinar si hay más productos para cargar
   const hasMore =
@@ -111,9 +97,12 @@ export default function Home() {
     <>
       <UpTop />
       <HeroSection />
-      <SearchSection products={filteredProducts} />
+      <SearchSection
+        products={allProducts}
+        onSearchResults={handleSearchResults}
+      />
       <TourSection
-        products={filteredProducts}
+        products={searchResults} // Usar searchResults en lugar de filteredProducts
         isLoading={isLoadingInitial}
         onLoadMore={loadMoreProducts}
         hasMore={hasMore}

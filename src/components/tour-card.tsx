@@ -27,10 +27,10 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
     description,
     price,
     country,
-    target_audience,
     images,
     average_rating,
     total_reviews,
+    address,
     product_category,
   } = props;
 
@@ -172,26 +172,39 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
           onTouchEnd={handleTouchEnd}
         >
           <div className="relative w-full h-full">
-            <Image
-              src={productImages[currentImageIndex] || "/tour.jpg"}
-              alt={name}
-              fill
-              sizes="(max-width: 768px) 50vw, 33vw"
-              className="object-cover"
-              priority
-            />
+            {productImages.map((image, index) => (
+              <div
+                key={index}
+                className={`absolute inset-0 transition-all duration-500 ease-in-out ${
+                  index === currentImageIndex
+                    ? "opacity-100 translate-x-0"
+                    : index < currentImageIndex
+                      ? "opacity-0 -translate-x-full"
+                      : "opacity-0 translate-x-full"
+                }`}
+              >
+                <Image
+                  src={image || "/tour.jpg"}
+                  alt={`${name} - Image ${index + 1}`}
+                  fill
+                  sizes="(max-width: 768px) 50vw, 33vw"
+                  className="object-cover"
+                  priority={index === 0}
+                />
+              </div>
+            ))}
           </div>
 
           {/* Badge de categoría o destacado */}
           {product_category && (
-            <div className="absolute top-2 left-2 bg-white/90 text-black text-xs px-2 py-1 rounded-md font-medium z-10">
+            <Badge className="absolute top-2 left-2 bg-black/60 text-white hover:bg-black/80 z-10">
               {product_category.name}
-            </div>
+            </Badge>
           )}
 
           {/* Botón de favorito */}
           <button
-            className="absolute top-2 right-2 bg-white/90 z-10 p-1.5 rounded-full shadow-sm"
+            className="absolute top-2 right-2 bg-white/40 hover:bg-white/60 dark:bg-black/40 dark:hover:bg-black/60 z-10 p-1.5 rounded-full transition-colors duration-200"
             onClick={(e) => {
               e.stopPropagation();
               toggleFavorite(id);
@@ -203,7 +216,9 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
           >
             <Heart
               className={`h-4 w-4 ${
-                isFavorited ? "fill-rose-500 text-rose-500" : "text-gray-700"
+                isFavorited
+                  ? "fill-rose-500 text-rose-500"
+                  : "text-gray-700 dark:text-white stroke-[2.5px] hover:text-rose-400"
               } ${isSaving || isUnsaving ? "opacity-50" : ""}`}
             />
           </button>
@@ -225,17 +240,20 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
           {/* Título y ubicación */}
           <div className="flex flex-col gap-0.5">
             <div className="flex items-start justify-between">
-              <div className="text-xs font-medium line-clamp-1">{name}</div>
+              <div className="text-xs line-clamp-1">{name}</div>
               <div className="flex items-center gap-1 text-xs">
                 <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />
                 <span>{formattedRating}</span>
               </div>
             </div>
+            <span className="text-xs line-clamp-1 text-muted-foreground">
+              {country}, {address}
+            </span>
 
             {/* Precio */}
             <div className="text-xs">
               <span className="font-semibold">
-                ${calculatePriceWithTaxes(price)} USD
+                ${calculatePriceWithTaxes(price)}
               </span>{" "}
               p/p
             </div>
@@ -314,7 +332,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
         </div>
 
         {product_category && (
-          <Badge className="absolute top-2 left-2 bg-black/70 text-white hover:bg-black/80 z-10">
+          <Badge className="absolute top-2 left-2 bg-black/60 text-white hover:bg-black/80 z-10">
             {product_category.name}
           </Badge>
         )}
@@ -341,7 +359,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
       </div>
 
       <div className="flex flex-col">
-        <CardContent className="pt-3 pb-2">
+        <CardContent className="pt-1">
           {/* Rating */}
           <div className="mb-1.5">
             <Rating
@@ -354,28 +372,24 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
           </div>
 
           {/* Título */}
-          <h3 className="text-base md:text-lg font-bold text-wrap line-clamp-1 mb-1.5">
+          <h3 className="text-[0.875rem] md:text-[1rem] font-bold text-wrap line-clamp-1 ">
             {name}
           </h3>
 
           {/* Descripción */}
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+          <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
             {description}
           </p>
 
           {/* Ubicación y audiencia */}
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-2">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 ">
             {country && (
               <div className="flex items-center text-sm text-muted-foreground">
                 <MapPin className="w-3.5 h-3.5 mr-1 flex-shrink-0" />
-                <span className="truncate max-w-[80px]">{country}</span>
+                <span className="text-sm text-muted-foreground line-clamp-1">
+                  {country} / {address}
+                </span>
               </div>
-            )}
-
-            {target_audience && (
-              <span className="text-sm text-muted-foreground truncate max-w-[100px]">
-                {target_audience.name}
-              </span>
             )}
           </div>
         </CardContent>
@@ -383,7 +397,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
         <CardFooter className="flex items-center justify-between py-3">
           <div className="font-semibold">
             ${calculatePriceWithTaxes(price)}{" "}
-            <span className="text-sm text-muted-foreground">USD p/p</span>
+            <span className="text-sm text-muted-foreground">p/p</span>
           </div>
           <Button
             variant="secondary"

@@ -1,5 +1,5 @@
 "use client";
-import { IProduct } from "@/types/product";
+import type { IProduct } from "@/types/product";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const productsApiSlice = createApi({
@@ -8,7 +8,6 @@ export const productsApiSlice = createApi({
     baseUrl: "/backend",
   }),
   tagTypes: ["Products", "Reviews"],
-  // Configuración global para evitar refetch automático
   refetchOnFocus: false,
   refetchOnReconnect: false,
   endpoints: (builder) => {
@@ -28,11 +27,19 @@ export const productsApiSlice = createApi({
           const searchParams = new URLSearchParams();
 
           Object.entries(params).forEach(([key, value]) => {
-            if (value !== undefined && value !== null) {
-              searchParams.append(key, String(value));
+            if (value !== undefined && value !== null && value !== "") {
+              // Para arrays, convertir a string separado por comas
+              if (Array.isArray(value)) {
+                if (value.length > 0) {
+                  searchParams.append(key, value.join(","));
+                }
+              } else {
+                searchParams.append(key, String(value));
+              }
             }
           });
 
+          console.log("Query params:", searchParams.toString());
           return `/api/v1/products?${searchParams.toString()}`;
         },
         providesTags: (result) =>
@@ -45,6 +52,73 @@ export const productsApiSlice = createApi({
                 })),
               ]
             : [{ type: "Products", id: "LIST" }],
+      }),
+
+      searchProducts: builder.query<
+        {
+          data: IProduct[];
+          pagination: {
+            hasMore: boolean;
+            nextCursor: string | null;
+            limit: number;
+          };
+        },
+        {
+          search: string;
+          product_type?: string;
+          country?: string;
+          min_price?: number;
+          max_price?: number;
+          categories?: string[];
+          durations?: string[];
+          limit?: number;
+          cursor?: string;
+        }
+      >({
+        query: (params) => {
+          const searchParams = new URLSearchParams();
+
+          // Parámetros de búsqueda
+          if (params.search && params.search.length >= 3) {
+            searchParams.append("search", params.search);
+          }
+
+          if (params.product_type) {
+            searchParams.append("product_type", params.product_type);
+          }
+
+          if (params.country) {
+            searchParams.append("country", params.country);
+          }
+
+          if (params.min_price !== undefined) {
+            searchParams.append("min_price", String(params.min_price));
+          }
+
+          if (params.max_price !== undefined) {
+            searchParams.append("max_price", String(params.max_price));
+          }
+
+          if (params.categories && params.categories.length > 0) {
+            searchParams.append("categories", params.categories.join(","));
+          }
+
+          if (params.durations && params.durations.length > 0) {
+            searchParams.append("durations", params.durations.join(","));
+          }
+
+          if (params.limit) {
+            searchParams.append("limit", String(params.limit));
+          }
+
+          if (params.cursor) {
+            searchParams.append("cursor", params.cursor);
+          }
+
+          console.log("Search query params:", searchParams.toString());
+          return `/api/v1/products?${searchParams.toString()}`;
+        },
+        providesTags: ["Products"],
       }),
 
       createProduct: builder.mutation<IProduct, Partial<IProduct>>({
@@ -106,6 +180,7 @@ export const productsApiSlice = createApi({
 
 export const {
   useGetProductsQuery,
+  useSearchProductsQuery,
   useGetProductQuery,
   useGetProductsByUserIdQuery,
   useCreateProductMutation,
