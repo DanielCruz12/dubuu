@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { DownloadIcon, PlusCircle, SearchIcon } from "lucide-react";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { DownloadIcon, Link, PlusCircle, SearchIcon } from "lucide-react";
 import { toursColumns } from "../(columns)/columns";
 import {
   Select,
@@ -314,10 +314,16 @@ export function ProductsDataTable() {
                 <DownloadIcon className="h-4 w-4 mr-2" />
                 <span>Exportar</span>
               </Button>
-              <Button title="Agregar nuevo tour">
+              <Link
+                className={cn(
+                  buttonVariants({ variant: "default" }),
+                  "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                )}
+                href="/dashboard/products/add"
+              >
                 <PlusCircle className="h-4 w-4 mr-2" />
                 <span>Nuevo Tour</span>
-              </Button>
+              </Link>
             </div>
           </div>
 

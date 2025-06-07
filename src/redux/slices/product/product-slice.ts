@@ -121,7 +121,7 @@ export const productsApiSlice = createApi({
         providesTags: ["Products"],
       }),
 
-      createProduct: builder.mutation<IProduct, Partial<IProduct>>({
+      createProduct: builder.mutation<IProduct, FormData>({
         query: (post) => ({
           url: "/api/v1/products",
           method: "POST",

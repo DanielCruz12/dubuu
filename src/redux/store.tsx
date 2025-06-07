@@ -35,7 +35,11 @@ import { bookingsApiSlice } from "@/redux/slices/booking/booking-slice";
 import { usersApiSlice } from "@/redux/slices/user/user-slice";
 import { favoritesApiSlice } from "@/redux/slices/favorite/favorite-slice";
 import { contactsApiSlice } from "@/redux/slices/contact/contact-slice";
-import searchReducer from "@/redux/slices/product/search/search-slice"; // ← AGREGADO
+import { productCategoriesApiSlice } from "@/redux/slices/product/product-category";
+import { productAmenitiesApiSlice } from "@/redux/slices/product/product-amenity";
+import { productAudiencesApiSlice } from "@/redux/slices/product/product-audience";
+
+import searchReducer from "@/redux/slices/product/search/search-slice";
 
 import authReducer from "./slices/auth/auth-slice";
 
@@ -69,6 +73,9 @@ const persistConfig = {
     "paymentAccountApiSlice",
     "payments",
     "favoritesApiSlice",
+    "productCategories",
+    "productAmenities",
+    "productAudiences",
     // Aquí puedes indicar qué reducers deseas persistir
     // "productsApiSlice", // Si deseas persistir el slice de productos
     // "paymentApiSlice", // Si deseas persistir el slice de pagos
@@ -91,6 +98,9 @@ const rootReducer = combineReducers({
   [favoritesApiSlice.reducerPath]: favoritesApiSlice.reducer,
   [usersApiSlice.reducerPath]: usersApiSlice.reducer,
   [contactsApiSlice.reducerPath]: contactsApiSlice.reducer,
+  [productCategoriesApiSlice.reducerPath]: productCategoriesApiSlice.reducer,
+  [productAmenitiesApiSlice.reducerPath]: productAmenitiesApiSlice.reducer,
+  [productAudiencesApiSlice.reducerPath]: productAudiencesApiSlice.reducer,
   auth: authReducer,
   search: searchReducer,
   filters: filtersReducer,
@@ -116,7 +126,10 @@ export const makeStore = () =>
         bookingsApiSlice.middleware,
         favoritesApiSlice.middleware,
         usersApiSlice.middleware,
-        contactsApiSlice.middleware
+        contactsApiSlice.middleware,
+        productCategoriesApiSlice.middleware,
+        productAmenitiesApiSlice.middleware,
+        productAudiencesApiSlice.middleware
       ),
   });
 

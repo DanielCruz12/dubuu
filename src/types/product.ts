@@ -5,6 +5,33 @@ export interface IProductTypes {
   name: string;
   description: string;
 }
+export interface IProductCategory {
+  id: string;
+  name: string;
+  description: string;
+  product_type: {
+    id: string;
+    name: string;
+  };
+}
+
+export interface IProductAmenity {
+  id: string;
+  name: string;
+  description: string;
+  category_id: {
+    id: string;
+    name: string;
+  };
+}
+
+export interface IProductAudience {
+  id: string;
+  name: string;
+  description: string;
+  created_at?: string;
+  updated_at?: string;
+}
 
 export interface IProductBase<T extends string = string> {
   id: string;
