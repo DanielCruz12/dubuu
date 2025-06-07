@@ -45,9 +45,9 @@ export function TourPreview({ onEdit, tourData = [] }: TourPreviewProps) {
     >
       <Card>
         <CardHeader>
-          <CardTitle className="text-xl font-medium">{tourData.name}</CardTitle>
+          <CardTitle className="text-xl font-medium line-clamp-2">{tourData.name}</CardTitle>
           <CardDescription>
-            {tourData.description.substring(0, 100)}...
+            {tourData.description}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
