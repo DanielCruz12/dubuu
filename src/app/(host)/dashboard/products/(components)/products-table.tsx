@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { DownloadIcon, Link, PlusCircle, SearchIcon } from "lucide-react";
 import { toursColumns } from "../(columns)/columns";
 import {
@@ -309,18 +309,23 @@ export function ProductsDataTable() {
               )}
             </div>
 
-            <div className="flex gap-2 ml-auto">
-              <Button onClick={handleExport} title="Exportar a Excel">
-                <DownloadIcon className="h-4 w-4 mr-2" />
+            <div className="flex items-center gap-2 ml-auto">
+              <Button
+                onClick={handleExport}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <DownloadIcon className="h-4 w-4" />
                 <span>Exportar</span>
               </Button>
-              <Link
-                className={cn(buttonVariants({ variant: "default" }))}
-                href="/dashboard/products/add"
-              >
-                <PlusCircle className="h-4 w-4 mr-2" />
-                <span>Nuevo Tour</span>
-              </Link>
+
+              <Button asChild size="sm" className="flex items-center gap-2">
+                <Link href="/dashboard/products/add">
+                  <PlusCircle className="h-4 w-4" />
+                  <span>Nuevo Tour</span>
+                </Link>
+              </Button>
             </div>
           </div>
 

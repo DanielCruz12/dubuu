@@ -45,10 +45,10 @@ export function TourPreview({ onEdit, tourData = [] }: TourPreviewProps) {
     >
       <Card>
         <CardHeader>
-          <CardTitle className="text-xl font-medium line-clamp-2">{tourData.name}</CardTitle>
-          <CardDescription>
-            {tourData.description}
-          </CardDescription>
+          <CardTitle className="text-xl font-medium line-clamp-2">
+            {tourData.name}
+          </CardTitle>
+          <CardDescription>{tourData.description}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -67,7 +67,7 @@ export function TourPreview({ onEdit, tourData = [] }: TourPreviewProps) {
                   <p className="font-medium">{tourData.address}</p>
                   <p className="text-sm text-gray-500">
                     {countries.find((c) => c.nombre === tourData.country)
-                      ?.nombre || tourData.country}
+                      ?.nombre || tourData?.country}
                   </p>
                 </div>
               </div>
@@ -104,7 +104,7 @@ export function TourPreview({ onEdit, tourData = [] }: TourPreviewProps) {
                 <Calendar className="h-5 w-5 mt-0.5" />
                 <div>
                   <p className="font-medium">
-                    {tourData.available_dates.length} fechas disponibles
+                    {tourData.available_dates?.length} fechas disponibles
                   </p>
                   <p className="text-sm text-gray-500">
                     Próxima: {format(tourData.available_dates[0], "dd/MM/yyyy")}
@@ -119,7 +119,7 @@ export function TourPreview({ onEdit, tourData = [] }: TourPreviewProps) {
               <Sparkles className="h-4 w-4 mr-2" />
               Destacados
             </h3>
-            <p className="text-sm">{tourData.highlight}</p>
+            <p className="text-sm">{tourData?.highlight}</p>
           </div>
 
           <div className="border-t pt-4">
@@ -127,7 +127,7 @@ export function TourPreview({ onEdit, tourData = [] }: TourPreviewProps) {
               <Package className="h-4 w-4 mr-2" />
               Incluido
             </h3>
-            <p className="text-sm">{tourData.included}</p>
+            <p className="text-sm">{tourData?.included}</p>
           </div>
 
           <div className="border-t pt-4">
@@ -136,7 +136,7 @@ export function TourPreview({ onEdit, tourData = [] }: TourPreviewProps) {
               Itinerario
             </h3>
             <ul className="space-y-2">
-              {tourData.itinerary.map((item: string, index: number) => (
+              {tourData?.itinerary.map((item: string, index: number) => (
                 <li key={index} className="text-sm flex items-start">
                   <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 text-xs mr-2 mt-0.5">
                     {index + 1}
@@ -153,7 +153,7 @@ export function TourPreview({ onEdit, tourData = [] }: TourPreviewProps) {
               Comodidades
             </h3>
             <div className="flex flex-wrap gap-2">
-              {tourData.amenities.map((amenityId: string) => {
+              {tourData?.amenities.map((amenityId: string) => {
                 const amenity = amenitiesOptions.find(
                   (a) => a.id === amenityId
                 );

@@ -179,14 +179,8 @@ export function TourForm() {
       // Crear FormData para enviar al API
       const apiFormData = createFormData(formData);
 
-      console.log("Enviando datos al API...", apiFormData);
-      console.log("Datos del tour:", formData);
-      console.log("FormData:", apiFormData);
-
       // Enviar al API usando RTK Query
       const result = await createProduct(apiFormData).unwrap();
-
-      console.log("Tour creado exitosamente:", result);
 
       // Guardar datos para la vista previa
       setCreatedTourData(formData);
