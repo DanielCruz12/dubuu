@@ -34,10 +34,13 @@ import type {
 // Importar la mutación de crear producto
 import { useCreateProductMutation } from "@/redux/slices/product/product-slice";
 import { TourPreview } from "./tour-previuw";
+import { SignInButton, useUser } from "@clerk/nextjs";
 
 export function TourForm() {
   const [step, setStep] = useState(1);
   const totalSteps = 5;
+  const { user, isSignedIn } = useUser();
+  const userId = user?.id || "";
 
   // Hook de mutación para crear producto
   const [createProduct, { isLoading: isCreating }] = useCreateProductMutation();
@@ -70,9 +73,6 @@ export function TourForm() {
     data.append("departure_point", formData.basicInfo.departure_point);
     data.append("address", formData.basicInfo.address);
     data.append("country", formData.basicInfo.country);
-    if (formData.basicInfo.region) {
-      data.append("region", formData.basicInfo.region);
-    }
     data.append("max_people", formData.basicInfo.max_people.toString());
     data.append("duration", formData.basicInfo.duration.toString());
 
@@ -115,7 +115,7 @@ export function TourForm() {
     data.append("price", formData.multimedia.price.toString());
 
     // Usuario (esto debería venir del contexto de autenticación)
-    data.append("user_id", "user_2xmDPkBuxt6qg1HCSLztz6zvaBx");
+    data.append("user_id", userId);
 
     // Archivos
     if (formData.files.bannerFile) {
@@ -131,7 +131,7 @@ export function TourForm() {
     });
 
     formData.files.fileAttachments.forEach((file, index) => {
-      data.append(`attachments`, file);
+      data.append(`files`, file);
     });
 
     return data;
@@ -179,7 +179,9 @@ export function TourForm() {
       // Crear FormData para enviar al API
       const apiFormData = createFormData(formData);
 
-      console.log("Enviando datos al API...");
+      console.log("Enviando datos al API...", apiFormData);
+      console.log("Datos del tour:", formData);
+      console.log("FormData:", apiFormData);
 
       // Enviar al API usando RTK Query
       const result = await createProduct(apiFormData).unwrap();
@@ -241,6 +243,24 @@ export function TourForm() {
     setCreatedTourData(null);
     setStep(1);
   };
+
+  if (!isSignedIn) {
+    return (
+      <div className="text-center">
+        <h2 className="text-xl font-semibold mb-4">
+          Necesitas iniciar sesión para crear el producto
+        </h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          Inicia sesión o crea una cuenta para poder crear y disfrutar de
+          nuestra plataforma exclusiva.
+          <br />
+        </p>
+        <SignInButton>
+          <Button>Iniciar sesión</Button>
+        </SignInButton>
+      </div>
+    );
+  }
 
   // Mostrar vista previa si el tour fue creado exitosamente
   if (isSuccess && createdTourData) {
