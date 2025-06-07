@@ -75,7 +75,7 @@ export function TourPreview({ onEdit, tourData = [] }: TourPreviewProps) {
               <div className="flex items-start space-x-3 p-3 rounded-md">
                 <Tag className="h-5 w-5 mt-0.5" />
                 <div>
-                  <p className="font-medium">${tourData.price.toFixed(2)}</p>
+                  <p className="font-medium">${tourData.price}</p>
                   <p className="text-sm text-gray-500">Precio por persona</p>
                 </div>
               </div>
