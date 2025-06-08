@@ -16,6 +16,7 @@ import {
   Sparkles,
   Package,
   ShieldCheck,
+  AlertCircle,
 } from "lucide-react";
 
 import {
@@ -36,7 +37,20 @@ interface TourPreviewProps {
   tourData?: any; // Idealmente deberíamos definir un tipo específico para los datos del tour
 }
 
-export function TourPreview({ onEdit, tourData = [] }: TourPreviewProps) {
+export function TourPreview({ onEdit, tourData = {} }: TourPreviewProps) {
+  // Validaciones de datos
+  const hasAvailableDates =
+    Array.isArray(tourData.available_dates) &&
+    tourData.available_dates.length > 0;
+  const hasItinerary =
+    Array.isArray(tourData.itinerary) && tourData.itinerary.length > 0;
+  const hasAmenities =
+    Array.isArray(tourData.amenities) && tourData.amenities.length > 0;
+  const countryName =
+    countries.find((c) => c.nombre === tourData.country)?.nombre ||
+    tourData?.country ||
+    "No especificado";
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -46,9 +60,11 @@ export function TourPreview({ onEdit, tourData = [] }: TourPreviewProps) {
       <Card>
         <CardHeader>
           <CardTitle className="text-xl font-medium line-clamp-2">
-            {tourData.name}
+            {tourData.name || "Nombre del tour no disponible"}
           </CardTitle>
-          <CardDescription>{tourData.description}</CardDescription>
+          <CardDescription>
+            {tourData.description || "Descripción no disponible"}
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -56,7 +72,10 @@ export function TourPreview({ onEdit, tourData = [] }: TourPreviewProps) {
               <div className="flex items-start space-x-3 p-3 rounded-md">
                 <MapPin className="h-5 w-5 mt-0.5" />
                 <div>
-                  <p className="font-medium">{tourData.departure_point}</p>
+                  <p className="font-medium">
+                    {tourData.departure_point ||
+                      "Punto de partida no especificado"}
+                  </p>
                   <p className="text-sm text-gray-500">Punto de partida</p>
                 </div>
               </div>
@@ -64,18 +83,21 @@ export function TourPreview({ onEdit, tourData = [] }: TourPreviewProps) {
               <div className="flex items-start space-x-3 p-3 rounded-md">
                 <Globe className="h-5 w-5 mt-0.5" />
                 <div>
-                  <p className="font-medium">{tourData.address}</p>
-                  <p className="text-sm text-gray-500">
-                    {countries.find((c) => c.nombre === tourData.country)
-                      ?.nombre || tourData?.country}
+                  <p className="font-medium">
+                    {tourData.address || "Dirección no especificada"}
                   </p>
+                  <p className="text-sm text-gray-500">{countryName}</p>
                 </div>
               </div>
 
               <div className="flex items-start space-x-3 p-3 rounded-md">
                 <Tag className="h-5 w-5 mt-0.5" />
                 <div>
-                  <p className="font-medium">${tourData.price}</p>
+                  <p className="font-medium">
+                    {tourData.price
+                      ? `$${tourData.price}`
+                      : "Precio no disponible"}
+                  </p>
                   <p className="text-sm text-gray-500">Precio por persona</p>
                 </div>
               </div>
@@ -85,7 +107,11 @@ export function TourPreview({ onEdit, tourData = [] }: TourPreviewProps) {
               <div className="flex items-start space-x-3 p-3 rounded-md">
                 <Clock className="h-5 w-5 mt-0.5" />
                 <div>
-                  <p className="font-medium">{tourData.duration} día(s)</p>
+                  <p className="font-medium">
+                    {tourData.duration
+                      ? `${tourData.duration} día(s)`
+                      : "Duración no especificada"}
+                  </p>
                   <p className="text-sm text-gray-500">Duración</p>
                 </div>
               </div>
@@ -94,7 +120,9 @@ export function TourPreview({ onEdit, tourData = [] }: TourPreviewProps) {
                 <Users className="h-5 w-5 mt-0.5" />
                 <div>
                   <p className="font-medium">
-                    Máximo {tourData.max_people} personas
+                    {tourData.max_people
+                      ? `Máximo ${tourData.max_people} personas`
+                      : "Capacidad no especificada"}
                   </p>
                   <p className="text-sm text-gray-500">Capacidad</p>
                 </div>
@@ -103,70 +131,117 @@ export function TourPreview({ onEdit, tourData = [] }: TourPreviewProps) {
               <div className="flex items-start space-x-3 p-3 rounded-md">
                 <Calendar className="h-5 w-5 mt-0.5" />
                 <div>
-                  <p className="font-medium">
-                    {tourData.available_dates?.length} fechas disponibles
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    Próxima: {format(tourData.available_dates[0], "dd/MM/yyyy")}
-                  </p>
+                  {hasAvailableDates ? (
+                    <>
+                      <p className="font-medium">
+                        {tourData.available_dates.length} fechas disponibles
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Próxima:{" "}
+                        {format(
+                          new Date(tourData.available_dates[0]),
+                          "dd/MM/yyyy"
+                        )}
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="font-medium text-amber-600 flex items-center">
+                        <AlertCircle className="h-4 w-4 mr-1" />
+                        Sin fechas disponibles
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        No hay fechas programadas
+                      </p>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
           </div>
 
+          {/* Destacados */}
           <div className="border-t pt-4">
             <h3 className="font-medium mb-2 flex items-center">
               <Sparkles className="h-4 w-4 mr-2" />
               Destacados
             </h3>
-            <p className="text-sm">{tourData?.highlight}</p>
+            <p className="text-sm">
+              {tourData?.highlight || "No hay información destacada disponible"}
+            </p>
           </div>
 
+          {/* Incluido */}
           <div className="border-t pt-4">
             <h3 className="font-medium mb-2 flex items-center">
               <Package className="h-4 w-4 mr-2" />
               Incluido
             </h3>
-            <p className="text-sm">{tourData?.included}</p>
+            <p className="text-sm">
+              {tourData?.included || "Información de inclusiones no disponible"}
+            </p>
           </div>
 
+          {/* Itinerario */}
           <div className="border-t pt-4">
             <h3 className="font-medium mb-2 flex items-center">
               <List className="h-4 w-4 mr-2" />
               Itinerario
             </h3>
-            <ul className="space-y-2">
-              {tourData?.itinerary.map((item: string, index: number) => (
-                <li key={index} className="text-sm flex items-start">
-                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 text-xs mr-2 mt-0.5">
-                    {index + 1}
-                  </span>
-                  {item}
-                </li>
-              ))}
-            </ul>
+            {hasItinerary ? (
+              <ul className="space-y-2">
+                {tourData.itinerary.map((item: string, index: number) => (
+                  <li key={index} className="text-sm flex items-start">
+                    <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 text-xs mr-2 mt-0.5">
+                      {index + 1}
+                    </span>
+                    {item || `Actividad ${index + 1}`}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="flex items-center text-sm text-gray-500">
+                <AlertCircle className="h-4 w-4 mr-2" />
+                No hay itinerario disponible
+              </div>
+            )}
           </div>
 
+          {/* Comodidades */}
           <div className="border-t pt-4">
             <h3 className="font-medium mb-2 flex items-center">
               <CheckCircle className="h-4 w-4 mr-2" />
               Comodidades
             </h3>
-            <div className="flex flex-wrap gap-2">
-              {tourData?.amenities.map((amenityId: string) => {
-                const amenity = amenitiesOptions.find(
-                  (a) => a.id === amenityId
-                );
-                return amenity ? (
-                  <span
-                    key={amenity.id}
-                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
-                  >
-                    {amenity.label}
-                  </span>
-                ) : null;
-              })}
-            </div>
+            {hasAmenities ? (
+              <div className="flex flex-wrap gap-2">
+                {tourData.amenities.map((amenityId: string) => {
+                  const amenity = amenitiesOptions.find(
+                    (a) => a.id === amenityId
+                  );
+                  return amenity ? (
+                    <span
+                      key={amenity.id}
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
+                    >
+                      {amenity.label}
+                    </span>
+                  ) : (
+                    <span
+                      key={amenityId}
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800"
+                    >
+                      Comodidad no encontrada
+                    </span>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="flex items-center text-sm text-gray-500">
+                <AlertCircle className="h-4 w-4 mr-2" />
+                No hay comodidades especificadas
+              </div>
+            )}
           </div>
         </CardContent>
         <CardFooter className="flex justify-end">

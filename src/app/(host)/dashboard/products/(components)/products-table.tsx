@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { DownloadIcon, Link, PlusCircle, SearchIcon } from "lucide-react";
+import { DownloadIcon, PlusCircle, SearchIcon } from "lucide-react";
 import { toursColumns } from "../(columns)/columns";
 import {
   Select,
@@ -35,6 +35,7 @@ import {
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DataTableSkeleton } from "@/components/skeletons/datatable-skeleton";
+import Link from "next/link";
 
 export function ProductsDataTable() {
   const { user } = useUser();
@@ -312,15 +313,13 @@ export function ProductsDataTable() {
             <div className="flex items-center gap-2 ml-auto">
               <Button
                 onClick={handleExport}
-                variant="outline"
-                size="sm"
                 className="flex items-center gap-2"
               >
                 <DownloadIcon className="h-4 w-4" />
                 <span>Exportar</span>
               </Button>
 
-              <Button asChild size="sm" className="flex items-center gap-2">
+              <Button asChild className="flex items-center gap-2">
                 <Link href="/dashboard/products/add">
                   <PlusCircle className="h-4 w-4" />
                   <span>Nuevo Tour</span>
