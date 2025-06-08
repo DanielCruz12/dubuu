@@ -28,12 +28,13 @@ export const productsApiSlice = createApi({
         query: (params) => {
           const searchParams = new URLSearchParams();
 
-          // Agregar is_approved=true por defecto si no se proporciona
           const isApprovedParam =
             params.is_approved !== undefined ? params.is_approved : true;
           searchParams.append("is_approved", String(isApprovedParam));
 
           Object.entries(params).forEach(([key, value]) => {
+            // ¡IMPORTANTE! Saltamos is_approved porque ya lo agregamos arriba
+            if (key === "is_approved") return;
             if (value !== undefined && value !== null && value !== "") {
               // Para arrays, convertir a string separado por comas
               if (Array.isArray(value)) {
