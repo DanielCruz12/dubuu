@@ -19,6 +19,10 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "dubuu.com",
+      },
+      {
+        protocol: "https",
         hostname: "images.unsplash.com",
       },
 
