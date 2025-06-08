@@ -47,7 +47,6 @@ export function ProductsDataTable() {
   const [availableTours, setAvailableTours] = useState<ITourProduct[]>([]);
   const [openTourSelect, setOpenTourSelect] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredProducts, setFilteredProducts] = useState<ITourProduct[]>([]);
 
   const { data, isLoading } = useGetProductsByUserIdQuery(user?.id as string, {
     skip: !user?.id,
@@ -61,6 +60,18 @@ export function ProductsDataTable() {
     );
     return selectedTour?.tour.tour_dates || [];
   }, [selectedTourId, availableTours]);
+
+  // Filtrar productos basado en el término de búsqueda
+  const filteredProducts = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return availableTours;
+    }
+
+    const lowercaseSearch = searchTerm.toLowerCase();
+    return availableTours.filter((tour) =>
+      tour.name.toLowerCase().includes(lowercaseSearch)
+    );
+  }, [availableTours, searchTerm]);
 
   // Manejar el cambio de producto seleccionado
   const handleTourChange = useCallback(
@@ -80,12 +91,6 @@ export function ProductsDataTable() {
     [availableTours]
   );
 
-  /*   const handleUpdateTour = useCallback((updatedTour: Partial<ITourProduct>) => {
-    console.log("Actualizando tour en la tabla:", updatedTour)
-    // Aquí podrías llamar a una mutación para actualizar el tour en el backend
-    // Y luego actualizar el estado local o refrescar los datos
-  }, []) */
-
   // Procesar los datos cuando se reciben
   useEffect(() => {
     if (!data) return;
@@ -102,7 +107,6 @@ export function ProductsDataTable() {
     });
 
     setAvailableTours(tourProducts);
-    setFilteredProducts(tourProducts);
 
     // Seleccionar automáticamente el primer tour y su primera fecha
     if (tourProducts.length > 0) {
@@ -145,27 +149,6 @@ export function ProductsDataTable() {
 
     setFilteredTours(toursWithSelectedDate);
   }, [selectedTourId, selectedDateId, availableTours]);
-
-  const handleCommandSearch = useCallback(
-    (value: string) => {
-      setSearchTerm(value);
-
-      if (!availableTours) return;
-
-      if (!value.trim()) {
-        setFilteredProducts(availableTours);
-        return;
-      }
-
-      const lowercaseSearch = value.toLowerCase();
-      const filtered = availableTours.filter((tour) =>
-        tour.name.toLowerCase().includes(lowercaseSearch)
-      );
-
-      setFilteredProducts(filtered);
-    },
-    [availableTours]
-  );
 
   // Exportar a Excel
   const handleExport = () => {
@@ -237,38 +220,36 @@ export function ProductsDataTable() {
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-full p-0" align="start">
-                  <Command>
+                  <Command shouldFilter={false}>
                     <CommandInput
                       value={searchTerm}
-                      onValueChange={handleCommandSearch}
+                      onValueChange={setSearchTerm}
                       placeholder="Buscar producto..."
                     />
                     <CommandList>
                       <CommandEmpty>No se encontraron productos.</CommandEmpty>
                       <CommandGroup className="max-h-64 overflow-y-auto">
-                        {(searchTerm ? filteredProducts : availableTours).map(
-                          (tour) => (
-                            <CommandItem
-                              key={tour.id}
-                              value={tour.id}
-                              onSelect={() => {
-                                handleTourChange(tour.id);
-                                setOpenTourSelect(false);
-                                setSearchTerm("");
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  selectedTourId === tour.id
-                                    ? "opacity-100"
-                                    : "opacity-0"
-                                )}
-                              />
-                              {tour.name}
-                            </CommandItem>
-                          )
-                        )}
+                        {filteredProducts.map((tour) => (
+                          <CommandItem
+                            key={tour.id}
+                            value={tour.name}
+                            onSelect={() => {
+                              handleTourChange(tour.id);
+                              setOpenTourSelect(false);
+                              setSearchTerm("");
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                selectedTourId === tour.id
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                            {tour.name}
+                          </CommandItem>
+                        ))}
                       </CommandGroup>
                     </CommandList>
                   </Command>
@@ -313,6 +294,7 @@ export function ProductsDataTable() {
             <div className="flex items-center gap-2 ml-auto">
               <Button
                 onClick={handleExport}
+                variant="outline"
                 className="flex items-center gap-2"
               >
                 <DownloadIcon className="h-4 w-4" />

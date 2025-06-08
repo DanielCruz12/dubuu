@@ -19,7 +19,8 @@ export default function Home() {
   // Consulta inicial sin cursor
   const { data: initialProductsData, isLoading: isLoadingInitial } =
     useGetProductsQuery(
-      { limit: 4 },
+      { limit: 4, is_approved: true },
+
       {
         // Evitar refetch automático
         refetchOnMountOrArgChange: false,
@@ -37,6 +38,7 @@ export default function Home() {
     {
       limit: 8,
       cursor: nextCursor || undefined,
+      is_approved: true,
     },
     {
       // Solo ejecutar cuando shouldFetchMore es true y nextCursor existe

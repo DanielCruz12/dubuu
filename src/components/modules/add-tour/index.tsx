@@ -33,14 +33,15 @@ import type {
 
 // Importar la mutación de crear producto
 import { useCreateProductMutation } from "@/redux/slices/product/product-slice";
-import { TourPreview } from "./tour-previuw";
 import { SignInButton, useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 export function TourForm() {
   const [step, setStep] = useState(1);
   const totalSteps = 5;
   const { user, isSignedIn } = useUser();
   const userId = user?.id || "";
+  const router = useRouter();
 
   // Hook de mutación para crear producto
   const [createProduct, { isLoading: isCreating }] = useCreateProductMutation();
@@ -60,8 +61,6 @@ export function TourForm() {
     videoFiles: [],
     fileAttachments: [],
   });
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [createdTourData, setCreatedTourData] = useState<TourData | null>(null);
 
   // Función para crear FormData
   const createFormData = (formData: TourData): FormData => {
@@ -179,16 +178,12 @@ export function TourForm() {
       // Crear FormData para enviar al API
       const apiFormData = createFormData(formData);
 
-      // Enviar al API usando RTK Query
-      const result = await createProduct(apiFormData).unwrap();
-
-      // Guardar datos para la vista previa
-      setCreatedTourData(formData);
-      setIsSuccess(true);
+      await createProduct(apiFormData).unwrap();
 
       toast.success("¡Tour creado con éxito!", {
         description: "El tour ha sido registrado correctamente en el sistema.",
       });
+      router.push("/dashboard/products");
     } catch (error) {
       console.error("Error al crear el tour:", error);
 
@@ -215,29 +210,6 @@ export function TourForm() {
     }
   };
 
-  const handleEditTour = () => {
-    setIsSuccess(false);
-    setStep(1);
-  };
-
-  const handleCreateAnother = () => {
-    // Resetear todos los estados
-    setBasicInfo(null);
-    setLocation(null);
-    setDetails(null);
-    setCategorization(null);
-    setMultimedia(null);
-    setFiles({
-      bannerFile: null,
-      imageFiles: [],
-      videoFiles: [],
-      fileAttachments: [],
-    });
-    setIsSuccess(false);
-    setCreatedTourData(null);
-    setStep(1);
-  };
-
   if (!isSignedIn) {
     return (
       <div className="text-center">
@@ -253,37 +225,6 @@ export function TourForm() {
           <Button>Iniciar sesión</Button>
         </SignInButton>
       </div>
-    );
-  }
-
-  // Mostrar vista previa si el tour fue creado exitosamente
-  if (isSuccess && createdTourData) {
-    return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.3 }}
-      >
-        <div className="space-y-6">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-green-600 mb-2">
-              ¡Tour creado exitosamente!
-            </h1>
-            <p className="text-gray-600">
-              Tu tour ha sido registrado y está listo para ser publicado.
-            </p>
-          </div>
-
-          <TourPreview onEdit={handleEditTour} tourData={createdTourData} />
-
-          <div className="flex justify-center gap-4">
-            <Button variant="outline" onClick={handleEditTour}>
-              Editar tour
-            </Button>
-            <Button onClick={handleCreateAnother}>Crear otro tour</Button>
-          </div>
-        </div>
-      </motion.div>
     );
   }
 

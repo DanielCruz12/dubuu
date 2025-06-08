@@ -21,10 +21,17 @@ export const productsApiSlice = createApi({
             limit: number;
           };
         },
-        Record<string, string | number | boolean | undefined>
+        Record<string, string | number | boolean | undefined> & {
+          is_approved?: boolean;
+        }
       >({
         query: (params) => {
           const searchParams = new URLSearchParams();
+
+          // Agregar is_approved=true por defecto si no se proporciona
+          const isApprovedParam =
+            params.is_approved !== undefined ? params.is_approved : true;
+          searchParams.append("is_approved", String(isApprovedParam));
 
           Object.entries(params).forEach(([key, value]) => {
             if (value !== undefined && value !== null && value !== "") {
@@ -39,7 +46,6 @@ export const productsApiSlice = createApi({
             }
           });
 
-          console.log("Query params:", searchParams.toString());
           return `/api/v1/products?${searchParams.toString()}`;
         },
         providesTags: (result) =>
@@ -69,6 +75,7 @@ export const productsApiSlice = createApi({
           country?: string;
           min_price?: number;
           max_price?: number;
+          is_approved?: boolean;
           categories?: string[];
           durations?: string[];
           limit?: number;
@@ -115,7 +122,10 @@ export const productsApiSlice = createApi({
             searchParams.append("cursor", params.cursor);
           }
 
-          console.log("Search query params:", searchParams.toString());
+          if (params.is_approved !== undefined) {
+            searchParams.append("is_approved", String(params.is_approved));
+          }
+
           return `/api/v1/products?${searchParams.toString()}`;
         },
         providesTags: ["Products"],
