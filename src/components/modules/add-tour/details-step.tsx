@@ -30,11 +30,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { CalendarIcon, X, Plus } from "lucide-react";
+import { CalendarIcon, X, Plus, Clock } from "lucide-react";
 
 import { type DetailsFormValues, detailsSchema } from "./types";
 import { scrollToFirstError } from "./utils";
 import { TourDifficultyBadge } from "@/components/difficulty-badge";
+
+interface DateWithTime {
+  date: Date;
+  time: string;
+}
 
 interface DetailsStepProps {
   onSubmit: (data: DetailsFormValues) => void;
@@ -46,8 +51,9 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
     defaultValues?.itinerary || []
   );
   const [newItineraryItem, setNewItineraryItem] = useState("");
-  const [selectedDates, setSelectedDates] = useState<Date[]>(
-    defaultValues?.available_dates || []
+  const [datesWithTimes, setDatesWithTimes] = useState<DateWithTime[]>(
+    defaultValues?.available_dates?.map((date) => ({ date, time: "09:00" })) ||
+      []
   );
   const [expenseItems, setExpenseItems] = useState<string[]>(
     defaultValues?.expenses || []
@@ -115,6 +121,58 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
     setPackingItems(updatedItems);
     form.setValue("packing_list", updatedItems);
   };
+
+  const handleDateSelect = (dates: Date[] | undefined) => {
+    if (dates) {
+      // Crear nuevas fechas con horas, manteniendo las horas existentes si la fecha ya existía
+      const newDatesWithTimes = dates.map((date) => {
+        const existing = datesWithTimes.find(
+          (dwt) => dwt.date.toDateString() === date.toDateString()
+        );
+        return existing || { date, time: "09:00" };
+      });
+
+      setDatesWithTimes(newDatesWithTimes);
+      form.setValue("available_dates", dates);
+    }
+  };
+
+  const updateTime = (index: number, time: string) => {
+    const updated = [...datesWithTimes];
+    updated[index].time = time;
+    setDatesWithTimes(updated);
+  };
+
+  const removeDateWithTime = (index: number) => {
+    const updated = datesWithTimes.filter((_, i) => i !== index);
+    setDatesWithTimes(updated);
+    form.setValue(
+      "available_dates",
+      updated.map((dwt) => dwt.date)
+    );
+  };
+
+  interface TimeOption {
+    label: string;
+    value: string;
+  }
+
+  // Generar opciones de hora (cada 30 minutos, 24 horas, formato 12h)
+  const timeOptions: TimeOption[] = [];
+  for (let hour = 0; hour < 24; hour++) {
+    for (let minute = 0; minute < 60; minute += 30) {
+      // Convertir a formato 12 horas
+      const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+      const ampm = hour < 12 ? "AM" : "PM";
+      const timeString = `${hour12}:${minute.toString().padStart(2, "0")} ${ampm}`;
+      const valueString = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+
+      timeOptions.push({
+        label: timeString,
+        value: valueString,
+      });
+    }
+  }
 
   const handleSubmit = form.handleSubmit(
     (data) => {
@@ -390,7 +448,7 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
             name="available_dates"
             render={({}) => (
               <FormItem>
-                <FormLabel>Fechas disponibles</FormLabel>
+                <FormLabel>Fechas y horarios disponibles</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -398,15 +456,15 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
                         variant="outline"
                         className={cn(
                           "w-full justify-start text-left font-normal border-gray-200 dark:border-gray-800",
-                          !selectedDates.length && "text-muted-foreground"
+                          !datesWithTimes.length && "text-muted-foreground"
                         )}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {selectedDates.length > 0 ? (
+                        {datesWithTimes.length > 0 ? (
                           <span>
-                            {selectedDates.length} fecha
-                            {selectedDates.length > 1 ? "s" : ""} seleccionada
-                            {selectedDates.length > 1 ? "s" : ""}
+                            {datesWithTimes.length} fecha
+                            {datesWithTimes.length > 1 ? "s" : ""} seleccionada
+                            {datesWithTimes.length > 1 ? "s" : ""}
                           </span>
                         ) : (
                           <span>Seleccionar fechas</span>
@@ -417,41 +475,58 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
                       mode="multiple"
-                      selected={selectedDates}
-                      onSelect={(dates) => {
-                        if (dates) {
-                          setSelectedDates(dates);
-                          form.setValue("available_dates", dates);
-                        }
-                      }}
+                      selected={datesWithTimes.map((dwt) => dwt.date)}
+                      onSelect={handleDateSelect}
                       initialFocus
                       disabled={(date) => date < new Date()}
                     />
                   </PopoverContent>
                 </Popover>
-                {selectedDates.length > 0 && (
-                  <div className="mt-2 flex flex-wrap gap-1">
-                    {selectedDates.map((date, i) => (
+
+                {datesWithTimes.length > 0 && (
+                  <div className="mt-3 space-y-2">
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Horarios para cada fecha:
+                    </div>
+                    {datesWithTimes.map((dateTime, i) => (
                       <div
                         key={i}
-                        className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-md px-2 py-1 text-xs"
+                        className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-md"
                       >
-                        <span>{format(date, "dd/MM/yyyy")}</span>
+                        <div className="flex items-center gap-2 flex-1">
+                          <CalendarIcon className="h-4 w-4 text-gray-500" />
+                          <span className="text-sm font-medium">
+                            {format(dateTime.date, "dd/MM/yyyy")}
+                          </span>
+                          <Clock className="h-4 w-4 text-gray-500 ml-2" />
+                          <Select
+                            value={dateTime.time}
+                            onValueChange={(time) => updateTime(i, time)}
+                          >
+                            <SelectTrigger className="w-24 h-8">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {timeOptions.map((option) => (
+                                <SelectItem
+                                  key={option.value}
+                                  value={option.value}
+                                >
+                                  {option.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
                         <Button
                           type="button"
                           variant="ghost"
                           size="sm"
-                          className="h-4 w-4 p-0 ml-1"
-                          onClick={() => {
-                            const newDates = selectedDates.filter(
-                              (d) => d.getTime() !== date.getTime()
-                            );
-                            setSelectedDates(newDates);
-                            form.setValue("available_dates", newDates);
-                          }}
+                          onClick={() => removeDateWithTime(i)}
+                          className="h-8 w-8 p-0"
                         >
                           <span className="sr-only">Eliminar</span>
-                          <X className="h-3 w-3" />
+                          <X className="h-4 w-4" />
                         </Button>
                       </div>
                     ))}

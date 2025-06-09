@@ -8,10 +8,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Clipboard, MapPin, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import dynamic from "next/dynamic";
-import { toast } from "sonner";
 
 // Importamos el mapa dinámicamente para evitar problemas de SSR
 const LeafletMapComponent = dynamic(() => import("@/components/leaflet-map"), {
@@ -74,9 +72,6 @@ export default function LocationPicker({
 
       // Guardar automáticamente la ubicación cuando se selecciona
       onLocationSelect(newLocation);
-      toast.success("Ubicación seleccionada", {
-        description: "La ubicación ha sido guardada automáticamente",
-      });
     } catch (error) {
       console.error("Error al obtener la dirección:", error);
       const newLocation = {
@@ -88,120 +83,29 @@ export default function LocationPicker({
 
       // Guardar automáticamente incluso si hay error
       onLocationSelect(newLocation);
-      toast.success("Ubicación seleccionada", {
-        description: "La ubicación ha sido guardada automáticamente",
-      });
     }
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success("Copiado al portapapeles", {
-      description: "La información ha sido copiada",
-    });
-  };
-
   return (
-    <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-      <div className="lg:col-span-2">
-        <Card className="h-full">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Search className="h-5 w-5" />
-              Selecciona una ubicación
-            </CardTitle>
-            <CardDescription>
-              Busca una dirección específica o haz clic en el mapa para
-              seleccionar una ubicación
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="p-0 h-[500px]">
-            <LeafletMapComponent
-              onLocationSelect={handleLocationSelect}
-              selectedLocation={selectedLocation}
-            />
-          </CardContent>
-        </Card>
-      </div>
-
-      <div>
-        <Card>
-          <CardHeader>
-            <CardTitle>Información de ubicación</CardTitle>
-            <CardDescription>
-              Detalles de la ubicación seleccionada
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {selectedLocation ? (
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium flex items-center gap-2">
-                    <MapPin className="h-4 w-4" /> Dirección
-                  </h3>
-                  <div className="p-3 bg-muted rounded-md relative group">
-                    <p className="text-sm break-words pr-8">
-                      {selectedLocation.address}
-                    </p>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-2 top-2 opacity-50 group-hover:opacity-100"
-                      onClick={() => copyToClipboard(selectedLocation.address)}
-                    >
-                      <Clipboard className="h-4 w-4" />
-                      <span className="sr-only">Copiar dirección</span>
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <h3 className="text-sm font-medium">Coordenadas</h3>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="p-3 bg-muted rounded-md">
-                      <p className="text-xs text-muted-foreground">Latitud</p>
-                      <p className="text-sm font-medium">
-                        {selectedLocation.lat.toFixed(6)}
-                      </p>
-                    </div>
-                    <div className="p-3 bg-muted rounded-md">
-                      <p className="text-xs text-muted-foreground">Longitud</p>
-                      <p className="text-sm font-medium">
-                        {selectedLocation.lng.toFixed(6)}
-                      </p>
-                    </div>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full mt-2"
-                    onClick={() =>
-                      copyToClipboard(
-                        `${selectedLocation.lat.toFixed(6)}, ${selectedLocation.lng.toFixed(6)}`
-                      )
-                    }
-                  >
-                    <Clipboard className="h-4 w-4 mr-2" />
-                    Copiar coordenadas
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-10 text-center">
-                <MapPin className="h-10 w-10 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium">
-                  Ninguna ubicación seleccionada
-                </h3>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Busca una dirección o haz clic en el mapa para seleccionar una
-                  ubicación ó puedes pegar las coordenadas de google maps para
-                  mayor exactitud
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+    <div className="w-full">
+      <Card className="h-full">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Search className="h-5 w-5" />
+            Selecciona una ubicación
+          </CardTitle>
+          <CardDescription>
+            Busca una dirección específica o haz clic en el mapa para
+            seleccionar una ubicación
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-0 h-[500px]">
+          <LeafletMapComponent
+            onLocationSelect={handleLocationSelect}
+            selectedLocation={selectedLocation}
+          />
+        </CardContent>
+      </Card>
     </div>
   );
 }

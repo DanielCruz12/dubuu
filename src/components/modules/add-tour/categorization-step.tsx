@@ -281,6 +281,27 @@ export function CategorizationStep({
     <Form {...form}>
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 gap-4">
+          {/* Audiencia Objetivo */}
+          <FormField
+            control={form.control}
+            name="target_product_audience_id"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Audiencia Objetivo</FormLabel>
+                <FormControl>
+                  <SingleCombobox
+                    options={audienceOptions}
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Selecciona una audiencia objetivo"
+                    emptyMessage="No se encontraron audiencias objetivo"
+                    className="w-full"
+                  />
+                </FormControl>
+                <FormMessage className="text-xs text-red-500" />
+              </FormItem>
+            )}
+          />
           {/* Tipo de Producto */}
           <FormField
             control={form.control}
@@ -350,28 +371,6 @@ export function CategorizationStep({
                     emptyMessage="No se encontraron comodidades para esta categoría"
                     className="w-full"
                     disabled={!selectedCategoryId}
-                  />
-                </FormControl>
-                <FormMessage className="text-xs text-red-500" />
-              </FormItem>
-            )}
-          />
-
-          {/* Audiencia Objetivo */}
-          <FormField
-            control={form.control}
-            name="target_product_audience_id"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Audiencia Objetivo</FormLabel>
-                <FormControl>
-                  <SingleCombobox
-                    options={audienceOptions}
-                    value={field.value}
-                    onChange={field.onChange}
-                    placeholder="Selecciona una audiencia objetivo"
-                    emptyMessage="No se encontraron audiencias objetivo"
-                    className="w-full"
                   />
                 </FormControl>
                 <FormMessage className="text-xs text-red-500" />

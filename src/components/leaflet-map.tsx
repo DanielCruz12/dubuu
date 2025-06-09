@@ -5,7 +5,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MapPin, Layers } from "lucide-react";
+import { MapPin, Layers, Loader2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -13,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { toast } from "sonner";
 
 interface LeafletMapComponentProps {
   onLocationSelect: (lat: number, lng: number) => void;
@@ -27,22 +26,19 @@ interface SearchSuggestion {
   lon: string;
   type: string;
   importance: number;
-}
-
-interface PlacePhoto {
-  id: string;
-  urls: {
-    small: string;
-    regular: string;
-  };
-  alt_description: string;
-  user: {
-    name: string;
-  };
+  class?: string;
+  extratags?: Record<string, string>;
 }
 
 // Definir las diferentes capas de mapa disponibles
 const mapLayers = {
+  grayscale: {
+    name: "Blanco y Negro",
+    url: "https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png",
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    filter: "grayscale(100%) contrast(120%)",
+  },
   light: {
     name: "Claro",
     url: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
@@ -80,6 +76,79 @@ const mapLayers = {
   },
 };
 
+// Función para generar imágenes placeholder inteligentes basadas en el tipo de lugar
+const generatePlaceImages = (
+  placeName: string,
+  placeType: string,
+  lat: number,
+  lng: number
+) => {
+  const cleanName = placeName.toLowerCase();
+  let query = "place";
+
+  // Determinar categoría basada en el nombre y tipo
+  if (
+    cleanName.includes("gasolinera") ||
+    cleanName.includes("puma") ||
+    cleanName.includes("shell") ||
+    cleanName.includes("texaco")
+  ) {
+    query = "gas station";
+  } else if (cleanName.includes("hotel") || cleanName.includes("hostal")) {
+    query = "hotel building";
+  } else if (
+    cleanName.includes("restaurante") ||
+    cleanName.includes("comida") ||
+    cleanName.includes("pizza")
+  ) {
+    query = "restaurant food";
+  } else if (cleanName.includes("banco") || cleanName.includes("atm")) {
+    query = "bank building";
+  } else if (cleanName.includes("hospital") || cleanName.includes("clinica")) {
+    query = "hospital medical";
+  } else if (
+    cleanName.includes("escuela") ||
+    cleanName.includes("universidad") ||
+    cleanName.includes("colegio")
+  ) {
+    query = "school education";
+  } else if (cleanName.includes("iglesia") || cleanName.includes("catedral")) {
+    query = "church building";
+  } else if (cleanName.includes("parque") || cleanName.includes("plaza")) {
+    query = "park nature";
+  } else if (
+    cleanName.includes("centro") ||
+    cleanName.includes("mall") ||
+    cleanName.includes("comercial")
+  ) {
+    query = "shopping center";
+  } else if (
+    cleanName.includes("volcán") ||
+    cleanName.includes("cerro") ||
+    cleanName.includes("montaña")
+  ) {
+    query = "volcano mountain";
+  } else if (cleanName.includes("playa") || cleanName.includes("costa")) {
+    query = "beach coast";
+  }
+
+  // Generar múltiples imágenes placeholder con diferentes seeds
+  return [
+    {
+      url: `/placeholder.svg?height=120&width=200&query=${encodeURIComponent(query + " El Salvador")}&seed=${Math.abs(lat * lng * 1000) % 1000}`,
+      alt: `Vista de ${placeName}`,
+    },
+    {
+      url: `/placeholder.svg?height=120&width=200&query=${encodeURIComponent(query + " building")}&seed=${Math.abs(lat * lng * 2000) % 1000}`,
+      alt: `Edificio de ${placeName}`,
+    },
+    {
+      url: `/placeholder.svg?height=120&width=200&query=${encodeURIComponent(query + " exterior")}&seed=${Math.abs(lat * lng * 3000) % 1000}`,
+      alt: `Exterior de ${placeName}`,
+    },
+  ];
+};
+
 export default function LeafletMapComponent({
   onLocationSelect,
   selectedLocation,
@@ -94,10 +163,10 @@ export default function LeafletMapComponent({
     useState<keyof typeof mapLayers>("satellite");
   const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [placePhotos, setPlacePhotos] = useState<PlacePhoto[]>([]);
   const [selectedPlace, setSelectedPlace] = useState<SearchSuggestion | null>(
     null
   );
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     // Inicializar el mapa si no existe
@@ -197,27 +266,51 @@ export default function LeafletMapComponent({
     };
   }, [selectedLocation, onLocationSelect, selectedLayer]);
 
-  // Crear popup con información del lugar y fotos
+  // Crear popup con información del lugar y fotos placeholder
   const createLocationPopup = (lat: number, lng: number) => {
     const popupContent = document.createElement("div");
     popupContent.className = "location-popup";
 
     let photosHtml = "";
-    if (placePhotos.length > 0) {
+    let placeInfoHtml = "";
+
+    if (selectedPlace) {
+      // Generar imágenes placeholder inteligentes
+      const placeImages = generatePlaceImages(
+        selectedPlace.display_name,
+        selectedPlace.type,
+        lat,
+        lng
+      );
+
       photosHtml = `
         <div class="photos-container mb-3">
           <div class="photos-grid">
-            ${placePhotos
-              .slice(0, 3)
+            ${placeImages
               .map(
-                (photo) => `
-              <img src="${photo.urls.small}" alt="${photo.alt_description || "Foto del lugar"}" 
-                   class="photo-item" loading="lazy" />
+                (image) => `
+              <img src="${image.url}" alt="${image.alt}" 
+                   class="photo-item" loading="lazy" 
+                   onerror="this.style.display='none'"/>
             `
               )
               .join("")}
           </div>
-          ${placePhotos.length > 3 ? `<div class="more-photos">+${placePhotos.length - 3} más</div>` : ""}
+        </div>
+      `;
+
+      // Determinar el tipo de lugar para mostrar información relevante
+      const placeName = selectedPlace.display_name.split(",")[0];
+      const placeType = getPlaceTypeInfo(selectedPlace);
+
+      placeInfoHtml = `
+        <h3 class="place-title">${placeName}</h3>
+        <p class="place-address">${selectedPlace.display_name}</p>
+        <div class="place-info-grid">
+          <div class="place-type">
+            ${getPlaceIcon(selectedPlace)}
+            <span>${placeType}</span>
+          </div>
         </div>
       `;
     }
@@ -226,18 +319,7 @@ export default function LeafletMapComponent({
       <div class="popup-content">
         ${photosHtml}
         <div class="location-info">
-          ${
-            selectedPlace
-              ? `
-            <h3 class="place-title">${selectedPlace.display_name.split(",")[0]}</h3>
-            <p class="place-address">${selectedPlace.display_name}</p>
-            <div class="place-rating">
-              <Star class="star-icon" />
-              <span>Lugar verificado</span>
-            </div>
-          `
-              : ""
-          }
+          ${placeInfoHtml}
           <div class="coordinates">
             <strong>Coordenadas:</strong><br/>
             Lat: ${lat.toFixed(6)}<br/>
@@ -250,13 +332,78 @@ export default function LeafletMapComponent({
     return popupContent;
   };
 
+  // Obtener información del tipo de lugar
+  const getPlaceTypeInfo = (place: SearchSuggestion) => {
+    const name = place.display_name.toLowerCase();
+    const type = place.type || "";
+    const placeClass = place.class || "";
+
+    if (
+      name.includes("gasolinera") ||
+      (placeClass === "amenity" && type === "fuel")
+    )
+      return "Gasolinera";
+    if (name.includes("hotel") || placeClass === "tourism") return "Hotel";
+    if (
+      name.includes("restaurante") ||
+      (placeClass === "amenity" && type === "restaurant")
+    )
+      return "Restaurante";
+    if (name.includes("banco") || (placeClass === "amenity" && type === "bank"))
+      return "Banco";
+    if (
+      name.includes("hospital") ||
+      (placeClass === "amenity" && type === "hospital")
+    )
+      return "Hospital";
+    if (
+      name.includes("escuela") ||
+      (placeClass === "amenity" && type === "school")
+    )
+      return "Escuela";
+    if (
+      name.includes("iglesia") ||
+      (placeClass === "amenity" && type === "place_of_worship")
+    )
+      return "Iglesia";
+    if (name.includes("parque") || placeClass === "leisure") return "Parque";
+    if (name.includes("centro") || name.includes("mall"))
+      return "Centro Comercial";
+    if (placeClass === "place") return "Lugar";
+    return "Ubicación";
+  };
+
+  // Obtener icono del tipo de lugar
+  const getPlaceIcon = (place: SearchSuggestion) => {
+    const name = place.display_name.toLowerCase();
+    const type = place.type || "";
+    const placeClass = place.class || "";
+
+    if (
+      name.includes("gasolinera") ||
+      (placeClass === "amenity" && type === "fuel")
+    ) {
+      return `<svg class="place-icon" fill="currentColor" viewBox="0 0 20 20"><path d="M3 4a1 1 0 011-1h8a1 1 0 011 1v4a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 7a1 1 0 012 0v6.293l1.707 1.707a1 1 0 01-1.414 1.414L15 15.121V17a1 1 0 11-2 0V7z"/></svg>`;
+    }
+    if (name.includes("hotel")) {
+      return `<svg class="place-icon" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>`;
+    }
+    if (name.includes("restaurante")) {
+      return `<svg class="place-icon" fill="currentColor" viewBox="0 0 20 20"><path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 10-2 0v8a1 1 0 102 0V9z"/></svg>`;
+    }
+    return `<svg class="place-icon" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd"/></svg>`;
+  };
+
   // Buscar sugerencias mientras el usuario escribe
   const searchSuggestions = async (query: string) => {
     if (query.length < 3) {
       setSuggestions([]);
       setShowSuggestions(false);
+      setIsSearching(false);
       return;
     }
+
+    setIsSearching(true);
 
     try {
       // Buscar en múltiples fuentes para mejor cobertura
@@ -301,48 +448,8 @@ export default function LeafletMapComponent({
       setShowSuggestions(uniqueResults.length > 0);
     } catch (error) {
       console.error("Error al buscar sugerencias:", error);
-    }
-  };
-
-  // Buscar fotos del lugar
-  const searchPlacePhotos = async (placeName: string) => {
-    try {
-      // Limpiar el nombre del lugar para la búsqueda
-      const cleanPlaceName = placeName.split(",")[0].trim();
-      const searchTerms = [
-        cleanPlaceName,
-        `${cleanPlaceName} El Salvador`,
-        cleanPlaceName.includes("gasolinera")
-          ? "gas station El Salvador"
-          : cleanPlaceName,
-      ];
-
-      for (const term of searchTerms) {
-        try {
-          const response = await fetch(
-            `https://api.unsplash.com/search/photos?query=${encodeURIComponent(term)}&per_page=6&orientation=landscape`,
-            {
-              headers: {
-                Authorization:
-                  "Client-ID 8XJLFd7_7QgVm5PZN8YzqHQqGVqKB8KqGVqKB8KqGVq", // Clave demo de Unsplash
-              },
-            }
-          );
-
-          if (response.ok) {
-            const data = await response.json();
-            if (data.results && data.results.length > 0) {
-              setPlacePhotos(data.results);
-              break;
-            }
-          }
-        } catch (error) {
-          console.log(`Error buscando fotos para ${term}:`, error);
-        }
-      }
-    } catch (error) {
-      console.error("Error al buscar fotos:", error);
     } finally {
+      setIsSearching(false);
     }
   };
 
@@ -370,9 +477,6 @@ export default function LeafletMapComponent({
     setShowSuggestions(false);
     setSelectedPlace(suggestion);
 
-    // Buscar fotos del lugar
-    await searchPlacePhotos(suggestion.display_name);
-
     // Centrar el mapa en el resultado
     if (mapRef.current) {
       mapRef.current.setView([lat, lng], 16);
@@ -380,16 +484,11 @@ export default function LeafletMapComponent({
 
     // Seleccionar la ubicación
     onLocationSelect(lat, lng);
-
-    toast.success("Ubicación encontrada", {
-      description: suggestion.display_name.split(",").slice(0, 2).join(", "),
-    });
   };
 
   // Función para obtener ubicación actual
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
-      toast.error("La geolocalización no está disponible en tu navegador");
       return;
     }
 
@@ -404,14 +503,9 @@ export default function LeafletMapComponent({
 
         // Seleccionar la ubicación actual
         onLocationSelect(lat, lng);
-
-        toast.success("Ubicación actual obtenida");
       },
       (error) => {
         console.error("Error al obtener ubicación:", error);
-        toast.error("No se pudo obtener tu ubicación actual", {
-          description: "Verifica que hayas dado permisos de ubicación",
-        });
       }
     );
   };
@@ -424,7 +518,8 @@ export default function LeafletMapComponent({
         border-radius: 12px;
         padding: 0;
         overflow: hidden;
-        min-width: 280px;
+        min-width: 300px;
+        max-width: 350px;
       }
       
       .leaflet-popup-content {
@@ -547,21 +642,11 @@ export default function LeafletMapComponent({
         width: 100%;
         height: 100%;
         object-fit: cover;
-      }
-      
-      .more-photos {
-        position: absolute;
-        bottom: 4px;
-        right: 4px;
-        background: rgba(0,0,0,0.7);
-        color: white;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-size: 10px;
+        background: #f3f4f6;
       }
       
       .location-info {
-        padding: 12px;
+        padding: 16px;
       }
       
       .place-title {
@@ -578,7 +663,7 @@ export default function LeafletMapComponent({
       .place-address {
         font-size: 12px;
         color: #6b7280;
-        margin-bottom: 8px;
+        margin-bottom: 12px;
         line-height: 1.4;
       }
       
@@ -586,26 +671,40 @@ export default function LeafletMapComponent({
         color: #9ca3af;
       }
       
-      .place-rating {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        font-size: 12px;
-        color: #059669;
-        margin-bottom: 8px;
+      .place-info-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+        margin-bottom: 12px;
       }
       
-      .star-icon {
-        width: 12px;
-        height: 12px;
-        fill: currentColor;
+      .place-type {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        padding: 6px 8px;
+        background: #f9fafb;
+        border-radius: 6px;
+        color: #374151;
+      }
+      
+      .dark .place-type {
+        background: #374151;
+        color: #d1d5db;
+      }
+      
+      .place-icon {
+        width: 14px;
+        height: 14px;
+        flex-shrink: 0;
       }
       
       .coordinates {
         font-size: 11px;
         color: #6b7280;
         border-top: 1px solid #f3f4f6;
-        padding-top: 8px;
+        padding-top: 12px;
       }
       
       .dark .coordinates {
@@ -627,7 +726,8 @@ export default function LeafletMapComponent({
         }
         
         .leaflet-popup-content-wrapper {
-          min-width: 250px;
+          min-width: 280px;
+          max-width: 320px;
         }
       }
     `;
@@ -646,13 +746,22 @@ export default function LeafletMapComponent({
       <div className="map-search-overlay">
         <div className="flex flex-col sm:flex-row gap-2">
           <div className="flex-1 relative">
-            <Input
-              value={searchQuery}
-              onChange={(e) => handleSearchChange(e.target.value)}
-              placeholder="Ej. Gasolinera Puma, El Salvador"
-              className="w-full"
-              onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
-            />
+            <div className="relative">
+              <Input
+                value={searchQuery}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                placeholder="Ej. Gasolinera Puma Los Héroes, El Salvador"
+                className="w-full pr-10"
+                onFocus={() =>
+                  suggestions.length > 0 && setShowSuggestions(true)
+                }
+              />
+              {isSearching && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                </div>
+              )}
+            </div>
 
             {/* Dropdown de sugerencias */}
             {showSuggestions && suggestions.length > 0 && (
