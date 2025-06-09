@@ -41,6 +41,11 @@ interface DateWithTime {
   time: string;
 }
 
+interface TimeOption {
+  label: string;
+  value: string;
+}
+
 interface DetailsStepProps {
   onSubmit: (data: DetailsFormValues) => void;
   defaultValues?: Partial<DetailsFormValues>;
@@ -133,7 +138,16 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
       });
 
       setDatesWithTimes(newDatesWithTimes);
-      form.setValue("available_dates", dates);
+
+      // Actualizar las fechas en el formulario con las horas correctas
+      const datesWithCorrectTimes = newDatesWithTimes.map(({ date, time }) => {
+        const [hours, minutes] = time.split(":").map(Number);
+        const newDate = new Date(date);
+        newDate.setHours(hours, minutes, 0, 0);
+        return newDate;
+      });
+
+      form.setValue("available_dates", datesWithCorrectTimes);
     }
   };
 
@@ -141,21 +155,31 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
     const updated = [...datesWithTimes];
     updated[index].time = time;
     setDatesWithTimes(updated);
+
+    // Actualizar también la fecha en el formulario con la nueva hora
+    const updatedDates = [...form.getValues("available_dates")];
+    const [hours, minutes] = time.split(":").map(Number);
+    const dateToUpdate = new Date(updatedDates[index]);
+    dateToUpdate.setHours(hours, minutes, 0, 0);
+    updatedDates[index] = dateToUpdate;
+
+    form.setValue("available_dates", updatedDates);
   };
 
   const removeDateWithTime = (index: number) => {
     const updated = datesWithTimes.filter((_, i) => i !== index);
     setDatesWithTimes(updated);
-    form.setValue(
-      "available_dates",
-      updated.map((dwt) => dwt.date)
-    );
-  };
 
-  interface TimeOption {
-    label: string;
-    value: string;
-  }
+    // Actualizar las fechas en el formulario
+    const updatedDates = updated.map(({ date, time }) => {
+      const [hours, minutes] = time.split(":").map(Number);
+      const newDate = new Date(date);
+      newDate.setHours(hours, minutes, 0, 0);
+      return newDate;
+    });
+
+    form.setValue("available_dates", updatedDates);
+  };
 
   // Generar opciones de hora (cada 30 minutos, 24 horas, formato 12h)
   const timeOptions: TimeOption[] = [];
@@ -274,7 +298,7 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
           <FormField
             control={form.control}
             name="itinerary"
-            render={({}) => (
+            render={() => (
               <FormItem>
                 <FormLabel>Itinerario</FormLabel>
                 <div className="space-y-2">
@@ -338,7 +362,7 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
           <FormField
             control={form.control}
             name="expenses"
-            render={({}) => (
+            render={() => (
               <FormItem>
                 <FormLabel>Gastos no incluidos (opcional)</FormLabel>
                 <div className="space-y-2">
@@ -392,7 +416,7 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
           <FormField
             control={form.control}
             name="packing_list"
-            render={({}) => (
+            render={() => (
               <FormItem>
                 <FormLabel>Lista de empaque (opcional)</FormLabel>
                 <div className="space-y-2">
@@ -446,7 +470,7 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
           <FormField
             control={form.control}
             name="available_dates"
-            render={({}) => (
+            render={() => (
               <FormItem>
                 <FormLabel>Fechas y horarios disponibles</FormLabel>
                 <Popover>
@@ -503,7 +527,7 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
                             value={dateTime.time}
                             onValueChange={(time) => updateTime(i, time)}
                           >
-                            <SelectTrigger className="w-24 h-8">
+                            <SelectTrigger className="w-32 h-8">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>

@@ -76,79 +76,6 @@ const mapLayers = {
   },
 };
 
-// Función para generar imágenes placeholder inteligentes basadas en el tipo de lugar
-const generatePlaceImages = (
-  placeName: string,
-  placeType: string,
-  lat: number,
-  lng: number
-) => {
-  const cleanName = placeName.toLowerCase();
-  let query = "place";
-
-  // Determinar categoría basada en el nombre y tipo
-  if (
-    cleanName.includes("gasolinera") ||
-    cleanName.includes("puma") ||
-    cleanName.includes("shell") ||
-    cleanName.includes("texaco")
-  ) {
-    query = "gas station";
-  } else if (cleanName.includes("hotel") || cleanName.includes("hostal")) {
-    query = "hotel building";
-  } else if (
-    cleanName.includes("restaurante") ||
-    cleanName.includes("comida") ||
-    cleanName.includes("pizza")
-  ) {
-    query = "restaurant food";
-  } else if (cleanName.includes("banco") || cleanName.includes("atm")) {
-    query = "bank building";
-  } else if (cleanName.includes("hospital") || cleanName.includes("clinica")) {
-    query = "hospital medical";
-  } else if (
-    cleanName.includes("escuela") ||
-    cleanName.includes("universidad") ||
-    cleanName.includes("colegio")
-  ) {
-    query = "school education";
-  } else if (cleanName.includes("iglesia") || cleanName.includes("catedral")) {
-    query = "church building";
-  } else if (cleanName.includes("parque") || cleanName.includes("plaza")) {
-    query = "park nature";
-  } else if (
-    cleanName.includes("centro") ||
-    cleanName.includes("mall") ||
-    cleanName.includes("comercial")
-  ) {
-    query = "shopping center";
-  } else if (
-    cleanName.includes("volcán") ||
-    cleanName.includes("cerro") ||
-    cleanName.includes("montaña")
-  ) {
-    query = "volcano mountain";
-  } else if (cleanName.includes("playa") || cleanName.includes("costa")) {
-    query = "beach coast";
-  }
-
-  // Generar múltiples imágenes placeholder con diferentes seeds
-  return [
-    {
-      url: `/placeholder.svg?height=120&width=200&query=${encodeURIComponent(query + " El Salvador")}&seed=${Math.abs(lat * lng * 1000) % 1000}`,
-      alt: `Vista de ${placeName}`,
-    },
-    {
-      url: `/placeholder.svg?height=120&width=200&query=${encodeURIComponent(query + " building")}&seed=${Math.abs(lat * lng * 2000) % 1000}`,
-      alt: `Edificio de ${placeName}`,
-    },
-    {
-      url: `/placeholder.svg?height=120&width=200&query=${encodeURIComponent(query + " exterior")}&seed=${Math.abs(lat * lng * 3000) % 1000}`,
-      alt: `Exterior de ${placeName}`,
-    },
-  ];
-};
-
 export default function LeafletMapComponent({
   onLocationSelect,
   selectedLocation,
@@ -271,34 +198,9 @@ export default function LeafletMapComponent({
     const popupContent = document.createElement("div");
     popupContent.className = "location-popup";
 
-    let photosHtml = "";
     let placeInfoHtml = "";
 
     if (selectedPlace) {
-      // Generar imágenes placeholder inteligentes
-      const placeImages = generatePlaceImages(
-        selectedPlace.display_name,
-        selectedPlace.type,
-        lat,
-        lng
-      );
-
-      photosHtml = `
-        <div class="photos-container mb-3">
-          <div class="photos-grid">
-            ${placeImages
-              .map(
-                (image) => `
-              <img src="${image.url}" alt="${image.alt}" 
-                   class="photo-item" loading="lazy" 
-                   onerror="this.style.display='none'"/>
-            `
-              )
-              .join("")}
-          </div>
-        </div>
-      `;
-
       // Determinar el tipo de lugar para mostrar información relevante
       const placeName = selectedPlace.display_name.split(",")[0];
       const placeType = getPlaceTypeInfo(selectedPlace);
@@ -317,7 +219,6 @@ export default function LeafletMapComponent({
 
     popupContent.innerHTML = `
       <div class="popup-content">
-        ${photosHtml}
         <div class="location-info">
           ${placeInfoHtml}
           <div class="coordinates">

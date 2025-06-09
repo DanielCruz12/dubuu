@@ -3,7 +3,16 @@
 import { Mountain, MountainSnow, Footprints } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type DifficultyLevel = "fácil" | "moderado" | "difícil" | "extremo" | string;
+type DifficultyLevel =
+  | "fácil"
+  | "moderado"
+  | "difícil"
+  | "extremo"
+  | "easy"
+  | "medium"
+  | "hard"
+  | "extreme"
+  | string;
 
 interface TourDifficultyBadgeProps {
   difficulty: DifficultyLevel;
@@ -14,12 +23,34 @@ export function TourDifficultyBadge({
   difficulty,
   className,
 }: TourDifficultyBadgeProps) {
+  // Mapeo de valores en inglés a español
+  const difficultyMap: Record<string, string> = {
+    easy: "fácil",
+    medium: "moderado",
+    hard: "difícil",
+    extreme: "extremo",
+    // También mantener los valores en español
+    facil: "fácil",
+    moderado: "moderado",
+    dificil: "difícil",
+    extremo: "extremo",
+  };
+
   // Normalizar la dificultad (convertir a minúsculas y quitar acentos)
-  const normalizedDifficulty =
+  const normalizedInput =
     difficulty
       ?.toLowerCase()
       .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "") || "fácil";
+      .replace(/[\u0300-\u036f]/g, "") || "easy";
+
+  // Obtener el valor en español
+  const spanishDifficulty = difficultyMap[normalizedInput] || difficulty;
+
+  // Normalizar para la lógica interna
+  const normalizedDifficulty = spanishDifficulty
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
 
   // Configuración según nivel de dificultad
   const config = {
@@ -81,7 +112,7 @@ export function TourDifficultyBadge({
       )}
     >
       <Icon className="w-4 h-4" />
-      <span>{difficulty || badgeConfig.label}</span>
+      <span>{badgeConfig.label}</span>
       <span className="sr-only">Nivel de dificultad</span>
     </div>
   );
