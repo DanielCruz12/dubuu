@@ -10,7 +10,6 @@ import {
   useSelector,
 } from "react-redux";
 import { setupListeners } from "@reduxjs/toolkit/query";
-import filtersReducer from "./slices/filter/filter-slice";
 
 // Redux Persist
 import {
@@ -103,7 +102,6 @@ const rootReducer = combineReducers({
   [productAudiencesApiSlice.reducerPath]: productAudiencesApiSlice.reducer,
   auth: authReducer,
   search: searchReducer,
-  filters: filtersReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

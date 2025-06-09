@@ -34,6 +34,7 @@ import { CalendarIcon, X, Plus } from "lucide-react";
 
 import { type DetailsFormValues, detailsSchema } from "./types";
 import { scrollToFirstError } from "./utils";
+import { TourDifficultyBadge } from "@/components/difficulty-badge";
 
 interface DetailsStepProps {
   onSubmit: (data: DetailsFormValues) => void;
@@ -181,9 +182,30 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="easy">Fácil</SelectItem>
-                    <SelectItem value="medium">Medio</SelectItem>
-                    <SelectItem value="hard">Difícil</SelectItem>
+                    <SelectItem value="easy">
+                      <TourDifficultyBadge
+                        difficulty="fácil"
+                        className="scale-90"
+                      />
+                    </SelectItem>
+                    <SelectItem value="medium">
+                      <TourDifficultyBadge
+                        difficulty="moderado"
+                        className="scale-90"
+                      />
+                    </SelectItem>
+                    <SelectItem value="hard">
+                      <TourDifficultyBadge
+                        difficulty="difícil"
+                        className="scale-90"
+                      />
+                    </SelectItem>
+                    <SelectItem value="extreme">
+                      <TourDifficultyBadge
+                        difficulty="extremo"
+                        className="scale-90"
+                      />
+                    </SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage className="text-xs text-red-500" />

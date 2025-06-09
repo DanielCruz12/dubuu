@@ -6,13 +6,7 @@ import type React from "react";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { type RootState, useAppDispatch, useAppSelector } from "@/redux/store";
-import {
-  resetFilters,
-  setRating,
-  setPricing,
-  setProductType,
-  initialFilterState,
-} from "@/redux/slices/filter/filter-slice";
+
 import {
   setSearchTerm,
   setCountry,
@@ -20,6 +14,8 @@ import {
   setDurations,
   setPriceRange,
   setLocationEnabled,
+  setRating,
+  setProductType,
   resetSearch,
 } from "@/redux/slices/product/search/search-slice";
 import { useGetProductsQuery } from "@/redux/slices/product/product-slice";
@@ -59,6 +55,13 @@ import Image from "next/image";
 import { PriceRangeHistogram } from "../price-range-histogram";
 import { useUser } from "@clerk/nextjs";
 
+// Define initial state for filters
+const initialFilterState = {
+  rating: "2",
+  pricing: "1000",
+  productType: "all",
+};
+
 interface SearchSectionProps {
   products: IProduct[];
   onSearchResults?: (products: IProduct[]) => void;
@@ -80,9 +83,8 @@ export default function SearchSection({
   const { user } = useUser();
 
   const dispatch = useAppDispatch();
-  const { rating, pricing, productType } = useAppSelector(
-    (state: RootState) => state.filters
-  );
+
+  // Updated to use the new combined search slice structure
   const {
     searchTerm,
     country,
@@ -90,11 +92,12 @@ export default function SearchSection({
     durations,
     priceRange,
     isLocationEnabled,
+    rating,
+    productType,
   } = useAppSelector((state: RootState) => state.search);
 
   // Estados locales para aplicar los filtros al final
   const [tempRating, setTempRating] = useState(rating);
-  const [tempPricing, setTempPricing] = useState(pricing);
   const [tempProductType, setTempProductType] = useState(productType);
   const [tempCategories, setTempCategories] = useState(categories);
   const [tempDurations, setTempDurations] = useState(durations);
@@ -119,16 +122,12 @@ export default function SearchSection({
       params.product_type = productType;
     }
 
-    if (isLocationEnabled && country) {
-      params.country = country;
+    if (isLocationEnabled && country && country.code) {
+      params.country = country.code; // Solo el código
     }
 
     if (rating !== initialFilterState.rating) {
       params.min_rating = rating;
-    }
-
-    if (pricing !== initialFilterState.pricing) {
-      params.max_price = pricing;
     }
 
     if (priceRange[0] > 0) {
@@ -155,7 +154,6 @@ export default function SearchSection({
     isLocationEnabled,
     country,
     rating,
-    pricing,
     priceRange,
     categories,
     durations,
@@ -169,7 +167,6 @@ export default function SearchSection({
     productType !== initialFilterState.productType ||
     (isLocationEnabled && country) ||
     rating !== initialFilterState.rating ||
-    pricing !== initialFilterState.pricing ||
     priceRange[0] > 0 ||
     priceRange[1] < 1000 ||
     categories.length > 0 ||
@@ -219,10 +216,12 @@ export default function SearchSection({
 
         if (response.ok) {
           const data = await response.json();
-          const countryName = data.countryName || data.country;
-          dispatch(setCountry(countryName));
+          const countryData = data.country || data.countryCode;
+          const countryCode = countryData.code;
+          const countryName = countryData.name;
+          dispatch(setCountry({ code: countryCode, name: countryName }));
           dispatch(setLocationEnabled(true));
-          localStorage.setItem("userCountry", countryName);
+          localStorage.setItem("userCountry", countryCode);
         }
       } catch (error) {
         console.error("Error en geocodificación:", error);
@@ -240,7 +239,28 @@ export default function SearchSection({
 
     const savedCountry = localStorage.getItem("userCountry");
     if (savedCountry && !country) {
-      dispatch(setCountry(savedCountry));
+      // Intentar obtener el nombre del país desde el código guardado
+      const fetchCountryName = async (countryCode: string) => {
+        try {
+          const response = await fetch(
+            `https://restcountries.com/v3.1/alpha/${countryCode}`
+          );
+          if (response.ok) {
+            const data = await response.json();
+            const countryName = data[0]?.name?.common || countryCode;
+            dispatch(setCountry({ code: countryCode, name: countryName }));
+          } else {
+            // Si falla la API, usar el código como nombre temporalmente
+            dispatch(setCountry({ code: savedCountry, name: savedCountry }));
+          }
+        } catch (error) {
+          console.error("Error al obtener nombre del país:", error);
+          // Si falla, usar el código como nombre
+          dispatch(setCountry({ code: savedCountry, name: savedCountry }));
+        }
+      };
+
+      fetchCountryName(savedCountry);
       dispatch(setLocationEnabled(true));
     }
   }, [country, dispatch, isMounted]);
@@ -249,7 +269,6 @@ export default function SearchSection({
   useEffect(() => {
     let count = 0;
     if (rating !== initialFilterState.rating) count++;
-    if (pricing !== initialFilterState.pricing) count++;
     if (productType !== initialFilterState.productType) count++;
     if (categories.length > 0) count++;
     if (durations.length > 0) count++;
@@ -258,7 +277,6 @@ export default function SearchSection({
     setActiveFiltersCount(count);
   }, [
     rating,
-    pricing,
     productType,
     categories,
     durations,
@@ -291,7 +309,6 @@ export default function SearchSection({
 
   const handleApplyFilters = () => {
     dispatch(setRating(tempRating));
-    dispatch(setPricing(tempPricing));
     dispatch(setProductType(tempProductType));
     dispatch(setCategories(tempCategories));
     dispatch(setDurations(tempDurations));
@@ -300,10 +317,8 @@ export default function SearchSection({
   };
 
   const handleResetFilters = () => {
-    dispatch(resetFilters());
     dispatch(resetSearch());
     setTempRating(initialFilterState.rating);
-    setTempPricing(initialFilterState.pricing);
     setTempProductType(initialFilterState.productType);
     setTempCategories([]);
     setTempDurations([]);
@@ -329,7 +344,7 @@ export default function SearchSection({
   const handleLocationToggle = () => {
     if (isLocationEnabled) {
       dispatch(setLocationEnabled(false));
-      dispatch(setCountry(null));
+      dispatch(setCountry({ code: "", name: "" }));
       if (isMounted) {
         localStorage.removeItem("userCountry");
       }
@@ -488,7 +503,7 @@ export default function SearchSection({
               />
               <span>
                 {isLocationEnabled && country
-                  ? country
+                  ? country.name
                   : isLoadingLocation
                     ? "Ubicando..."
                     : "Mi ubicación"}
@@ -529,27 +544,13 @@ export default function SearchSection({
             </Badge>
           )}
 
-          {pricing !== initialFilterState.pricing && (
-            <Badge
-              variant="outline"
-              className="rounded-full px-3 py-1 gap-1.5 flex items-center"
-            >
-              <DollarSign className="h-3 w-3 text-green-600" />
-              Máx: ${pricing}
-              <X
-                className="h-3 w-3 ml-1 cursor-pointer"
-                onClick={() => dispatch(setPricing(initialFilterState.pricing))}
-              />
-            </Badge>
-          )}
-
           {isLocationEnabled && country && (
             <Badge
               variant="outline"
               className="rounded-full px-3 py-1 gap-1.5 flex items-center"
             >
               <Navigation className="h-3 w-3 text-blue-600" />
-              {country}
+              {country.name}
               <X
                 className="h-3 w-3 ml-1 cursor-pointer"
                 onClick={handleLocationToggle}
@@ -723,10 +724,7 @@ export default function SearchSection({
                         >
                           <div className="w-20 h-20 md:w-24 md:h-24 relative rounded-lg overflow-hidden flex-shrink-0">
                             <Image
-                              src={
-                                tourImages[0] ||
-                                "/placeholder.svg?height=200&width=200"
-                              }
+                              src={tourImages[0] || "/elsalvador.jpg"}
                               width={100}
                               height={100}
                               alt={tourName}

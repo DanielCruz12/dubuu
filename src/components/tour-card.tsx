@@ -361,15 +361,17 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
       <div className="flex flex-col">
         <CardContent className="pt-1">
           {/* Rating */}
-          <div className="mb-1.5">
-            <Rating
-              averageRating={average_rating}
-              reviewsCount={total_reviews}
-              maxStars={5}
-              activeStarClassName="text-yellow-400 fill-yellow-400"
-              inactiveStarClassName="text-gray-300"
-            />
-          </div>
+          {total_reviews > 0 && (
+            <div className="mb-1.5">
+              <Rating
+                averageRating={average_rating}
+                reviewsCount={total_reviews}
+                maxStars={5}
+                activeStarClassName="text-yellow-400 fill-yellow-400"
+                inactiveStarClassName="text-gray-300"
+              />
+            </div>
+          )}
 
           {/* Título */}
           <h3 className="text-[0.875rem] md:text-[1rem] font-bold text-wrap line-clamp-1 ">
@@ -387,7 +389,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
               <div className="flex items-center text-sm text-muted-foreground">
                 <MapPin className="w-3.5 h-3.5 mr-1 flex-shrink-0" />
                 <span className="text-sm text-muted-foreground line-clamp-1">
-                  {country} / {address}
+                  {address}
                 </span>
               </div>
             )}
