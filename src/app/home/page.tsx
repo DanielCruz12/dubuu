@@ -2,11 +2,11 @@
 import { useState, useEffect } from "react";
 import HeroSection from "@/components/sections/hero-section";
 import PopularDestinations from "@/components/sections/popular-destination";
-import SearchSection from "@/components/sections/search-section";
 import TourSection from "@/components/sections/tour-section";
 import UpTop from "@/components/up-top";
 import { useGetProductsQuery } from "@/redux/slices/product/product-slice";
 import type { IProduct } from "@/types/product";
+import SearchSection from "@/components/sections/search-section";
 
 export default function Home() {
   const [allProducts, setAllProducts] = useState<IProduct[]>([]);
