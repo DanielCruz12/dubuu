@@ -59,6 +59,7 @@ export const ratingOptions = [
   { label: "+3 estrellas", value: "3" },
   { label: "+2 estrellas", value: "2" },
   { label: "+1 estrellas", value: "1" },
+  { label: "Sin calificación", value: "0" },
 ];
 
 export const productTypes = [

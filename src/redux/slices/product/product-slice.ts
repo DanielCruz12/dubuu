@@ -23,6 +23,8 @@ export const productsApiSlice = createApi({
         },
         Record<string, string | number | boolean | undefined> & {
           is_approved?: boolean;
+          is_active?: boolean;
+          min_rating?: number;
         }
       >({
         query: (params) => {
@@ -32,9 +34,13 @@ export const productsApiSlice = createApi({
             params.is_approved !== undefined ? params.is_approved : true;
           searchParams.append("is_approved", String(isApprovedParam));
 
+          const isActiveParam =
+            params.is_active !== undefined ? params.is_active : true;
+          searchParams.append("is_active", String(isActiveParam));
+
           Object.entries(params).forEach(([key, value]) => {
-            // ¡IMPORTANTE! Saltamos is_approved porque ya lo agregamos arriba
-            if (key === "is_approved") return;
+            // ¡IMPORTANTE! Saltamos is_approved y is_active porque ya los agregamos arriba
+            if (key === "is_approved" || key === "is_active") return;
             if (value !== undefined && value !== null && value !== "") {
               // Para arrays, convertir a string separado por comas
               if (Array.isArray(value)) {
@@ -77,6 +83,8 @@ export const productsApiSlice = createApi({
           min_price?: number;
           max_price?: number;
           is_approved?: boolean;
+          min_rating?: number;
+          is_active?: boolean;
           categories?: string[];
           durations?: string[];
           limit?: number;
@@ -115,6 +123,10 @@ export const productsApiSlice = createApi({
             searchParams.append("durations", params.durations.join(","));
           }
 
+          if (params.min_rating !== undefined) {
+            searchParams.append("min_rating", String(params.min_rating));
+          }
+
           if (params.limit) {
             searchParams.append("limit", String(params.limit));
           }
@@ -125,6 +137,10 @@ export const productsApiSlice = createApi({
 
           if (params.is_approved !== undefined) {
             searchParams.append("is_approved", String(params.is_approved));
+          }
+
+          if (params.is_active !== undefined) {
+            searchParams.append("is_active", String(params.is_active));
           }
 
           return `/api/v1/products?${searchParams.toString()}`;

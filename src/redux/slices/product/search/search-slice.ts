@@ -1,11 +1,13 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-interface SearchState {
+export interface Country {
+  code: string;
+  name: string;
+}
+
+export interface SearchState {
   searchTerm: string;
-  country: {
-    code: string;
-    name: string;
-  };
+  country: Country;
   categories: string[];
   durations: string[];
   priceRange: [number, number];
@@ -17,29 +19,26 @@ interface SearchState {
 export const initialSearchState: SearchState = {
   searchTerm: "",
   country: {
-    code: "SV", // Código de país por defecto
-    name: "El Salvador", // Nombre del país por defecto
+    code: "", // Código de país por defecto
+    name: "", // Nombre del país por defecto
   },
   categories: [],
   durations: [],
   priceRange: [0, 1000],
-  isLocationEnabled: false,
-  // Valores iniciales de los nuevos campos
-  rating: "2",
+  isLocationEnabled: false, // Cambiar a true por defecto
+  // Cambiar rating inicial a "0" para no filtrar por defecto
+  rating: "0",
   productType: "tours",
 };
 
-const searchSlice = createSlice({
+export const searchSlice = createSlice({
   name: "search",
   initialState: initialSearchState,
   reducers: {
     setSearchTerm: (state, action: PayloadAction<string>) => {
       state.searchTerm = action.payload;
     },
-    setCountry: (
-      state,
-      action: PayloadAction<{ code: string; name: string }>
-    ) => {
+    setCountry: (state, action: PayloadAction<Country>) => {
       state.country = action.payload;
     },
     setCategories: (state, action: PayloadAction<string[]>) => {
@@ -54,7 +53,6 @@ const searchSlice = createSlice({
     setLocationEnabled: (state, action: PayloadAction<boolean>) => {
       state.isLocationEnabled = action.payload;
     },
-    // Nuevos reducers agregados del filtersSlice
     setRating: (state, action: PayloadAction<string>) => {
       state.rating = action.payload;
     },

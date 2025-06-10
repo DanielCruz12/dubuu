@@ -50,16 +50,16 @@ import { Input } from "../ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { IProduct } from "@/types/product";
 import { productTypes, ratingOptions } from "@/utils/data";
-import { ScrollArea } from "../ui/scroll-area";
+import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import Image from "next/image";
 import { PriceRangeHistogram } from "../price-range-histogram";
 import { useUser } from "@clerk/nextjs";
 
 // Define initial state for filters
 const initialFilterState = {
-  rating: "2",
+  rating: "0", // Cambiar de "2" a "0"
   pricing: "1000",
-  productType: "all",
+  productType: "tours",
 };
 
 interface SearchSectionProps {
@@ -103,6 +103,15 @@ export default function SearchSection({
   const [tempDurations, setTempDurations] = useState(durations);
   const [tempPriceRange, setTempPriceRange] = useState(priceRange);
 
+  // Sincronizar estados temporales cuando cambian los valores del Redux store
+  useEffect(() => {
+    setTempRating(rating);
+    setTempProductType(productType);
+    setTempCategories(categories);
+    setTempDurations(durations);
+    setTempPriceRange(priceRange);
+  }, [rating, productType, categories, durations, priceRange]);
+
   // Efecto para marcar como montado y verificar autenticación
   useEffect(() => {
     setIsMounted(true);
@@ -122,12 +131,13 @@ export default function SearchSection({
       params.product_type = productType;
     }
 
+    // FIX: Asegurar que el filtro de país se aplique correctamente
     if (isLocationEnabled && country && country.code) {
-      params.country = country.code; // Solo el código
+      params.country = country.code;
     }
 
-    if (rating !== initialFilterState.rating) {
-      params.min_rating = rating;
+    if (rating !== initialFilterState.rating && rating !== "0") {
+      params.min_rating = parseFloat(rating);
     }
 
     if (priceRange[0] > 0) {
@@ -165,8 +175,8 @@ export default function SearchSection({
   const shouldSearch =
     (!!user && searchTerm.length >= 3) ||
     productType !== initialFilterState.productType ||
-    (isLocationEnabled && country) ||
-    rating !== initialFilterState.rating ||
+    (isLocationEnabled && country && country.code) ||
+    (rating !== initialFilterState.rating && rating !== "0") ||
     priceRange[0] > 0 ||
     priceRange[1] < 1000 ||
     categories.length > 0 ||
@@ -190,7 +200,7 @@ export default function SearchSection({
     }
   }, [isSearching, isSearchFetching, onSearchLoading]);
 
-  // Función de geolocalización
+  // Función de geolocalización - CORREGIDA para usar countryCode y countryName
   const requestLocation = async () => {
     if (!navigator.geolocation) return;
 
@@ -216,12 +226,16 @@ export default function SearchSection({
 
         if (response.ok) {
           const data = await response.json();
-          const countryData = data.country || data.countryCode;
-          const countryCode = countryData.code;
-          const countryName = countryData.name;
-          dispatch(setCountry({ code: countryCode, name: countryName }));
-          dispatch(setLocationEnabled(true));
-          localStorage.setItem("userCountry", countryCode);
+          // Usar directamente countryCode y countryName de la respuesta
+          const countryCode = data.countryCode;
+          const countryName = data.countryName;
+
+          if (countryCode && countryName) {
+            dispatch(setCountry({ code: countryCode, name: countryName }));
+            dispatch(setLocationEnabled(true));
+            localStorage.setItem("userCountry", countryCode);
+            localStorage.setItem("userCountryName", countryName);
+          }
         }
       } catch (error) {
         console.error("Error en geocodificación:", error);
@@ -233,47 +247,54 @@ export default function SearchSection({
     }
   };
 
-  // Cargar país guardado
+  // Cargar país guardado - FIX para el problema del country display
   useEffect(() => {
     if (!isMounted) return;
 
     const savedCountry = localStorage.getItem("userCountry");
-    if (savedCountry && !country) {
-      // Intentar obtener el nombre del país desde el código guardado
-      const fetchCountryName = async (countryCode: string) => {
-        try {
-          const response = await fetch(
-            `https://restcountries.com/v3.1/alpha/${countryCode}`
-          );
-          if (response.ok) {
-            const data = await response.json();
-            const countryName = data[0]?.name?.common || countryCode;
-            dispatch(setCountry({ code: countryCode, name: countryName }));
-          } else {
-            // Si falla la API, usar el código como nombre temporalmente
-            dispatch(setCountry({ code: savedCountry, name: savedCountry }));
-          }
-        } catch (error) {
-          console.error("Error al obtener nombre del país:", error);
-          // Si falla, usar el código como nombre
-          dispatch(setCountry({ code: savedCountry, name: savedCountry }));
-        }
-      };
+    const savedCountryName = localStorage.getItem("userCountryName");
 
-      fetchCountryName(savedCountry);
-      dispatch(setLocationEnabled(true));
+    if (savedCountry && (!country || !country.code)) {
+      // Si tenemos el nombre guardado, usarlo inmediatamente
+      if (savedCountryName) {
+        dispatch(setCountry({ code: savedCountry, name: savedCountryName }));
+        dispatch(setLocationEnabled(true));
+      } else {
+        // Si no tenemos el nombre, hacer la consulta pero mostrar el código mientras tanto
+        dispatch(setCountry({ code: savedCountry, name: savedCountry }));
+        dispatch(setLocationEnabled(true));
+
+        // Intentar obtener el nombre del país desde el código guardado
+        const fetchCountryName = async (countryCode: string) => {
+          try {
+            const response = await fetch(
+              `https://restcountries.com/v3.1/alpha/${countryCode}`
+            );
+            if (response.ok) {
+              const data = await response.json();
+              const countryName = data[0]?.name?.common || countryCode;
+              dispatch(setCountry({ code: countryCode, name: countryName }));
+              localStorage.setItem("userCountryName", countryName);
+            }
+          } catch (error) {
+            console.error("Error al obtener nombre del país:", error);
+          }
+        };
+
+        fetchCountryName(savedCountry);
+      }
     }
   }, [country, dispatch, isMounted]);
 
   // Calcular filtros activos
   useEffect(() => {
     let count = 0;
-    if (rating !== initialFilterState.rating) count++;
+    if (rating !== initialFilterState.rating && rating !== "0") count++;
     if (productType !== initialFilterState.productType) count++;
     if (categories.length > 0) count++;
     if (durations.length > 0) count++;
     if (priceRange[0] > 0 || priceRange[1] < 1000) count++;
-    if (isLocationEnabled && country) count++;
+    if (isLocationEnabled && country && country.code) count++;
     setActiveFiltersCount(count);
   }, [
     rating,
@@ -325,6 +346,7 @@ export default function SearchSection({
     setTempPriceRange([0, 1000]);
     if (isMounted) {
       localStorage.removeItem("userCountry");
+      localStorage.removeItem("userCountryName");
     }
     setIsDialogFilterOpen(false);
   };
@@ -347,9 +369,10 @@ export default function SearchSection({
       dispatch(setCountry({ code: "", name: "" }));
       if (isMounted) {
         localStorage.removeItem("userCountry");
+        localStorage.removeItem("userCountryName");
       }
     } else {
-      if (country) {
+      if (country && country.code) {
         dispatch(setLocationEnabled(true));
       } else {
         requestLocation();
@@ -502,7 +525,7 @@ export default function SearchSection({
                 className={`h-3.5 w-3.5 ${isLoadingLocation ? "animate-spin" : ""}`}
               />
               <span>
-                {isLocationEnabled && country
+                {isLocationEnabled && country?.name
                   ? country.name
                   : isLoadingLocation
                     ? "Ubicando..."
@@ -523,13 +546,15 @@ export default function SearchSection({
               </Button>
             ))}
           </div>
+
+          <ScrollBar orientation="horizontal" />
         </ScrollArea>
       </div>
 
       {/* Chips de filtros activos */}
       {activeFiltersCount > 0 && (
         <div className="flex flex-wrap gap-2">
-          {rating !== initialFilterState.rating && (
+          {rating !== "0" && rating !== initialFilterState.rating && (
             <Badge
               variant="outline"
               className="rounded-full px-3 py-1 gap-1.5 flex items-center"
@@ -539,18 +564,18 @@ export default function SearchSection({
                 rating}
               <X
                 className="h-3 w-3 ml-1 cursor-pointer"
-                onClick={() => dispatch(setRating(initialFilterState.rating))}
+                onClick={() => dispatch(setRating("0"))}
               />
             </Badge>
           )}
 
-          {isLocationEnabled && country && (
+          {isLocationEnabled && country && country.code && (
             <Badge
               variant="outline"
               className="rounded-full px-3 py-1 gap-1.5 flex items-center"
             >
               <Navigation className="h-3 w-3 text-blue-600" />
-              {country.name}
+              {country.name || country.code}
               <X
                 className="h-3 w-3 ml-1 cursor-pointer"
                 onClick={handleLocationToggle}
