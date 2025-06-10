@@ -13,6 +13,7 @@ import {
 import { EditProductModal } from "./edit-product-modal";
 import type { ITourProduct } from "@/types/product";
 import { toast } from "sonner";
+import { useUpdateProductMutation } from "@/redux/slices/product/product-slice";
 
 interface ActionCellProps {
   tour: ITourProduct & { selectedDateId?: string };
@@ -20,22 +21,27 @@ interface ActionCellProps {
   selectedDateId?: string;
 }
 
-export function ActionCell({
-  tour,
-  onUpdate,
-  selectedDateId,
-}: ActionCellProps) {
+export function ActionCell({ tour, selectedDateId }: ActionCellProps) {
   const [showEditModal, setShowEditModal] = useState(false);
-
+  const [updateProduct] = useUpdateProductMutation();
   // Usar el selectedDateId del tour si no se proporciona explícitamente
   const dateId = selectedDateId || tour.selectedDateId;
 
-  const handleSaveTour = (updatedTour: Partial<ITourProduct>) => {
-    console.log("Tour actualizado:", updatedTour);
-    if (onUpdate) {
-      onUpdate(updatedTour);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleSaveTour = async (updateData: any) => {
+    try {
+      await updateProduct({
+        id: tour.id,
+        data: updateData,
+      }).unwrap();
+
+      toast.success("Tour actualizado correctamente");
+
+      setShowEditModal(false);
+    } catch (error) {
+      console.error("Error al actualizar:", error);
+      toast.error("Error al actualizar el tour");
     }
-    setShowEditModal(false);
   };
 
   return (

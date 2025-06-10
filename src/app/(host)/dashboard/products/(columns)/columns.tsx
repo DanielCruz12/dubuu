@@ -182,8 +182,22 @@ export const toursColumns: ColumnDef<
       const isActive = row.getValue("is_active") as boolean;
       return (
         <div className="flex items-center gap-2">
-          <Badge variant={isActive ? "default" : "outline"}>
+          <Badge variant={isActive ? "default" : "destructive"}>
             {isActive ? "Activo" : "Inactivo"}
+          </Badge>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "is_approved",
+    header: "Estado",
+    cell: ({ row }) => {
+      const isActive = row.getValue("is_approved") as boolean;
+      return (
+        <div className="flex items-center gap-2">
+          <Badge variant={isActive ? "default" : "destructive"}>
+            {isActive ? "Aprobado" : "Pendiente"}
           </Badge>
         </div>
       );

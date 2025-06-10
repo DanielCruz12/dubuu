@@ -150,6 +150,7 @@ export function EditProductModal({
       const updatedTour: Partial<ITourProduct> = {
         ...tour,
         price: data.price,
+        address: data.departure_point, // El backend usa 'address' para el punto de salida
         is_active: data.is_active,
         tour: {
           ...tour.tour,

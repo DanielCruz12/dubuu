@@ -177,8 +177,14 @@ export const productsApiSlice = createApi({
       }),
 
       updateProduct: builder.mutation<
-        IProduct,
-        { id: string; data: Partial<IProduct> }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        { product: IProduct; tourDate?: any },
+        {
+          id: string;
+          data: Partial<
+            IProduct & { selectedDateId?: string; max_people?: number }
+          >;
+        }
       >({
         query: ({ id, data }) => ({
           url: `/api/v1/products/${id}`,
