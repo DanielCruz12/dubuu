@@ -50,48 +50,6 @@ export const getRegionById = (
   return country.regiones.find((region) => region.id === regionId);
 };
 
-/**
- * Normalizes a country name for use in URLs
- * - Converts to lowercase
- * - Removes accents/tildes
- * - Removes spaces and special characters
- */
-export function normalizeCountryForUrl(country: string): string {
-  if (!country) return "";
-
-  // Convert to lowercase
-  let normalized = country.toLowerCase();
-
-  // Remove accents/tildes
-  normalized = normalized.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
-  // Remove spaces and special characters
-  normalized = normalized.replace(/[\s-.,]/g, "");
-
-  return normalized;
-}
-
-/**
- * Finds the original country name from a normalized URL version
- * by comparing with a list of countries
- */
-export function findCountryFromNormalizedName(
-  normalizedName: string,
-  countries: string[]
-): string | null {
-  if (!normalizedName) return null;
-
-  // Find the country whose normalized version matches the input
-  const country = countries.find(
-    (c) => normalizeCountryForUrl(c) === normalizedName
-  );
-
-  return country || null;
-}
-
-/**
- * Gets all available countries from tour data
- */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getAvailableCountries(tours: any[]): string[] {
   // Using Array.from instead of spread operator for better compatibility
@@ -128,21 +86,20 @@ export function calculateRentalPrice(
   from: Date,
   to: Date
 ): number {
-  const msInHour = 1000 * 60 * 60
-  const totalHours = Math.ceil((to.getTime() - from.getTime()) / msInHour)
+  const msInHour = 1000 * 60 * 60;
+  const totalHours = Math.ceil((to.getTime() - from.getTime()) / msInHour);
 
-  if (totalHours <= 0) throw new Error('El rango de fechas es inválido')
-  if (totalHours > 24 * 15) throw new Error('Máximo de 15 días por alquiler')
+  if (totalHours <= 0) throw new Error("El rango de fechas es inválido");
+  if (totalHours > 24 * 15) throw new Error("Máximo de 15 días por alquiler");
 
-  const fullDays = Math.floor(totalHours / 24)
-  const extraHours = totalHours % 24
+  const fullDays = Math.floor(totalHours / 24);
+  const extraHours = totalHours % 24;
 
-  const pricePerHour = (pricePerDay / 24) * 1.5 // 50% más caro por hora
-  const total = fullDays * pricePerDay + extraHours * pricePerHour
+  const pricePerHour = (pricePerDay / 24) * 1.5; // 50% más caro por hora
+  const total = fullDays * pricePerDay + extraHours * pricePerHour;
 
-  return parseFloat(total.toFixed(2))
+  return parseFloat(total.toFixed(2));
 }
-
 
 export const statusConfig = {
   completed: {

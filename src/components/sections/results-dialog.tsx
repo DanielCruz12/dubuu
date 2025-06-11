@@ -16,7 +16,6 @@ import { Search, MapPin, Star, X } from "lucide-react";
 import type { IProduct } from "@/types/product";
 import { Input } from "../ui/input";
 import { useRouter } from "next/navigation";
-import { normalizeCountryForUrl } from "@/utils";
 import { Button } from "../ui/button";
 import { calculatePriceWithTaxes } from "@/lib/price";
 
@@ -101,10 +100,9 @@ export function ResultDialog({
     localStorage.setItem("recentSearches", JSON.stringify(newSearches));
   };
 
-  const navigateToTour = (tourId: string, tourCountry: string) => {
+  const navigateToTour = (tourId: string) => {
     // Normalize the country name for the URL
-    const normalizedCountry = normalizeCountryForUrl(tourCountry);
-    router.push(`/home/tours/${normalizedCountry}/${tourId}`);
+    router.push(`/home/${tourId}`);
     onClose(false);
   };
 
@@ -200,10 +198,6 @@ export function ResultDialog({
                       { image: "/elsalvador.jpg", name: "El Salvador" },
                       { image: "/tour.jpg", name: "Tour en la ciudad" },
                       { image: "/tour2.jpg", name: "Tour en la playa" },
-                      {
-                        image: "/contact3.jpeg",
-                        name: "Contacto en la montaña",
-                      },
                     ].map((item, index) => (
                       <div
                         key={index}
@@ -277,16 +271,11 @@ export function ResultDialog({
                     <div
                       key={tour.id}
                       className="group p-3 border border-primary/10 rounded-xl hover:shadow-md transition-all duration-300 cursor-pointer hover:border-primary/30 flex gap-3"
-                      onClick={() =>
-                        navigateToTour(tour.id, tour.country || "")
-                      }
+                      onClick={() => navigateToTour(tour.id)}
                     >
                       <div className="w-20 h-20 md:w-24 md:h-24 relative rounded-lg overflow-hidden flex-shrink-0">
                         <Image
-                          src={
-                            tour?.images?.[0] ||
-                            "/placeholder.svg?height=200&width=200"
-                          }
+                          src={tour?.images?.[0] || "/tour1.jpg"}
                           alt={tour.name}
                           fill
                           sizes="(max-width: 440px) 80px, 96px"

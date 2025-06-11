@@ -83,4 +83,17 @@ export interface ITourProduct extends IProductBase<"tours"> {
   };
 }
 
+export interface Destination {
+  id: string;
+  name: string;
+  image: string;
+  tours: number;
+  activities: number;
+  category: string;
+  duration: string;
+  country: string;
+  rating: number;
+  priceRange: number;
+}
+
 export type IProduct = ITourProduct | IRentalProduct;

@@ -1,81 +1,7 @@
 import Image from "next/image";
-import { ChevronRight } from "lucide-react";
-import { normalizeCountryForUrl } from "@/utils";
-import { useRouter } from "next/navigation";
-
-interface Destination {
-  id: string;
-  name: string;
-  image: string;
-  tours: number;
-  activities: number;
-  category: string;
-  duration: string;
-  country: string;
-  rating: number;
-  priceRange: number;
-}
-
-const destinations: Destination[] = [
-  {
-    id: "1",
-    name: "El Salvador",
-    country: "El Salvador",
-    image: "/paris.jpeg",
-    tours: 156,
-    activities: 248,
-    category: "City",
-    duration: "5-7 days",
-    rating: 4.8,
-    priceRange: 13,
-  },
-  {
-    id: "2",
-    name: "Guatemala",
-    country: "Guatemala",
-    image: "/tokyo.jpg",
-    tours: 143,
-    activities: 200,
-    category: "City",
-    duration: "4-7 days",
-    rating: 4.9,
-    priceRange: 14.99,
-  },
-  {
-    id: "3",
-    name: "Honduras",
-    country: "Honduras",
-    image: "/roma.jpg",
-    tours: 132,
-    activities: 220,
-    category: "City",
-    duration: "3-5 days",
-    rating: 4.7,
-    priceRange: 200,
-  },
-  {
-    id: "4",
-    name: "Nicaragua",
-    country: "Nicaragua",
-    image: "/elsalvador.jpg",
-    tours: 128,
-    activities: 180,
-    category: "Beach",
-    duration: "2-4 days",
-    rating: 4.6,
-    priceRange: 3000,
-  },
-];
+import { destinations } from "@/utils/data";
 
 export default function PopularDestinations() {
-  const router = useRouter();
-
-  const navigateToTour = (tourCountry: string) => {
-    // Normalize the country name for the URL
-    const normalizedCountry = normalizeCountryForUrl(tourCountry);
-    router.push(`/home/tours/${normalizedCountry}`);
-  };
-
   return (
     <section className="py-12">
       <div className="space-y-3">
@@ -87,7 +13,7 @@ export default function PopularDestinations() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
           {destinations.map((destination) => (
             <div
-              onClick={() => navigateToTour(destination.country)}
+              /*  onClick={() => navigateToTour(destination.country)} */
               key={destination.id}
               className="rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
             >
@@ -110,7 +36,6 @@ export default function PopularDestinations() {
                       ${destination.priceRange}
                     </p>
                   </div>
-                  <ChevronRight className="h-6 w-6 text-gray-400" />
                 </div>
                 <p className="text-muted-foreground mt-2">
                   {destination.tours} Viajes, {destination.activities}{" "}

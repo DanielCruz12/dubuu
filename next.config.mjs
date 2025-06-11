@@ -16,21 +16,6 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "d191xw0kn1fj0p.cloudfront.net",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "dubuu.com",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-      },
-
-      {
-        protocol: "https",
-        hostname: "firebasestorage.googleapis.com",
       },
     ],
   },

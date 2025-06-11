@@ -41,8 +41,7 @@ export function NoSearchResults() {
             </h3>
             <p className="text-muted-foreground mb-6 max-w-md">
               No encontramos ningún resultado que coincida con tus filtros
-              actuales. Intenta ajustar los criterios de búsqueda o revisa
-              nuestra colección completa.
+              actuales. Intenta ajustar los criterios de búsqueda.
             </p>
 
             {/*    <Link

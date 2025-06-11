@@ -17,6 +17,7 @@ import {
 import type { IBookingUser } from "@/types/booking";
 import moment from "moment";
 import "moment/locale/es";
+import { statusColors, statusText } from "@/utils/data";
 
 interface BookingDetailsProps {
   booking: IBookingUser;
@@ -41,20 +42,6 @@ export function BookingDetails({
   };
 
   const uiStatus = mapStatus(booking.status);
-
-  const statusColors = {
-    confirmado: "bg-green-50 text-green-700 border-green-200",
-    pendiente: "bg-amber-50 text-amber-700 border-amber-200",
-    completado: "bg-blue-50 text-blue-700 border-blue-200",
-    cancelado: "bg-red-50 text-red-700 border-red-200",
-  };
-
-  const statusText = {
-    confirmado: "Confirmado",
-    pendiente: "Pendiente",
-    completado: "Completado",
-    cancelado: "Cancelado",
-  };
 
   // Format the date from ISO string
 

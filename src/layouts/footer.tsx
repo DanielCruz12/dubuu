@@ -13,9 +13,9 @@ import Link from "next/link";
 // Footer navigation data
 const footerNavigation = {
   experiencias: [
-    { name: "Viajes Privados", href: "/home/tours/all" },
-    { name: "Alquileres", href: "/home/rental/all" },
-    { name: "Propiedades", href: "/home/properties/all" },
+    { name: "Viajes Privados", href: "/home" },
+    { name: "Alquileres", href: "/home" },
+    { name: "Propiedades", href: "/home" },
   ],
   empresa: [
     { name: "Sé parte", href: "/investment" },
@@ -40,7 +40,13 @@ export default function Footer() {
       <div className="px-6 md:px-20 mt-8">
         {/* Top Section with Logo and Tagline */}
         <div className="mb-12  text-left">
-          <Image src="/logo.svg" alt="Dubuu Logo" width={100} height={40} priority />
+          <Image
+            src="/logo.svg"
+            alt="Dubuu Logo"
+            width={100}
+            height={40}
+            priority
+          />
           <p className="text-sm">
             Experiencias de viaje exclusivas diseñadas para los viajeros más
             exigentes.

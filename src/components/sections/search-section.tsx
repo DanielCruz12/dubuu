@@ -95,14 +95,6 @@ export default function SearchSection({
 
   return (
     <section className="w-full">
-      {/* Mensaje para usuarios no autenticados */}
-      {!user && (
-        <div className="mb-3 text-sm text-muted-foreground text-center py-2 bg-muted/30 rounded-lg">
-          Debes iniciar sesión para buscar por texto. Los filtros están
-          disponibles.
-        </div>
-      )}
-
       {/* Barra de búsqueda principal */}
       <div className="relative mb-3">
         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">

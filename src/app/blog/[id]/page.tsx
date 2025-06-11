@@ -1,20 +1,17 @@
 "use client";
-import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
-import { Clock, Calendar } from "lucide-react";
-import { blogData } from "../../../utils/data"; // Import blog data
 
 export default function BlogPost({ params }: { params: { id: string } }) {
-  const blog = blogData.find(
+  console.log(params)
+ /*  const blog = blogData.find(
     (b: { id: number }) => b.id === parseInt(params.id)
   ); // Find blog post by ID
 
   if (!blog) {
     return <div>Blog post not found</div>;
-  }
+  } */
 
   return (
-    <article className="px-5 md:px-20 mx-auto ">
+   /*  <article className="px-5 md:px-20 mx-auto ">
       <div className="mb-8 text-center">
         <Badge className="mb-4">{blog.category}</Badge>
         <h1 className="text-2xl md:text-5xl font-bold tracking-tight mb-6">
@@ -62,6 +59,7 @@ export default function BlogPost({ params }: { params: { id: string } }) {
         <p className="lead">{blog.excerpt}</p>
         <p>{blog.content}</p>
       </div>
-    </article>
+    </article> */
+    <div></div>
   );
 }

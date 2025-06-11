@@ -9,7 +9,6 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import type { IProduct } from "@/types/product";
 import Rating from "./rating";
 import { Badge } from "./ui/badge";
-import { normalizeCountryForUrl } from "@/utils";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import {
@@ -145,10 +144,8 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
     }
   };
 
-  const navigateToTour = (tourId: string, tourCountry: string) => {
-    // Normalize the country name for the URL
-    const normalizedCountry = normalizeCountryForUrl(tourCountry);
-    router.push(`/home/tours/${normalizedCountry}/${tourId}`);
+  const navigateToTour = (tourId: string) => {
+    router.push(`/home/${tourId}`);
   };
 
   // Safely handle images array
@@ -162,7 +159,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
     return (
       <Card
         className="overflow-hidden rounded-xl border-none shadow-sm h-full cursor-pointer"
-        onClick={() => navigateToTour(id, country || "")}
+        onClick={() => navigateToTour(id)}
       >
         <div
           ref={carouselRef}
@@ -404,7 +401,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
           <Button
             variant="secondary"
             className="rounded-full"
-            onClick={() => navigateToTour(id, country || "")}
+            onClick={() => navigateToTour(id)}
           >
             Ver detalles
           </Button>
