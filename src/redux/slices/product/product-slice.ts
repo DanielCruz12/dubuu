@@ -168,7 +168,11 @@ export const productsApiSlice = createApi({
 
       getProductsByUserId: builder.query<IProduct[], string>({
         query: (userId) => `/api/v1/products/user/${userId}`,
-        providesTags: (result, error, id) => [{ type: "Products", id }],
+        providesTags: (result) => [
+          { type: "Products", id: "USER_PRODUCTS" },
+          ...(result?.map(({ id }) => ({ type: "Products" as const, id })) ||
+            []),
+        ],
       }),
 
       getProductsByUserIdUsersimplified: builder.query<IProduct[], string>({
@@ -194,6 +198,7 @@ export const productsApiSlice = createApi({
         invalidatesTags: [
           { type: "Reviews", id: "LIST" } as const,
           { type: "Products", id: "LIST" } as const,
+          { type: "Products", id: "USER_PRODUCTS" } as const,
         ],
       }),
 
