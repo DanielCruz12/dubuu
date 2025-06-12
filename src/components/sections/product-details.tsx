@@ -59,6 +59,7 @@ const ProductDetails = ({ product }: { product: IProduct }) => {
     <div className="mb-4">
       {isTour && tourData?.difficulty && (
         <div className="mb-4">
+          <label className="text-base md:text-xl font-semibold pr-3">Nivel de dificultad {" "}</label>
           <TourDifficultyBadge difficulty={tourData.difficulty} />
         </div>
       )}

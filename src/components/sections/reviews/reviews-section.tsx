@@ -49,12 +49,14 @@ export default function ReviewSection({
       reviews.some((review) => existingBooking.user_id === review.user_id),
   };
 
-  // Renderizar la sección principal de reseñas (siempre visible)
   return (
     <div className="mt-12 space-y-8">
-      <h2 className="text-xl md:text-2xl font-semibold">Reseñas</h2>
+      {reviews.length < 0 && (
+        <h2 className="text-xl md:text-2xl font-semibold">Reseñas</h2>
+      )}
+
       <ReviewSummary reviews={reviews} />
-      <Separator className="dark:border-muted" />
+      <Separator className="" />
       <ReviewList reviews={reviews} />
 
       {/* Sección de interacción del usuario con reseñas - solo mostrar en casos específicos */}

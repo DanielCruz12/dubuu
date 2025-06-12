@@ -11,7 +11,9 @@ export default function ReviewList({ reviews }: ReviewListProps) {
   return (
     <div>
       <div className="flex items-center justify-between mb-4 px-3">
-        <h3 className="text-lg font-medium">Reseñas ({reviews.length})</h3>
+        {reviews.length < 0 && (
+          <h3 className="text-lg font-medium">Reseñas ({reviews.length})</h3>
+        )}
 
         <ReviewSheet triggerText="Ver todas las reseñas">
           {reviews.length === 0 ? (
@@ -34,7 +36,7 @@ export default function ReviewList({ reviews }: ReviewListProps) {
       ) : (
         <ScrollArea type="always" className="max-h-[450px] rounded-md p-1">
           <div className="space-y-4 pr-4 max-h-[450px]">
-            {reviews.slice(0,4).map((review) => (
+            {reviews.slice(0, 4).map((review) => (
               <ReviewCard key={review.id} review={review} />
             ))}
           </div>

@@ -129,13 +129,15 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({
                     const tourPrice = tour?.price || 0;
                     const tourRating = Number(tour?.average_rating) || 0;
                     const tourReviews = tour?.total_reviews || 0;
-                    const tourCountry = tour?.country || "";
                     const tourImages = tour?.images || [];
                     const tourCategory = tour?.product_category;
 
                     return (
                       <div
                         key={tourId}
+                        onClick={() =>
+                          window.open(`/home/${tourId}`, "_blank")
+                        }
                         className="group p-3 border border-primary/10 rounded-xl hover:shadow-md transition-all duration-300 cursor-pointer hover:border-primary/30 flex gap-3"
                       >
                         <div className="w-20 h-20 md:w-24 md:h-24 relative rounded-lg overflow-hidden flex-shrink-0">
@@ -157,6 +159,16 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({
                           <h3 className="font-medium text-sm group-hover:text-primary transition-colors line-clamp-1">
                             {tourName}
                           </h3>
+                          <div className="text-xs text-muted-foreground mt-1 line-clamp-1">
+                            {tour.description || "Descripción no disponible"}
+                          </div>
+
+                          {tour?.address && (
+                            <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
+                              <MapPin className="w-3 h-3" />
+                              <span className="truncate">{tour?.address}</span>
+                            </div>
+                          )}
 
                           <div className="flex items-center gap-1 mt-1">
                             <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
@@ -169,15 +181,8 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({
                             </span>
                           </div>
 
-                          {tourCountry && (
-                            <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
-                              <MapPin className="w-3 h-3" />
-                              <span className="truncate">{tourCountry}</span>
-                            </div>
-                          )}
-
                           <div className="mt-1 font-medium text-sm">
-                            ${tourPrice} USD
+                            ${tourPrice} p/p
                           </div>
                         </div>
                       </div>

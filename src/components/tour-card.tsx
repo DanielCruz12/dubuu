@@ -237,7 +237,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
           {/* Título y ubicación */}
           <div className="flex flex-col gap-0.5">
             <div className="flex items-start justify-between">
-              <div className="text-xs line-clamp-1">{name}</div>
+              <div className="text-xs  line-clamp-1">{name}</div>
               <div className="flex items-center gap-1 text-xs">
                 <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />
                 <span>{formattedRating}</span>
@@ -357,23 +357,22 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
 
       <div className="flex flex-col">
         <CardContent className="pt-1">
-          {/* Rating */}
-          {total_reviews > 0 && (
-            <div className="mb-1.5">
+          <div className="flex items-center justify-between">
+            {/* Título */}
+            <h3 className="text-[0.875rem]  pt-2 md:text-[1rem] font-bold text-wrap line-clamp-1 ">
+              {name}
+            </h3>
+            {/* Rating */}
+            {total_reviews > 0 && (
               <Rating
                 averageRating={average_rating}
                 reviewsCount={total_reviews}
-                maxStars={5}
+                maxStars={total_reviews > 0 ? 5 : 1}
                 activeStarClassName="text-yellow-400 fill-yellow-400"
                 inactiveStarClassName="text-gray-300"
               />
-            </div>
-          )}
-
-          {/* Título */}
-          <h3 className="text-[0.875rem] md:text-[1rem] font-bold text-wrap line-clamp-1 ">
-            {name}
-          </h3>
+            )}
+          </div>
 
           {/* Descripción */}
           <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
