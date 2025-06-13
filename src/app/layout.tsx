@@ -64,7 +64,6 @@ export const metadata: Metadata = {
         width: 1200,
         height: 630,
         alt: "Dubuu - Experiencias de Viaje Únicas en El Salvador y Centroamérica",
-        type: "image/jpeg",
       },
     ],
   },
@@ -119,7 +118,7 @@ export default async function RootLayout({
             name="viewport"
             content="width=device-width, initial-scale=1.0"
           />
-          <link rel="icon" href="/icon.png" type="image/png" />
+          <link rel="icon" href="/logo.png" type="image/png" />
 
           {/* ✅ Meta tags actualizados con imagen JPG */}
           <meta property="og:type" content="website" />
@@ -167,7 +166,7 @@ export default async function RootLayout({
               "@type": "Organization",
               "name": "Dubuu",
               "url": "https://www.dubuu.com",
-              "logo": "https://www.dubuu.com/logo.svg",
+              "logo": "https://www.dubuu.com/logo.png",
               "description": "Diseñamos experiencias únicas de viaje en El Salvador y Centroamérica. Tours de lujo, alquiler de vehículos premium y propiedades exclusivas para viajeros exigentes.",
               "address": {
                 "@type": "PostalAddress",
