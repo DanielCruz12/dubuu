@@ -1,3 +1,4 @@
+import type React from "react";
 import { Raleway } from "next/font/google";
 import GlobalProviders from "../components/providers/global-providers";
 import { ClerkProvider } from "@clerk/nextjs";
@@ -7,6 +8,7 @@ import Script from "next/script";
 import { Toaster } from "sonner";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
+import { Suspense } from "react";
 
 const raleway = Raleway({ weight: "400", subsets: ["latin"] });
 
@@ -33,13 +35,6 @@ export const metadata: Metadata = {
     "destinos Centroamérica",
     "alternativa Booking",
     "alternativa Airbnb",
-    "tours El Salvador",
-    "viajes de lujo Centroamérica",
-    "experiencias únicas El Salvador",
-    "alquiler vehículos El Salvador",
-    "propiedades exclusivas Centroamérica",
-    "turismo de lujo",
-    "experiencias personalizadas",
   ],
   authors: [{ name: "Dubuu" }],
   creator: "Dubuu",
@@ -66,23 +61,24 @@ export const metadata: Metadata = {
       "Diseñamos experiencias únicas de viaje en El Salvador y Centroamérica. Tours de lujo, alquiler de vehículos premium y propiedades exclusivas para viajeros exigentes.",
     images: [
       {
-        url: "https://www.dubuu.com/logo.svg",
+        url: "https://www.dubuu.com/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "Dubuu - Experiencias de Viaje Únicas en El Salvador y Centroamérica",
+        type: "image/jpeg",
       },
     ],
   },
-  /*   twitter: {
+  twitter: {
     card: "summary_large_image",
     title:
       "Dubuu - Experiencias de Viaje Únicas en El Salvador y Centroamérica",
     description:
       "Diseñamos experiencias únicas de viaje en El Salvador y Centroamérica. Tours de lujo, alquiler de vehículos y propiedades exclusivas.",
-    images: ["https://www.dubuu.com/logo.svg",],
+    images: ["https://www.dubuu.com/og-image.jpg"],
     creator: "@dubuu",
     site: "@dubuu",
-  }, */
+  },
   robots: {
     index: true,
     follow: true,
@@ -95,7 +91,6 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
-
   category: "travel",
   applicationName: "Dubuu",
 };
@@ -116,32 +111,18 @@ export default async function RootLayout({
         },
       }}
     >
-      <html lang="en" suppressHydrationWarning>
+      <html lang="es" suppressHydrationWarning>
+        {" "}
+        {/* ✅ Cambiado a 'es' */}
         <head>
           <meta charSet="UTF-8" />
           <meta
             name="viewport"
             content="width=device-width, initial-scale=1.0"
           />
-          {/*  <meta
-          name="google-site-verification"
-          content="q_nKN4hBrKNgHd0IqIr4to0C-Cxn_L7gtijzxRKmBME"
-        /> */}
-          <link rel="icon" href="/icon.svg" type="image/png" />
-          <meta
-            name="description"
-            content="Diseñamos experiencias únicas de viaje en El Salvador y Centroamérica. Tours de lujo, alquiler de vehículos premium y propiedades exclusivas para viajeros exigentes."
-          />
-          <title>
-            Dubuu - Experiencias de Viaje Únicas en El Salvador y Centroamérica
-          </title>
-          <meta
-            name="keywords"
-            content="Diseñamos experiencias únicas de viaje en El Salvador y Centroamérica. Tours de lujo, alquiler de vehículos premium y propiedades exclusivas para viajeros exigentes."
-          />
-          <meta name="author" content="Dubuu team" />
-          <link rel="canonical" href="https://www.dubuu.com" />
+          <link rel="icon" href="/icon.png" type="image/png" />
 
+          {/* ✅ Meta tags actualizados con imagen JPG */}
           <meta property="og:type" content="website" />
           <meta property="og:url" content="https://www.dubuu.com" />
           <meta
@@ -152,11 +133,18 @@ export default async function RootLayout({
             property="og:description"
             content="Diseñamos experiencias únicas de viaje en El Salvador y Centroamérica. Tours de lujo, alquiler de vehículos premium y propiedades exclusivas para viajeros exigentes."
           />
-          <meta property="og:image" content="https://www.dubuu.com/logo.svg" />
+          <meta
+            property="og:image"
+            content="https://www.dubuu.com/og-image.jpg"
+          />
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" />
+          <meta property="og:image:type" content="image/jpeg" />
 
-          {/*   <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:site" content="@Daniel_CruzD" />
-          <meta name="twitter:creator" content="@Daniel_CruzD" />
+          {/* ✅ Twitter Card habilitado */}
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:site" content="@dubuu" />
+          <meta name="twitter:creator" content="@dubuu" />
           <meta
             name="twitter:title"
             content="Dubuu - Experiencias de Viaje Únicas en El Salvador y Centroamérica"
@@ -165,21 +153,10 @@ export default async function RootLayout({
             name="twitter:description"
             content="Diseñamos experiencias únicas de viaje en El Salvador y Centroamérica. Tours de lujo, alquiler de vehículos premium y propiedades exclusivas para viajeros exigentes."
           />
-          <meta name="twitter:image" content="https://www.dubuu.com/logo.svg" /> */}
-
-          {/*   <meta property="og:type" content="website" />
-          <meta property="og:url" content="https://tusitio.com/" />
-          <meta property="og:title" content="Tu Sitio Web" />
           <meta
-            property="og:description"
-            content="Descripción atractiva de tu sitio web"
+            name="twitter:image"
+            content="https://www.dubuu.com/og-image.jpg"
           />
-          <meta
-            property="og:image"
-            content="https://tusitio.com/og-image.jpg"
-          />
-          <meta property="og:image:width" content="1200" />
-          <meta property="og:image:height" content="630" /> */}
 
           <Script
             id="metadata"
@@ -189,14 +166,15 @@ export default async function RootLayout({
             {
               "@context": "https://schema.org",
               "@type": "Organization",
-              "name": "dubuu",
+              "name": "Dubuu",
               "url": "https://www.dubuu.com",
               "logo": "https://www.dubuu.com/logo.svg",
               "description": "Diseñamos experiencias únicas de viaje en El Salvador y Centroamérica. Tours de lujo, alquiler de vehículos premium y propiedades exclusivas para viajeros exigentes.",
-              "location": {
-                "@type": "El Salvador"
+              "address": {
+                "@type": "PostalAddress",
+                "addressCountry": "El Salvador"
               },
-               "founder": {
+              "founder": {
                 "@type": "Person",
                 "name": "Josué Daniel Cruz Dubón"
               },
@@ -206,22 +184,23 @@ export default async function RootLayout({
                 "contactType": "Customer Service",
                 "areaServed": "El Salvador",
                 "availableLanguage": "Spanish"
-              },
+              }
             }
           `,
             }}
           />
+
           <Script
             id="google-tag-manager"
             async
             src="https://www.googletagmanager.com/gtag/js?id=G-QXFD8S7VK0"
-          ></Script>
+          />
           <Script id="google-analytics">
             {`
               window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', 'G-QXFD8S7VK0'); 
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-QXFD8S7VK0'); 
             `}
           </Script>
         </head>
@@ -229,7 +208,7 @@ export default async function RootLayout({
           <SpeedInsights />
           <Analytics />
           <GlobalProviders>
-            {children}
+            <Suspense>{children}</Suspense>
             <Toaster richColors />
           </GlobalProviders>
         </body>
