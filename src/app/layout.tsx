@@ -8,7 +8,6 @@ import Script from "next/script";
 import { Toaster } from "sonner";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
-import { Suspense } from "react";
 
 const raleway = Raleway({ weight: "400", subsets: ["latin"] });
 
@@ -208,7 +207,7 @@ export default async function RootLayout({
           <SpeedInsights />
           <Analytics />
           <GlobalProviders>
-            <Suspense>{children}</Suspense>
+            {children}
             <Toaster richColors />
           </GlobalProviders>
         </body>
