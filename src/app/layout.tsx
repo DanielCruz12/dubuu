@@ -118,7 +118,8 @@ export default async function RootLayout({
             name="viewport"
             content="width=device-width, initial-scale=1.0"
           />
-          <link rel="icon" href="/logo.png" type="image/png" />
+          <link rel="icon" href="https://www.dubuu.com/icon.svg" />
+
 
           {/* ✅ Meta tags actualizados con imagen JPG */}
           <meta property="og:type" content="website" />
