@@ -17,7 +17,6 @@ import {
   useGetUserFavoritesQuery,
 } from "@/redux/slices/favorite/favorite-slice";
 import { toast } from "sonner";
-import { calculatePriceWithTaxes } from "@/lib/price";
 
 export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
   const {
@@ -249,10 +248,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
 
             {/* Precio */}
             <div className="text-xs">
-              <span className="font-semibold">
-                ${calculatePriceWithTaxes(price)}
-              </span>{" "}
-              p/p
+              <span className="font-semibold">${price}</span> p/p
             </div>
           </div>
         </div>
@@ -394,8 +390,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
 
         <CardFooter className="flex items-center justify-between py-3">
           <div className="font-semibold">
-            ${calculatePriceWithTaxes(price)}{" "}
-            <span className="text-sm text-muted-foreground">p/p</span>
+            ${price} <span className="text-sm text-muted-foreground">p/p</span>
           </div>
           <Button
             variant="secondary"

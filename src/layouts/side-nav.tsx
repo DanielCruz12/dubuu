@@ -11,61 +11,60 @@ import {
   commonDashboardItems,
   adminDashboardItems,
   hostDashboardItems,
-} from "./header";
+} from "@/utils/menu-options";
 import { useEffect, useState } from "react";
 
 export function SideNav() {
   const pathname = usePathname();
   const router = useRouter();
   const { hasRole, isLoadingRole } = useClerkToken();
-  const [navItems, setNavItems] = useState(accountNavItems)
+  const [navItems, setNavItems] = useState(accountNavItems);
 
+  // Handle all redirects and navigation items in a single useEffect
+  useEffect(() => {
+    if (isLoadingRole) return;
 
- // Handle all redirects and navigation items in a single useEffect
- useEffect(() => {
-  if (isLoadingRole) return
+    // Determine which navigation items to show based on the role
+    let items = accountNavItems;
 
-  // Determine which navigation items to show based on the role
-  let items = accountNavItems
+    // If user is admin or host
+    if (hasRole("admin") || hasRole("host")) {
+      // Start with common items
+      items = [...commonDashboardItems];
 
-  // If user is admin or host
-  if (hasRole("admin") || hasRole("host")) {
-    // Start with common items
-    items = [...commonDashboardItems]
+      // Add admin items if user is admin
+      if (hasRole("admin")) {
+        items = [...items, ...adminDashboardItems];
+      }
 
-    // Add admin items if user is admin
-    if (hasRole("admin")) {
-      items = [...items, ...adminDashboardItems]
+      // Add host items if user is host
+      if (hasRole("host")) {
+        items = [...items, ...hostDashboardItems];
+      }
+
+      // Redirect from account to dashboard if needed
+      if (pathname?.startsWith("/account")) {
+        router.push("/dashboard");
+        return;
+      }
+    } else if (pathname?.startsWith("/dashboard/")) {
+      // Regular users shouldn't see dashboard items, redirect them
+      router.push("/account");
+      return;
     }
 
-    // Add host items if user is host
-    if (hasRole("host")) {
-      items = [...items, ...hostDashboardItems]
-    }
+    // Update nav items state
+    setNavItems(items);
+  }, [isLoadingRole, hasRole, pathname, router]);
 
-    // Redirect from account to dashboard if needed
-    if (pathname?.startsWith("/account")) {
-      router.push("/dashboard")
-      return
-    }
-  } else if (pathname?.startsWith("/dashboard/")) {
-    // Regular users shouldn't see dashboard items, redirect them
-    router.push("/account")
-    return
+  if (isLoadingRole) {
+    return (
+      <div className="flex flex-col justify-start gap-4 pr-4 items-center py-4">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        <p className="text-sm text-muted-foreground">Cargando...</p>
+      </div>
+    );
   }
-
-  // Update nav items state
-  setNavItems(items)
-}, [isLoadingRole, hasRole, pathname, router])
-
-if (isLoadingRole) {
-  return (
-    <div className="flex flex-col justify-start gap-4 pr-4 items-center py-4">
-      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      <p className="text-sm text-muted-foreground">Cargando...</p>
-    </div>
-  )
-}
 
   return (
     <nav className="flex flex-col justify-start gap-4 pr-4">

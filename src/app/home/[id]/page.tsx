@@ -30,7 +30,6 @@ import clsx from "clsx";
 import { useGetReviewsQuery } from "@/redux/slices/product/review-slice";
 import { isProductType } from "@/utils";
 import UpTop from "@/components/up-top";
-import { calculatePriceWithTaxes } from "@/lib/price";
 import { ShareModal } from "@/components/share-modal";
 
 export default function ProductBooking() {
@@ -136,7 +135,7 @@ export default function ProductBooking() {
               variant="secondary"
               className="md:p-2 text-xl md:text-[2rem]"
             >
-              ${calculatePriceWithTaxes(product.price)}
+              ${product.price}
             </Badge>
           </div>
         </div>

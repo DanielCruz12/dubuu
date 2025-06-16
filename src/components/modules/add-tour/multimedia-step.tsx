@@ -26,8 +26,9 @@ import {
   multimediaSchema,
   type TourFiles,
 } from "./types";
-import { calculatePrices, scrollToFirstError, validateFiles } from "./utils";
+import { scrollToFirstError, validateFiles } from "./utils";
 import Image from "next/image";
+import { getCommissionRates, getHostEarningsFromFinalPrice } from "@/lib/price";
 
 interface MultimediaStepProps {
   onSubmit: (data: MultimediaFormValues, files: TourFiles) => void;
@@ -436,17 +437,17 @@ export function MultimediaStep({
                     type="number"
                     step="0.01"
                     placeholder="Ej. 20.99"
-                    className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
+                    className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white "
                   />
                 </FormControl>
                 <FormMessage className="text-xs text-red-500" />
               </FormItem>
             )}
           />
+          <div className="mb-2" />
 
-          {/* Cálculo de precios */}
           {form.watch("price") > 0 && (
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 mt-2">
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg py-2 px-4 mb-4">
               <h3 className="text-lg font-medium mb-3 flex items-center">
                 <DollarSign className="h-5 w-5 mr-2" />
                 Desglose de precios
@@ -456,46 +457,47 @@ export function MultimediaStep({
                   const price = Number.parseFloat(
                     form.watch("price").toString()
                   );
-                  const { tourismTax, platformFee, sellerEarns, userPays } =
-                    calculatePrices(price);
+                  const breakdown = getHostEarningsFromFinalPrice(price);
+                  const commissionRates = getCommissionRates();
 
                   return (
                     <>
-                      <div className="flex justify-between items-center text-sm">
+                      <div className="flex justify-between items-center text-sm pb-8">
                         <span className="text-gray-600 dark:text-gray-400">
-                          Precio base:
+                          Precio final (usuario paga):
                         </span>
-                        <span className="font-medium">${price.toFixed(2)}</span>
+                        <span className="font-bold text-2xl">
+                          ${price.toFixed(2)}
+                        </span>
                       </div>
+                      <Separator className="my-2" />
                       <div className="flex justify-between items-center text-sm">
                         <span className="text-gray-600 dark:text-gray-400 flex items-center">
                           <Percent className="h-3 w-3 mr-1" />
-                          Impuesto de turismo (5%):
+                          Comisión por pago (
+                          {commissionRates.paymentProcessingPercentage}):
                         </span>
-                        <span className="font-medium">
-                          -${tourismTax.toFixed(2)}
+                        <span className="font-medium text-red-600">
+                          -${breakdown.paymentProcessing.toFixed(2)}
                         </span>
                       </div>
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="text-gray-600 dark:text-gray-400 flex items-center">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600 dark:text-gray-400  flex items-center">
                           <Percent className="h-3 w-3 mr-1" />
-                          Comisión de plataforma (10%):
+                          Comisión de plataforma (
+                          {commissionRates.platformPercentage}):
                         </span>
-                        <span className="font-medium">
-                          -${platformFee.toFixed(2)}
+                        <span className="font-medium text-red-600">
+                          -${breakdown.platformFee.toFixed(2)}
                         </span>
                       </div>
                       <Separator className="my-2" />
                       <div className="flex justify-between items-center">
-                        <span className="font-medium">Tú recibes:</span>
-                        <span className="font-bold text-lg">
-                          ${sellerEarns.toFixed(2)}
+                        <span className="font-medium text-green-700 dark:text-green-400">
+                          Tú recibes:
                         </span>
-                      </div>
-                      <div className="flex justify-between items-center mt-4 pt-2 border-t">
-                        <span className="font-medium">El usuario paga:</span>
-                        <span className="font-bold text-lg">
-                          ${userPays.toFixed(2)}
+                        <span className="text-2xl font-bold text-green-700 dark:text-green-400">
+                          ${breakdown.hostReceives.toFixed(2)}
                         </span>
                       </div>
                     </>

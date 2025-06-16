@@ -5,22 +5,7 @@ import type React from "react";
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  LogOut,
-  Rss,
-  Handshake,
-  Info,
-  LayoutDashboard,
-  Home,
-  CalendarDays,
-  User,
-  CreditCard,
-  List,
-  Bookmark,
-  Settings,
-  Users,
-  LayoutDashboardIcon,
-} from "lucide-react";
+import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -36,8 +21,17 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { useClerk } from "@clerk/nextjs";
 import { MenuProfileSheet } from "./sidebar";
 import { useClerkToken } from "@/components/providers/auth-provider";
-import { MenuNavItem, NavItem, RoleNavItem } from "@/types/dashboard-nav";
+import { RoleNavItem } from "@/types/dashboard-nav";
 import Image from "next/image";
+import {
+  accountNavItems,
+  adminDashboardItems,
+  authenticatedHostOrAdminMenuItems,
+  authenticatedUserMenuItems,
+  commonDashboardItems,
+  guestMenuItems,
+  hostDashboardItems,
+} from "@/utils/menu-options";
 
 export function Header() {
   const pathname = usePathname();
@@ -98,7 +92,13 @@ export function Header() {
 
           <div className="">
             <Link href="/home" className="flex items-center gap-1">
-              <Image src="/logo.svg" priority alt="Dubuu Logo" width={100} height={40} />
+              <Image
+                src="/logo.svg"
+                priority
+                alt="Dubuu Logo"
+                width={100}
+                height={40}
+              />
             </Link>
           </div>
 
@@ -118,7 +118,7 @@ export function Header() {
                 </Button>
               </DropdownMenuTrigger>
 
-              <DropdownMenuContent align="start" className="w-56">
+              <DropdownMenuContent align="start" className="w-60 p-2">
                 {user ? (
                   <>
                     <DropdownMenuLabel className="font-normal">
@@ -132,39 +132,40 @@ export function Header() {
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild className="cursor-pointer py-3">
-                      <Link href="/home">
-                        <Home className="mr-2 h-4 w-4" />
-                        <span>Inicio</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild className="cursor-pointer py-3">
-                      <Link href="/contact">
-                        <Handshake className="mr-2 h-4 w-4" />
-                        <span>¿Quieres ser parte?</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild className="cursor-pointer py-3">
-                      <Link href="/blog">
-                        <Rss className="mr-2 h-4 w-4" />
-                        <span>Blog</span>
-                      </Link>
-                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <DropdownMenuItem asChild className="py-3">
+                    <Link href="/sign-in" className="cursor-pointer w-full">
+                      <Button
+                        variant="outline"
+                        className="w-full justify-center"
+                      >
+                        Iniciar sesión
+                      </Button>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+
+                {menuToRender.map((item, index) => (
+                  <DropdownMenuItem key={index} asChild className="py-3">
+                    <Link href={item.href} className="flex items-center">
+                      <item.icon className="mr-2 h-4 w-4" />
+                      <span>{item.label}</span>
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+
+                {user && (
+                  <>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={() => signOut()}
-                      className="cursor-pointer"
+                      className="cursor-pointer py-3"
                     >
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>Cerrar sesión</span>
                     </DropdownMenuItem>
                   </>
-                ) : (
-                  <DropdownMenuItem asChild>
-                    <Link href="/sign-in" className="cursor-pointer w-full">
-                      Iniciar sesión
-                    </Link>
-                  </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
@@ -180,7 +181,13 @@ export function Header() {
       <div className="flex h-16 items-center md:px-20 px-4">
         <div className="flex items-center gap-2">
           <Link href={"/home"} className="flex items-center gap-1">
-            <Image src="/logo.svg" priority alt="Dubuu Logo" width={100} height={40} />
+            <Image
+              src="/logo.svg"
+              priority
+              alt="Dubuu Logo"
+              width={100}
+              height={40}
+            />
           </Link>
         </div>
 
@@ -250,138 +257,3 @@ export function Header() {
     </header>
   );
 }
-
-// Menu items for guests
-export const guestMenuItems: MenuNavItem[] = [
-  {
-    icon: Home,
-    label: "Inicio",
-    href: "/home",
-  },
-  {
-    icon: Info,
-    label: "Centro de ayuda",
-    href: "/support",
-  },
-  {
-    icon: Rss,
-    label: "Blog",
-    href: "/blog",
-  },
-];
-
-// Menu items for authenticated users (Dropdown)
-export const authenticatedUserMenuItems: MenuNavItem[] = [
-  {
-    icon: LayoutDashboard,
-    label: "Cuenta",
-    href: "/account",
-  },
-  {
-    icon: Handshake,
-    label: "¿Quieres ser parte?",
-    href: "/contact",
-  },
-  {
-    icon: Info,
-    label: "Centro de ayuda",
-    href: "/support",
-  },
-  {
-    icon: Rss,
-    label: "Blog",
-    href: "/blog",
-  },
-];
-
-// Menu items for hosts/admins (Dropdown)
-export const authenticatedHostOrAdminMenuItems: MenuNavItem[] = [
-  {
-    icon: LayoutDashboard,
-    label: "Panel",
-    href: "/dashboard",
-  },
-  {
-    icon: Info,
-    label: "Centro de ayuda",
-    href: "/support",
-  },
-  {
-    icon: Rss,
-    label: "Blog",
-    href: "/blog",
-  },
-];
-
-// SideNav for normal users (/account)
-export const accountNavItems: NavItem[] = [
-  {
-    title: "Perfil",
-    href: "/account/profile",
-    icon: <User className="h-4 w-4 mr-2" />,
-  },
-  {
-    title: "Mis reservas",
-    href: "/account/bookings",
-    icon: <CalendarDays className="h-4 w-4 mr-2" />,
-  },
-  {
-    title: "Guardados",
-    href: "/account/saved",
-    icon: <Bookmark className="h-4 w-4 mr-2" />,
-  },
-];
-
-// Common dashboard items for all roles
-export const commonDashboardItems: NavItem[] = [
-  {
-    title: "Perfil",
-    href: "/dashboard/profile",
-    icon: <User className="h-4 w-4 mr-2" />,
-  },
-];
-
-// Admin-only dashboard items
-export const adminDashboardItems: NavItem[] = [
-  {
-    title: "Usuarios",
-    href: "/dashboard/users",
-    icon: <Users className="h-4 w-4 mr-2" />,
-  },
-  {
-    title: "Configuración",
-    href: "/dashboard/settings",
-    icon: <Settings className="h-4 w-4 mr-2" />,
-  },
-];
-
-// Host-only dashboard items
-export const hostDashboardItems: NavItem[] = [
-  {
-    title: "Panel",
-    href: "/dashboard",
-    icon: <LayoutDashboardIcon className="h-4 w-4 mr-2" />,
-  },
-  {
-    title: "Reservas",
-    href: "/dashboard/bookings",
-    icon: <CalendarDays className="h-4 w-4 mr-2" />,
-  },
-  {
-    title: "Productos",
-    href: "/dashboard/products",
-    icon: <List className="h-4 w-4 mr-2" />,
-  },
-  {
-    title: "Pagos",
-    href: "/dashboard/payments",
-    icon: <CreditCard className="h-4 w-4 mr-2" />,
-  },
-];
-
-// Combined dashboard items with role flags (for backward compatibility)
-export const dashboardNavItems: RoleNavItem[] = [
-  ...commonDashboardItems,
-  ...adminDashboardItems.map((item) => ({ ...item, adminOnly: true })),
-  ...hostDashboardItems.map((item) => ({ ...item, hostOnly: true })),
-];

@@ -17,7 +17,6 @@ import type { IProduct } from "@/types/product";
 import { Input } from "../ui/input";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
-import { calculatePriceWithTaxes } from "@/lib/price";
 
 export function ResultDialog({
   isOpen,
@@ -312,7 +311,7 @@ export function ResultDialog({
                         )}
 
                         <div className="mt-1 font-medium text-sm">
-                          ${calculatePriceWithTaxes(tour.price)} USD
+                          ${tour.price} USD
                         </div>
                       </div>
                     </div>

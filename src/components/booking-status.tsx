@@ -18,7 +18,6 @@ import moment from "moment";
 import { ReceiptProps } from "@/types/pdf";
 import PDFButton from "./pdf/pdf-button";
 import { statusConfig } from "@/utils";
-import { calculatePriceWithTaxes } from "@/lib/price";
 
 type BookingStatusProps = {
   id: string;
@@ -65,11 +64,10 @@ export function BookingStatus({
         id: tickets.adult.toString(),
         description: productName as string,
         quantity: tickets.adult,
-        price: calculatePriceWithTaxes(product.price),
+        price: product.price,
       },
     ],
-    subtotal:
-      (calculatePriceWithTaxes(product.price) as number) * tickets.adult,
+    subtotal: (product.price as number) * tickets.adult,
     total: total,
     notes:
       "Gracias por confiar en nuestros servicios. Este recibo sirve como comprobante de pago.",

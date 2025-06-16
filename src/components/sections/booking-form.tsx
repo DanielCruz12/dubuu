@@ -15,15 +15,14 @@ import {
 } from "@/components/ui/select";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
-import { Info, Users } from "lucide-react";
+import { Users } from "lucide-react";
 import type { IProduct } from "@/types/product";
 import { Separator } from "../ui/separator";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { isProductType } from "@/utils";
 import { useState, useRef } from "react";
-import { calculatePriceWithTaxes, getTaxBreakdown } from "@/lib/price";
+import { getHostEarningsFromFinalPrice } from "@/lib/price";
 
 import "moment/locale/es";
 const schema = z.object({
@@ -104,10 +103,7 @@ export default function BookingForm({
       datetime: watchData.datetime,
       tickets: watchData.tickets,
       addons: watchData.addons,
-      total: calculatePriceWithTaxes(product.price, {
-        quantity: watchData.tickets.adult,
-        formatResult: false,
-      }) as number,
+      total: product.price * watchData.tickets.adult,
       user_id: user.id,
       product_id: product.id,
     });
@@ -213,7 +209,7 @@ export default function BookingForm({
         <div>
           <Label>Entradas:</Label>
           <div className="flex flex-col gap-2 md:flex-row md:justify-between md:items-center mt-2">
-            <span>Adultos (18+)</span>
+            <span>Adultos</span>
             <div className="flex items-center gap-2">
               <span>${product.price}</span>
               <Controller
@@ -262,78 +258,36 @@ export default function BookingForm({
         </div>
 
         <div className="pt-4 border-t dark:border-muted space-y-3">
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-between text-sm">
-              <span>IVA (13%)</span>
-              <span>
-                $
-                {getTaxBreakdown(
-                  product.price,
-                  watchData.tickets.adult
-                ).iva.toFixed(2)}
-              </span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span>Impuesto de Turismo (5%)</span>
-              <span>
-                $
-                {getTaxBreakdown(
-                  product.price,
-                  watchData.tickets.adult
-                ).tourismTax.toFixed(2)}
-              </span>
-            </div>
-            <div className="flex justify-between text-sm mb-3">
-              <div className="">
-                Tarifa de Servicio (3%)
-                <Popover>
-                  <PopoverTrigger className="px-1 ml-2 ">
-                    <Info className="h-4 w-4" />
-                    <span className="sr-only">Información sobre impuestos</span>
-                  </PopoverTrigger>
-                  <PopoverContent className="max-w-xs">
-                    <p className="text-sm text-muted-foreground">
-                      Nuestra tarifa de servicio es mucho menor comparada con
-                      Airbnb (14-16%) y Booking (15-18%).
-                    </p>
-                  </PopoverContent>
-                </Popover>
-              </div>
-              <span>
-                $
-                {getTaxBreakdown(
-                  product.price,
-                  watchData.tickets.adult
-                ).serviceFee.toFixed(2)}
-              </span>
-            </div>
-          </div>
+          {(() => {
+            const price = product.price;
+            const breakdown = getHostEarningsFromFinalPrice(
+              price,
+              watchData.tickets.adult
+            );
 
-          <div>
-            <div className="flex justify-between text-sm">
-              <span>Subtotal</span>
-              <span>
-                $
-                {getTaxBreakdown(
-                  product.price,
-                  watchData.tickets.adult
-                ).subtotal.toFixed(2)}
-              </span>
-            </div>
-            <Separator className="my-3" />
+            return (
+              <>
+                <div className="flex justify-between text-sm">
+                  <span>Precio por persona:</span>
+                  <span>${price}</span>
+                </div>
 
-            <div className="flex rounded py-3 px-2 justify-between font-semibold items-center">
-              <span className="text-lg md:text-2xl">Total</span>
-              <div className="flex items-center gap-2">
-                <span className="text-lg md:text-2xl">
-                  $
-                  {calculatePriceWithTaxes(product.price, {
-                    quantity: watchData.tickets.adult,
-                  })}
-                </span>
-              </div>
-            </div>
-          </div>
+                <div className="flex justify-between text-sm">
+                  <span>Subtotal:</span>
+                  <span>${breakdown.userPays.toFixed(2)}</span>
+                </div>
+                <Separator className="my-3" />
+                <div className="flex rounded py-3 px-2 justify-between font-semibold items-center">
+                  <span className="text-lg md:text-2xl">Total</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg md:text-2xl">
+                      ${breakdown.userPays.toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              </>
+            );
+          })()}
 
           {!showPaymentStep && (
             <Button
