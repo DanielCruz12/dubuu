@@ -7,8 +7,6 @@ import { isProductType } from "@/utils";
 
 interface LocationMapProps {
   title?: string;
-  locationName: string;
-  address: string;
   latitude: number;
   longitude: number;
   zoom?: number;
@@ -16,7 +14,7 @@ interface LocationMapProps {
 }
 
 export default function LocationMap({
-  title = "Ubicación",
+  title = "Punto de salida",
   product,
   latitude,
   longitude,
@@ -76,7 +74,6 @@ export default function LocationMap({
           <MapPin className="h-5 w-5" />
         </div>
         <div>
-          <h3 className="font-bold text-base">Punto de salida</h3>
           <p className="text-sm">{tourData?.departure_point}</p>
         </div>
       </div>

@@ -338,7 +338,7 @@ export default function BookingForm({
           {!showPaymentStep && (
             <Button
               type="button"
-              variant={"secondary"}
+              variant={"default"}
               className="w-full"
               onClick={handleReserveClick}
             >

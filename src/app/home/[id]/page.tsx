@@ -31,6 +31,7 @@ import { useGetReviewsQuery } from "@/redux/slices/product/review-slice";
 import { isProductType } from "@/utils";
 import UpTop from "@/components/up-top";
 import { calculatePriceWithTaxes } from "@/lib/price";
+import { ShareModal } from "@/components/share-modal";
 
 export default function ProductBooking() {
   const { user } = useUser();
@@ -99,7 +100,7 @@ export default function ProductBooking() {
     <div className="mx-auto md:px-0">
       <UpTop />
       <section className="w-full mb-8">
-        <div className="mb-6">
+        <div className="mb-4">
           <div className="flex flex-col md:flex-row items-start gap-2 text-sm">
             <Rating
               averageRating={Number(product.average_rating)}
@@ -108,23 +109,44 @@ export default function ProductBooking() {
               activeStarClassName="text-yellow-400 fill-yellow-400"
               inactiveStarClassName="text-gray-300"
             />
-            <div className="flex items-center gap-1">
-              <MapPin className="w-4 h-4" />
-              <span className="text-muted-foreground">{product?.address}</span>
+          </div>
+          <div className="flex justify-between items-start mb-2">
+            <h1 className="text-xl md:text-3xl font-semibold flex-1 pr-4">
+              {product?.name}
+            </h1>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <ShareModal
+                title={product?.name}
+                url={typeof window !== "undefined" ? window.location.href : ""}
+                description={product?.description?.substring(0, 100) + "..."}
+                image={product?.banner}
+              />
+              {/*   <Button
+                variant="ghost"
+                size="sm"
+                className="rounded-full hover:bg-gray-100 p-2"
+              >
+                <Heart className="h-4 w-4 " />
+                <span className="text-sm font-medium underline">Guardar</span>
+              </Button> */}
             </div>
           </div>
-          <h1 className="text-xl md:text-3xl font-semibold">{product?.name}</h1>
-
-          <div className="flex items-center gap-2 mt-2">
-            <Badge variant="default" className="text-sm md:text-[1rem]">
+          <div className="flex items-center gap-2 md:mt-2">
+            <Badge
+              variant="secondary"
+              className="md:p-2 text-xl md:text-[2rem]"
+            >
               ${calculatePriceWithTaxes(product.price)}
             </Badge>
           </div>
         </div>
 
         <ImageCollage banner={product.banner} images={product?.images} />
-
-        <ScrollArea type="always" className="w-full pt-2">
+        <div className="pt-2 flex items-center gap-1">
+          <MapPin className="w-6 h-6 md:w-5 md:h-5" />
+          <span className="text-sm md:text-base">{product?.address}</span>
+        </div>
+        <ScrollArea type="always" className="w-full">
           <div className="flex flex-wrap gap-2 md:gap-4 mt-3">
             {product.amenities?.map((service, index) => (
               <Badge
@@ -153,10 +175,8 @@ export default function ProductBooking() {
             <ProductDetails product={product} />
             <div className="hidden md:block">
               <LocationMap
+                title="Punto de salida"
                 product={product}
-                title="Ubicación"
-                locationName="Galar Gdański - Tourist Cruises"
-                address="Dokowa 1, Gdansk, 80-863"
                 latitude={isTour ? product.tour.lat : 0}
                 longitude={isTour ? product.tour.long : 0}
                 zoom={15}
@@ -292,9 +312,7 @@ export default function ProductBooking() {
       <div className="block md:hidden">
         <LocationMap
           product={product}
-          title="Ubicación"
-          locationName="Galar Gdański - Tourist Cruises"
-          address="Dokowa 1, Gdansk, 80-863"
+          title="Punto de salida"
           latitude={isTour ? product.tour.lat : 0}
           longitude={isTour ? product.tour.long : 0}
           zoom={15}
