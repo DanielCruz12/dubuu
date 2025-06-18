@@ -1,127 +1,76 @@
-import type { MetadataRoute } from "next";
-
-// Esta función simula la obtención de datos de tu base de datos
-// Reemplázala con tu lógica real para obtener tours, propiedades, etc.
-async function fetchBlogPosts() {
-  // Ejemplo: return await db.blogPosts.findMany();
-  return [
-    { slug: "mejores-destinos-el-salvador", updatedAt: new Date() },
-    { slug: "guia-playas-centroamerica", updatedAt: new Date() },
-    { slug: "tours-volcanicos", updatedAt: new Date() },
-  ];
-}
-
-async function fetchRentals() {
-  // Ejemplo: return await db.rentals.findMany();
-  return [
-    { slug: "suv-4x4", updatedAt: new Date() },
-    { slug: "sedan-economico", updatedAt: new Date() },
-    { slug: "minivan", updatedAt: new Date() },
-  ];
-}
-
-async function fetchInvestments() {
-  // Ejemplo: return await db.investments.findMany();
-  return [
-    { slug: "propiedad-playa-el-tunco", updatedAt: new Date() },
-    { slug: "villa-lago-coatepeque", updatedAt: new Date() },
-    { slug: "apartamento-san-salvador", updatedAt: new Date() },
-  ];
-}
+import { MetadataRoute } from "next";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Obtener datos dinámicos
-  const blogPosts = await fetchBlogPosts();
-  const rentals = await fetchRentals();
-  const investments = await fetchInvestments();
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com";
 
-  // Páginas estáticas principales basadas en tu estructura de archivos
-  const staticPages = [
+  const routes: MetadataRoute.Sitemap = [
     {
-      url: "https://www.dubuu.com",
+      url: baseUrl,
       lastModified: new Date(),
-      changeFrequency: "daily" as const,
-      priority: 1.0,
     },
     {
-      url: "https://www.dubuu.com/home",
+      url: `${baseUrl}/blog`,
       lastModified: new Date(),
-      changeFrequency: "weekly" as const,
-      priority: 0.9,
     },
     {
-      url: "https://www.dubuu.com/rental",
+      url: `${baseUrl}/about`,
       lastModified: new Date(),
-      changeFrequency: "daily" as const,
-      priority: 0.9,
     },
     {
-      url: "https://www.dubuu.com/investment",
+      url: `${baseUrl}/contact`,
       lastModified: new Date(),
-      changeFrequency: "weekly" as const,
-      priority: 0.8,
     },
     {
-      url: "https://www.dubuu.com/map",
+      url: `${baseUrl}/privacy`,
       lastModified: new Date(),
-      changeFrequency: "monthly" as const,
-      priority: 0.7,
     },
     {
-      url: "https://www.dubuu.com/blog",
+      url: `${baseUrl}/terms`,
       lastModified: new Date(),
-      changeFrequency: "weekly" as const,
-      priority: 0.8,
     },
     {
-      url: "https://www.dubuu.com/contact",
+      url: `${baseUrl}/sitemap.xml`,
       lastModified: new Date(),
-      changeFrequency: "monthly" as const,
-      priority: 0.7,
     },
     {
-      url: "https://www.dubuu.com/support",
+      url: `${baseUrl}/robots.txt`,
       lastModified: new Date(),
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
     },
     {
-      url: "https://www.dubuu.com/terms",
+      url: `${baseUrl}/favicon.ico`,
       lastModified: new Date(),
-      changeFrequency: "yearly" as const,
-      priority: 0.5,
+    },
+    {
+      url: `${baseUrl}/apple-touch-icon.png`,
+      lastModified: new Date(),
+    },
+    {
+      url: `${baseUrl}/manifest.json`,
+      lastModified: new Date(),
+    },
+    {
+      url: `${baseUrl}/opengraph-image.png`,
+      lastModified: new Date(),
+    },
+    {
+      url: `${baseUrl}/investment`,
+    },
+    {
+      url: `${baseUrl}/home`,
+    },
+    {
+      url: `${baseUrl}/account/*`,
+    },
+    {
+      url: `${baseUrl}/account/profile`,
+    },
+    {
+      url: `${baseUrl}/account/saved`,
+    },
+    {
+      url: `${baseUrl}/account/bookings`,
     },
   ];
 
-  // Mapear entradas de blog a entradas de sitemap
-  const blogEntries = blogPosts.map((post) => ({
-    url: `https://www.dubuu.com/blog/${post.slug}`,
-    lastModified: post.updatedAt,
-    changeFrequency: "monthly" as const,
-    priority: 0.7,
-  }));
-
-  // Mapear alquileres a entradas de sitemap
-  const rentalEntries = rentals.map((rental) => ({
-    url: `https://www.dubuu.com/rental/${rental.slug}`,
-    lastModified: rental.updatedAt,
-    changeFrequency: "weekly" as const,
-    priority: 0.8,
-  }));
-
-  // Mapear inversiones a entradas de sitemap
-  const investmentEntries = investments.map((investment) => ({
-    url: `https://www.dubuu.com/investment/${investment.slug}`,
-    lastModified: investment.updatedAt,
-    changeFrequency: "weekly" as const,
-    priority: 0.8,
-  }));
-
-  // Combinar todas las entradas
-  return [
-    ...staticPages,
-    ...blogEntries,
-    ...rentalEntries,
-    ...investmentEntries,
-  ];
+  return routes;
 }
