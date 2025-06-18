@@ -9,6 +9,12 @@ import { CalendarDays, CreditCard, MapPin, Users } from "lucide-react";
 import { Overview } from "./(components)/overview";
 import { RecentBookings } from "./(components)/recent-bookings";
 import { DashboardTitle } from "@/components/dashboard-title";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Panel de Control",
+  description: "Bienvenido a tu panel de control",
+};
 
 export default function DashboardPage() {
   return (

@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+
 export default function PartnerOrInvestPage() {
   const financialData = [
     { name: "Año 1", ingresos: 220000, gastos: 187000, beneficio: 33000 },

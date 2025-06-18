@@ -1,7 +1,7 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 export default function RecentPosts() {
@@ -17,7 +17,7 @@ export default function RecentPosts() {
               Favorite destinations based on customer reviews
             </p>
           </div>
-        {/*   <div className="grid gap-8">
+          {/*   <div className="grid gap-8">
             {pathname === "/blog"
               ? posts.map((post, index) => (
                   <Link key={index} href={`/blog/${post.id}`}>
@@ -33,7 +33,7 @@ export default function RecentPosts() {
         </div>
 
         {/* Sidebar */}
-       {/*  <aside className="md:mt-20">
+        {/*  <aside className="md:mt-20">
           <h2 className="mb-6 pt-4 text-xl font-semibold">Trending Now</h2>
           <div className="grid gap-6">
             {trendingPosts.slice(0, 2).map((post, index) => (

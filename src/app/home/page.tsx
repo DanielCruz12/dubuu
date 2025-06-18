@@ -39,7 +39,7 @@ export default function Home() {
       limit: 8,
       cursor: nextCursor || undefined,
       is_approved: true,
-      is_active: true
+      is_active: true,
     },
     {
       // Solo ejecutar cuando shouldFetchMore es true y nextCursor existe

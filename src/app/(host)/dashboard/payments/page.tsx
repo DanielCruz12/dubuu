@@ -1,6 +1,11 @@
 import React from "react";
 import { PaymentForm } from "./(forms)/payment-form";
 import { DashboardTitle } from "@/components/dashboard-title";
+import { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Información de Pago",
+  description: "Para recibir pagos, debes decirnos a dónde enviar el dinero.",
+};
 
 const Payments = () => {
   return (

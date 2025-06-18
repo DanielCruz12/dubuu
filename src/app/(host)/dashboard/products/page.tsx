@@ -1,5 +1,10 @@
 import { DashboardTitle } from "@/components/dashboard-title";
 import { ProductsDataTable } from "./(components)/products-table";
+import { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Productos",
+  description: "Lista de todos tus productos",
+};
 
 const Products = () => {
   return (
