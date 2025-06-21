@@ -121,7 +121,6 @@ export default async function RootLayout({
           <link rel="icon" href="https://www.dubuu.com/icon.svg" />
           <meta name="dubuu" content="dubuu" />
 
-
           {/* ✅ Meta tags actualizados con imagen JPG */}
           <meta property="og:type" content="website" />
           <meta property="og:url" content="https://www.dubuu.com" />
@@ -190,6 +189,23 @@ export default async function RootLayout({
             }}
           />
 
+          <Script
+            id="crisp-chat"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
+                window.$crisp=[];
+                window.CRISP_WEBSITE_ID="50f4a4a9-d234-4f9e-a317-d396a602193c";
+                (function(){
+                  d=document;
+                  s=d.createElement("script");
+                  s.src="https://client.crisp.chat/l.js";
+                  s.async=1;
+                  d.getElementsByTagName("head")[0].appendChild(s);
+                })();
+              `,
+            }}
+          />
           <Script
             id="google-tag-manager"
             async

@@ -1,5 +1,99 @@
-import { IProductBase } from "./product";
+import type { IProductBase } from "./product";
 
 export interface IRentalProduct extends IProductBase<"rental"> {
-    rental_type: string;
-  }
+  rental: {
+    brand: string;
+    model: string;
+    year: number;
+    condition: "new" | "used" | "excellent" | "good" | "fair";
+    mileage: number;
+    transmission: "automatic" | "manual";
+    seating_capacity: number;
+    pickup_location: string;
+    max_delivery_distance_km: number;
+    base_delivery_fee: string;
+    fee_per_km: string;
+    offers_delivery: boolean;
+    price_per_day: string;
+    available_from: string;
+    available_until: string;
+    fuel_type: "gasoline" | "diesel" | "electric" | "hybrid";
+    is_available: boolean;
+    is_approved: boolean;
+    is_live: boolean;
+    type_car:
+      | "sedan"
+      | "suv"
+      | "hatchback"
+      | "coupe"
+      | "convertible"
+      | "truck"
+      | "van"
+      | "motorcycle";
+    color: string;
+    doors: number;
+    engine: string;
+  };
+}
+
+// Additional types for rental-specific functionality
+export interface IRentalAvailability {
+  date: string;
+  is_available: boolean;
+  price_per_day: string;
+}
+
+export interface IRentalBooking {
+  id: string;
+  rental_id: string;
+  user_id: string;
+  pickup_date: string;
+  return_date: string;
+  pickup_location: string;
+  return_location?: string;
+  total_days: number;
+  base_price: string;
+  delivery_fee?: string;
+  total_amount: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface IRentalDeliveryOptions {
+  offers_delivery: boolean;
+  max_delivery_distance_km: number;
+  base_delivery_fee: string;
+  fee_per_km: string;
+}
+
+// Utility types for rental filtering and searching
+export type RentalTransmissionType = "automatic" | "manual";
+export type RentalFuelType = "gasoline" | "diesel" | "electric" | "hybrid";
+export type RentalCondition = "new" | "used" | "excellent" | "good" | "fair";
+export type RentalCarType =
+  | "sedan"
+  | "suv"
+  | "hatchback"
+  | "coupe"
+  | "convertible"
+  | "truck"
+  | "van"
+  | "motorcycle";
+
+export interface IRentalFilters {
+  brand?: string;
+  model?: string;
+  year_min?: number;
+  year_max?: number;
+  price_min?: number;
+  price_max?: number;
+  transmission?: RentalTransmissionType;
+  fuel_type?: RentalFuelType;
+  condition?: RentalCondition;
+  type_car?: RentalCarType;
+  seating_capacity_min?: number;
+  offers_delivery?: boolean;
+  available_from?: string;
+  available_until?: string;
+}
