@@ -41,6 +41,7 @@ import { productAudiencesApiSlice } from "@/redux/slices/product/product-audienc
 import searchReducer from "@/redux/slices/product/search/search-slice";
 
 import authReducer from "./slices/auth/auth-slice";
+import { exchangesApiSlice } from "./slices/exchange/exchange-slice";
 
 // Función para crear un almacenamiento "inerte" en entornos sin window (server-side)
 const createNoopStorage = () => {
@@ -75,6 +76,7 @@ const persistConfig = {
     "productCategories",
     "productAmenities",
     "productAudiences",
+    "exchangesApiSlice",
     // Aquí puedes indicar qué reducers deseas persistir
     // "productsApiSlice", // Si deseas persistir el slice de productos
     // "paymentApiSlice", // Si deseas persistir el slice de pagos
@@ -100,6 +102,8 @@ const rootReducer = combineReducers({
   [productCategoriesApiSlice.reducerPath]: productCategoriesApiSlice.reducer,
   [productAmenitiesApiSlice.reducerPath]: productAmenitiesApiSlice.reducer,
   [productAudiencesApiSlice.reducerPath]: productAudiencesApiSlice.reducer,
+  [exchangesApiSlice.reducerPath]: exchangesApiSlice.reducer,
+
   auth: authReducer,
   search: searchReducer,
 });
@@ -127,7 +131,8 @@ export const makeStore = () =>
         contactsApiSlice.middleware,
         productCategoriesApiSlice.middleware,
         productAmenitiesApiSlice.middleware,
-        productAudiencesApiSlice.middleware
+        productAudiencesApiSlice.middleware,
+        exchangesApiSlice.middleware
       ),
   });
 

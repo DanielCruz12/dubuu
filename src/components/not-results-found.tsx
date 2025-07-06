@@ -24,7 +24,6 @@ export function NoSearchResults() {
 
   // Construir la información de la ruta usando el artículo correcto
   /*  const routeInfo = {
-    path: `/home/${productType}/all`,
     label: `Ver ${article} ${displayName} disponibles`,
   }; */
 

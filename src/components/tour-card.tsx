@@ -17,6 +17,7 @@ import {
   useGetUserFavoritesQuery,
 } from "@/redux/slices/favorite/favorite-slice";
 import { toast } from "sonner";
+import { generateSlug } from "@/lib/utils";
 
 export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
   const {
@@ -30,6 +31,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
     total_reviews,
     address,
     product_category,
+    product_type,
   } = props;
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -143,8 +145,14 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
     }
   };
 
-  const navigateToTour = (tourId: string) => {
-    router.push(`/home/${tourId}`);
+  const navigateToTour = (name: string, id: string, country: string) => {
+    const slug = generateSlug(
+      name,
+      country,
+      product_type.name,
+      product_category?.name
+    );
+    router.push(`/home/${slug}/${id}`);
   };
 
   // Safely handle images array
@@ -158,7 +166,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
     return (
       <Card
         className="overflow-hidden rounded-xl border-none shadow-sm h-full cursor-pointer"
-        onClick={() => navigateToTour(id)}
+        onClick={() => navigateToTour(name, id, country)}
       >
         <div
           ref={carouselRef}
@@ -395,7 +403,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
           <Button
             variant="secondary"
             className="rounded-full"
-            onClick={() => navigateToTour(id)}
+            onClick={() => navigateToTour(name, id, country)}
           >
             Ver detalles
           </Button>

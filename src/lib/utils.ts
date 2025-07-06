@@ -1,6 +1,8 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { toast } from "sonner";
+import { Country } from "@/types/payment-types";
+import { countries } from "@/utils/data";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -26,3 +28,36 @@ export const withToast = async <T>(
     throw err;
   }
 };
+
+export const toSlug = (text: string) =>
+  text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // quitar acentos
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9\-]/g, "")
+    .replace(/\-+/g, "-");
+
+export function getCountryNameByCode(
+  id: string,
+  countriesList: Country[] = countries
+): string | null {
+  const country = countriesList.find(
+    (c) => c.id.toUpperCase() === id.toUpperCase()
+  );
+  return country ? country.nombre : null;
+}
+
+export function generateSlug(
+  name: string,
+  countryCode: string,
+  productType: string,
+  productCategory?: string
+): string {
+  const countryName = getCountryNameByCode(countryCode) || "desconocido";
+
+  return toSlug(
+    `${name} ${countryName} ${productCategory || ""} ${productType}`
+  );
+}

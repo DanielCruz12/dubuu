@@ -28,6 +28,7 @@ import type { IProduct } from "@/types/product";
 import { productTypes, ratingOptions } from "@/utils/data";
 import { setSearchTerm } from "@/redux/slices/product/search/search-slice";
 import { PriceRangeHistogram } from "@/components/price-range-histogram";
+import { generateSlug } from "@/lib/utils";
 
 interface SearchDialogProps {
   isOpen: boolean;
@@ -135,9 +136,15 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({
                     return (
                       <div
                         key={tourId}
-                        onClick={() =>
-                          window.open(`/home/${tourId}`, "_blank")
-                        }
+                        onClick={() => {
+                          const slug = generateSlug(
+                            tourName,
+                            tour?.country,
+                            tour?.product_type?.name,
+                            tour?.product_category?.name
+                          );
+                          window.open(`/home/${slug}/${tourId}`, "_blank");
+                        }}
                         className="group p-3 border border-primary/10 rounded-xl hover:shadow-md transition-all duration-300 cursor-pointer hover:border-primary/30 flex gap-3"
                       >
                         <div className="w-20 h-20 md:w-24 md:h-24 relative rounded-lg overflow-hidden flex-shrink-0">

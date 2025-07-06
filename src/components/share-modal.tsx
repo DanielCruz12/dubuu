@@ -155,7 +155,7 @@ export function ShareModal({
         <Button
           variant="ghost"
           size="sm"
-          className="rounded-full hover:bg-gray-100 p-2"
+          className="rounded-full p-2"
         >
           <Share2 className="h-4 w-4 " />
           <span className="text-sm font-medium underline">Compartir</span>

@@ -32,6 +32,7 @@ import {
   guestMenuItems,
   hostDashboardItems,
 } from "@/utils/menu-options";
+import CurrencySelectorDrawer from "@/components/currency-selector";
 
 export function Header() {
   const pathname = usePathname();
@@ -193,7 +194,7 @@ export function Header() {
 
         <div className="ml-auto flex items-center gap-4">
           <ModeToggle />
-
+          <CurrencySelectorDrawer />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">

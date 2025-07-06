@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import type React from "react";
@@ -17,6 +18,7 @@ import type { IProduct } from "@/types/product";
 import { Input } from "../ui/input";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
+import { generateSlug } from "@/lib/utils";
 
 export function ResultDialog({
   isOpen,
@@ -99,9 +101,20 @@ export function ResultDialog({
     localStorage.setItem("recentSearches", JSON.stringify(newSearches));
   };
 
-  const navigateToTour = (tourId: string) => {
-    // Normalize the country name for the URL
-    router.push(`/home/${tourId}`);
+  const navigateToTour = (
+    name: string,
+    id: string,
+    country: string,
+    product_type: any,
+    product_category: any
+  ) => {
+    const slug = generateSlug(
+      name,
+      country,
+      product_type.name,
+      product_category?.name
+    );
+    router.push(`/home/${slug}/${id}`);
     onClose(false);
   };
 
@@ -270,7 +283,15 @@ export function ResultDialog({
                     <div
                       key={tour.id}
                       className="group p-3 border border-primary/10 rounded-xl hover:shadow-md transition-all duration-300 cursor-pointer hover:border-primary/30 flex gap-3"
-                      onClick={() => navigateToTour(tour.id)}
+                      onClick={() =>
+                        navigateToTour(
+                          tour.id,
+                          tour.name,
+                          tour.country,
+                          tour.product_type.name,
+                          tour.product_category.name
+                        )
+                      }
                     >
                       <div className="w-20 h-20 md:w-24 md:h-24 relative rounded-lg overflow-hidden flex-shrink-0">
                         <Image
