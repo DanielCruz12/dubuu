@@ -18,6 +18,7 @@ import {
 } from "@/redux/slices/favorite/favorite-slice";
 import { toast } from "sonner";
 import { generateSlug } from "@/lib/utils";
+import { useCurrency } from "@/hooks/use-currency-converter";
 
 export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
   const {
@@ -41,6 +42,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
   const carouselRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { user } = useUser();
+  const { convert, symbol } = useCurrency();
 
   // Get favorites from API
   const { data: favorites } = useGetUserFavoritesQuery(
@@ -256,7 +258,11 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
 
             {/* Precio */}
             <div className="text-xs">
-              <span className="font-semibold">${price}</span> p/p
+              <span className="font-semibold">
+                {symbol}
+                {convert(price)}{" "}
+              </span>{" "}
+              p/p
             </div>
           </div>
         </div>
@@ -398,7 +404,9 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
 
         <CardFooter className="flex items-center justify-between py-3">
           <div className="font-semibold">
-            ${price} <span className="text-sm text-muted-foreground">p/p</span>
+            {symbol}
+            {convert(price)}{" "}
+            <span className="text-sm text-muted-foreground">p/p</span>
           </div>
           <Button
             variant="secondary"

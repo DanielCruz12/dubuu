@@ -18,6 +18,7 @@ import moment from "moment";
 import { ReceiptProps } from "@/types/pdf";
 import PDFButton from "./pdf/pdf-button";
 import { statusConfig } from "@/utils";
+import { useCurrency } from "@/hooks/use-currency-converter";
 
 type BookingStatusProps = {
   id: string;
@@ -85,6 +86,8 @@ export function BookingStatus({
   const config = statusConfig[status];
   const Icon = config.icon;
 
+  const { convert, symbol } = useCurrency();
+
   return (
     <Card
       id={`booking-status-${id}`}
@@ -138,7 +141,11 @@ export function BookingStatus({
             <Separator className="my-1" />
             <div className="flex justify-between font-medium">
               <span>Total:</span>
-              <span>${total.toFixed(2)}</span>
+              <span>
+                {symbol}
+                {convert(total)}{" "}
+                <span className="text-sm text-muted-foreground">p/p</span>
+              </span>
             </div>
           </div>
         </div>

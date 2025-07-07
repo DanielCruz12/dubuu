@@ -31,11 +31,13 @@ import { useGetReviewsQuery } from "@/redux/slices/product/review-slice";
 import { isProductType } from "@/utils";
 import UpTop from "@/components/up-top";
 import { ShareModal } from "@/components/share-modal";
+import { useCurrency } from "@/hooks/use-currency-converter";
 
 export default function ProductBooking() {
   const { user } = useUser();
   const { id } = useParams();
   const { data, isLoading, isError } = useGetProductQuery(id as string);
+  const { convert, symbol } = useCurrency();
 
   const [bookingData, setBookingData] = useState<{
     datetime: string;
@@ -135,7 +137,8 @@ export default function ProductBooking() {
               variant="secondary"
               className="md:p-2 text-xl md:text-[2rem]"
             >
-              ${product.price}
+              {symbol}
+              {convert(product.price)}{" "}
             </Badge>
           </div>
         </div>

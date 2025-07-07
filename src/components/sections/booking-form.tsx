@@ -25,6 +25,7 @@ import { useState, useRef } from "react";
 import { getHostEarningsFromFinalPrice } from "@/lib/price";
 
 import "moment/locale/es";
+import { useCurrency } from "@/hooks/use-currency-converter";
 const schema = z.object({
   datetime: z.string().min(1, "Selecciona una fecha y hora"),
   tickets: z.object({
@@ -54,6 +55,7 @@ export default function BookingForm({
   showPaymentStep: boolean;
 }) {
   const { user } = useUser();
+  const { convert, symbol } = useCurrency();
 
   const datetimeRef = useRef<HTMLDivElement>(null);
 
@@ -211,7 +213,9 @@ export default function BookingForm({
           <div className="flex flex-col gap-2 md:flex-row md:justify-between md:items-center mt-2">
             <span>Adultos</span>
             <div className="flex items-center gap-2">
-              <span>${product.price}</span>
+              {symbol}
+              {convert(product.price)}{" "}
+              <span className="text-sm text-muted-foreground">p/p</span>
               <Controller
                 control={control}
                 name="tickets.adult"
@@ -259,29 +263,37 @@ export default function BookingForm({
 
         <div className="pt-4 border-t dark:border-muted space-y-3">
           {(() => {
-            const price = product.price;
+            const price = convert(product.price);
+            const adultTickets = watchData.tickets.adult;
             const breakdown = getHostEarningsFromFinalPrice(
               price,
-              watchData.tickets.adult
+              adultTickets
             );
 
             return (
               <>
                 <div className="flex justify-between text-sm">
                   <span>Precio por persona:</span>
-                  <span>${price}</span>
+                  <span>
+                    {symbol}
+                    {price} p/p
+                  </span>
                 </div>
 
                 <div className="flex justify-between text-sm">
                   <span>Subtotal:</span>
-                  <span>${breakdown.userPays.toFixed(2)}</span>
+                  <span>
+                    {symbol}
+                    {breakdown.userPays.toFixed(2)}
+                  </span>
                 </div>
                 <Separator className="my-3" />
                 <div className="flex rounded py-3 px-2 justify-between font-semibold items-center">
                   <span className="text-lg md:text-2xl">Total</span>
                   <div className="flex items-center gap-2">
                     <span className="text-lg md:text-2xl">
-                      ${breakdown.userPays.toFixed(2)}
+                      {symbol}
+                      {breakdown.userPays.toFixed(2)}
                     </span>
                   </div>
                 </div>

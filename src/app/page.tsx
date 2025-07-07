@@ -8,8 +8,11 @@ import { tours } from "@/utils/data";
 import UpTop from "@/components/up-top";
 import Link from "next/link";
 import { Star } from "lucide-react";
+import { useCurrency } from "@/hooks/use-currency-converter";
 
 export default function Home() {
+  const { convert, symbol } = useCurrency();
+
   const containerRef = useRef(null);
   const aboutRef = useRef(null);
 
@@ -211,7 +214,10 @@ export default function Home() {
                   <p className="text-gray-200 mb-4 opacity-90">
                     {tour.description}
                   </p>
-                  <p className="font-bold text-white">{tour.price}</p>
+                  <p className="font-bold text-white">
+                    {symbol}
+                    {convert(Number(tour.price))}{" "}
+                  </p>
                 </div>
               </motion.div>
             ))}
@@ -222,8 +228,7 @@ export default function Home() {
               <Link
                 href={"/home"}
                 className={
-                  buttonVariants({ variant: "default" }) +
-                  " px-8 py-2 rounded"
+                  buttonVariants({ variant: "default" }) + " px-8 py-2 rounded"
                 }
               >
                 Ver todos los viajes

@@ -1,7 +1,11 @@
+"use client";
 import Image from "next/image";
 import { destinations } from "@/utils/data";
+import { useCurrency } from "@/hooks/use-currency-converter";
 
 export default function PopularDestinations() {
+  const { convert, symbol } = useCurrency();
+
   return (
     <section className="py-12">
       <div className="space-y-3">
@@ -33,7 +37,8 @@ export default function PopularDestinations() {
                       {destination.name}
                     </h3>
                     <p className="text-muted-foreground text-sm md:text-base ml-2">
-                      ${destination.priceRange}
+                      {symbol}
+                      {convert(destination.priceRange)}{" "}
                     </p>
                   </div>
                 </div>

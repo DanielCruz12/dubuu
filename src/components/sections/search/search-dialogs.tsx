@@ -29,6 +29,7 @@ import { productTypes, ratingOptions } from "@/utils/data";
 import { setSearchTerm } from "@/redux/slices/product/search/search-slice";
 import { PriceRangeHistogram } from "@/components/price-range-histogram";
 import { generateSlug } from "@/lib/utils";
+import { useCurrency } from "@/hooks/use-currency-converter";
 
 interface SearchDialogProps {
   isOpen: boolean;
@@ -47,6 +48,7 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({
   filteredProducts,
   dispatch,
 }) => {
+  const { convert, symbol } = useCurrency();
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px] max-w-[95%] md:max-w-[85%] lg:max-w-[75%] xl:max-w-[65%] p-0 overflow-hidden rounded-xl border-none shadow-xl">
@@ -189,7 +191,11 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({
                           </div>
 
                           <div className="mt-1 font-medium text-sm">
-                            ${tourPrice} p/p
+                            {symbol}
+                            {convert(tourPrice)}{" "}
+                            <span className="text-sm text-muted-foreground">
+                              p/p
+                            </span>
                           </div>
                         </div>
                       </div>
