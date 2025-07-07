@@ -216,7 +216,7 @@ export default function Home() {
                   </p>
                   <p className="font-bold text-white">
                     {symbol}
-                    {convert(Number(tour.price))}{" "}
+                    {convert(tour.price)}
                   </p>
                 </div>
               </motion.div>

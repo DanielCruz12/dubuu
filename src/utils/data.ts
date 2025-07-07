@@ -274,24 +274,25 @@ export const tours = [
     title: "El Salvador",
     duration: "1 día",
     description: "Explora Surf City, cascadas escondidas y pueblos coloniales",
-    price: "$50 p/p",
+    price: 50,
     image: "/homepage/4.jpg", // Playa de El Salvador
   },
   {
     title: "Guatemala",
     duration: "1 día",
     description: "Viaje cultural por Antigua, Atitlán y Tikal",
-    price: "$45",
+    price: 45,
     image: "/homepage/6.jpg", // Antigua Guatemala
   },
   {
     title: "Honduras",
     duration: "2 días",
     description: "Descubre Roatán, Copán y su biodiversidad",
-    price: "$100",
+    price: 100,
     image: "/homepage/3.jpg", // Roatán, Honduras
   },
 ];
+
 
 export const mockTours = [
   {

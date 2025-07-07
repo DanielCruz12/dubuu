@@ -75,7 +75,7 @@ const ProductDetails = ({ product }: { product: IProduct }) => {
               Descripción general
             </AccordionTrigger>
             <AccordionContent>
-              <div className="space-y-4 font-normal md:text-base text-muted-foreground">
+              <div className="space-y-4 font-normal md:text-base text-muted-foreground line-clamp-5">
                 <p>{product.description}</p>
               </div>
             </AccordionContent>

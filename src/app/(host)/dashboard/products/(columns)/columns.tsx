@@ -177,13 +177,13 @@ export const toursColumns: ColumnDef<
   },
   {
     accessorKey: "is_active",
-    header: "Estado",
+    header: "Disponibilidad",
     cell: ({ row }) => {
       const isActive = row.getValue("is_active") as boolean;
       return (
         <div className="flex items-center gap-2">
           <Badge variant={isActive ? "default" : "destructive"}>
-            {isActive ? "Activo" : "Inactivo"}
+            {isActive ? "Visible" : "Oculto"}
           </Badge>
         </div>
       );

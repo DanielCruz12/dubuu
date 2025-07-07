@@ -17,11 +17,11 @@ const nextConfig = {
         protocol: "https",
         hostname: "d191xw0kn1fj0p.cloudfront.net",
       },
+
       {
         protocol: "https",
-        hostname: "hebbkx1anhila5yf.public.blob.vercel-storage.com",
+        hostname: "avatar.vercel.sh",
       },
-
     ],
   },
 };
