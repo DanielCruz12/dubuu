@@ -9,14 +9,16 @@ import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/captions.css";
 import { Header } from "@/layouts/header";
 import { AuthProvider } from "./auth-provider";
+import { LanguageProvider } from "@/lib/i18n-context";
 import NextTopLoader from "nextjs-toploader";
 
 const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
   return (
     <StoreProvider>
       <AuthProvider>
-        <ThemeProvider attribute="class" defaultTheme="white">
-          <NextTopLoader />
+        <LanguageProvider>
+          <ThemeProvider attribute="class" defaultTheme="white">
+            <NextTopLoader />
 
           <div className="flex flex-col min-h-screen">
             <div className="max-w-[2000px] mx-auto w-full">
@@ -28,6 +30,7 @@ const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
             </div>
           </div>
         </ThemeProvider>
+      </LanguageProvider>
       </AuthProvider>
     </StoreProvider>
   );

@@ -5,6 +5,7 @@ import { TourCardSkeleton } from "../skeletons/tour-card-skeleton";
 import type { IProduct } from "@/types/product";
 import { Button } from "../ui/button";
 import { NoSearchResults } from "../not-results-found";
+import { useLanguage } from "@/lib/i18n-context";
 
 export default function TourSection({
   products,
@@ -19,6 +20,7 @@ export default function TourSection({
   hasMore?: boolean;
   isLoadingMore?: boolean;
 }) {
+  const { t } = useLanguage();
   if (isLoading) {
     return <TourCardSkeleton />;
   }
@@ -46,7 +48,7 @@ export default function TourSection({
             disabled={isLoadingMore}
             className="group w-full sm:w-auto max-w-xs"
           >
-            {isLoadingMore ? "Cargando..." : "Cargar más"}
+            {isLoadingMore ? t("common.loading") : t("common.more")}
           </Button>
         </div>
       )}
