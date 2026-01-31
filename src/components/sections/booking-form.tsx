@@ -68,7 +68,7 @@ export default function BookingForm({
   const isTour = isProductType(product, "tours");
 
   const availableDates = isTour
-    ? product.tour.tour_dates
+    ? (product.tour?.tour_dates ?? [])
         .filter((dateObj) => moment(dateObj.date).isAfter(moment()))
         .map((dateObj) => ({
           value: dateObj.id,

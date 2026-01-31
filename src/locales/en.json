@@ -1,0 +1,50 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "more": "Load more",
+    "filters": "Filters",
+    "location": "My location",
+    "locating": "Locating...",
+    "categories": "Categories",
+    "duration": "Duration",
+    "clearAll": "Clear all",
+    "search": "Search",
+    "login": "Sign in",
+    "logout": "Sign out"
+  },
+  "home": {
+    "hero": {
+      "subtitle": "Discover the treasures of the world"
+    },
+    "search": {
+      "placeholder": "Search destinations, tours, experiences...",
+      "placeholderNotLogged": "Sign in to search by text...",
+      "placeholderInitial": "Loading..."
+    },
+    "popularDestinations": {
+      "title": "Popular destinations",
+      "subtitle": "The best tourist destinations preferred by the community",
+      "tours": "Trips",
+      "activities": "Activities"
+    }
+  },
+  "filters": {
+    "productType": {
+      "tours": "Trips",
+      "rental": "Rental"
+    },
+    "rating": {
+      "five": " 5 stars",
+      "fourPlus": "+4 stars",
+      "threePlus": "+3 stars",
+      "twoPlus": "+2 stars",
+      "onePlus": "+1 stars",
+      "none": "No rating"
+    }
+  },
+  "menu": {
+    "signIn": "Sign in",
+    "signOut": "Sign out"
+  }
+}
+

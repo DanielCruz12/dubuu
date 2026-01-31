@@ -2,16 +2,18 @@
 import Image from "next/image";
 import { destinations } from "@/utils/data";
 import { useCurrency } from "@/hooks/use-currency-converter";
+import { useLanguage } from "@/lib/i18n-context";
 
 export default function PopularDestinations() {
   const { convert, symbol } = useCurrency();
+  const { t } = useLanguage();
 
   return (
     <section className="py-12">
       <div className="space-y-3">
-        <h2 className="text-xl md:text-3xl font-bold">Destinos populares</h2>
+        <h2 className="text-xl md:text-3xl font-bold">{t("home.popularDestinations.title")}</h2>
         <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">
-          Los mejores destinos turisticos preferidos por la comunidad
+          {t("home.popularDestinations.subtitle")}
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
@@ -43,8 +45,8 @@ export default function PopularDestinations() {
                   </div>
                 </div>
                 <p className="text-muted-foreground mt-2">
-                  {destination.tours} Viajes, {destination.activities}{" "}
-                  Actividades
+                  {destination.tours} {t("home.popularDestinations.tours")}, {destination.activities}{" "}
+                  {t("home.popularDestinations.activities")}
                 </p>
               </div>
             </div>

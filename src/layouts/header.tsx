@@ -33,12 +33,15 @@ import {
   hostDashboardItems,
 } from "@/utils/menu-options";
 import CurrencySelectorDrawer from "@/components/currency-selector";
+import { LanguageSelector } from "@/components/language-selector";
+import { useLanguage } from "@/lib/i18n-context";
 
 export function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const { user, signOut } = useClerk();
   const { role, hasRole } = useClerkToken();
+  const { t } = useLanguage();
 
   // Fix: Check exact path for /account as well as paths that start with /account/ or /dashboard/
   const isDashboard =
@@ -105,7 +108,7 @@ export function Header() {
 
           <div className="ml-auto flex items-center gap-4">
             <ModeToggle />
-
+            <LanguageSelector />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -141,7 +144,7 @@ export function Header() {
                         variant="outline"
                         className="w-full justify-center"
                       >
-                        Iniciar sesión
+                        {t("common.login")}
                       </Button>
                     </Link>
                   </DropdownMenuItem>
@@ -164,7 +167,7 @@ export function Header() {
                       className="cursor-pointer py-3"
                     >
                       <LogOut className="mr-2 h-4 w-4" />
-                      <span>Cerrar sesión</span>
+                      <span>{t("common.logout")}</span>
                     </DropdownMenuItem>
                   </>
                 )}
@@ -194,6 +197,7 @@ export function Header() {
 
         <div className="ml-auto flex items-center gap-4">
           <ModeToggle />
+          <LanguageSelector />
           <CurrencySelectorDrawer />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -224,7 +228,7 @@ export function Header() {
                 <DropdownMenuItem asChild className="py-3">
                   <Link href="/sign-in" className="cursor-pointer w-full">
                     <Button variant="outline" className="w-full justify-center">
-                      Iniciar sesión
+                      {t("common.login")}
                     </Button>
                   </Link>
                 </DropdownMenuItem>
@@ -247,7 +251,7 @@ export function Header() {
                     className="cursor-pointer py-3"
                   >
                     <LogOut className="mr-2 h-4 w-4" />
-                    <span>Cerrar sesión</span>
+                    <span>{t("common.logout")}</span>
                   </DropdownMenuItem>
                 </>
               )}

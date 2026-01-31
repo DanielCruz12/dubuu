@@ -14,6 +14,7 @@ import {
   setPriceRange,
   setProductType,
 } from "@/redux/slices/product/search/search-slice";
+import { useLanguage } from "@/lib/i18n-context";
 
 interface SearchFiltersProps {
   activeFiltersCount: number;
@@ -46,6 +47,7 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
   onResetFilters,
   dispatch,
 }) => {
+  const { t } = useLanguage();
   return (
     <>
       {/* Filtros rápidos con scroll horizontal */}
@@ -59,7 +61,7 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
               className="flex items-center gap-1.5 whitespace-nowrap rounded-full border-2 px-3 py-1 h-9 flex-shrink-0"
             >
               <FilterIcon className="h-3.5 w-3.5" />
-              <span>Filtros</span>
+              <span>{t("common.filters")}</span>
               {activeFiltersCount > 0 && (
                 <Badge className="ml-1 h-5 w-5 rounded-full p-0 flex items-center justify-center">
                   {activeFiltersCount}
@@ -82,8 +84,8 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
                 {isLocationEnabled && country?.name
                   ? country.name
                   : isLoadingLocation
-                    ? "Ubicando..."
-                    : "Mi ubicación"}
+                    ? t("common.locating")
+                    : t("common.location")}
               </span>
             </Button>
 
@@ -142,7 +144,7 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
               variant="outline"
               className="rounded-full px-3 py-1 gap-1.5 flex items-center"
             >
-              Categorías: {categories.length}
+              {t("common.categories")}: {categories.length}
               <X
                 className="h-3 w-3 ml-1 cursor-pointer"
                 onClick={() => dispatch(setCategories([]))}
@@ -155,7 +157,7 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
               variant="outline"
               className="rounded-full px-3 py-1 gap-1.5 flex items-center"
             >
-              Duración: {durations.length}
+              {t("common.duration")}: {durations.length}
               <X
                 className="h-3 w-3 ml-1 cursor-pointer"
                 onClick={() => dispatch(setDurations([]))}
@@ -184,7 +186,7 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
               onClick={onResetFilters}
               className="text-xs h-7 px-2 rounded-full"
             >
-              Limpiar todos
+              {t("common.clearAll")}
             </Button>
           )}
         </div>

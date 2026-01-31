@@ -81,16 +81,17 @@ export function EditProductModal({
 
   // Encontrar la fecha seleccionada
   const getSelectedDate = (): ITourProductDates | null => {
-    if (!tour.tour.tour_dates || tour.tour.tour_dates.length === 0) return null;
+    const tourDates = tour.tour?.tour_dates ?? [];
+    if (tourDates.length === 0) return null;
 
     if (localSelectedDateId) {
       return (
-        tour.tour.tour_dates.find((date) => date.id === localSelectedDateId) ||
-        tour.tour.tour_dates[0]
+        tourDates.find((date) => date.id === localSelectedDateId) ||
+        tourDates[0]
       );
     }
 
-    return tour.tour.tour_dates[0]; // Primera fecha por defecto
+    return tourDates[0]; // Primera fecha por defecto
   };
 
   const selectedDate = getSelectedDate();
@@ -103,38 +104,37 @@ export function EditProductModal({
         typeof tour.price === "string"
           ? Number.parseFloat(tour.price)
           : tour.price,
-      departure_point: tour.tour.departure_point || "",
+      departure_point: tour.tour?.departure_point || "",
       max_people: selectedDate?.max_people || 0,
       is_active: tour.is_active || false,
       selected_date_id:
         localSelectedDateId ||
-        (tour.tour.tour_dates && tour.tour.tour_dates.length > 0
-          ? tour.tour.tour_dates[0].id
-          : ""),
+        ((tour.tour?.tour_dates ?? [])[0]?.id ?? ""),
     },
   });
 
   // Actualizar la fecha seleccionada local cuando cambia la prop
+  const tourDates = tour.tour?.tour_dates ?? [];
   useEffect(() => {
     if (selectedDateId) {
       setLocalSelectedDateId(selectedDateId);
 
       // Actualizar los valores del formulario cuando cambia la fecha seleccionada
-      const newSelectedDate = tour.tour.tour_dates.find(
+      const newSelectedDate = tourDates.find(
         (date) => date.id === selectedDateId
       );
       if (newSelectedDate) {
         form.setValue("max_people", newSelectedDate.max_people);
       }
     }
-  }, [selectedDateId, form, tour.tour.tour_dates]);
+  }, [selectedDateId, form, tourDates]);
 
   // Manejar el cambio de fecha
   const handleDateChange = (dateId: string) => {
     setLocalSelectedDateId(dateId);
 
     // Actualizar los valores del formulario cuando cambia la fecha seleccionada
-    const newSelectedDate = tour.tour.tour_dates.find(
+    const newSelectedDate = tourDates.find(
       (date) => date.id === dateId
     );
     if (newSelectedDate) {
@@ -147,16 +147,17 @@ export function EditProductModal({
     setIsPending(true);
     try {
       // Crear una copia profunda del tour para actualizarlo
+      const currentTourDates = tour.tour?.tour_dates ?? [];
       const updatedTour: Partial<ITourProduct> = {
         ...tour,
         price: data.price,
         address: data.departure_point, // El backend usa 'address' para el punto de salida
         is_active: data.is_active,
         tour: {
-          ...tour.tour,
+          ...(tour.tour ?? {}),
           departure_point: data.departure_point,
           // Actualizar la fecha específica en el array de fechas
-          tour_dates: tour.tour.tour_dates.map((date) => {
+          tour_dates: currentTourDates.map((date) => {
             if (date.id === localSelectedDateId) {
               return {
                 ...date,
@@ -198,7 +199,7 @@ export function EditProductModal({
                 {/* Resto de campos en diseño responsivo */}
                 <div className="grid md:grid-cols-2 gap-4">
                   {/* Selector de fecha */}
-                  {tour.tour.tour_dates && tour.tour.tour_dates.length > 0 && (
+                  {tourDates.length > 0 && (
                     <FormField
                       control={form.control}
                       name="selected_date_id"
@@ -218,7 +219,7 @@ export function EditProductModal({
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {tour.tour.tour_dates.map((date) => (
+                              {tourDates.map((date) => (
                                 <SelectItem key={date.id} value={date.id}>
                                   {format(
                                     new Date(date.date),

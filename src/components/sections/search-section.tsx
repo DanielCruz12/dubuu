@@ -7,6 +7,7 @@ import type { IProduct } from "@/types/product";
 import { useSearchLogic } from "@/hooks/use-search-logic";
 import { SearchFilters } from "./search/search-filters";
 import { FilterDialog, SearchDialog } from "./search/search-dialogs";
+import { useLanguage } from "@/lib/i18n-context";
 
 interface SearchSectionProps {
   products: IProduct[];
@@ -19,6 +20,7 @@ export default function SearchSection({
   onSearchResults,
   onSearchLoading,
 }: SearchSectionProps) {
+  const { t } = useLanguage();
   const {
     // State
     isDialogOpen,
@@ -69,7 +71,7 @@ export default function SearchSection({
           </div>
           <Input
             type="search"
-            placeholder="Cargando..."
+            placeholder={t("common.loading")}
             className="pl-10 pr-4 py-2 h-12 rounded-full border-2 focus-visible:ring-offset-0 focus-visible:ring-1"
             disabled
           />
@@ -100,12 +102,12 @@ export default function SearchSection({
         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
           <Search className="h-4 w-4 text-muted-foreground" />
         </div>
-        <Input
+          <Input
           type="search"
           placeholder={
             user
-              ? "Buscar destinos, tours, experiencias..."
-              : "Inicia sesión para buscar por texto..."
+              ? t("home.search.placeholder")
+              : t("home.search.placeholderNotLogged")
           }
           className="pl-10 pr-4 py-2 h-12 rounded-full border-2 focus-visible:ring-offset-0 focus-visible:ring-1"
           value={searchTerm}

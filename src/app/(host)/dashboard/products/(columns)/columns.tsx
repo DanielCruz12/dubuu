@@ -60,11 +60,12 @@ export const toursColumns: ColumnDef<
       const tour = row.original;
       const selectedDateId = tour.selectedDateId;
 
-      if (!selectedDateId || !tour.tour.tour_dates) {
+      const tourDates = tour.tour?.tour_dates ?? [];
+      if (!selectedDateId || tourDates.length === 0) {
         return <div>No disponible</div>;
       }
 
-      const selectedDate = tour.tour.tour_dates.find(
+      const selectedDate = tourDates.find(
         (date) => date.id === selectedDateId
       );
 
@@ -84,7 +85,7 @@ export const toursColumns: ColumnDef<
     header: "Punto de Salida",
     cell: ({ row }) => {
       const tour = row.original;
-      return <div>{tour.tour.departure_point || "No especificado"}</div>;
+      return <div>{tour.tour?.departure_point || "No especificado"}</div>;
     },
   },
   {
@@ -104,11 +105,12 @@ export const toursColumns: ColumnDef<
       const tour = row.original;
       const selectedDateId = tour.selectedDateId;
 
-      if (!selectedDateId || !tour.tour.tour_dates) {
+      const tourDatesMax = tour.tour?.tour_dates ?? [];
+      if (!selectedDateId || tourDatesMax.length === 0) {
         return <div className="text-center">0</div>;
       }
 
-      const selectedDate = tour.tour.tour_dates.find(
+      const selectedDate = tourDatesMax.find(
         (date) => date.id === selectedDateId
       );
 
@@ -126,11 +128,12 @@ export const toursColumns: ColumnDef<
       const tour = row.original;
       const selectedDateId = tour.selectedDateId;
 
-      if (!selectedDateId || !tour.tour.tour_dates) {
+      const tourDatesBooked = tour.tour?.tour_dates ?? [];
+      if (!selectedDateId || tourDatesBooked.length === 0) {
         return <div className="text-center">0</div>;
       }
 
-      const selectedDate = tour.tour.tour_dates.find(
+      const selectedDate = tourDatesBooked.find(
         (date) => date.id === selectedDateId
       );
 
@@ -158,11 +161,12 @@ export const toursColumns: ColumnDef<
       const tour = row.original;
       const selectedDateId = tour.selectedDateId;
 
-      if (!selectedDateId || !tour.tour.tour_dates) {
+      const tourDatesSpots = tour.tour?.tour_dates ?? [];
+      if (!selectedDateId || tourDatesSpots.length === 0) {
         return <div className="text-center">0</div>;
       }
 
-      const selectedDate = tour.tour.tour_dates.find(
+      const selectedDate = tourDatesSpots.find(
         (date) => date.id === selectedDateId
       );
 
