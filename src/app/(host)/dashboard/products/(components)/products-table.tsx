@@ -58,7 +58,7 @@ export function ProductsDataTable() {
     const selectedTour = availableTours.find(
       (tour) => tour.id === selectedTourId
     );
-    return selectedTour?.tour.tour_dates || [];
+    return selectedTour?.tour?.tour_dates ?? [];
   }, [selectedTourId, availableTours]);
 
   // Filtrar productos basado en el término de búsqueda
@@ -82,8 +82,9 @@ export function ProductsDataTable() {
       const selectedTour = availableTours.find((tour) => tour.id === tourId);
 
       // Establecer la primera fecha como predeterminada si está disponible
-      if (selectedTour && selectedTour.tour.tour_dates.length > 0) {
-        setSelectedDateId(selectedTour.tour.tour_dates[0].id);
+      const dates = selectedTour?.tour?.tour_dates ?? [];
+      if (selectedTour && dates.length > 0) {
+        setSelectedDateId(dates[0].id);
       } else {
         setSelectedDateId("");
       }
@@ -113,8 +114,9 @@ export function ProductsDataTable() {
       const firstTour = tourProducts[0];
       setSelectedTourId(firstTour.id);
 
-      if (firstTour.tour.tour_dates.length > 0) {
-        setSelectedDateId(firstTour.tour.tour_dates[0].id);
+      const firstTourDates = firstTour.tour?.tour_dates ?? [];
+      if (firstTourDates.length > 0) {
+        setSelectedDateId(firstTourDates[0].id);
       }
     }
   }, [data]);
@@ -132,8 +134,9 @@ export function ProductsDataTable() {
 
     // Añadir el selectedDateId a cada tour para que las columnas puedan acceder a él
     const toursWithSelectedDate = filtered.map((tour) => {
+      const tourDates = tour.tour?.tour_dates ?? [];
       // Verificar que el selectedDateId pertenezca a este tour
-      const dateExists = tour.tour.tour_dates.some(
+      const dateExists = tourDates.some(
         (date) => date.id === selectedDateId
       );
 
@@ -141,8 +144,8 @@ export function ProductsDataTable() {
         ...tour,
         selectedDateId: dateExists
           ? selectedDateId
-          : tour.tour.tour_dates.length > 0
-            ? tour.tour.tour_dates[0].id
+          : tourDates.length > 0
+            ? tourDates[0].id
             : undefined,
       };
     });
@@ -153,8 +156,9 @@ export function ProductsDataTable() {
   // Exportar a Excel
   const handleExport = () => {
     const dataToExport = filteredTours.map((tour) => {
+      const tourDates = tour.tour?.tour_dates ?? [];
       // Encontrar la fecha seleccionada
-      const selectedDate = tour.tour.tour_dates.find(
+      const selectedDate = tourDates.find(
         (date) => date.id === tour.selectedDateId
       );
 
@@ -165,7 +169,7 @@ export function ProductsDataTable() {
         Precio: tour.price,
         País: tour.country,
         Dirección: tour.address,
-        "Punto de Partida": tour.tour.departure_point,
+        "Punto de Partida": tour.tour?.departure_point ?? "",
         Fecha: selectedDate
           ? format(new Date(selectedDate.date), "dd/MM/yyyy HH:mm")
           : "",
