@@ -153,9 +153,8 @@ export default function Home() {
                 </div>
                 <p className="text-sm text-gray-700 leading-relaxed mb-4">
                   Una experiencia transformadora. Dubuu nos mostró la verdadera
-                  esencia de Guatemala con un nivel de servicio excepcional.
+                  esencia de una reserva con un nivel de servicio excepcional.
                 </p>
-                <p className="text-sm font-bold mt-4">— Daniel Dubón</p>
               </motion.div>
             </motion.div>
           </div>

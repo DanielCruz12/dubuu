@@ -1,5 +1,31 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+---
+
+## Sobre Dubuu
+
+**Dubuu** es la plataforma donde los viajeros reservan experiencias y alquiler de autos, y donde las empresas gestionan tours y flotas en un solo lugar.
+
+### Qué es Dubuu
+
+Dubuu no es solo una web de tours. Es un espacio para **hacer reservas** de todo lo que necesitas: experiencias, tours y alquiler de vehículos. Para el viajero, un solo sitio para planear; para las empresas, una sola herramienta para vender y administrar.
+
+La plataforma está pensada en dos pilares: **quien viaja** y **quien ofrece el servicio**. Si eres viajero, reservas tours y autos con pocos clics. Si eres negocio, gestionas reservas, disponibilidad y clientes desde un mismo panel, sin depender de varias herramientas.
+
+### Para viajeros
+
+En Dubuu puedes reservar **tours y experiencias** y **alquiler de coches** en la misma plataforma. El objetivo es que organices tu viaje sin cambiar de web: eliges el tour, el coche y las fechas, y todo queda registrado en tu cuenta. Cada reserva queda guardada en tu panel: fechas, detalles y estado.
+
+### Para empresas
+
+Si tu negocio ofrece **tours** o **alquiler de vehículos**, Dubuu te da un panel para gestionar reservas, disponibilidad y pagos. Puedes publicar y editar tus tours y tu flota de autos, ver el calendario de reservas y mantener la información al día. La idea es dedicar menos tiempo a la operación y más a la oferta y a los clientes.
+
+### Lo esencial: las reservas
+
+En Dubuu lo esencial son las **reservas**: de tours y de alquiler de autos. Para viajeros, una forma sencilla de reservar todo en un solo sitio. Para empresas, una forma clara de gestionar oferta, reservas y clientes sin dispersar la información en varias herramientas.
+
+---
+
 ## Getting Started
 
 First, run the development server:

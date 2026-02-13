@@ -76,7 +76,7 @@ export function BookingStatus({
     companyLogo: "/logo.svg",
     companyAddress: "El Salvador, La Libertad",
     companyPhone: "+503 77886116",
-    companyEmail: "team@lappsnet.com",
+    companyEmail: "support@dubuu.com",
     companyWebsite: "https://www.dubuu.com",
     qrValue: "https://miempresa.com/verificar/INV-2023-001",
     paymentMethod: "Transferencia Bancaria",

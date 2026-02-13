@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CalendarDays, CreditCard, MapPin, Users } from "lucide-react";
+import { CalendarDays, CreditCard, Users } from "lucide-react";
 import { Overview } from "./(components)/overview";
 import { RecentBookings } from "./(components)/recent-bookings";
 import { DashboardTitle } from "@/components/dashboard-title";
@@ -28,7 +28,7 @@ export default function DashboardPage() {
         description="Bienvenido a tu panel de control"
       />
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -45,27 +45,13 @@ export default function DashboardPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Gasto Total</CardTitle>
+            <CardTitle className="text-sm font-medium">Ingresos Totales</CardTitle>
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">$150</div>
             <p className="text-xs text-muted-foreground">
               +12% desde el año pasado
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Destinos Visitados
-            </CardTitle>
-            <MapPin className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">12</div>
-            <p className="text-xs text-muted-foreground">
-              +3 desde el año pasado
             </p>
           </CardContent>
         </Card>
@@ -100,7 +86,7 @@ export default function DashboardPage() {
         <Card className="col-span-4 lg:col-span-3">
           <CardHeader>
             <CardTitle>Próximas Reservas</CardTitle>
-            <CardDescription>Tienes 4 reservas pendientes</CardDescription>
+            <CardDescription>Tienes 4 reservas</CardDescription>
           </CardHeader>
           <CardContent>
             <RecentBookings />
