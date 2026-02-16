@@ -1,13 +1,12 @@
 "use client";
 import { Input } from "../ui/input";
-import { Search, RefreshCw, FilterIcon } from "lucide-react";
-import { Button } from "../ui/button";
-import { ScrollArea } from "../ui/scroll-area";
+import { Search, RefreshCw } from "lucide-react";
 import type { IProduct } from "@/types/product";
 import { useSearchLogic } from "@/hooks/use-search-logic";
 import { SearchFilters } from "./search/search-filters";
 import { FilterDialog, SearchDialog } from "./search/search-dialogs";
 import { useLanguage } from "@/lib/i18n-context";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface SearchSectionProps {
   products: IProduct[];
@@ -15,12 +14,30 @@ interface SearchSectionProps {
   onSearchLoading?: (loading: boolean) => void;
 }
 
+function SearchSectionSkeleton() {
+  return (
+    <section className="w-full">
+      <div className="mb-3">
+        <Skeleton className="h-12 w-full rounded-full" />
+      </div>
+      <div className="mb-2">
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-9 w-20 rounded-full flex-shrink-0" />
+          <Skeleton className="h-9 w-24 rounded-full flex-shrink-0" />
+          <Skeleton className="h-9 w-20 rounded-full flex-shrink-0" />
+          <Skeleton className="h-9 w-20 rounded-full flex-shrink-0" />
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function SearchSection({
   products,
   onSearchResults,
   onSearchLoading,
 }: SearchSectionProps) {
-  const { t } = useLanguage();
+  const { t, isReady } = useLanguage();
   const {
     // State
     isDialogOpen,
@@ -61,38 +78,9 @@ export default function SearchSection({
     handleDurationChange,
   } = useSearchLogic({ products, onSearchResults, onSearchLoading });
 
-  // No renderizar hasta que el componente esté montado para evitar hidratación
-  if (!isMounted) {
-    return (
-      <section className="w-full">
-        <div className="relative mb-3">
-          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            <Search className="h-4 w-4 text-muted-foreground" />
-          </div>
-          <Input
-            type="search"
-            placeholder={t("common.loading")}
-            className="pl-10 pr-4 py-2 h-12 rounded-full border-2 focus-visible:ring-offset-0 focus-visible:ring-1"
-            disabled
-          />
-        </div>
-        <div className="mb-2">
-          <ScrollArea className="w-full">
-            <div className="flex items-center gap-2 pb-1 min-w-max">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled
-                className="flex items-center gap-1.5 whitespace-nowrap rounded-full border-2 px-3 py-1 h-9 flex-shrink-0"
-              >
-                <FilterIcon className="h-3.5 w-3.5" />
-                <span>Filtros</span>
-              </Button>
-            </div>
-          </ScrollArea>
-        </div>
-      </section>
-    );
+  // Skeletons mientras no está montado o i18n no está listo (evita hidratación y texto crudo)
+  if (!isMounted || !isReady) {
+    return <SearchSectionSkeleton />;
   }
 
   return (
@@ -110,7 +98,7 @@ export default function SearchSection({
               : t("home.search.placeholderNotLogged")
           }
           className="pl-10 pr-4 py-2 h-12 rounded-full border-2 focus-visible:ring-offset-0 focus-visible:ring-1"
-          value={searchTerm}
+          value={searchTerm ?? ""}
           onChange={handleSearchChange}
           onFocus={handleSearchFocus}
           disabled={!user}

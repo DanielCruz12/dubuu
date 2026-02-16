@@ -1,3 +1,5 @@
+"use client";
+
 import { Separator } from "@/components/ui/separator";
 import {
   Instagram,
@@ -9,37 +11,37 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useLanguage } from "@/lib/i18n-context";
 
-// Footer navigation data
 const footerNavigation = {
   experiencias: [
-    { name: "Viajes Privados", href: "/home" },
-    { name: "Alquileres", href: "/home" },
-    { name: "Propiedades", href: "/home" },
+    { key: "privateTrips", href: "/home" },
+    { key: "rentals", href: "/home" },
+    { key: "properties", href: "/home" },
   ],
   empresa: [
-    { name: "Sé parte", href: "/investment" },
-    { name: "Blog", href: "/blog" },
-    { name: "Contacto", href: "/contact" },
+    { key: "joinUs", href: "/investment" },
+    { key: "blog", href: "/blog" },
+    { key: "contact", href: "/contact" },
   ],
   legal: [
-    { name: "Términos y Condiciones", href: "/terms" },
-    { name: "Política de Privacidad", href: "/privacy" },
+    { key: "terms", href: "/terms" },
+    { key: "privacy", href: "/privacy" },
   ],
   social: [
-    { name: "Instagram", icon: Instagram, href: "#" },
-    { name: "Facebook", icon: Facebook, href: "#" },
-    { name: "Twitter", icon: Twitter, href: "#" },
+    { key: "instagram", icon: Instagram, href: "#" },
+    { key: "facebook", icon: Facebook, href: "#" },
+    { key: "twitter", icon: Twitter, href: "#" },
   ],
 };
 
 export default function Footer() {
+  const { t } = useLanguage();
+
   return (
     <footer className="border-t py-8">
-      {/* Main Footer Content */}
       <div className="px-6 md:px-20 mt-8">
-        {/* Top Section with Logo and Tagline */}
-        <div className="mb-12  text-left">
+        <div className="mb-12 text-left">
           <Image
             src="/logo.svg"
             alt="Dubuu Logo"
@@ -47,32 +49,26 @@ export default function Footer() {
             height={40}
             priority
           />
-          <p className="text-sm">
-            Experiencias de viaje exclusivas diseñadas para los viajeros más
-            exigentes.
-          </p>
+          <p className="text-sm">{t("footer.tagline")}</p>
 
-          {/* Social Media */}
           <div className="flex justify-start space-x-6 mb-4 gap-4 pt-4">
             {footerNavigation.social.map((item) => (
               <Link
-                key={item.name}
+                key={item.key}
                 href={item.href}
                 className="text-zinc-400 hover transition-colors"
               >
-                <span className="sr-only">{item.name}</span>
+                <span className="sr-only">{t(`footer.social.${item.key}`)}</span>
                 <item.icon className="h-5 w-5" />
               </Link>
             ))}
           </div>
         </div>
 
-        {/* Main Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-12">
-          {/* Column 1: Contact */}
           <div className="mb-8">
             <h3 className="text-xs font-semibold tracking-wider uppercase mb-4">
-              Contacto
+              {t("footer.sections.contact")}
             </h3>
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-sm">
@@ -90,40 +86,37 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Columns 3 & 4: Experiencias & Empresa - 2 columns on mobile */}
           <div className="grid grid-cols-2 col-span-1 lg:col-span-1 gap-8">
-            {/* Experiencias */}
             <div>
               <h3 className="text-xs font-semibold tracking-wider uppercase mb-4">
-                Experiencias
+                {t("footer.sections.experiencias")}
               </h3>
               <ul className="space-y-2">
                 {footerNavigation.experiencias.map((item) => (
-                  <li key={item.name}>
+                  <li key={item.key}>
                     <Link
                       href={item.href}
                       className="text-sm hover transition-colors"
                     >
-                      {item.name}
+                      {t(`footer.nav.${item.key}`)}
                     </Link>
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* Empresa */}
             <div>
               <h3 className="text-xs font-semibold tracking-wider uppercase mb-4">
-                Empresa
+                {t("footer.sections.empresa")}
               </h3>
               <ul className="space-y-2">
                 {footerNavigation.empresa.map((item) => (
-                  <li key={item.name}>
+                  <li key={item.key}>
                     <Link
                       href={item.href}
                       className="text-sm hover transition-colors"
                     >
-                      {item.name}
+                      {t(`footer.nav.${item.key}`)}
                     </Link>
                   </li>
                 ))}
@@ -134,19 +127,18 @@ export default function Footer() {
 
         <Separator className="" />
 
-        {/* Bottom Section */}
         <div className="mb-4 flex flex-col md:flex-row justify-between items-center text-xs">
           <p className="py-4">
-            © {new Date().getFullYear()} dubuu. Todos los derechos reservados.
+            © {new Date().getFullYear()} dubuu. {t("footer.copyright")}
           </p>
           <div className="flex space-x-6 gap-4">
             {footerNavigation.legal.map((item) => (
               <Link
-                key={item.name}
+                key={item.key}
                 href={item.href}
                 className="hover transition-colors"
               >
-                {item.name}
+                {t(`footer.nav.${item.key}`)}
               </Link>
             ))}
           </div>

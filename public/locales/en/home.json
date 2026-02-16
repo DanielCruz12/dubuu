@@ -1,0 +1,16 @@
+{
+  "hero": {
+    "subtitle": "Discover the treasures of the world"
+  },
+  "search": {
+    "placeholder": "Search destinations, tours, experiences...",
+    "placeholderNotLogged": "Sign in to search by text...",
+    "placeholderInitial": "Loading..."
+  },
+  "popularDestinations": {
+    "title": "Popular destinations",
+    "subtitle": "The best tourist destinations preferred by the community",
+    "tours": "Trips",
+    "activities": "Activities"
+  }
+}

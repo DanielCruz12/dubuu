@@ -1,0 +1,14 @@
+{
+  "productType": {
+    "tours": "Viajes",
+    "rental": "Alquiler"
+  },
+  "rating": {
+    "five": " 5 estrellas",
+    "fourPlus": "+4 estrellas",
+    "threePlus": "+3 estrellas",
+    "twoPlus": "+2 estrellas",
+    "onePlus": "+1 estrellas",
+    "none": "Sin calificación"
+  }
+}

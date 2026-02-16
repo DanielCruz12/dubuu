@@ -10,7 +10,7 @@ export function TourCardSkeleton() {
           {Array.from({ length: 4 }).map((_, index) => (
             <CarouselItem
               key={index}
-              className="!basis-1/2 md:!basis-1/3 lg:!basis-1/4 p-2 sm:p-4 !max-w-[50%] md:!max-w-[33.33%] lg:!max-w-[25%]"
+              className={`!basis-1/2 md:!basis-1/3 lg:!basis-1/4 p-2 sm:p-4 !max-w-[50%] md:!max-w-[33.33%] lg:!max-w-[25%] ${index >= 2 ? "hidden md:!block" : ""}`}
             >
               <div className="relative h-full rounded-lg">
                 <Card className="overflow-hidden rounded-xl border-0 shadow-lg h-full">
@@ -39,62 +39,52 @@ export function TourCardSkeleton() {
                     </div>
                   </div>
 
-                  {/* Contenido para móvil */}
+                  {/* Contenido para móvil - mismo padding y estructura que TourCard (p-2, flex-col gap-0.5) */}
                   <div className="block md:hidden">
-                    <div className="p-2">
-                      <div className="flex items-start justify-between mb-1">
-                        {/* Ubicación */}
-                        <Skeleton className="h-3 w-24 rounded" />
-                        {/* Rating */}
+                    <div className="p-2 flex flex-col gap-0.5">
+                      <div className="flex items-start justify-between">
+                        <Skeleton className="h-3 w-24 rounded flex-shrink-0" />
                         <div className="flex items-center gap-1">
                           <Skeleton className="h-3 w-3 rounded-full" />
                           <Skeleton className="h-3 w-8 rounded" />
                         </div>
                       </div>
-
-                      {/* Precio */}
-                      <Skeleton className="h-3 w-20 rounded mt-1" />
+                      <Skeleton className="h-3 w-full max-w-[90%] rounded" />
+                      <Skeleton className="h-3 w-20 rounded" />
                     </div>
                   </div>
 
-                  {/* Contenido para desktop */}
+                  {/* Contenido para desktop - mismo padding que TourCard (CardContent pt-1, h3 pt-2, desc mb-3, Footer py-3) */}
                   <div className="hidden md:block">
-                    <CardContent className="pt-3 pb-2">
-                      {/* Rating */}
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <div className="flex">
+                    <CardContent className="pt-1">
+                      {/* Título + Rating (mismo layout que TourCard: flex justify-between, título con pt-2) */}
+                      <div className="flex items-center justify-between">
+                        <Skeleton className="h-4 w-full max-w-[70%] rounded pt-2" />
+                        <div className="flex items-center gap-1.5 flex-shrink-0">
                           {Array.from({ length: 5 }).map((_, i) => (
-                            <Skeleton
-                              key={i}
-                              className="h-4 w-4 rounded-full"
-                            />
+                            <Skeleton key={i} className="h-4 w-4 rounded-full" />
                           ))}
+                          <Skeleton className="h-4 w-8 rounded" />
                         </div>
-                        <Skeleton className="h-4 w-8 rounded" />
-                        <Skeleton className="h-4 w-16 rounded" />
                       </div>
 
-                      {/* Título */}
-                      <Skeleton className="h-6 w-full rounded mb-1.5" />
-
-                      {/* Descripción */}
-                      <div className="space-y-1 mb-2">
+                      {/* Descripción (mb-3 como en TourCard) */}
+                      <div className="space-y-1.5 mb-3">
                         <Skeleton className="h-4 w-full rounded" />
                         <Skeleton className="h-4 w-3/4 rounded" />
                       </div>
 
-                      {/* Ubicación y audiencia */}
-                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-2">
+                      {/* Ubicación (gap-x-2 gap-y-1 como en TourCard) */}
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                         <div className="flex items-center">
                           <Skeleton className="h-3.5 w-3.5 rounded-full mr-1" />
-                          <Skeleton className="h-4 w-16 rounded" />
+                          <Skeleton className="h-4 w-24 rounded" />
                         </div>
-                        <Skeleton className="h-4 w-20 rounded" />
                       </div>
                     </CardContent>
 
                     <CardFooter className="flex items-center justify-between py-3">
-                      <Skeleton className="h-6 w-16 rounded" />
+                      <Skeleton className="h-5 w-16 rounded" />
                       <Skeleton className="h-9 w-24 rounded-full" />
                     </CardFooter>
                   </div>

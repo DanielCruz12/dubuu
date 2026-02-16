@@ -17,7 +17,7 @@ const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
     <StoreProvider>
       <AuthProvider>
         <LanguageProvider>
-          <ThemeProvider attribute="class" defaultTheme="white">
+          <ThemeProvider attribute="class" defaultTheme="light">
             <NextTopLoader />
 
           <div className="flex flex-col min-h-screen">
