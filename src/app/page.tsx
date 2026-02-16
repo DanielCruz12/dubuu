@@ -9,21 +9,30 @@ import UpTop from "@/components/up-top";
 import Link from "next/link";
 import { Star } from "lucide-react";
 import { useCurrency } from "@/hooks/use-currency-converter";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
+
+// Imágenes del banner en public/homepage (1.jpg–6.jpg; en desktop el carrusel necesita h-full en el viewport)
+const HERO_SLIDES = [
+  { image: "/homepage/banner1.png", title: "Reservas que simplifican tu viaje", subtitle: "Haz reservas de tours y alquiler de autos en un solo lugar. Dubuu es la plataforma para viajeros y empresas.", cta: "Descubrir" },
+  { image: "/homepage/banner2.png", title: "¿Tienes una empresa de tours?", subtitle: "Lista tus experiencias y tours en Dubuu. Gestiona reservas, disponibilidad y clientes desde un solo panel.", cta: "Ver cómo funciona" },
+  { image: "/homepage/banner3.png", title: "Alquiler de autos", subtitle: "Si ofreces vehículos en alquiler, también puedes listarlos aquí. Tours y autos en la misma plataforma.", cta: "Descubrir" },
+  { image: "/homepage/banner4.png", title: "Tu viaje y tu negocio, mejor organizados", subtitle: "Reserva experiencias y coches con pocos clics, o gestiona tu oferta si eres empresa. Todo en Dubuu.", cta: "Empezar" },
+  { image: "/homepage/banner5.png", title: "Experiencias que inspiran", subtitle: "Alojamientos y experiencias diseñados para que tu viaje sea único. Reserva con confianza en Dubuu.", cta: "Descubrir" },
+];
 
 export default function Home() {
   const { convert, symbol } = useCurrency();
 
   const containerRef = useRef(null);
   const aboutRef = useRef(null);
-
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"],
-  });
-
-  const opacity = useTransform(scrollYProgress, [0, 0.15], [1, 2]);
-  const scale = useTransform(scrollYProgress, [0, 0.15], [1, 2]);
-  const y = useTransform(scrollYProgress, [0, 0.15], [0, -200]);
+  const plugin = Autoplay({ delay: 5000, stopOnInteraction: true });
 
   const { scrollYProgress: aboutScrollProgress } = useScroll({
     target: aboutRef,
@@ -37,54 +46,59 @@ export default function Home() {
     <div ref={containerRef} className="w-full overflow-x-hidden">
       <UpTop />
 
-      {/* Hero Section */}
+      {/* Hero: carrusel de banners — en desktop más bajo; overlay oscuro para legibilidad */}
       <section className="relative h-screen w-full overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <motion.div style={{ opacity, scale, y }} className="h-full w-full">
-            <motion.div className="h-full w-full relative">
-              <Image
-                src="/homepage/1.jpg"
-                alt="Luxury travel"
-                fill
-                className="object-cover"
-                priority
-              />
-            </motion.div>
-            {/* Gradiente suave desde abajo hacia arriba */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-            {/* Gradiente adicional para mejor legibilidad del texto */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/40"></div>
-          </motion.div>
-        </div>
-
-        <div className="relative z-10 flex h-full w-full items-center justify-center">
-          <div className="px-4 md:px-6">
-            <motion.div
-              className="max-w-4xl mx-auto text-center text-white"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.2 }}
-            >
-              <h1 className="text-4xl md:text-6xl font-light tracking-tight leading-none mb-6">
-                VIAJES <span className="font-bold">EXTRAORDINARIOS</span>
-              </h1>
-              <p className="text-xl md:text-2xl font-light tracking-wide mb-6 max-w-xl mx-auto">
-                Experiencias de lujo diseñadas para los viajeros más exigentes
-              </p>
-              <div className="inline-block">
-                <Link
-                  href="/home"
-                  className={
-                    buttonVariants({ variant: "secondary" }) +
-                    " px-8 py-2 rounded"
-                  }
-                >
-                  Descubrir
-                </Link>
-              </div>
-            </motion.div>
-          </div>
-        </div>
+        <Carousel
+          opts={{ loop: true }}
+          plugins={[plugin]}
+          className="h-full w-full"
+        >
+          <CarouselContent className="ml-0 h-full">
+            {HERO_SLIDES.map((slide, i) => (
+              <CarouselItem
+                key={i}
+                className="relative h-full min-h-screen md:min-h-0 pl-0 basis-full"
+              >
+                <div className="relative h-full w-full min-h-screen md:min-h-0">
+                  <div className="absolute inset-0 h-full w-full">
+                    <Image
+                      src={encodeURI(slide.image)}
+                      alt=""
+                      width={1000}
+                      height={1000}
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                    {/* Overlay oscuro para que el texto blanco se lea mejor (solo refuerzo en desktop) */}
+                    <div className="absolute inset-0 bg-black/35 md:bg-black/40" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/25" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-black/50" />
+                  </div>
+                  <div className="absolute inset-0 z-10 flex items-center justify-center">
+                    <div className="px-4 md:px-6 text-center text-white max-w-4xl mx-auto">
+                      <h1 className="text-3xl md:text-5xl lg:text-6xl font-light tracking-tight leading-none mb-4 md:mb-6">
+                        {slide.title}
+                      </h1>
+                      <p className="text-lg md:text-xl font-light tracking-wide mb-6 max-w-xl mx-auto">
+                        {slide.subtitle}
+                      </p>
+                      <Link
+                        href="/home"
+                        className={
+                          buttonVariants({ variant: "secondary" }) +
+                          " px-8 py-2 rounded"
+                        }
+                      >
+                        {slide.cta}
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="left-4 md:left-6 h-10 w-10 rounded-full border-white/30 bg-black/30 text-white hover:bg-black/50 hover:text-white" />
+          <CarouselNext className="right-4 md:right-6 h-10 w-10 rounded-full border-white/30 bg-black/30 text-white hover:bg-black/50 hover:text-white" />
+        </Carousel>
       </section>
 
       {/* About Section */}
@@ -153,9 +167,8 @@ export default function Home() {
                 </div>
                 <p className="text-sm text-gray-700 leading-relaxed mb-4">
                   Una experiencia transformadora. Dubuu nos mostró la verdadera
-                  esencia de Guatemala con un nivel de servicio excepcional.
+                  esencia de una reserva con un nivel de servicio excepcional.
                 </p>
-                <p className="text-sm font-bold mt-4">— Daniel Dubón</p>
               </motion.div>
             </motion.div>
           </div>

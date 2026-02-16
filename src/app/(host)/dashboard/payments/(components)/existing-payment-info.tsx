@@ -32,37 +32,37 @@ export function ExistingPaymentInfo({
           </div>
 
           {data.paymentMethod === "bank" && (
-            <div className="space-y-3">
-              <div className="flex items-start space-x-3 p-3 rounded-md">
-                <Building className="h-5 w-5 mt-0.5" />
-                <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex items-start space-x-3 p-3 rounded-md border border-border bg-muted/30">
+                <Building className="h-5 w-5 mt-0.5 shrink-0" />
+                <div className="min-w-0">
                   <p className="font-medium">{data.bankData.bankName}</p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-muted-foreground">
                     {data.bankData.accountType === "ahorro"
                       ? "Cuenta de Ahorro"
                       : data.bankData.accountType === "corriente"
                         ? "Cuenta Corriente"
-                        : "Cuenta de Nómina"}
+                        : ""}
                   </p>
-                  <p className="text-sm text-gray-500">
-                    Cuenta: •••• {data.bankData.accountNumber.slice(-4)}
+                  <p className="text-sm text-muted-foreground">
+                    Cuenta: •••• {data.bankData.accountNumber?.slice(-4)}
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-start space-x-3 p-3 rounded-md">
-                <User className="h-5 w-5 mt-0.5" />
-                <div>
+              <div className="flex items-start space-x-3 p-3 rounded-md border border-border bg-muted/30">
+                <User className="h-5 w-5 mt-0.5 shrink-0" />
+                <div className="min-w-0">
                   <p className="font-medium">{data.bankData.holderName}</p>
-                  <p className="text-sm text-gray-500">Titular</p>
+                  <p className="text-sm text-muted-foreground">Titular</p>
                 </div>
               </div>
 
-              <div className="flex items-start space-x-3 p-3 rounded-md">
-                <Mail className="h-5 w-5 mt-0.5" />
-                <div>
+              <div className="flex items-start space-x-3 p-3 rounded-md border border-border bg-muted/30">
+                <Mail className="h-5 w-5 mt-0.5 shrink-0" />
+                <div className="min-w-0">
                   <p className="font-medium">{data.bankData.email}</p>
-                  <p className="text-sm text-gray-500">Correo de contacto</p>
+                  <p className="text-sm text-muted-foreground">Correo de contacto</p>
                 </div>
               </div>
             </div>

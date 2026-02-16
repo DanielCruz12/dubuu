@@ -126,7 +126,6 @@ export function BankForm({
                       <SelectItem value="corriente">
                         Cuenta Corriente
                       </SelectItem>
-                      <SelectItem value="nomina">Cuenta de Nómina</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage className="text-xs text-red-500" />

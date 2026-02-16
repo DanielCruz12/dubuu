@@ -114,7 +114,11 @@ export function PaymentForm() {
         setPaymentMethod("bank"); // Default to bank
       }
     } else if (paymentError) {
-      console.error("Error al obtener datos de pago:", paymentError);
+      // 404 = usuario sin cuenta de pago aún; no es un error de app
+      const status = (paymentError as { status?: number })?.status;
+      if (status !== 404) {
+        console.error("Error al obtener datos de pago:", paymentError);
+      }
       setDataFetched(true);
       setShowExistingData(false);
     }

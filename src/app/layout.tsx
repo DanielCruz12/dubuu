@@ -110,8 +110,6 @@ export default async function RootLayout({
       }}
     >
       <html lang="es" suppressHydrationWarning>
-        {" "}
-        {/* ✅ Cambiado a 'es' */}
         <head>
           <meta charSet="UTF-8" />
           <meta

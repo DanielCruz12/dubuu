@@ -32,7 +32,8 @@ import {
   guestMenuItems,
   hostDashboardItems,
 } from "@/utils/menu-options";
-import CurrencySelectorDrawer from "@/components/currency-selector";
+// Selector de moneda deshabilitado por el momento
+// import CurrencySelectorDrawer from "@/components/currency-selector";
 import { LanguageSelector } from "@/components/language-selector";
 import { useLanguage } from "@/lib/i18n-context";
 
@@ -109,6 +110,7 @@ export function Header() {
           <div className="ml-auto flex items-center gap-4">
             <ModeToggle />
             <LanguageSelector />
+            {/* <CurrencySelectorDrawer /> */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -198,7 +200,7 @@ export function Header() {
         <div className="ml-auto flex items-center gap-4">
           <ModeToggle />
           <LanguageSelector />
-          <CurrencySelectorDrawer />
+          {/* <CurrencySelectorDrawer /> */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">

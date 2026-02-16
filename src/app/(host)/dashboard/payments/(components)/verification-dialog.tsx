@@ -31,15 +31,17 @@ export function VerificationDialog({
             <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-500" />
             Verificación de datos bancarios
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-red-600 dark:text-red-300 space-y-2 text-sm sm:text-base mt-2">
-            <p className="font-normal">
-              Los datos bancarios que proporcionas serán utilizados para
-              transferir el dinero de todas tus reservaciones.
-            </p>
-            <p className="text-xs sm:text-sm">
-              Una vez procesados los pagos, será difícil recuperar fondos
-              enviados a cuentas incorrectas.
-            </p>
+          <AlertDialogDescription asChild className="text-red-600 dark:text-red-300 space-y-2 text-sm sm:text-base mt-2">
+            <div>
+              <span className="block font-normal">
+                Los datos bancarios que proporcionas serán utilizados para
+                transferir el dinero de todas tus reservaciones.
+              </span>
+              <span className="block text-xs sm:text-sm mt-2">
+                Una vez procesados los pagos, será difícil recuperar fondos
+                enviados a cuentas incorrectas.
+              </span>
+            </div>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">

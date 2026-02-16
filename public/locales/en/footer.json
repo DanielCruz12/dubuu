@@ -1,0 +1,24 @@
+{
+  "tagline": "Exclusive travel experiences designed for the most demanding travelers.",
+  "sections": {
+    "contact": "Contact",
+    "experiencias": "Experiences",
+    "empresa": "Company"
+  },
+  "nav": {
+    "privateTrips": "Private Trips",
+    "rentals": "Rentals",
+    "properties": "Properties",
+    "joinUs": "Join us",
+    "blog": "Blog",
+    "contact": "Contact",
+    "terms": "Terms and Conditions",
+    "privacy": "Privacy Policy"
+  },
+  "social": {
+    "instagram": "Instagram",
+    "facebook": "Facebook",
+    "twitter": "Twitter"
+  },
+  "copyright": "All rights reserved."
+}

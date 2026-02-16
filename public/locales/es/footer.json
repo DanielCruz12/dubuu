@@ -1,0 +1,24 @@
+{
+  "tagline": "Experiencias de viaje exclusivas diseñadas para los viajeros más exigentes.",
+  "sections": {
+    "contact": "Contacto",
+    "experiencias": "Experiencias",
+    "empresa": "Empresa"
+  },
+  "nav": {
+    "privateTrips": "Viajes Privados",
+    "rentals": "Alquileres",
+    "properties": "Propiedades",
+    "joinUs": "Sé parte",
+    "blog": "Blog",
+    "contact": "Contacto",
+    "terms": "Términos y Condiciones",
+    "privacy": "Política de Privacidad"
+  },
+  "social": {
+    "instagram": "Instagram",
+    "facebook": "Facebook",
+    "twitter": "Twitter"
+  },
+  "copyright": "Todos los derechos reservados."
+}

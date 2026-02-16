@@ -26,7 +26,7 @@ export default function HelpAndSupportPage() {
     {
       question: "¿Cómo puedo contactar al soporte técnico?",
       answer:
-        "Puedes contactar a nuestro equipo de soporte técnico utilizando el formulario de contacto en esta página. También puedes enviarnos un correo electrónico directamente a support@example.com.",
+        "Puedes contactar a nuestro equipo de soporte técnico utilizando el formulario de contacto en esta página. También puedes enviarnos un correo electrónico directamente a support@dubuu.com.",
     },
     {
       question: "¿Cuáles son los horarios de atención al cliente?",
