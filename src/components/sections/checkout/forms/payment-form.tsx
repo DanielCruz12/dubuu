@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useFormContext } from "react-hook-form";
+import { useLanguage } from "@/lib/i18n-context";
 import {
   FormField,
   FormItem,
@@ -32,6 +33,7 @@ export default function PaymentMethodForm({
   isLoading: boolean;
   setShowPaymentStep: (show: boolean) => void;
 }) {
+  const { t } = useLanguage();
   const { control, watch, setValue } = useFormContext<CheckoutFormValues>();
   const [paymentTab, setPaymentTab] = useState("credit");
 
@@ -47,9 +49,9 @@ export default function PaymentMethodForm({
   return (
     <Card className="overflow-hidden border pb-4">
       <CardHeader className=" pb-8">
-        <CardTitle className="text-xl">Método de Pago</CardTitle>
+        <CardTitle className="text-xl">{t("home.checkout.payment.title")}</CardTitle>
         <CardDescription>
-          Selecciona tu método de pago preferido.
+          {t("home.checkout.payment.description")}
         </CardDescription>
       </CardHeader>
       <CardContent className="pt-6">
@@ -95,7 +97,7 @@ export default function PaymentMethodForm({
                           height={60}
                           alt="tarjetas"
                         />
-                        Tarjeta de Crédito/Débito
+                        {t("home.checkout.payment.creditCard")}
                       </FormLabel>
                     </FormItem>
                   </div>
@@ -143,7 +145,7 @@ export default function PaymentMethodForm({
           type="submit"
           className="w-full text-base py-2"
         >
-          {isLoading ? "Procesando..." : "Proceder al pago"}
+          {isLoading ? t("home.checkout.payment.processing") : t("home.checkout.payment.proceedToPay")}
         </Button>
 
         <Button
@@ -152,16 +154,18 @@ export default function PaymentMethodForm({
           variant="ghost"
           className="w-full text-sm text-muted-foreground hover:text-primary transition hover:underline"
         >
-          Cancelar
+          {t("home.checkout.payment.cancel")}
         </Button>
 
         <p className="text-xs sm:text-sm text-center text-muted-foreground mt-1 px-2 sm:px-6">
-          Al hacer clic en <strong>Proceder al pago</strong>, aceptas nuestros{" "}
+          {t("home.checkout.payment.termsAgreeBefore")}
+          <strong>{t("home.checkout.payment.termsAgreeButton")}</strong>
+          {t("home.checkout.payment.termsAgreeAfter")}
           <Link
             href="/terms"
             className="underline underline-offset-4 hover:text-primary"
           >
-            términos y condiciones
+            {t("home.checkout.payment.termsLink")}
           </Link>
           .
         </p>

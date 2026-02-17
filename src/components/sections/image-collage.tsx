@@ -5,6 +5,7 @@ import type React from "react"
 import Image from "next/image"
 import { useState } from "react"
 import Lightbox from "yet-another-react-lightbox"
+import { useLanguage } from "@/lib/i18n-context"
 import Captions from "yet-another-react-lightbox/plugins/captions"
 import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen"
 import Zoom from "yet-another-react-lightbox/plugins/zoom"
@@ -21,6 +22,7 @@ export default function ImageCollage({
   images: string[]
   banner: string
 }) {
+  const { t } = useLanguage()
   const [open, setOpen] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
 
@@ -30,7 +32,7 @@ export default function ImageCollage({
   // Format all images for the lightbox
   const formattedImages = allImages.map((src, index) => ({
     src,
-    alt: `Imagen ${index + 1}`,
+    alt: `${t("home.imageCollage.image")} ${index + 1}`,
   }))
 
   // Maximum number of images to show in the grid before "see more" button
@@ -63,7 +65,7 @@ export default function ImageCollage({
             >
               <Image
                 src={image || "/logo.svg"}
-                alt={`Image ${index + 1}`}
+                alt={`${t("home.imageCollage.image")} ${index + 1}`}
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw"
@@ -118,7 +120,7 @@ export default function ImageCollage({
         >
           <Image
             src={banner || "/logo.svg"}
-            alt="Banner image"
+            alt={t("home.imageCollage.bannerAlt")}
             fill
             className="object-cover transition-transform duration-500 hover:scale-105"
             sizes="(max-width: 768px) 100vw, 50vw"
@@ -138,7 +140,7 @@ export default function ImageCollage({
           >
             <Image
               src={image || "/logo.svg"}
-              alt={`Imagen ${index + 2}`}
+              alt={`${t("home.imageCollage.image")} ${index + 2}`}
               fill
               className="object-cover transition-transform duration-500 hover:scale-105"
               sizes="25vw"
@@ -158,7 +160,7 @@ export default function ImageCollage({
           >
             <Image
               src={image || "/logo.svg"}
-              alt={`Imagen ${index + 4}`}
+              alt={`${t("home.imageCollage.image")} ${index + 4}`}
               fill
               className="object-cover transition-transform duration-500 hover:scale-105"
               sizes="25vw"
@@ -175,7 +177,7 @@ export default function ImageCollage({
                 }}
               >
                 <button className="bg-white text-black px-4 py-2 rounded-lg font-medium hover:bg-opacity-90">
-                  Mostrar todas las fotos ({images.length})
+                  {t("home.imageCollage.showAllPhotos")} ({images.length})
                 </button>
               </div>
             )}

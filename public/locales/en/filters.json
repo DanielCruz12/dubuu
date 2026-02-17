@@ -1,14 +1,21 @@
 {
-  "productType": {
-    "tours": "Trips",
-    "rental": "Rental"
-  },
-  "rating": {
-    "five": " 5 stars",
-    "fourPlus": "+4 stars",
-    "threePlus": "+3 stars",
-    "twoPlus": "+2 stars",
-    "onePlus": "+1 stars",
-    "none": "No rating"
+  "productType": {"tours": "Trips", "rental": "Rental"},
+  "rating": {"five": "5 stars", "fourPlus": "+4 stars", "threePlus": "+3 stars", "twoPlus": "+2 stars", "onePlus": "+1 stars", "none": "No rating"},
+  "dialog": {
+    "title": "Filter results",
+    "description": "Adjust the filters to find products according to your preferences.",
+    "productTypeLabel": "Product type",
+    "productTypePlaceholder": "Product type",
+    "allTypes": "All types",
+    "ratingLabel": "Rating",
+    "ratingPlaceholder": "Rating",
+    "priceRangeTitle": "Price range",
+    "priceRangeDescription": "Trip price, includes all fees",
+    "categoriesLabel": "Categories",
+    "durationLabel": "Duration",
+    "category": {"aventura": "Adventure", "cultural": "Cultural", "relajacion": "Relaxation"},
+    "duration": {"1-dia": "1 day", "2-3-dias": "2-3 days", "mas-de-3-dias": "More than 3 days"},
+    "reset": "Reset",
+    "apply": "Apply filters"
   }
 }

@@ -11,6 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import type { CheckoutFormValues } from "@/schemas/checkout-schema";
 import { AlertTriangle, Calendar, CreditCard, Lock } from "lucide-react";
+import { useLanguage } from "@/lib/i18n-context";
 import {
   formatCreditCardNumber,
   formatExpiryDate,
@@ -20,6 +21,7 @@ import {
 import { useEffect, useState } from "react";
 
 export default function CreditCardForm() {
+  const { t } = useLanguage();
   const { control, setValue, trigger, watch } =
     useFormContext<CheckoutFormValues>();
   const [cardType, setCardType] = useState<string>("");
@@ -71,11 +73,11 @@ export default function CreditCardForm() {
         name="cardNumber"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Número de Tarjeta</FormLabel>
+            <FormLabel>{t("home.checkout.payment.cardNumber")}</FormLabel>
             <FormControl>
               <div className="relative">
                 <Input
-                  placeholder="4242 4242 4242 4242"
+                  placeholder={t("home.checkout.payment.placeholderCard")}
                   value={field.value}
                   onChange={handleCardNumberChange}
                   maxLength={19}
@@ -93,7 +95,7 @@ export default function CreditCardForm() {
               <div className="flex items-center mt-1 text-red-600 text-sm">
                 <AlertTriangle className="h-4 w-4 mr-1" />
                 <span>
-                  Este número de tarjeta no es válido para pagos reales
+                  {t("home.checkout.payment.testCardWarning")}
                 </span>
               </div>
             )}
@@ -106,9 +108,9 @@ export default function CreditCardForm() {
         name="cardName"
         render={({ field }) => (
           <FormItem className="mt-4">
-            <FormLabel>Nombre en la Tarjeta</FormLabel>
+            <FormLabel>{t("home.checkout.payment.cardName")}</FormLabel>
             <FormControl>
-              <Input placeholder="Juan Pérez" {...field} />
+              <Input placeholder={t("home.checkout.payment.placeholderName")} {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -120,11 +122,11 @@ export default function CreditCardForm() {
           name="cardExpiry"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Fecha de Expiración</FormLabel>
+              <FormLabel>{t("home.checkout.payment.cardExpiry")}</FormLabel>
               <FormControl>
                 <div className="relative">
                   <Input
-                    placeholder="MM/YY"
+                    placeholder={t("home.checkout.payment.placeholderExpiry")}
                     value={field.value}
                     onChange={handleExpiryChange}
                     maxLength={5}
@@ -142,11 +144,11 @@ export default function CreditCardForm() {
           name="cardCvc"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>CVC</FormLabel>
+              <FormLabel>{t("home.checkout.payment.cardCvc")}</FormLabel>
               <FormControl>
                 <div className="relative">
                   <Input
-                    placeholder="123"
+                    placeholder={t("home.checkout.payment.placeholderCvc")}
                     value={field.value}
                     onChange={handleCVCChange}
                     maxLength={4}

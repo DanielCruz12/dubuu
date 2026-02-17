@@ -17,18 +17,14 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
+import { useLanguage } from "@/lib/i18n-context";
 
-// Imágenes del banner en public/homepage (1.jpg–6.jpg; en desktop el carrusel necesita h-full en el viewport)
-const HERO_SLIDES = [
-  { image: "/homepage/banner1.png", title: "Reservas que simplifican tu viaje", subtitle: "Haz reservas de tours y alquiler de autos en un solo lugar. Dubuu es la plataforma para viajeros y empresas.", cta: "Descubrir" },
-  { image: "/homepage/banner2.png", title: "¿Tienes una empresa de tours?", subtitle: "Lista tus experiencias y tours en Dubuu. Gestiona reservas, disponibilidad y clientes desde un solo panel.", cta: "Ver cómo funciona" },
-  { image: "/homepage/banner3.png", title: "Alquiler de autos", subtitle: "Si ofreces vehículos en alquiler, también puedes listarlos aquí. Tours y autos en la misma plataforma.", cta: "Descubrir" },
-  { image: "/homepage/banner4.png", title: "Tu viaje y tu negocio, mejor organizados", subtitle: "Reserva experiencias y coches con pocos clics, o gestiona tu oferta si eres empresa. Todo en Dubuu.", cta: "Empezar" },
-  { image: "/homepage/banner5.png", title: "Experiencias que inspiran", subtitle: "Alojamientos y experiencias diseñados para que tu viaje sea único. Reserva con confianza en Dubuu.", cta: "Descubrir" },
-];
+const HERO_SLIDE_KEYS = ["slide1", "slide2", "slide3", "slide4", "slide5"] as const;
+const HERO_SLIDE_IMAGES = ["/homepage/banner1.png", "/homepage/banner2.png", "/homepage/banner3.png", "/homepage/banner4.png", "/homepage/banner5.png"];
 
 export default function Home() {
   const { convert, symbol } = useCurrency();
+  const { t } = useLanguage();
 
   const containerRef = useRef(null);
   const aboutRef = useRef(null);
@@ -54,21 +50,20 @@ export default function Home() {
           className="h-full w-full"
         >
           <CarouselContent className="ml-0 h-full">
-            {HERO_SLIDES.map((slide, i) => (
+            {HERO_SLIDE_KEYS.map((slideKey, i) => (
               <CarouselItem
-                key={i}
+                key={slideKey}
                 className="relative h-full min-h-screen md:min-h-0 pl-0 basis-full"
               >
                 <div className="relative h-full w-full min-h-screen md:min-h-0">
                   <div className="absolute inset-0 h-full w-full">
                     <Image
-                      src={encodeURI(slide.image)}
+                      src={encodeURI(HERO_SLIDE_IMAGES[i])}
                       alt=""
                       width={1000}
                       height={1000}
                       className="absolute inset-0 h-full w-full object-cover"
                     />
-                    {/* Overlay oscuro para que el texto blanco se lea mejor (solo refuerzo en desktop) */}
                     <div className="absolute inset-0 bg-black/35 md:bg-black/40" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/25" />
                     <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-black/50" />
@@ -76,10 +71,10 @@ export default function Home() {
                   <div className="absolute inset-0 z-10 flex items-center justify-center">
                     <div className="px-4 md:px-6 text-center text-white max-w-4xl mx-auto">
                       <h1 className="text-3xl md:text-5xl lg:text-6xl font-light tracking-tight leading-none mb-4 md:mb-6">
-                        {slide.title}
+                        {t(`home.landing.${slideKey}.title`)}
                       </h1>
                       <p className="text-lg md:text-xl font-light tracking-wide mb-6 max-w-xl mx-auto">
-                        {slide.subtitle}
+                        {t(`home.landing.${slideKey}.subtitle`)}
                       </p>
                       <Link
                         href="/home"
@@ -88,7 +83,7 @@ export default function Home() {
                           " px-8 py-2 rounded"
                         }
                       >
-                        {slide.cta}
+                        {t(`home.landing.${slideKey}.cta`)}
                       </Link>
                     </div>
                   </div>
@@ -107,17 +102,15 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
             <motion.div style={{ opacity: aboutOpacity, x: aboutX }}>
               <h2 className="text-4xl md:text-5xl font-light tracking-tight mb-8">
-                DISEÑAMOS <span className="font-bold">EXPERIENCIAS</span> ÚNICAS
+                {t("home.landing.about.titlePrefix")}
+                <span className="font-bold">{t("home.landing.about.titleBold")}</span>
+                {t("home.landing.about.titleSuffix")}
               </h2>
               <p className="text-gray-600 mb-6 leading-relaxed">
-                En Dubuu, entendemos que cada viajero es único. Por eso, cada
-                experiencia que creamos está meticulosamente diseñada para
-                superar expectativas y crear recuerdos inolvidables.
+                {t("home.landing.about.paragraph1")}
               </p>
               <p className="text-gray-600 mb-10 leading-relaxed">
-                Nuestro equipo de expertos en viajes de lujo trabaja con los
-                mejores proveedores del mundo para ofrecerte acceso exclusivo a
-                destinos y experiencias extraordinarias.
+                {t("home.landing.about.paragraph2")}
               </p>
               <div className="inline-block">
                 <Link
@@ -127,7 +120,7 @@ export default function Home() {
                     " px-8 py-2 rounded"
                   }
                 >
-                  Ver experiencias
+                  {t("home.landing.about.cta")}
                 </Link>
               </div>
             </motion.div>
@@ -142,7 +135,7 @@ export default function Home() {
               <div className="aspect-[3/3] relative overflow-hidden rounded-2xl">
                 <Image
                   src="/tour1.jpg"
-                  alt="Luxury experience"
+                  alt={t("home.landing.about.imageAlt")}
                   fill
                   className="object-cover"
                 />
@@ -166,8 +159,7 @@ export default function Home() {
                   ))}
                 </div>
                 <p className="text-sm text-gray-700 leading-relaxed mb-4">
-                  Una experiencia transformadora. Dubuu nos mostró la verdadera
-                  esencia de una reserva con un nivel de servicio excepcional.
+                  {t("home.landing.about.testimonial")}
                 </p>
               </motion.div>
             </motion.div>
@@ -186,10 +178,12 @@ export default function Home() {
             transition={{ duration: 0.5 }}
           >
             <h2 className="text-4xl md:text-5xl font-light tracking-tight mb-6">
-              Viajes <span className="font-bold">privados</span>
+              {t("home.landing.tours.titlePrefix")}
+              <span className="font-bold">{t("home.landing.tours.titleBold")}</span>
+              {t("home.landing.tours.titleSuffix")}
             </h2>
             <p className="text-gray-400 text-lg">
-              Experiencias guiadas con acceso exclusivo y atención personalizada
+              {t("home.landing.tours.subtitle")}
             </p>
           </motion.div>
 
@@ -244,7 +238,7 @@ export default function Home() {
                   buttonVariants({ variant: "default" }) + " px-8 py-2 rounded"
                 }
               >
-                Ver todos los viajes
+                {t("home.landing.tours.cta")}
               </Link>
             </div>
           </div>

@@ -4,6 +4,7 @@
 import { RefreshCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/lib/i18n-context";
 import {
   Card,
   CardContent,
@@ -51,6 +52,7 @@ export function BookingStatus({
   onViewDetails,
   className,
 }: BookingStatusProps) {
+  const { t } = useLanguage();
   const receiptData: ReceiptProps = {
     receiptNumber: productId,
     date: new Date().toLocaleDateString("es-ES", {
@@ -70,8 +72,7 @@ export function BookingStatus({
     ],
     subtotal: (product.price as number) * tickets.adult,
     total: total,
-    notes:
-      "Gracias por confiar en nuestros servicios. Este recibo sirve como comprobante de pago.",
+    notes: t("home.bookingStatus.receiptNotes"),
     companyName: "Dubuu",
     companyLogo: "/logo.svg",
     companyAddress: "El Salvador, La Libertad",
@@ -83,7 +84,13 @@ export function BookingStatus({
     paymentStatus: "Completado",
   };
 
-  const config = statusConfig[status];
+  const baseConfig = statusConfig[status];
+  const config = {
+    ...baseConfig,
+    title: status === "completed" ? t("home.bookingStatus.completed.title") : status === "in-process" ? t("home.bookingStatus.inProcess.title") : t("home.bookingStatus.canceled.title"),
+    description: status === "completed" ? t("home.bookingStatus.completed.description") : status === "in-process" ? t("home.bookingStatus.inProcess.description") : t("home.bookingStatus.canceled.description"),
+    badgeText: status === "completed" ? t("home.bookingStatus.completed.badgeText") : status === "in-process" ? t("home.bookingStatus.inProcess.badgeText") : t("home.bookingStatus.canceled.badgeText"),
+  };
   const Icon = config.icon;
 
   const { convert, symbol } = useCurrency();
@@ -112,20 +119,20 @@ export function BookingStatus({
       <CardContent className="pb-3">
         <div className="space-y-3">
           <div className="flex flex-col p-2 rounded">
-            <h3 className="text-base font-semibold mb-4">Información</h3>
+            <h3 className="text-base font-semibold mb-4">{t("home.bookingStatus.info")}</h3>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-500">Nº de Reserva</span>
+                <span className="text-gray-500">{t("home.bookingStatus.bookingNumber")}</span>
                 <span className="font-normal">#{id.slice(0, 13)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Fecha de Reserva</span>
+                <span className="text-gray-500">{t("home.bookingStatus.bookingDate")}</span>
                 <span className="font-normal">
                   {moment(created_at).format("LLL")}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Método de Pago</span>
+                <span className="text-gray-500">{t("home.bookingStatus.paymentMethod")}</span>
                 <span className="font-normal">{paymentMethod}</span>
               </div>
             </div>
@@ -133,18 +140,18 @@ export function BookingStatus({
 
           <div className="bg-muted/50 rounded-md p-3 space-y-2">
             <div className="flex justify-between text-sm">
-              <span>Entradas:</span>
+              <span>{t("home.bookingStatus.tickets")}</span>
               <span>
-                {tickets.adult} {tickets.adult === 1 ? "adulto" : "adultos"}
+                {tickets.adult} {tickets.adult === 1 ? t("home.bookingStatus.adult") : t("home.bookingStatus.adults")}
               </span>
             </div>
             <Separator className="my-1" />
             <div className="flex justify-between font-medium">
-              <span>Total:</span>
+              <span>{t("home.bookingForm.total")}</span>
               <span>
                 {symbol}
                 {convert(total)}{" "}
-                <span className="text-sm text-muted-foreground">p/p</span>
+                <span className="text-sm text-muted-foreground">{t("home.bookingForm.perPerson")}</span>
               </span>
             </div>
           </div>
@@ -158,14 +165,14 @@ export function BookingStatus({
             onClick={onRebook}
           >
             <RefreshCcw className="h-4 w-4 mr-2" />
-            Reservar de nuevo
+            {t("home.bookingStatus.rebook")}
           </Button>
         )}
         {onViewDetails && (
           <PDFButton
             receiptData={receiptData}
             buttonVariant="outline"
-            buttonText="Descargar Recibo"
+            buttonText={t("home.bookingStatus.downloadReceipt")}
             fileName={`Recibo-${productName?.slice(0, 10)}-${productId.slice(0, 8)}`}
           />
         )}

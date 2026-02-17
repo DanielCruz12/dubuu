@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
+import { useLanguage } from "@/lib/i18n-context";
 import {
   FormField,
   FormItem,
@@ -29,6 +30,7 @@ import { countries } from "@/utils/data";
 import { getCountryById, getRegionById } from "@/utils";
 
 export default function ShippingForm() {
+  const { t } = useLanguage();
   const { control, watch, setValue } = useFormContext<CheckoutFormValues>();
 
   const selectedCountry = watch("country");
@@ -79,11 +81,10 @@ export default function ShippingForm() {
             name="country"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>País</FormLabel>
+                <FormLabel>{t("home.checkout.address.country")}</FormLabel>
                 <Select
                   onValueChange={(value) => {
                     field.onChange(value);
-                    // Reset region when country changes
                     setValue("state", "");
                     setValue("zipCode", "");
                   }}
@@ -91,7 +92,7 @@ export default function ShippingForm() {
                 >
                   <FormControl>
                     <SelectTrigger className="transition-all duration-200 ">
-                      <SelectValue placeholder="Seleccionar país" />
+                      <SelectValue placeholder={t("home.checkout.address.selectCountry")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -111,14 +112,14 @@ export default function ShippingForm() {
             name="state"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Región</FormLabel>
+                <FormLabel>{t("home.checkout.address.region")}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
                   <FormControl>
                     <SelectTrigger className="transition-all duration-200 ">
-                      <SelectValue placeholder="Seleccionar región" />
+                      <SelectValue placeholder={t("home.checkout.address.selectRegion")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -144,10 +145,10 @@ export default function ShippingForm() {
             name="city"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Ciudad</FormLabel>
+                <FormLabel>{t("home.checkout.address.city")}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Ingrese su ciudad"
+                    placeholder={t("home.checkout.address.placeholderCity")}
                     {...field}
                     className="transition-all duration-200 "
                   />
@@ -161,10 +162,10 @@ export default function ShippingForm() {
             name="zipCode"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Código Postal</FormLabel>
+                <FormLabel>{t("home.checkout.address.zipCode")}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Código postal"
+                    placeholder={t("home.checkout.address.placeholderZip")}
                     {...field}
                     className="transition-all duration-200 "
                   />

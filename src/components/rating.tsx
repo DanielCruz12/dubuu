@@ -1,6 +1,8 @@
+"use client";
 // Rating.tsx
 import { Star } from "lucide-react";
 import React from "react";
+import { useLanguage } from "@/lib/i18n-context";
 
 export interface RatingProps {
   averageRating: number | string;
@@ -25,18 +27,18 @@ export const Rating: React.FC<RatingProps> = ({
   activeStarClassName = "text-yellow-400 fill-yellow-400",
   isMobileOptimized = false,
 }) => {
+  const { t } = useLanguage();
   const ratingValue =
     typeof averageRating === "string" ? Number(averageRating) : averageRating;
   const finalRating = isNaN(ratingValue) ? 0 : ratingValue;
   const formattedRating = formatRating(finalRating);
 
-  // Texto para las reseñas
   const reviewText =
     reviewsCount === 0
-      ? "(No hay reseñas)"
-      : reviewsCount > 1
-        ? `(${reviewsCount} reseñas)`
-        : "(1 reseña)";
+      ? t("home.reviews.noReviews")
+      : reviewsCount === 1
+        ? t("home.reviews.oneReview")
+        : t("home.reviews.reviewsCount").replace("{count}", String(reviewsCount));
 
   return (
     <div

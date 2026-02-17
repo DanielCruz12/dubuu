@@ -6,6 +6,7 @@ import ReviewSummary from "./reviews-summary";
 import ReviewList from "./review-list";
 import ReviewForm from "./reviews-form";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/lib/i18n-context";
 import {
   Popover,
   PopoverContent,
@@ -30,11 +31,12 @@ export default function ReviewSection({
   reviews,
   isLoading,
 }: ReviewSectionProps) {
+  const { t } = useLanguage();
   const [openDialogReview, setOpenDialogReview] = useState(false);
   const { user, isLoaded: isUserLoaded } = useUser();
 
   if (isLoading) {
-    return <div className="animate-pulse">Cargando...</div>;
+    return <div className="animate-pulse">{t("home.reviews.loading")}</div>;
   }
 
   // Determinar el estado del usuario y su reserva
@@ -52,7 +54,7 @@ export default function ReviewSection({
   return (
     <div className="mt-12 space-y-8">
       {reviews.length < 0 && (
-        <h2 className="text-xl md:text-2xl font-semibold">Reseñas</h2>
+        <h2 className="text-xl md:text-2xl font-semibold">{t("home.reviews.title")}</h2>
       )}
 
       <ReviewSummary reviews={reviews} />
@@ -83,12 +85,11 @@ export default function ReviewSection({
           <div className="flex items-center gap-2">
             <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
             <h3 className="font-medium text-green-800 dark:text-green-400">
-              ¡Gracias por tu reseña!
+              {t("home.reviews.thanksTitle")}
             </h3>
           </div>
           <p className="mt-1 text-sm text-green-700 dark:text-green-300 pl-6">
-            Tu opinión es muy valiosa y ayuda a otros viajeros a tomar
-            decisiones informadas.
+            {t("home.reviews.thanksDescription")}
           </p>
         </div>
       );
@@ -100,11 +101,10 @@ export default function ReviewSection({
         <div className="mt-6 p-4 border rounded-lg">
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4 text-muted-foreground" />
-            <h3 className="font-medium">Reserva pendiente</h3>
+            <h3 className="font-medium">{t("home.reviews.pendingTitle")}</h3>
           </div>
           <p className="mt-1 text-sm text-muted-foreground pl-6">
-            Podrás dejar una reseña una vez que tu reserva esté completada.
-            ¡Esperamos que disfrutes tu experiencia!
+            {t("home.reviews.pendingDescription")}
           </p>
         </div>
       );
@@ -116,36 +116,32 @@ export default function ReviewSection({
         <div className="mt-6 p-4 border rounded-lg">
           <div className="flex items-center mb-2">
             <h3 className="text-lg md:text-xl font-semibold">
-              Deja una reseña
+              {t("home.reviews.leaveReview")}
             </h3>
             <Popover>
               <PopoverTrigger className="px-2 ml-2">
                 <Info className="h-4 w-4" />
-                <span className="sr-only">Información sobre reseñas</span>
+                <span className="sr-only">{t("home.reviews.srInfo")}</span>
               </PopoverTrigger>
               <PopoverContent className="max-w-xs">
                 <p className="text-sm text-muted-foreground">
-                  Por favor, asegúrate de que tu reseña cumpla con nuestras
-                  políticas de contenido. No se permiten comentarios ofensivos,
-                  difamatorios o inapropiados.
+                  {t("home.reviews.reviewInfo")}
                 </p>
               </PopoverContent>
             </Popover>
           </div>
           <p className="text-sm text-muted-foreground mb-4">
-            Tu opinión es importante para nosotros y ayuda a otros viajeros a
-            tomar decisiones informadas y mejoran nuestros servicios.
-            Agradecemos tu tiempo y comentarios.
+            {t("home.reviews.reviewIntro")}
           </p>
 
           <ReusableDialog
             trigger={
               <Button variant="outline" className="text-sm">
-                Compartir mi experiencia
+                {t("home.reviews.shareExperience")}
               </Button>
             }
-            title="Escribe tu reseña"
-            description="Comparte tu experiencia con otros viajeros"
+            title={t("home.reviews.writeReviewTitle")}
+            description={t("home.reviews.writeReviewDescription")}
             className=""
             open={openDialogReview}
             onOpenChange={setOpenDialogReview}

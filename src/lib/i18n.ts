@@ -78,7 +78,10 @@ export function getNamespacesForRoute(pathname: string): string[] {
     namespaces.push("menu");
   }
   if (pathname.includes("/contact")) {
-    namespaces.push("menu");
+    namespaces.push("menu", "contact");
+  }
+  if (pathname.includes("/terms")) {
+    namespaces.push("terms");
   }
   return namespaces.filter((ns, i) => namespaces.indexOf(ns) === i);
 }

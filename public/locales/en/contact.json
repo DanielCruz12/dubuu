@@ -1,0 +1,64 @@
+{
+  "title": "Listing Request - Dubuu",
+  "description": "Complete the form to list your product or service on our platform",
+  "labels": {
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email",
+    "phone": "Phone number",
+    "serviceType": "Service type",
+    "serviceDetails": "Service details",
+    "preferredContact": "Preferred contact method",
+    "emailOption": "Email",
+    "phoneOption": "Phone",
+    "securityVerification": "Security verification",
+    "acceptTerms": "I accept the",
+    "termsAndConditions": "Terms and Conditions",
+    "andThe": "and the",
+    "privacyPolicy": "Privacy Policy"
+  },
+  "placeholders": {
+    "firstName": "Enter your first name",
+    "lastName": "Enter your last name",
+    "email": "email@example.com",
+    "serviceType": "Select a service type",
+    "serviceDetails": "Describe the details of your service or product..."
+  },
+  "serviceTypes": {
+    "tour": "Tour / Trip",
+    "alquilerAuto": "Car rental",
+    "propiedad": "Property sale"
+  },
+  "formDescription": "Include relevant information such as location, prices, features, etc.",
+  "submit": "Submit request",
+  "submitting": "Sending...",
+  "whyList": "Why list with Dubuu?",
+  "benefits": {
+    "income": "Increase your income with our platform",
+    "reach": "Reach thousands of potential customers",
+    "management": "Simplified booking management",
+    "support": "24/7 personalized support"
+  },
+  "afterSubmit": "After submitting your request, a representative will contact you to schedule a call and discuss the details.",
+  "validation": {
+    "nameRequired": "First name is required",
+    "lastNameRequired": "Last name is required",
+    "invalidEmail": "Invalid email address",
+    "invalidPhone": "Invalid phone number",
+    "selectServiceType": "Select a service type",
+    "messageMin": "Please provide more details about your request",
+    "acceptTerms": "You must accept the terms and conditions",
+    "recaptchaRequired": "Please complete the reCAPTCHA"
+  },
+  "toast": {
+    "loginRequired": "Please sign in to submit your request.",
+    "loginDescription": "You must be signed in to submit the form.",
+    "recaptchaError": "reCAPTCHA verification error",
+    "recaptchaDescription": "Please complete the reCAPTCHA again.",
+    "success": "Request sent successfully!",
+    "successDescriptionEmail": "We will contact you via your email shortly.",
+    "successDescriptionPhone": "We will contact you via your phone shortly.",
+    "error": "Error sending the form",
+    "errorDescription": "Please try again later or contact us directly."
+  }
+}

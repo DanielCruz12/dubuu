@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Sheet,
   SheetContent,
@@ -7,6 +9,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "./ui/scroll-area";
+import { useLanguage } from "@/lib/i18n-context";
 
 export function ReviewSheet({
   triggerText,
@@ -15,6 +18,7 @@ export function ReviewSheet({
   triggerText: string;
   children: React.ReactNode;
 }) {
+  const { t } = useLanguage();
   return (
     <Sheet>
       <SheetTrigger>
@@ -24,9 +28,9 @@ export function ReviewSheet({
       </SheetTrigger>
       <SheetContent side={"left"} className="w-full sm:max-w-[450px]">
         <SheetHeader>
-          <SheetTitle>Reseñas</SheetTitle>
+          <SheetTitle>{t("home.reviews.sheetTitle")}</SheetTitle>
           <SheetDescription>
-            Opiniones verificadas de nuestros clientes.
+            {t("home.reviews.sheetDescription")}
           </SheetDescription>
         </SheetHeader>
         <ScrollArea className="mt-4 h-[80vh] pr-4">{children}</ScrollArea>

@@ -1,14 +1,21 @@
 {
-  "productType": {
-    "tours": "Viajes",
-    "rental": "Alquiler"
-  },
-  "rating": {
-    "five": " 5 estrellas",
-    "fourPlus": "+4 estrellas",
-    "threePlus": "+3 estrellas",
-    "twoPlus": "+2 estrellas",
-    "onePlus": "+1 estrellas",
-    "none": "Sin calificación"
+  "productType": {"tours": "Viajes", "rental": "Alquiler"},
+  "rating": {"five": "5 estrellas", "fourPlus": "+4 estrellas", "threePlus": "+3 estrellas", "twoPlus": "+2 estrellas", "onePlus": "+1 estrellas", "none": "Sin calificación"},
+  "dialog": {
+    "title": "Filtrar resultados",
+    "description": "Ajusta los filtros para encontrar productos según tus preferencias.",
+    "productTypeLabel": "Tipo de producto",
+    "productTypePlaceholder": "Tipo de producto",
+    "allTypes": "Todos los tipos",
+    "ratingLabel": "Calificación",
+    "ratingPlaceholder": "Calificación",
+    "priceRangeTitle": "Rango de precios",
+    "priceRangeDescription": "Precio del viaje, incluye todas las tarifas",
+    "categoriesLabel": "Categorías",
+    "durationLabel": "Duración",
+    "category": {"aventura": "Aventura", "cultural": "Cultural", "relajacion": "Relajación"},
+    "duration": {"1-dia": "1 día", "2-3-dias": "2-3 días", "mas-de-3-dias": "Más de 3 días"},
+    "reset": "Restablecer",
+    "apply": "Aplicar filtros"
   }
 }

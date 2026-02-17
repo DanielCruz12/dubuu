@@ -26,15 +26,19 @@ import { getHostEarningsFromFinalPrice } from "@/lib/price";
 
 import "moment/locale/es";
 import { useCurrency } from "@/hooks/use-currency-converter";
-const schema = z.object({
-  datetime: z.string().min(1, "Selecciona una fecha y hora"),
-  tickets: z.object({
-    adult: z.coerce.number().min(1, "Mínimo 1 entrada"),
-  }),
-  addons: z.array(z.enum(["lunch", "transport"])),
-});
+import { useLanguage } from "@/lib/i18n-context";
 
-type FormData = z.infer<typeof schema>;
+function getBookingFormSchema(t: (key: string) => string) {
+  return z.object({
+    datetime: z.string().min(1, t("home.bookingForm.validation.datetimeRequired")),
+    tickets: z.object({
+      adult: z.coerce.number().min(1, t("home.bookingForm.validation.minOneTicket")),
+    }),
+    addons: z.array(z.enum(["lunch", "transport"])),
+  });
+}
+
+type FormData = z.infer<ReturnType<typeof getBookingFormSchema>>;
 
 export default function BookingForm({
   product,
@@ -54,6 +58,7 @@ export default function BookingForm({
   }) => void;
   showPaymentStep: boolean;
 }) {
+  const { t } = useLanguage();
   const { user } = useUser();
   const { convert, symbol } = useCurrency();
 
@@ -85,7 +90,7 @@ export default function BookingForm({
     watch,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(getBookingFormSchema(t)),
     defaultValues: {
       datetime: "",
       tickets: { adult: 1 },
@@ -97,7 +102,7 @@ export default function BookingForm({
 
   const onSubmit = async () => {
     if (!user) {
-      toast.error("Debes iniciar sesión para continuar con la reserva");
+      toast.error(t("home.bookingForm.toast.loginRequired"));
       return;
     }
 
@@ -134,7 +139,7 @@ export default function BookingForm({
       watchData.tickets.adult > selectedDateAvailability.availableSpots
     ) {
       toast.error(
-        `Solo hay ${selectedDateAvailability.availableSpots} lugares disponibles`
+        t("home.bookingForm.toast.spotsLeft").replace("{count}", String(selectedDateAvailability.availableSpots))
       );
       return;
     }
@@ -145,12 +150,12 @@ export default function BookingForm({
   return (
     <div className="sticky top-4 rounded-lg px-2 max-w-md mx-auto">
       <h2 className="text-base font-semibold mb-4 hidden md:block">
-        Reservar - {product.name}
+        {t("home.bookingForm.title")} {product.name}
       </h2>
 
       <form className="space-y-6">
         <div ref={datetimeRef}>
-          <Label>Fecha y hora:</Label>
+          <Label>{t("home.bookingForm.datetimeLabel")}</Label>
           <Controller
             control={control}
             name="datetime"
@@ -172,7 +177,7 @@ export default function BookingForm({
                 value={field.value}
               >
                 <SelectTrigger className="mt-1 w-full mx-auto">
-                  <SelectValue placeholder="Selecciona una fecha y hora" />
+                  <SelectValue placeholder={t("home.bookingForm.datetimePlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {availableDates.length > 0 ? (
@@ -188,15 +193,15 @@ export default function BookingForm({
                             className={`ml-2 ${d.availableSpots <= 3 && d.availableSpots > 0 ? "text-amber-500 font-semibold" : d.availableSpots <= 0 ? "text-red-500 font-semibold" : "text-emerald-400"}`}
                           >
                             {d.availableSpots > 0
-                              ? `(${d.availableSpots} disp.)`
-                              : "(Agotado)"}
+                              ? `(${d.availableSpots} ${t("home.bookingForm.available")})`
+                              : `(${t("home.bookingForm.soldOut")})`}
                           </span>
                         </div>
                       </SelectItem>
                     ))
                   ) : (
                     <SelectItem value="no-dates" disabled>
-                      No hay fechas disponibles
+                      {t("home.bookingForm.noDates")}
                     </SelectItem>
                   )}
                 </SelectContent>
@@ -209,13 +214,13 @@ export default function BookingForm({
         </div>
 
         <div>
-          <Label>Entradas:</Label>
+          <Label>{t("home.bookingForm.ticketsLabel")}</Label>
           <div className="flex flex-col gap-2 md:flex-row md:justify-between md:items-center mt-2">
-            <span>Adultos</span>
+            <span>{t("home.bookingForm.adults")}</span>
             <div className="flex items-center gap-2">
               {symbol}
               {convert(product.price)}{" "}
-              <span className="text-sm text-muted-foreground">p/p</span>
+              <span className="text-sm text-muted-foreground">{t("home.bookingForm.perPerson")}</span>
               <Controller
                 control={control}
                 name="tickets.adult"
@@ -273,10 +278,10 @@ export default function BookingForm({
             return (
               <>
                 <div className="flex justify-between text-sm">
-                  <span>Precio por persona:</span>
+                  <span>{t("home.bookingForm.pricePerPerson")}</span>
                   <span>
                     {symbol}
-                    {price} p/p
+                    {price} {t("home.bookingForm.perPerson")}
                   </span>
                 </div>
 
@@ -289,7 +294,7 @@ export default function BookingForm({
                 </div>
                 <Separator className="my-3" />
                 <div className="flex rounded py-3 px-2 justify-between font-semibold items-center">
-                  <span className="text-lg md:text-2xl">Total</span>
+                  <span className="text-lg md:text-2xl">{t("home.bookingForm.total")}</span>
                   <div className="flex items-center gap-2">
                     <span className="text-lg md:text-2xl">
                       {symbol}
@@ -308,7 +313,7 @@ export default function BookingForm({
               className="w-full"
               onClick={handleReserveClick}
             >
-              Reservar ahora
+              {t("home.bookingForm.bookNow")}
             </Button>
           )}
         </div>
@@ -319,7 +324,7 @@ export default function BookingForm({
             className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-2 mx-auto"
           >
             <Users className="w-4 h-4" />
-            ¿Necesitas ayuda?
+            {t("home.bookingForm.needHelp")}
           </button>
         </div>
       </form>
