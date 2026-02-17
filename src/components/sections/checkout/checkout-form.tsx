@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect } from "react";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
+import { useLanguage } from "@/lib/i18n-context";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, FormProvider } from "react-hook-form";
 import {
@@ -35,6 +36,7 @@ export default function CheckoutForm({
   } | null;
   setShowPaymentStep: (show: boolean) => void;
 }) {
+  const { t } = useLanguage();
   const user = useUser();
 
   const methods = useForm<CheckoutFormValues>({
@@ -101,8 +103,8 @@ export default function CheckoutForm({
     }
 
     if (isTestCard(values.cardNumber)) {
-      toast.error("Error de pago", {
-        description: "Este número de tarjeta no es válido para pagos reales.",
+      toast.error(t("home.checkout.toast.invalidCard"), {
+        description: t("home.checkout.toast.invalidCardDesc"),
       });
       return;
     }
@@ -132,7 +134,7 @@ export default function CheckoutForm({
     } catch (err: any) {
       console.error("Error al actualizar usuario", err);
       toast.error(
-        err?.data?.message || "No se pudo actualizar la información del usuario"
+        err?.data?.message || t("home.checkout.toast.updateError")
       );
       return;
     }
@@ -164,18 +166,18 @@ export default function CheckoutForm({
         }
       })(),
       {
-        loading: "Procesando pago.",
-        success: "Redirigiendo al banco...",
-        error: (err) => err?.data?.message || "Error al procesar el pago",
+        loading: t("home.checkout.toast.processing"),
+        success: t("home.checkout.toast.redirecting"),
+        error: (err) => err?.data?.message || t("home.checkout.toast.paymentError"),
       }
     );
   }
 
   return (
     <FormProvider {...methods}>
-      <h1 className="text-3xl font-bold mb-2">Finalizar Compra</h1>
+      <h1 className="text-3xl font-bold mb-2">{t("home.checkout.title")}</h1>
       <p className="text-slate-500 mb-8">
-        Complete sus datos para procesar su pedido
+        {t("home.checkout.description")}
       </p>
       <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-8">
         <ContactForm />

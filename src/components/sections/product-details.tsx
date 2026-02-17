@@ -7,6 +7,7 @@ import {
 import type { IProduct } from "@/types/product";
 import { isProductType } from "@/utils";
 import { TourDifficultyBadge } from "../difficulty-badge";
+import { useLanguage } from "@/lib/i18n-context";
 
 // Timeline item component for reusability
 const TimelineItem = ({ content }: { content: string }) => (
@@ -33,6 +34,7 @@ const TimelineList = ({ items }: { items?: string[] }) => {
 };
 
 const ProductDetails = ({ product }: { product: IProduct }) => {
+  const { t } = useLanguage();
   const isTour = isProductType(product, "tours");
   const tourData = isTour ? product.tour : null;
 
@@ -59,7 +61,7 @@ const ProductDetails = ({ product }: { product: IProduct }) => {
     <div className="mb-4">
       {isTour && tourData?.difficulty && (
         <div className="mb-4">
-          <label className="text-base md:text-xl font-semibold pr-3">Nivel de dificultad {" "}</label>
+          <label className="text-base md:text-xl font-semibold pr-3">{t("home.productDetails.difficultyLevel")} </label>
           <TourDifficultyBadge difficulty={tourData.difficulty} />
         </div>
       )}
@@ -72,7 +74,7 @@ const ProductDetails = ({ product }: { product: IProduct }) => {
         {hasDescription && (
           <AccordionItem value="overview">
             <AccordionTrigger className="text-base md:text-xl font-semibold">
-              Descripción general
+              {t("home.productDetails.overview")}
             </AccordionTrigger>
             <AccordionContent>
               <div className="space-y-4 font-normal md:text-base text-muted-foreground line-clamp-5">
@@ -85,7 +87,7 @@ const ProductDetails = ({ product }: { product: IProduct }) => {
         {hasHighlight && (
           <AccordionItem value="highlight">
             <AccordionTrigger className="text-base md:text-xl font-semibold">
-              Destacar
+              {t("home.productDetails.highlight")}
             </AccordionTrigger>
             <AccordionContent>
               <div className="space-y-4 font-normal md:text-base text-muted-foreground">
@@ -98,7 +100,7 @@ const ProductDetails = ({ product }: { product: IProduct }) => {
         {hasIncluded && (
           <AccordionItem value="included">
             <AccordionTrigger className="text-base md:text-xl font-semibold">
-              Qué incluye
+              {t("home.productDetails.whatsIncluded")}
             </AccordionTrigger>
             <AccordionContent>
               <div className="space-y-4 font-normal md:text-base text-muted-foreground">
@@ -111,7 +113,7 @@ const ProductDetails = ({ product }: { product: IProduct }) => {
         {hasItinerary && (
           <AccordionItem value="itinerary">
             <AccordionTrigger className="text-base md:text-xl font-semibold">
-              Itinerario
+              {t("home.productDetails.itinerary")}
             </AccordionTrigger>
             <AccordionContent>
               <TimelineList items={tourData?.itinerary} />
@@ -122,7 +124,7 @@ const ProductDetails = ({ product }: { product: IProduct }) => {
         {hasExpenses && (
           <AccordionItem value="expenses">
             <AccordionTrigger className="text-base md:text-xl font-semibold">
-              Gastos adicionales
+              {t("home.productDetails.additionalExpenses")}
             </AccordionTrigger>
             <AccordionContent>
               <TimelineList items={tourData?.expenses} />
@@ -133,7 +135,7 @@ const ProductDetails = ({ product }: { product: IProduct }) => {
         {hasPackingList && (
           <AccordionItem value="packing_list">
             <AccordionTrigger className="text-base md:text-xl font-semibold">
-              Cosas que debes llevar
+              {t("home.productDetails.whatToBring")}
             </AccordionTrigger>
             <AccordionContent>
               <TimelineList items={tourData?.packing_list} />

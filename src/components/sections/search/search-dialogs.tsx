@@ -30,6 +30,7 @@ import { setSearchTerm } from "@/redux/slices/product/search/search-slice";
 import { PriceRangeHistogram } from "@/components/price-range-histogram";
 import { generateSlug } from "@/lib/utils";
 import { useCurrency } from "@/hooks/use-currency-converter";
+import { useLanguage } from "@/lib/i18n-context";
 
 interface SearchDialogProps {
   isOpen: boolean;
@@ -228,6 +229,15 @@ interface FilterDialogProps {
   onResetFilters: () => void;
 }
 
+const RATING_VALUE_TO_KEY: Record<string, string> = {
+  "5": "five",
+  "4": "fourPlus",
+  "3": "threePlus",
+  "2": "twoPlus",
+  "1": "onePlus",
+  "0": "none",
+};
+
 export const FilterDialog: React.FC<FilterDialogProps> = ({
   isOpen,
   onOpenChange,
@@ -244,68 +254,65 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
   onApplyFilters,
   onResetFilters,
 }) => {
+  const { t } = useLanguage();
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px] max-w-[95%] md:max-w-[85%] lg:max-w-[75%] xl:max-w-[55%] p-0 overflow-hidden rounded-xl border-none shadow-xl">
         <div className="bg-gradient-to-r dark:from-black dark:to-primary/5 border-none px-4 md:px-0">
           <DialogHeader>
             <DialogTitle className="text-center pt-6">
-              Filtrar resultados
+              {t("filters.dialog.title")}
             </DialogTitle>
             <DialogDescription className="pt-1 pb-2 text-center">
-              Ajusta los filtros para encontrar productos según tus
-              preferencias.
+              {t("filters.dialog.description")}
             </DialogDescription>
           </DialogHeader>
 
           <div className="grid md:grid-cols-2 grid-cols-1 gap-3 py-3 mx-auto max-w-3xl">
-            {/* Tipo de producto */}
             <div>
               <label className="text-xs font-medium mb-1 inline-flex items-center gap-1">
                 <MapPin className="h-3 w-3 text-primary" />
-                Tipo de producto
+                {t("filters.dialog.productTypeLabel")}
               </label>
               <Select
                 value={tempProductType}
                 onValueChange={setTempProductType}
               >
                 <SelectTrigger className="h-8 text-xs">
-                  <SelectValue placeholder="Tipo de producto" />
+                  <SelectValue placeholder={t("filters.dialog.productTypePlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all" className="text-xs">
-                    Todos los tipos
+                    {t("filters.dialog.allTypes")}
                   </SelectItem>
-                  {productTypes.map(({ name, description }) => (
+                  {productTypes.map(({ name }) => (
                     <SelectItem key={name} value={name} className="text-xs">
-                      {description}
+                      {t(`filters.productType.${name}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
-            {/* Calificación */}
             <div>
               <label className="text-xs font-medium mb-1 inline-flex items-center gap-1">
                 <Star className="h-3 w-3 text-amber-400" />
-                Calificación
+                {t("filters.dialog.ratingLabel")}
               </label>
               <Select value={tempRating} onValueChange={setTempRating}>
                 <SelectTrigger className="h-8 text-xs">
-                  <SelectValue placeholder="Calificación" />
+                  <SelectValue placeholder={t("filters.dialog.ratingPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  {ratingOptions.map(({ label, value }) => (
+                  {ratingOptions.map(({ value }) => (
                     <SelectItem key={value} value={value} className="text-xs">
-                      {label}
+                      {t(`filters.rating.${RATING_VALUE_TO_KEY[value] ?? "none"}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
-            {/* Precio con slider */}
             <div className="pt-1 px-2 md:col-span-2">
               <PriceRangeHistogram
                 value={tempPriceRange}
@@ -316,10 +323,9 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
               />
             </div>
 
-            {/* Categorías */}
             <div>
               <label className="text-xs font-medium mb-2 block">
-                Categorías
+                {t("filters.dialog.categoriesLabel")}
               </label>
               <div className="space-y-2">
                 {["aventura", "cultural", "relajacion"].map((category) => (
@@ -335,16 +341,15 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
                       htmlFor={category}
                       className="text-xs font-medium leading-none"
                     >
-                      {category.charAt(0).toUpperCase() + category.slice(1)}
+                      {t(`filters.dialog.category.${category}`)}
                     </label>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Duración */}
             <div>
-              <label className="text-xs font-medium mb-2 block">Duración</label>
+              <label className="text-xs font-medium mb-2 block">{t("filters.dialog.durationLabel")}</label>
               <div className="space-y-2">
                 {["1-dia", "2-3-dias", "mas-de-3-dias"].map((duration) => (
                   <div key={duration} className="flex items-center space-x-2">
@@ -359,11 +364,7 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
                       htmlFor={duration}
                       className="text-xs font-medium leading-none"
                     >
-                      {duration === "1-dia"
-                        ? "1 día"
-                        : duration === "2-3-dias"
-                          ? "2-3 días"
-                          : "Más de 3 días"}
+                      {t(`filters.dialog.duration.${duration}`)}
                     </label>
                   </div>
                 ))}
@@ -379,14 +380,14 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
               className="h-9 text-sm px-4 flex items-center gap-2"
             >
               <RefreshCw className="h-3.5 w-3.5" />
-              Restablecer
+              {t("filters.dialog.reset")}
             </Button>
             <Button
               size="sm"
               className="h-9 text-sm px-4 flex items-center gap-2"
               onClick={onApplyFilters}
             >
-              Aplicar filtros
+              {t("filters.dialog.apply")}
             </Button>
           </DialogFooter>
         </div>

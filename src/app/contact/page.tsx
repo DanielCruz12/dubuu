@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { User, Mail, Building, MessageSquare, CheckCircle } from "lucide-react";
+import { useLanguage } from "@/lib/i18n-context";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -40,26 +41,27 @@ import { verifyRecaptcha } from "@/lib/recaptcha";
 import { useUser } from "@clerk/nextjs";
 import { useSendContactMessageMutation } from "@/redux/slices/contact/contact-slice";
 
-const formSchema = z.object({
-  nombre: z.string().min(2, "El nombre es requerido"),
-  apellido: z.string().min(2, "El apellido es requerido"),
-  email: z.string().email("Dirección de correo electrónico inválida"),
-  telefono: z.string().min(10, "Número de teléfono inválido"),
-  tipoServicio: z.enum(["tour", "alquilerAuto", "propiedad"], {
-    required_error: "Seleccione un tipo de servicio",
-  }),
-  mensaje: z
-    .string()
-    .min(10, "Por favor, proporcione más detalles sobre su solicitud"),
-  terminosCondiciones: z
-    .boolean()
-    .refine((val) => val === true, "Debe aceptar los términos y condiciones"),
-  recaptcha: z.string().min(1, "Por favor, complete el reCAPTCHA"),
-});
+function getContactFormSchema(t: (path: string) => string) {
+  return z.object({
+    nombre: z.string().min(2, t("contact.validation.nameRequired")),
+    apellido: z.string().min(2, t("contact.validation.lastNameRequired")),
+    email: z.string().email(t("contact.validation.invalidEmail")),
+    telefono: z.string().min(10, t("contact.validation.invalidPhone")),
+    tipoServicio: z.enum(["tour", "alquilerAuto", "propiedad"], {
+      required_error: t("contact.validation.selectServiceType"),
+    }),
+    mensaje: z.string().min(10, t("contact.validation.messageMin")),
+    terminosCondiciones: z
+      .boolean()
+      .refine((val) => val === true, t("contact.validation.acceptTerms")),
+    recaptcha: z.string().min(1, t("contact.validation.recaptchaRequired")),
+  });
+}
 
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = z.infer<ReturnType<typeof getContactFormSchema>>;
 
 export default function ContactForm() {
+  const { t } = useLanguage();
   const { user, isSignedIn: isAuthenticated } = useUser();
   const [sendContactMessage, { isLoading: isSending }] =
     useSendContactMessageMutation();
@@ -71,7 +73,7 @@ export default function ContactForm() {
   const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(getContactFormSchema(t)),
     defaultValues: {
       nombre: "",
       apellido: "",
@@ -102,8 +104,8 @@ export default function ContactForm() {
 
   async function onSubmit(values: FormValues) {
     if (!isAuthenticated) {
-      toast.error("Por favor, inicie sesión para enviar su solicitud.", {
-        description: "Debe estar autenticado para enviar el formulario.",
+      toast.error(t("contact.toast.loginRequired"), {
+        description: t("contact.toast.loginDescription"),
       });
       return;
     }
@@ -115,8 +117,8 @@ export default function ContactForm() {
       const recaptchaVerified = await verifyRecaptcha(values.recaptcha);
 
       if (!recaptchaVerified.success) {
-        toast.error("Error de verificación de reCAPTCHA", {
-          description: "Por favor, complete el reCAPTCHA nuevamente.",
+        toast.error(t("contact.toast.recaptchaError"), {
+          description: t("contact.toast.recaptchaDescription"),
         });
         // Resetear reCAPTCHA
         recaptchaRef.current?.reset();
@@ -140,11 +142,11 @@ export default function ContactForm() {
       // Send data to API using Redux Toolkit Query
       await sendContactMessage(contactMessage).unwrap();
 
-      // Mostrar mensaje de éxito
-      toast.success("¡Solicitud enviada con éxito!", {
-        description: `Nos pondremos en contacto con usted a través de su ${
-          preferredContact === "email" ? "correo electrónico" : "teléfono"
-        } en breve.`,
+      toast.success(t("contact.toast.success"), {
+        description:
+          preferredContact === "email"
+            ? t("contact.toast.successDescriptionEmail")
+            : t("contact.toast.successDescriptionPhone"),
         duration: 5000,
       });
 
@@ -161,9 +163,8 @@ export default function ContactForm() {
       }
     } catch (err) {
       console.error("Error al enviar el formulario:", err);
-      toast.error("Error al enviar el formulario", {
-        description:
-          "Por favor, inténtelo de nuevo más tarde o contáctenos directamente.",
+      toast.error(t("contact.toast.error"), {
+        description: t("contact.toast.errorDescription"),
       });
     } finally {
       setIsSubmitting(false);
@@ -188,11 +189,10 @@ export default function ContactForm() {
             <Card className="border">
               <CardHeader className=" rounded-t-lg">
                 <CardTitle className="text-2xl font-bold">
-                  Solicitud de Listado - Dubuu
+                  {t("contact.title")}
                 </CardTitle>
                 <CardDescription>
-                  Complete el formulario para listar su producto o servicio en
-                  nuestra plataforma
+                  {t("contact.description")}
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-6">
@@ -207,13 +207,13 @@ export default function ContactForm() {
                         name="nombre"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Nombre</FormLabel>
+                            <FormLabel>{t("contact.labels.firstName")}</FormLabel>
                             <FormControl>
                               <div className="relative">
                                 <User className="absolute left-3 top-3 h-4 w-4" />
                                 <Input
                                   className="pl-9"
-                                  placeholder="Ingrese su nombre"
+                                  placeholder={t("contact.placeholders.firstName")}
                                   {...field}
                                 />
                               </div>
@@ -227,13 +227,13 @@ export default function ContactForm() {
                         name="apellido"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Apellido</FormLabel>
+                            <FormLabel>{t("contact.labels.lastName")}</FormLabel>
                             <FormControl>
                               <div className="relative">
                                 <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                                 <Input
                                   className="pl-9"
-                                  placeholder="Ingrese su apellido"
+                                  placeholder={t("contact.placeholders.lastName")}
                                   {...field}
                                 />
                               </div>
@@ -247,15 +247,15 @@ export default function ContactForm() {
                     <FormField
                       control={form.control}
                       name="email"
-                      render={({ field }) => (
+                        render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Correo Electrónico</FormLabel>
+                          <FormLabel>{t("contact.labels.email")}</FormLabel>
                           <FormControl>
                             <div className="relative">
                               <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                               <Input
                                 className="pl-9"
-                                placeholder="correo@ejemplo.com"
+                                placeholder={t("contact.placeholders.email")}
                                 type="email"
                                 {...field}
                               />
@@ -269,9 +269,9 @@ export default function ContactForm() {
                     <FormField
                       control={form.control}
                       name="telefono"
-                      render={({ field }) => (
+                        render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Número de Teléfono</FormLabel>
+                          <FormLabel>{t("contact.labels.phone")}</FormLabel>
                           <FormControl>
                             <PhoneInputComponent
                               value={field.value}
@@ -288,9 +288,9 @@ export default function ContactForm() {
                     <FormField
                       control={form.control}
                       name="tipoServicio"
-                      render={({ field }) => (
+                        render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Tipo de Servicio</FormLabel>
+                          <FormLabel>{t("contact.labels.serviceType")}</FormLabel>
                           <Select
                             onValueChange={field.onChange}
                             defaultValue={field.value}
@@ -299,17 +299,17 @@ export default function ContactForm() {
                               <div className="relative">
                                 <Building className="absolute left-3 top-3 h-4 w-4 text-gray-400 z-10" />
                                 <SelectTrigger className="pl-9">
-                                  <SelectValue placeholder="Seleccione un tipo de servicio" />
+                                  <SelectValue placeholder={t("contact.placeholders.serviceType")} />
                                 </SelectTrigger>
                               </div>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="tour">Tour / Viaje</SelectItem>
+                              <SelectItem value="tour">{t("contact.serviceTypes.tour")}</SelectItem>
                               <SelectItem value="alquilerAuto">
-                                Alquiler de Auto
+                                {t("contact.serviceTypes.alquilerAuto")}
                               </SelectItem>
                               <SelectItem value="propiedad">
-                                Venta de Propiedad
+                                {t("contact.serviceTypes.propiedad")}
                               </SelectItem>
                             </SelectContent>
                           </Select>
@@ -321,22 +321,21 @@ export default function ContactForm() {
                     <FormField
                       control={form.control}
                       name="mensaje"
-                      render={({ field }) => (
+                        render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Detalles del Servicio</FormLabel>
+                          <FormLabel>{t("contact.labels.serviceDetails")}</FormLabel>
                           <FormControl>
                             <div className="relative">
                               <MessageSquare className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                               <Textarea
-                                placeholder="Describa los detalles de su servicio o producto..."
+                                placeholder={t("contact.placeholders.serviceDetails")}
                                 className="min-h-[150px] pl-9 pt-7"
                                 {...field}
                               />
                             </div>
                           </FormControl>
                           <FormDescription>
-                            Incluya información relevante como ubicación,
-                            precios, características, etc.
+                            {t("contact.formDescription")}
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -345,7 +344,7 @@ export default function ContactForm() {
 
                     <div className="space-y-2">
                       <div className="text-sm font-medium">
-                        Método de contacto preferido
+                        {t("contact.labels.preferredContact")}
                       </div>
                       <div className="flex space-x-4">
                         <div className="flex items-center space-x-2">
@@ -355,7 +354,7 @@ export default function ContactForm() {
                             onCheckedChange={() => setPreferredContact("email")}
                           />
                           <label htmlFor="contact-email" className="text-sm">
-                            Correo electrónico
+                            {t("contact.labels.emailOption")}
                           </label>
                         </div>
                         <div className="flex items-center space-x-2">
@@ -367,7 +366,7 @@ export default function ContactForm() {
                             }
                           />
                           <label htmlFor="contact-phone" className="text-sm">
-                            Teléfono
+                            {t("contact.labels.phoneOption")}
                           </label>
                         </div>
                       </div>
@@ -378,7 +377,7 @@ export default function ContactForm() {
                       name="recaptcha"
                       render={() => (
                         <FormItem>
-                          <FormLabel>Verificación de Seguridad</FormLabel>
+                          <FormLabel>{t("contact.labels.securityVerification")}</FormLabel>
                           <FormControl>
                             <ReCAPTCHA
                               ref={recaptchaRef}
@@ -406,19 +405,19 @@ export default function ContactForm() {
                           </FormControl>
                           <div className="space-y-1 leading-none">
                             <FormLabel className="text-sm">
-                              Acepto los{" "}
+                              {t("contact.labels.acceptTerms")}{" "}
                               <Link
                                 href="/terms"
                                 className="text-gray-700 hover:underline"
                               >
-                                Términos y Condiciones
+                                {t("contact.labels.termsAndConditions")}
                               </Link>{" "}
-                              y la{" "}
+                              {t("contact.labels.andThe")}{" "}
                               <Link
                                 href="/privacy"
                                 className="text-gray-700 hover:underline"
                               >
-                                Política de Privacidad
+                                {t("contact.labels.privacyPolicy")}
                               </Link>
                             </FormLabel>
                             <FormMessage />
@@ -433,8 +432,8 @@ export default function ContactForm() {
                       disabled={isSubmitting || isSending || !isAuthenticated}
                     >
                       {isSubmitting || isSending
-                        ? "Enviando..."
-                        : "Enviar solicitud"}
+                        ? t("contact.submitting")
+                        : t("contact.submit")}
                     </Button>
                   </form>
                 </Form>
@@ -448,30 +447,28 @@ export default function ContactForm() {
                 <div className="flex items-start space-x-4">
                   <div>
                     <h3 className="text-lg font-semibold mb-2">
-                      ¿Por qué listar con Dubuu?
+                      {t("contact.whyList")}
                     </h3>
                     <ul className="space-y-2 text-sm">
                       <li className="flex items-center space-x-2">
                         <CheckCircle className="h-4 w-4 text-gray-700" />
-                        <span>Aumente sus ingresos con nuestra plataforma</span>
+                        <span>{t("contact.benefits.income")}</span>
                       </li>
                       <li className="flex items-center space-x-2">
                         <CheckCircle className="h-4 w-4 text-gray-700" />
-                        <span>Alcance a miles de clientes potenciales</span>
+                        <span>{t("contact.benefits.reach")}</span>
                       </li>
                       <li className="flex items-center space-x-2">
                         <CheckCircle className="h-4 w-4 text-gray-700" />
-                        <span>Gestión simplificada de reservas</span>
+                        <span>{t("contact.benefits.management")}</span>
                       </li>
                       <li className="flex items-center space-x-2">
                         <CheckCircle className="h-4 w-4 text-gray-700" />
-                        <span>Soporte personalizado 24/7</span>
+                        <span>{t("contact.benefits.support")}</span>
                       </li>
                     </ul>
                     <p className="mt-4 text-sm text-gray-600">
-                      Después de enviar su solicitud, un representante se pondrá
-                      en contacto con usted para programar una llamada y
-                      discutir los detalles.
+                      {t("contact.afterSubmit")}
                     </p>
                   </div>
                 </div>

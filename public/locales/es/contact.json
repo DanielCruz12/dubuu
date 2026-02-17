@@ -1,0 +1,64 @@
+{
+  "title": "Solicitud de Listado - Dubuu",
+  "description": "Complete el formulario para listar su producto o servicio en nuestra plataforma",
+  "labels": {
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "email": "Correo Electrónico",
+    "phone": "Número de Teléfono",
+    "serviceType": "Tipo de Servicio",
+    "serviceDetails": "Detalles del Servicio",
+    "preferredContact": "Método de contacto preferido",
+    "emailOption": "Correo electrónico",
+    "phoneOption": "Teléfono",
+    "securityVerification": "Verificación de Seguridad",
+    "acceptTerms": "Acepto los",
+    "termsAndConditions": "Términos y Condiciones",
+    "andThe": "y la",
+    "privacyPolicy": "Política de Privacidad"
+  },
+  "placeholders": {
+    "firstName": "Ingrese su nombre",
+    "lastName": "Ingrese su apellido",
+    "email": "correo@ejemplo.com",
+    "serviceType": "Seleccione un tipo de servicio",
+    "serviceDetails": "Describa los detalles de su servicio o producto..."
+  },
+  "serviceTypes": {
+    "tour": "Tour / Viaje",
+    "alquilerAuto": "Alquiler de Auto",
+    "propiedad": "Venta de Propiedad"
+  },
+  "formDescription": "Incluya información relevante como ubicación, precios, características, etc.",
+  "submit": "Enviar solicitud",
+  "submitting": "Enviando...",
+  "whyList": "¿Por qué listar con Dubuu?",
+  "benefits": {
+    "income": "Aumente sus ingresos con nuestra plataforma",
+    "reach": "Alcance a miles de clientes potenciales",
+    "management": "Gestión simplificada de reservas",
+    "support": "Soporte personalizado 24/7"
+  },
+  "afterSubmit": "Después de enviar su solicitud, un representante se pondrá en contacto con usted para programar una llamada y discutir los detalles.",
+  "validation": {
+    "nameRequired": "El nombre es requerido",
+    "lastNameRequired": "El apellido es requerido",
+    "invalidEmail": "Dirección de correo electrónico inválida",
+    "invalidPhone": "Número de teléfono inválido",
+    "selectServiceType": "Seleccione un tipo de servicio",
+    "messageMin": "Por favor, proporcione más detalles sobre su solicitud",
+    "acceptTerms": "Debe aceptar los términos y condiciones",
+    "recaptchaRequired": "Por favor, complete el reCAPTCHA"
+  },
+  "toast": {
+    "loginRequired": "Por favor, inicie sesión para enviar su solicitud.",
+    "loginDescription": "Debe estar autenticado para enviar el formulario.",
+    "recaptchaError": "Error de verificación de reCAPTCHA",
+    "recaptchaDescription": "Por favor, complete el reCAPTCHA nuevamente.",
+    "success": "¡Solicitud enviada con éxito!",
+    "successDescriptionEmail": "Nos pondremos en contacto con usted a través de su correo electrónico en breve.",
+    "successDescriptionPhone": "Nos pondremos en contacto con usted a través de su teléfono en breve.",
+    "error": "Error al enviar el formulario",
+    "errorDescription": "Por favor, inténtelo de nuevo más tarde o contáctenos directamente."
+  }
+}

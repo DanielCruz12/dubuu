@@ -2,6 +2,7 @@
 
 import { Mountain, MountainSnow, Footprints } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n-context";
 
 type DifficultyLevel =
   | "fácil"
@@ -23,78 +24,74 @@ export function TourDifficultyBadge({
   difficulty,
   className,
 }: TourDifficultyBadgeProps) {
-  // Mapeo de valores en inglés a español
+  const { t } = useLanguage();
   const difficultyMap: Record<string, string> = {
-    easy: "fácil",
-    medium: "moderado",
-    hard: "difícil",
-    extreme: "extremo",
-    // También mantener los valores en español
-    facil: "fácil",
-    moderado: "moderado",
-    dificil: "difícil",
-    extremo: "extremo",
+    easy: "easy",
+    medium: "medium",
+    hard: "hard",
+    extreme: "extreme",
+    facil: "easy",
+    moderado: "medium",
+    dificil: "hard",
+    extremo: "extreme",
   };
 
-  // Normalizar la dificultad (convertir a minúsculas y quitar acentos)
   const normalizedInput =
     difficulty
       ?.toLowerCase()
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "") || "easy";
 
-  // Obtener el valor en español
-  const spanishDifficulty = difficultyMap[normalizedInput] || difficulty;
+  const mapKey = difficultyMap[normalizedInput] || "easy";
 
-  // Normalizar para la lógica interna
-  const normalizedDifficulty = spanishDifficulty
+  const normalizedDifficulty = (difficulty ?? "")
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
 
-  // Configuración según nivel de dificultad
   const config = {
     facil: {
       icon: Footprints,
       bgColor: "from-green-500 to-green-600",
       textColor: "text-white",
-      label: "Fácil",
+      label: t("home.difficulty.easy"),
     },
     moderado: {
       icon: Mountain,
       bgColor: "from-yellow-500 to-yellow-600",
       textColor: "text-white",
-      label: "Moderado",
+      label: t("home.difficulty.medium"),
     },
     dificil: {
       icon: Mountain,
       bgColor: "from-orange-500 to-orange-600",
       textColor: "text-white",
-      label: "Difícil",
+      label: t("home.difficulty.hard"),
     },
     extremo: {
       icon: MountainSnow,
       bgColor: "from-red-500 to-red-700",
       textColor: "text-white",
-      label: "Extremo",
+      label: t("home.difficulty.extreme"),
     },
   };
 
   // Determinar qué configuración usar basado en la dificultad normalizada
   let badgeConfig = config.facil;
-
-  if (normalizedDifficulty.includes("facil")) {
+  if (normalizedDifficulty.includes("facil") || mapKey === "easy") {
     badgeConfig = config.facil;
   } else if (
     normalizedDifficulty.includes("moderado") ||
-    normalizedDifficulty.includes("medio")
+    normalizedDifficulty.includes("medio") ||
+    mapKey === "medium"
   ) {
     badgeConfig = config.moderado;
-  } else if (normalizedDifficulty.includes("dificil")) {
+  } else if (normalizedDifficulty.includes("dificil") || mapKey === "hard") {
     badgeConfig = config.dificil;
   } else if (
     normalizedDifficulty.includes("extremo") ||
-    normalizedDifficulty.includes("avanzado")
+    normalizedDifficulty.includes("avanzado") ||
+    mapKey === "extreme"
   ) {
     badgeConfig = config.extremo;
   }
@@ -113,7 +110,7 @@ export function TourDifficultyBadge({
     >
       <Icon className="w-4 h-4" />
       <span>{badgeConfig.label}</span>
-      <span className="sr-only">Nivel de dificultad</span>
+      <span className="sr-only">{t("home.difficulty.sr")}</span>
     </div>
   );
 }

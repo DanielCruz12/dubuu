@@ -1,0 +1,49 @@
+{
+  "title": "Terms and Conditions",
+  "lastUpdate": "Last update:",
+  "s1": {
+    "title": "1. Introduction",
+    "content": "Welcome to Dubuu. These Terms and Conditions govern the use of our platform, including all associated services and features. By accessing or using Dubuu, you agree to be bound by these terms. If you do not agree with any part of these terms, you may not access or use our services."
+  },
+  "s2": {
+    "title": "2. Definitions",
+    "content": "For the purposes of these Terms and Conditions, the following shall mean: 'Service': All functionalities, tools and content offered through the Dubuu platform. 'User': Any person who registers, accesses or uses the Service. 'Account': The personal registration that allows the User to access specific functionalities of the Service. 'User Content': Any information, data, texts, photographs, graphics, messages or other materials that Users send, post or display on the Service. 'Personal Data': Any information relating to an identified or identifiable natural person."
+  },
+  "s3": {
+    "title": "3. Account Registration and Security",
+    "content": "To use certain features of our platform, you may need to register and create an account. We use Clerk for user authentication, which provides an additional layer of security. You are responsible for maintaining the confidentiality of your access credentials and for all activities that occur under your account. We implement security measures such as data encryption and SSL certificates to protect your information."
+  },
+  "s4": {
+    "title": "4. Phishing and Security",
+    "content": "Phishing is a fraudulent practice where scammers attempt to obtain sensitive information by posing as trusted entities. Dubuu will never request sensitive information through unsolicited emails or messages. Despite our efforts to keep the platform secure, we are not responsible for phishing activities or data theft carried out by third parties who may impersonate our identity."
+  },
+  "s5": {
+    "title": "5. Payment Processing",
+    "beforeLink": "We use Wompi as our payment processor. When you make a transaction on our platform, you are also subject to Wompi's terms and conditions and privacy policy (",
+    "afterLink": "). Wompi implements 3D security to protect transactions. We do not store credit card data on our servers, as all payment processing is handled directly by Wompi."
+  },
+  "s6": {
+    "title": "6. Limitation of Liability",
+    "content": "To the maximum extent permitted by applicable law, Dubuu shall not be liable for direct, indirect, incidental, special, consequential or punitive damages, including but not limited to loss of profits, data, use, goodwill or other intangible losses, resulting from the use or inability to use the platform."
+  },
+  "s7": {
+    "title": "7. Intellectual Property and Prohibition of Copying",
+    "content": "All content, features and functionality of the Dubuu platform are the property of Dubuu or its licensors and are protected by intellectual property laws. Copying, reproduction, modification, distribution or any unauthorized use is strictly prohibited. Infringement of these rights will be pursued legally and may result in legal action, including claims for damages, fines and other sanctions as provided by law."
+  },
+  "s8": {
+    "title": "8. Third-Party Services",
+    "part1": "Our platform uses several third-party services to improve the user experience and security: ",
+    "part2": " for website protection and optimisation, ",
+    "part3": " to prevent malicious automated activities, ",
+    "part4": " for user authentication, and ",
+    "part5": " for payment processing. Use of these services is subject to their respective terms and conditions and privacy policies."
+  },
+  "s9": {
+    "title": "9. Modifications to the Terms",
+    "content": "We reserve the right to modify these Terms and Conditions at any time. Modifications will take effect immediately upon their publication on the platform. Your continued use of the platform after the publication of changes will constitute your acceptance of such changes."
+  },
+  "s10": {
+    "title": "10. Applicable Law",
+    "content": "These Terms and Conditions shall be governed by and construed in accordance with the laws of the country where Dubuu has its principal place of business, without regard to its conflict of law provisions. Any dispute arising in connection with these Terms and Conditions shall be subject to the exclusive jurisdiction of the courts of that country."
+  }
+}

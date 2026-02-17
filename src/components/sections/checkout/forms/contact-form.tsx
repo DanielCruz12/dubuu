@@ -18,16 +18,18 @@ import {
 } from "@/components/ui/card";
 import type { CheckoutFormValues } from "@/schemas/checkout-schema";
 import { PhoneInputComponent } from "@/components/phone-input";
+import { useLanguage } from "@/lib/i18n-context";
 
 export default function ContactForm() {
+  const { t } = useLanguage();
   const { control } = useFormContext<CheckoutFormValues>();
 
   return (
     <Card className="overflow-hidden border pb-4">
       <CardHeader className="pb-8">
-        <CardTitle className="text-xl">Información de Contacto</CardTitle>
+        <CardTitle className="text-xl">{t("home.checkout.contact.title")}</CardTitle>
         <CardDescription>
-          Ingresa tus datos de contacto para la confirmación del pedido.
+          {t("home.checkout.contact.description")}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 pt-6">
@@ -37,10 +39,10 @@ export default function ContactForm() {
             name="firstName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nombre</FormLabel>
+                <FormLabel>{t("home.checkout.contact.firstName")}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Juan"
+                    placeholder={t("home.checkout.contact.placeholderFirst")}
                     {...field}
                     className="transition-all duration-200 "
                   />
@@ -54,10 +56,10 @@ export default function ContactForm() {
             name="lastName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Apellido</FormLabel>
+                <FormLabel>{t("home.checkout.contact.lastName")}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Pérez"
+                    placeholder={t("home.checkout.contact.placeholderLast")}
                     {...field}
                     className="transition-all duration-200 "
                   />
@@ -74,7 +76,7 @@ export default function ContactForm() {
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Teléfono</FormLabel>
+                <FormLabel>{t("home.checkout.contact.phone")}</FormLabel>
                 <FormControl>
                   <PhoneInputComponent
                     value={field.value}

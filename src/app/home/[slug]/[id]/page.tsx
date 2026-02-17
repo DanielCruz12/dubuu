@@ -32,8 +32,10 @@ import { isProductType } from "@/utils";
 import UpTop from "@/components/up-top";
 import { ShareModal } from "@/components/share-modal";
 import { useCurrency } from "@/hooks/use-currency-converter";
+import { useLanguage } from "@/lib/i18n-context";
 
 export default function ProductBooking() {
+  const { t } = useLanguage();
   const { user } = useUser();
   const { id } = useParams();
   const { data, isLoading, isError } = useGetProductQuery(id as string);
@@ -89,7 +91,7 @@ export default function ProductBooking() {
 
   if (isLoading || isLoadingBooking) return <ProductsSkeleton />;
   if (isError || !product)
-    return <div className="h-screen">Producto no encontrado</div>;
+    return <div className="h-screen">{t("home.landing.productDetail.notFound")}</div>;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const existingBooking: any = userBookings?.find(
@@ -177,7 +179,7 @@ export default function ProductBooking() {
             <ProductDetails product={product} />
             <div className="hidden md:block">
               <LocationMap
-                title="Punto de salida"
+                title={t("home.landing.productDetail.departurePoint")}
                 product={product}
                 latitude={isTour ? product.tour.lat : 0}
                 longitude={isTour ? product.tour.long : 0}
@@ -229,7 +231,7 @@ export default function ProductBooking() {
                         productId={product.id}
                         paymentMethod={existingBooking.paymentMethod}
                         total={Number(existingBooking.total)}
-                        onViewDetails={() => alert("Ver detalles")}
+                        onViewDetails={() => alert(t("home.landing.productDetail.viewDetails"))}
                         onRebook={() => {
                           setShowPaymentStep(false);
                         }}
@@ -270,7 +272,7 @@ export default function ProductBooking() {
                               productId={product.id}
                               paymentMethod={existingBooking.paymentMethod}
                               total={Number(existingBooking.total)}
-                              onViewDetails={() => alert("Ver detalles")}
+                              onViewDetails={() => alert(t("home.landing.productDetail.viewDetails"))}
                               onRebook={() => {
                                 setShowPaymentStep(false);
                               }}
@@ -293,15 +295,14 @@ export default function ProductBooking() {
               ) : (
                 <div className="text-center">
                   <h2 className="text-xl font-semibold mb-4">
-                    Necesitas iniciar sesión para realizar la reserva
+                    {t("home.landing.productDetail.loginRequiredTitle")}
                   </h2>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Inicia sesión o crea una cuenta para poder reservar y
-                    disfrutar de nuestras promociones exclusivas.
+                    {t("home.landing.productDetail.loginRequiredDescription")}
                     <br />
                   </p>
                   <SignInButton>
-                    <Button>Iniciar sesión</Button>
+                    <Button>{t("common.login")}</Button>
                   </SignInButton>
                 </div>
               )}
@@ -314,7 +315,7 @@ export default function ProductBooking() {
       <div className="block md:hidden">
         <LocationMap
           product={product}
-          title="Punto de salida"
+          title={t("home.landing.productDetail.departurePoint")}
           latitude={isTour ? product.tour.lat : 0}
           longitude={isTour ? product.tour.long : 0}
           zoom={15}

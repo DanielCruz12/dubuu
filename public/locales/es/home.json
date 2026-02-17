@@ -1,16 +1,212 @@
 {
-  "hero": {
-    "subtitle": "Descubra los tesoros del mundo"
+  "hero": {"subtitle": "Descubra los tesoros del mundo"},
+  "search": {"placeholder": "Buscar destinos, tours, experiencias...", "placeholderNotLogged": "Inicia sesión para buscar por texto...", "placeholderInitial": "Cargando..."},
+  "popularDestinations": {"title": "Destinos populares", "subtitle": "Los mejores destinos turisticos preferidos por la comunidad", "tours": "Viajes", "activities": "Actividades"},
+  "landing": {
+    "slide1": {"title": "Reservas que simplifican tu viaje", "subtitle": "Haz reservas de tours y alquiler de autos en un solo lugar. Dubuu es la plataforma para viajeros y empresas.", "cta": "Descubrir"},
+    "slide2": {"title": "¿Tienes una empresa de tours?", "subtitle": "Lista tus experiencias y tours en Dubuu. Gestiona reservas, disponibilidad y clientes desde un solo panel.", "cta": "Ver cómo funciona"},
+    "slide3": {"title": "Alquiler de autos", "subtitle": "Si ofreces vehículos en alquiler, también puedes listarlos aquí. Tours y autos en la misma plataforma.", "cta": "Descubrir"},
+    "slide4": {"title": "Tu viaje y tu negocio, mejor organizados", "subtitle": "Reserva experiencias y coches con pocos clics, o gestiona tu oferta si eres empresa. Todo en Dubuu.", "cta": "Empezar"},
+    "slide5": {"title": "Experiencias que inspiran", "subtitle": "Alojamientos y experiencias diseñados para que tu viaje sea único. Reserva con confianza en Dubuu.", "cta": "Descubrir"},
+    "about": {
+      "titleBold": "EXPERIENCIAS",
+      "titlePrefix": "DISEÑAMOS ",
+      "titleSuffix": " ÚNICAS",
+      "paragraph1": "En Dubuu, entendemos que cada viajero es único. Por eso, cada experiencia que creamos está meticulosamente diseñada para superar expectativas y crear recuerdos inolvidables.",
+      "paragraph2": "Nuestro equipo de expertos en viajes de lujo trabaja con los mejores proveedores del mundo para ofrecerte acceso exclusivo a destinos y experiencias extraordinarias.",
+      "cta": "Ver experiencias",
+      "testimonial": "Una experiencia transformadora. Dubuu nos mostró la verdadera esencia de una reserva con un nivel de servicio excepcional.",
+      "imageAlt": "Experiencia de lujo"
+    },
+    "tours": {
+      "titleBold": "privados",
+      "titlePrefix": "Viajes ",
+      "titleSuffix": "",
+      "subtitle": "Experiencias guiadas con acceso exclusivo y atención personalizada",
+      "cta": "Ver todos los viajes"
+    },
+    "productDetail": {
+      "notFound": "Producto no encontrado",
+      "departurePoint": "Punto de salida",
+      "loginRequiredTitle": "Necesitas iniciar sesión para realizar la reserva",
+      "loginRequiredDescription": "Inicia sesión o crea una cuenta para poder reservar y disfrutar de nuestras promociones exclusivas.",
+      "viewDetails": "Ver detalles"
+    }
   },
-  "search": {
-    "placeholder": "Buscar destinos, tours, experiencias...",
-    "placeholderNotLogged": "Inicia sesión para buscar por texto...",
-    "placeholderInitial": "Cargando..."
+  "productDetails": {
+    "difficultyLevel": "Nivel de dificultad",
+    "overview": "Descripción general",
+    "highlight": "Destacar",
+    "whatsIncluded": "Qué incluye",
+    "itinerary": "Itinerario",
+    "additionalExpenses": "Gastos adicionales",
+    "whatToBring": "Cosas que debes llevar"
   },
-  "popularDestinations": {
-    "title": "Destinos populares",
-    "subtitle": "Los mejores destinos turisticos preferidos por la comunidad",
-    "tours": "Viajes",
-    "activities": "Actividades"
+  "difficulty": {
+    "easy": "Fácil",
+    "medium": "Moderado",
+    "hard": "Difícil",
+    "extreme": "Extremo",
+    "sr": "Nivel de dificultad"
+  },
+  "trustSection": {
+    "title": "Reserva con confianza",
+    "privacyTitle": "Protección de la privacidad",
+    "privacyDescription": "Usamos encriptación SSL para proteger sus datos"
+  },
+  "bookingForm": {
+    "title": "Reservar -",
+    "datetimeLabel": "Fecha y hora:",
+    "datetimePlaceholder": "Selecciona una fecha y hora",
+    "ticketsLabel": "Entradas:",
+    "adults": "Adultos",
+    "perPerson": "p/p",
+    "pricePerPerson": "Precio por persona:",
+    "subtotal": "Subtotal:",
+    "total": "Total",
+    "bookNow": "Reservar ahora",
+    "needHelp": "¿Necesitas ayuda?",
+    "validation": {
+      "datetimeRequired": "Selecciona una fecha y hora",
+      "minOneTicket": "Mínimo 1 entrada"
+    },
+    "noDates": "No hay fechas disponibles",
+    "available": "disp.",
+    "soldOut": "Agotado",
+    "toast": {
+      "loginRequired": "Debes iniciar sesión para continuar con la reserva",
+      "spotsLeft": "Solo hay {count} lugares disponibles"
+    }
+  },
+  "bookingStatus": {
+    "completed": {
+      "title": "Reserva Completada",
+      "description": "Tu reserva ha sido confirmada, porfavor verifica los datos de la reserva.",
+      "badgeText": "Completada"
+    },
+    "inProcess": {
+      "title": "Reserva en Proceso",
+      "description": "Tu reserva está siendo procesada. Pronto recibirás confirmación.",
+      "badgeText": "En Proceso"
+    },
+    "canceled": {
+      "title": "Reserva Cancelada",
+      "description": "Esta reserva ha sido cancelada. Puedes realizar una nueva reserva si lo deseas.",
+      "badgeText": "Cancelada"
+    },
+    "info": "Información",
+    "bookingNumber": "Nº de Reserva",
+    "bookingDate": "Fecha de Reserva",
+    "paymentMethod": "Método de Pago",
+    "tickets": "Entradas:",
+    "adult": "adulto",
+    "adults": "adultos",
+    "rebook": "Reservar de nuevo",
+    "downloadReceipt": "Descargar Recibo",
+    "receiptNotes": "Gracias por confiar en nuestros servicios. Este recibo sirve como comprobante de pago."
+  },
+  "share": {
+    "button": "Compartir",
+    "dialogTitle": "Comparte este espacio",
+    "copyLink": "Copiar enlace",
+    "email": "Email",
+    "whatsapp": "WhatsApp",
+    "facebook": "Facebook",
+    "twitter": "Twitter",
+    "instagram": "Instagram",
+    "linkedin": "LinkedIn",
+    "telegram": "Telegram",
+    "embed": "Insertar",
+    "moreOptions": "Más opciones",
+    "alertCopied": "Enlace copiado al portapapeles",
+    "alertInstagram": "Enlace copiado. Puedes pegarlo en Instagram Stories",
+    "alertEmbed": "Código de inserción copiado al portapapeles",
+    "alertUnavailable": "Compartir no está disponible en este navegador"
+  },
+  "reviews": {
+    "loading": "Cargando...",
+    "title": "Reseñas",
+    "noReviews": "(No hay reseñas)",
+    "oneReview": "(1 reseña)",
+    "reviewsCount": "({count} reseñas)",
+    "viewAllReviews": "Ver todas las reseñas",
+    "noReviewsYet": "Aún no hay reseñas. ¡Sé el primero en dejar una!",
+    "sheetTitle": "Reseñas",
+    "sheetDescription": "Opiniones verificadas de nuestros clientes.",
+    "thanksTitle": "¡Gracias por tu reseña!",
+    "thanksDescription": "Tu opinión es muy valiosa y ayuda a otros viajeros a tomar decisiones informadas.",
+    "pendingTitle": "Reserva pendiente",
+    "pendingDescription": "Podrás dejar una reseña una vez que tu reserva esté completada. ¡Esperamos que disfrutes tu experiencia!",
+    "leaveReview": "Deja una reseña",
+    "shareExperience": "Compartir mi experiencia",
+    "writeReviewTitle": "Escribe tu reseña",
+    "writeReviewDescription": "Comparte tu experiencia con otros viajeros",
+    "reviewInfo": "Por favor, asegúrate de que tu reseña cumpla con nuestras políticas de contenido. No se permiten comentarios ofensivos, difamatorios o inapropiados.",
+    "reviewIntro": "Tu opinión es importante para nosotros y ayuda a otros viajeros a tomar decisiones informadas y mejoran nuestros servicios. Agradecemos tu tiempo y comentarios.",
+    "srInfo": "Información sobre reseñas"
+  },
+  "imageCollage": {
+    "image": "Imagen",
+    "bannerAlt": "Imagen del banner",
+    "showAllPhotos": "Mostrar todas las fotos"
+  },
+  "location": {
+    "loadingMap": "Cargando mapa..."
+  },
+  "checkout": {
+    "title": "Finalizar Compra",
+    "description": "Complete sus datos para procesar su pedido",
+    "contact": {
+      "title": "Información de Contacto",
+      "description": "Ingresa tus datos de contacto para la confirmación del pedido.",
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "phone": "Teléfono",
+      "placeholderFirst": "Juan",
+      "placeholderLast": "Pérez"
+    },
+    "address": {
+      "title": "Dirección",
+      "description": "Ingresa tu dirección.",
+      "address": "Dirección",
+      "country": "País",
+      "region": "Región",
+      "city": "Ciudad",
+      "zipCode": "Código Postal",
+      "placeholderAddress": "Calle Principal 123",
+      "selectCountry": "Seleccionar país",
+      "selectRegion": "Seleccionar región",
+      "placeholderCity": "Ingrese su ciudad",
+      "placeholderZip": "Código postal"
+    },
+    "payment": {
+      "title": "Método de Pago",
+      "description": "Selecciona tu método de pago preferido.",
+      "creditCard": "Tarjeta de Crédito/Débito",
+      "processing": "Procesando...",
+      "proceedToPay": "Proceder al pago",
+      "cancel": "Cancelar",
+      "termsAgreeBefore": "Al hacer clic en ",
+      "termsAgreeButton": "Proceder al pago",
+      "termsAgreeAfter": ", aceptas nuestros ",
+      "termsLink": "términos y condiciones",
+      "cardNumber": "Número de Tarjeta",
+      "cardName": "Nombre en la Tarjeta",
+      "cardExpiry": "Fecha de Expiración",
+      "cardCvc": "CVC",
+      "placeholderCard": "4242 4242 4242 4242",
+      "placeholderName": "Juan Pérez",
+      "placeholderExpiry": "MM/YY",
+      "placeholderCvc": "123",
+      "testCardWarning": "Este número de tarjeta no es válido para pagos reales"
+    },
+    "toast": {
+      "invalidCard": "Error de pago",
+      "invalidCardDesc": "Este número de tarjeta no es válido para pagos reales.",
+      "updateError": "No se pudo actualizar la información del usuario",
+      "processing": "Procesando pago.",
+      "redirecting": "Redirigiendo al banco...",
+      "paymentError": "Error al procesar el pago"
+    }
   }
 }

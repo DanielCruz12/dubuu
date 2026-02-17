@@ -9,5 +9,10 @@
   "clearAll": "Limpiar todos",
   "search": "Buscar",
   "login": "Iniciar sesión",
-  "logout": "Cerrar sesión"
+  "logout": "Cerrar sesión",
+  "notFound": {
+    "message": "Lo sentimos, no pudimos encontrar esta página.",
+    "submessage": "Pero no te preocupes, puedes encontrar muchas otras cosas en nuestra página de inicio.",
+    "back": "Volver a la página de inicio"
+  }
 }

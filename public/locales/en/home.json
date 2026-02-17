@@ -1,16 +1,212 @@
 {
-  "hero": {
-    "subtitle": "Discover the treasures of the world"
+  "hero": {"subtitle": "Discover the treasures of the world"},
+  "search": {"placeholder": "Search destinations, tours, experiences...", "placeholderNotLogged": "Sign in to search by text...", "placeholderInitial": "Loading..."},
+  "popularDestinations": {"title": "Popular destinations", "subtitle": "The best tourist destinations preferred by the community", "tours": "Trips", "activities": "Activities"},
+  "landing": {
+    "slide1": {"title": "Bookings that simplify your trip", "subtitle": "Book tours and car rentals in one place. Dubuu is the platform for travelers and businesses.", "cta": "Discover"},
+    "slide2": {"title": "Do you have a tour company?", "subtitle": "List your experiences and tours on Dubuu. Manage bookings, availability and customers from one dashboard.", "cta": "See how it works"},
+    "slide3": {"title": "Car rental", "subtitle": "If you offer vehicles for rent, you can list them here too. Tours and cars on the same platform.", "cta": "Discover"},
+    "slide4": {"title": "Your trip and your business, better organized", "subtitle": "Book experiences and cars in a few clicks, or manage your offer if you're a business. All on Dubuu.", "cta": "Get started"},
+    "slide5": {"title": "Experiences that inspire", "subtitle": "Accommodations and experiences designed to make your trip unique. Book with confidence on Dubuu.", "cta": "Discover"},
+    "about": {
+      "titleBold": "EXPERIENCES",
+      "titlePrefix": "WE DESIGN ",
+      "titleSuffix": " UNIQUE",
+      "paragraph1": "At Dubuu, we understand that every traveler is unique. That's why every experience we create is meticulously designed to exceed expectations and create unforgettable memories.",
+      "paragraph2": "Our team of luxury travel experts works with the world's best providers to give you exclusive access to extraordinary destinations and experiences.",
+      "cta": "View experiences",
+      "testimonial": "A transformative experience. Dubuu showed us the true essence of booking with an exceptional level of service.",
+      "imageAlt": "Luxury experience"
+    },
+    "tours": {
+      "titleBold": "private",
+      "titlePrefix": "Trips ",
+      "titleSuffix": "",
+      "subtitle": "Guided experiences with exclusive access and personalized attention",
+      "cta": "View all trips"
+    },
+    "productDetail": {
+      "notFound": "Product not found",
+      "departurePoint": "Departure point",
+      "loginRequiredTitle": "You need to sign in to make a booking",
+      "loginRequiredDescription": "Sign in or create an account to book and enjoy our exclusive promotions.",
+      "viewDetails": "View details"
+    }
   },
-  "search": {
-    "placeholder": "Search destinations, tours, experiences...",
-    "placeholderNotLogged": "Sign in to search by text...",
-    "placeholderInitial": "Loading..."
+  "productDetails": {
+    "difficultyLevel": "Difficulty level",
+    "overview": "Overview",
+    "highlight": "Highlight",
+    "whatsIncluded": "What's included",
+    "itinerary": "Itinerary",
+    "additionalExpenses": "Additional expenses",
+    "whatToBring": "What to bring"
   },
-  "popularDestinations": {
-    "title": "Popular destinations",
-    "subtitle": "The best tourist destinations preferred by the community",
-    "tours": "Trips",
-    "activities": "Activities"
+  "difficulty": {
+    "easy": "Easy",
+    "medium": "Moderate",
+    "hard": "Hard",
+    "extreme": "Extreme",
+    "sr": "Difficulty level"
+  },
+  "trustSection": {
+    "title": "Book with confidence",
+    "privacyTitle": "Privacy protection",
+    "privacyDescription": "We use SSL encryption to protect your data"
+  },
+  "bookingForm": {
+    "title": "Book -",
+    "datetimeLabel": "Date and time:",
+    "datetimePlaceholder": "Select date and time",
+    "ticketsLabel": "Tickets:",
+    "adults": "Adults",
+    "perPerson": "p/p",
+    "pricePerPerson": "Price per person:",
+    "subtotal": "Subtotal:",
+    "total": "Total",
+    "bookNow": "Book now",
+    "needHelp": "Need help?",
+    "validation": {
+      "datetimeRequired": "Select a date and time",
+      "minOneTicket": "Minimum 1 ticket"
+    },
+    "noDates": "No dates available",
+    "available": "disp.",
+    "soldOut": "Sold out",
+    "toast": {
+      "loginRequired": "You must sign in to continue with the booking",
+      "spotsLeft": "Only {count} spots left"
+    }
+  },
+  "bookingStatus": {
+    "completed": {
+      "title": "Booking completed",
+      "description": "Your booking has been confirmed. Please verify the booking details.",
+      "badgeText": "Completed"
+    },
+    "inProcess": {
+      "title": "Booking in progress",
+      "description": "Your booking is being processed. You will receive confirmation soon.",
+      "badgeText": "In progress"
+    },
+    "canceled": {
+      "title": "Booking canceled",
+      "description": "This booking has been canceled. You can make a new booking if you wish.",
+      "badgeText": "Canceled"
+    },
+    "info": "Information",
+    "bookingNumber": "Booking No.",
+    "bookingDate": "Booking date",
+    "paymentMethod": "Payment method",
+    "tickets": "Tickets:",
+    "adult": "adult",
+    "adults": "adults",
+    "rebook": "Book again",
+    "downloadReceipt": "Download receipt",
+    "receiptNotes": "Thank you for trusting our services. This receipt serves as proof of payment."
+  },
+  "share": {
+    "button": "Share",
+    "dialogTitle": "Share this space",
+    "copyLink": "Copy link",
+    "email": "Email",
+    "whatsapp": "WhatsApp",
+    "facebook": "Facebook",
+    "twitter": "Twitter",
+    "instagram": "Instagram",
+    "linkedin": "LinkedIn",
+    "telegram": "Telegram",
+    "embed": "Embed",
+    "moreOptions": "More options",
+    "alertCopied": "Link copied to clipboard",
+    "alertInstagram": "Link copied. You can paste it in Instagram Stories",
+    "alertEmbed": "Embed code copied to clipboard",
+    "alertUnavailable": "Sharing is not available in this browser"
+  },
+  "reviews": {
+    "loading": "Loading...",
+    "title": "Reviews",
+    "noReviews": "(No reviews)",
+    "oneReview": "(1 review)",
+    "reviewsCount": "({count} reviews)",
+    "viewAllReviews": "View all reviews",
+    "noReviewsYet": "There are no reviews yet. Be the first to leave one!",
+    "sheetTitle": "Reviews",
+    "sheetDescription": "Verified opinions from our customers.",
+    "thanksTitle": "Thanks for your review!",
+    "thanksDescription": "Your opinion is very valuable and helps other travelers make informed decisions.",
+    "pendingTitle": "Pending booking",
+    "pendingDescription": "You can leave a review once your booking is completed. We hope you enjoy your experience!",
+    "leaveReview": "Leave a review",
+    "shareExperience": "Share my experience",
+    "writeReviewTitle": "Write your review",
+    "writeReviewDescription": "Share your experience with other travelers",
+    "reviewInfo": "Please ensure your review complies with our content policies. Offensive, defamatory or inappropriate comments are not allowed.",
+    "reviewIntro": "Your opinion matters to us and helps other travelers make informed decisions and improves our services. We appreciate your time and feedback.",
+    "srInfo": "Review information"
+  },
+  "imageCollage": {
+    "image": "Image",
+    "bannerAlt": "Banner image",
+    "showAllPhotos": "Show all photos"
+  },
+  "location": {
+    "loadingMap": "Loading map..."
+  },
+  "checkout": {
+    "title": "Complete purchase",
+    "description": "Fill in your details to process your order",
+    "contact": {
+      "title": "Contact Information",
+      "description": "Enter your contact details for order confirmation.",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "phone": "Phone",
+      "placeholderFirst": "John",
+      "placeholderLast": "Doe"
+    },
+    "address": {
+      "title": "Address",
+      "description": "Enter your address.",
+      "address": "Address",
+      "country": "Country",
+      "region": "Region",
+      "city": "City",
+      "zipCode": "Postal code",
+      "placeholderAddress": "Main Street 123",
+      "selectCountry": "Select country",
+      "selectRegion": "Select region",
+      "placeholderCity": "Enter your city",
+      "placeholderZip": "Postal code"
+    },
+    "payment": {
+      "title": "Payment method",
+      "description": "Select your preferred payment method.",
+      "creditCard": "Credit/Debit Card",
+      "processing": "Processing...",
+      "proceedToPay": "Proceed to payment",
+      "cancel": "Cancel",
+      "termsAgreeBefore": "By clicking ",
+      "termsAgreeButton": "Proceed to payment",
+      "termsAgreeAfter": ", you agree to our ",
+      "termsLink": "terms and conditions",
+      "cardNumber": "Card number",
+      "cardName": "Name on card",
+      "cardExpiry": "Expiry date",
+      "cardCvc": "CVC",
+      "placeholderCard": "4242 4242 4242 4242",
+      "placeholderName": "John Doe",
+      "placeholderExpiry": "MM/YY",
+      "placeholderCvc": "123",
+      "testCardWarning": "This card number is not valid for real payments"
+    },
+    "toast": {
+      "invalidCard": "Payment error",
+      "invalidCardDesc": "This card number is not valid for real payments.",
+      "updateError": "Could not update user information",
+      "processing": "Processing payment.",
+      "redirecting": "Redirecting to bank...",
+      "paymentError": "Error processing payment"
+    }
   }
 }

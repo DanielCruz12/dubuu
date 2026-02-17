@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useLanguage } from "@/lib/i18n-context";
 
 interface PriceRangeSliderProps {
   value: [number, number];
@@ -17,6 +18,7 @@ export function PriceRangeHistogram({
   max = 1000,
   step = 10,
 }: PriceRangeSliderProps) {
+  const { t } = useLanguage();
   const [localValue, setLocalValue] = useState(value);
   const [isDragging, setIsDragging] = useState<number | null>(null);
   const sliderRef = useRef<HTMLDivElement>(null);
@@ -122,9 +124,9 @@ export function PriceRangeHistogram({
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-sm font-semibold mb-1">Rango de precios</h3>
+        <h3 className="text-sm font-semibold mb-1">{t("filters.dialog.priceRangeTitle")}</h3>
         <p className="text-xs text-muted-foreground mb-4">
-          Precio del viaje, incluye todas las tarifas
+          {t("filters.dialog.priceRangeDescription")}
         </p>
       </div>
 

@@ -9,5 +9,10 @@
   "clearAll": "Clear all",
   "search": "Search",
   "login": "Sign in",
-  "logout": "Sign out"
+  "logout": "Sign out",
+  "notFound": {
+    "message": "Sorry, we could not find this page.",
+    "submessage": "But don't worry, you can find many other things on our homepage.",
+    "back": "Back to homepage"
+  }
 }
