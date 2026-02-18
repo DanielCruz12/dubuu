@@ -17,10 +17,13 @@ import { ReusableDialog } from "@/components/reusable-dialog";
 import type { Booking } from "@/types/booking";
 import type { Review } from "@/types/review";
 import { useUser } from "@clerk/nextjs";
+import moment from "moment";
+import "moment/locale/es";
 
 interface ReviewSectionProps {
   productId: string;
-  existingBooking?: Booking;
+  /** Reserva del usuario (puede ser Booking o IBookingUser con tourDate) */
+  existingBooking?: Booking & { tourDate?: string };
   reviews: Review[];
   isLoading: boolean;
 }
@@ -39,6 +42,12 @@ export default function ReviewSection({
     return <div className="animate-pulse">{t("home.reviews.loading")}</div>;
   }
 
+  // Solo se puede dejar reseña a partir del día de la fecha del tour
+  const tourDate = existingBooking?.tourDate;
+  const hasTourDatePassed = tourDate
+    ? new Date() >= new Date(tourDate)
+    : true;
+
   // Determinar el estado del usuario y su reserva
   const userState = {
     isLoggedIn: isUserLoaded && !!user,
@@ -49,6 +58,10 @@ export default function ReviewSection({
       !!existingBooking &&
       existingBooking.status === "completed" &&
       reviews.some((review) => existingBooking.user_id === review.user_id),
+    hasTourDatePassed,
+    tourDateFormatted: tourDate
+      ? moment(tourDate).locale("es").format("dddd, D [de] MMMM - h:mm A")
+      : "",
   };
 
   return (
@@ -72,6 +85,8 @@ export default function ReviewSection({
     hasBooking: boolean;
     isBookingCompleted: boolean;
     hasLeftReview: boolean;
+    hasTourDatePassed: boolean;
+    tourDateFormatted: string;
   }) {
     // Si el usuario no está logueado o no tiene reserva, no mostrar nada
     if (!state.isLoggedIn || !state.hasBooking) {
@@ -110,8 +125,23 @@ export default function ReviewSection({
       );
     }
 
-    // Si el usuario tiene una reserva completada y no ha dejado reseña
-    if (state.isBookingCompleted) {
+    // Reserva completada pero aún no ha pasado la fecha del tour: no puede reseñar hasta ese día
+    if (state.isBookingCompleted && !state.hasTourDatePassed && state.tourDateFormatted) {
+      return (
+        <div className="mt-6 p-4 border rounded-lg">
+          <div className="flex items-center gap-2">
+            <Clock className="h-4 w-4 text-muted-foreground" />
+            <h3 className="font-medium">{t("home.reviews.leaveReview")}</h3>
+          </div>
+          <p className="mt-1 text-sm text-muted-foreground pl-6">
+            {t("home.reviews.reviewAvailableFrom").replace("{date}", state.tourDateFormatted)}
+          </p>
+        </div>
+      );
+    }
+
+    // Si el usuario tiene una reserva completada, no ha dejado reseña y ya pasó la fecha del tour
+    if (state.isBookingCompleted && state.hasTourDatePassed) {
       return (
         <div className="mt-6 p-4 border rounded-lg">
           <div className="flex items-center mb-2">

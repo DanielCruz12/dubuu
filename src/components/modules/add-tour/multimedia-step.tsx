@@ -5,7 +5,7 @@ import type React from "react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { DollarSign, FileText, Percent, Upload, Video, X } from "lucide-react";
+import { DollarSign, FileText, Upload, Video, X } from "lucide-react";
 
 import {
   Form,
@@ -88,7 +88,7 @@ export function MultimediaStep({
 
       // Validar tamaño
       const oversizedFiles = selectedFiles.filter(
-        (file) => file.size > 5 * 1024 * 1024
+        (file) => file.size > 5 * 1024 * 1024,
       );
       if (oversizedFiles.length > 0) {
         toast.error("Algunas imágenes exceden el tamaño máximo de 5MB");
@@ -121,7 +121,7 @@ export function MultimediaStep({
 
       // Validar tamaño
       const oversizedFiles = selectedFiles.filter(
-        (file) => file.size > 50 * 1024 * 1024
+        (file) => file.size > 50 * 1024 * 1024,
       );
       if (oversizedFiles.length > 0) {
         toast.error("Algunos videos exceden el tamaño máximo de 50MB");
@@ -145,7 +145,7 @@ export function MultimediaStep({
 
       // Validar tamaño
       const oversizedFiles = selectedFiles.filter(
-        (file) => file.size > 10 * 1024 * 1024
+        (file) => file.size > 10 * 1024 * 1024,
       );
       if (oversizedFiles.length > 0) {
         toast.error("Algunos archivos exceden el tamaño máximo de 10MB");
@@ -180,7 +180,7 @@ export function MultimediaStep({
         bannerFile,
         imageFiles,
         videoFiles,
-        fileAttachments
+        fileAttachments,
       );
 
       if (fileErrors.length > 0) {
@@ -200,7 +200,7 @@ export function MultimediaStep({
     (errors) => {
       // Hacer scroll al primer error
       scrollToFirstError(errors);
-    }
+    },
   );
 
   return (
@@ -456,7 +456,7 @@ export function MultimediaStep({
               <div className="space-y-2">
                 {(() => {
                   const price = Number.parseFloat(
-                    form.watch("price").toString()
+                    form.watch("price").toString(),
                   );
                   const breakdown = getHostEarningsFromFinalPrice(price);
                   // const commissionRates = getCommissionRates(); // solo se usaba para mostrar %; comentado
@@ -474,7 +474,7 @@ export function MultimediaStep({
                       <Separator className="my-2" />
                       <div className="flex justify-between items-center text-sm">
                         <span className="text-gray-600 dark:text-gray-400 flex items-center">
-                          <Percent className="h-3 w-3 mr-1" />
+                          {/* <Percent className="h-3 w-3 mr-1" /> */}
                           Comisión por pago
                           {/* Porcentaje comentado: ({commissionRates.paymentProcessingPercentage}) */}
                         </span>
@@ -484,7 +484,7 @@ export function MultimediaStep({
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600 dark:text-gray-400  flex items-center">
-                          <Percent className="h-3 w-3 mr-1" />
+                          {/*   <Percent className="h-3 w-3 mr-1" /> */}
                           Comisión de plataforma
                           {/* Porcentaje comentado: ({commissionRates.platformPercentage}) */}
                         </span>

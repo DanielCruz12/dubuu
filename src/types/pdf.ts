@@ -8,6 +8,8 @@ export type ReceiptItem = {
   export type ReceiptProps = {
     receiptNumber: string
     date: string
+    /** Fecha de emisión del recibo */
+    reservationDate?: string
     customerName: string
     customerEmail?: string
     customerAddress?: string

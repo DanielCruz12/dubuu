@@ -143,7 +143,8 @@
     "writeReviewDescription": "Comparte tu experiencia con otros viajeros",
     "reviewInfo": "Por favor, asegúrate de que tu reseña cumpla con nuestras políticas de contenido. No se permiten comentarios ofensivos, difamatorios o inapropiados.",
     "reviewIntro": "Tu opinión es importante para nosotros y ayuda a otros viajeros a tomar decisiones informadas y mejoran nuestros servicios. Agradecemos tu tiempo y comentarios.",
-    "srInfo": "Información sobre reseñas"
+    "srInfo": "Información sobre reseñas",
+    "reviewAvailableFrom": "Podrás dejar tu reseña a partir del {date} (fecha de tu reserva)."
   },
   "imageCollage": {
     "image": "Imagen",

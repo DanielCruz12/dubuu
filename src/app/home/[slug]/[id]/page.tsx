@@ -223,6 +223,7 @@ export default function ProductBooking() {
                         status="completed"
                         productName={product.name}
                         created_at={existingBooking.created_at}
+                        tourDate={existingBooking.tourDate}
                         tickets={{
                           adult: Number(existingBooking.tickets),
                         }}
@@ -264,6 +265,7 @@ export default function ProductBooking() {
                               status="completed"
                               productName={product.name}
                               created_at={existingBooking.created_at}
+                              tourDate={existingBooking.tourDate}
                               tickets={{
                                 adult: Number(existingBooking.tickets),
                               }}

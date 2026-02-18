@@ -143,7 +143,8 @@
     "writeReviewDescription": "Share your experience with other travelers",
     "reviewInfo": "Please ensure your review complies with our content policies. Offensive, defamatory or inappropriate comments are not allowed.",
     "reviewIntro": "Your opinion matters to us and helps other travelers make informed decisions and improves our services. We appreciate your time and feedback.",
-    "srInfo": "Review information"
+    "srInfo": "Review information",
+    "reviewAvailableFrom": "You can leave your review from {date} onwards (your reservation date)."
   },
   "imageCollage": {
     "image": "Image",

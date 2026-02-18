@@ -30,6 +30,7 @@ type BookingStatusProps = {
   paymentMethod: string;
   user: any;
   created_at: string;
+  tourDate?: string;
   tickets: { adult: number };
   total: number;
   onRebook?: () => void;
@@ -45,6 +46,7 @@ export function BookingStatus({
   productName,
   product,
   created_at,
+  tourDate,
   tickets,
   user,
   total,
@@ -60,6 +62,9 @@ export function BookingStatus({
       month: "2-digit",
       day: "2-digit",
     }),
+    reservationDate: tourDate
+      ? moment(tourDate).locale("es").format("dddd, D [de] MMMM - h:mm A")
+      : undefined,
     customerName: user?.fullName,
     customerEmail: user.primaryEmailAddress,
     items: [
@@ -128,7 +133,9 @@ export function BookingStatus({
               <div className="flex justify-between">
                 <span className="text-gray-500">{t("home.bookingStatus.bookingDate")}</span>
                 <span className="font-normal">
-                  {moment(created_at).format("LLL")}
+                  {tourDate
+                    ? moment(tourDate).locale("es").format("LLL")
+                    : moment(created_at).locale("es").format("LLL")}
                 </span>
               </div>
               <div className="flex justify-between">

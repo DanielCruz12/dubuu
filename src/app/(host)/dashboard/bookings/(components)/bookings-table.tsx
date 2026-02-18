@@ -120,6 +120,11 @@ export function BookingsDataTable() {
     }
 
     const dataToExport = bookingsData.map((booking) => {
+      // Fecha del tour (día y hora que el usuario seleccionó), no la fecha de creación
+      const tourDate = booking.tourDate ?? booking.bookingDate;
+      const tourDateFormatted = tourDate
+        ? moment(tourDate).format("dddd, D [de] MMMM - h:mm A")
+        : "";
       return {
         ID: booking.bookingId,
         Usuario: booking.user.username,
@@ -127,10 +132,8 @@ export function BookingsDataTable() {
         Producto: booking.name,
         Estado: booking.status,
         Boletos: booking.tickets,
-        Fecha: moment(booking.bookingDate).format("dddd, D [de] MMMM - h:mm A"),
-        "Fecha de reserva": moment(booking.createdAt).format(
-          "dddd, D [de] MMMM - h:mm A"
-        ),
+        Fecha: tourDateFormatted,
+        "Fecha de reserva": tourDateFormatted,
         Total: new Intl.NumberFormat("en-US", {
           style: "currency",
           currency: "USD",
