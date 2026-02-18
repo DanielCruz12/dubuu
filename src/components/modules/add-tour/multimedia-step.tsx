@@ -28,7 +28,8 @@ import {
 } from "./types";
 import { scrollToFirstError, validateFiles } from "./utils";
 import Image from "next/image";
-import { getCommissionRates, getHostEarningsFromFinalPrice } from "@/lib/price";
+import { getHostEarningsFromFinalPrice } from "@/lib/price";
+// getCommissionRates comentado: solo se usaba para mostrar % en el desglose
 
 interface MultimediaStepProps {
   onSubmit: (data: MultimediaFormValues, files: TourFiles) => void;
@@ -458,7 +459,7 @@ export function MultimediaStep({
                     form.watch("price").toString()
                   );
                   const breakdown = getHostEarningsFromFinalPrice(price);
-                  const commissionRates = getCommissionRates();
+                  // const commissionRates = getCommissionRates(); // solo se usaba para mostrar %; comentado
 
                   return (
                     <>
@@ -474,8 +475,8 @@ export function MultimediaStep({
                       <div className="flex justify-between items-center text-sm">
                         <span className="text-gray-600 dark:text-gray-400 flex items-center">
                           <Percent className="h-3 w-3 mr-1" />
-                          Comisión por pago (
-                          {commissionRates.paymentProcessingPercentage}):
+                          Comisión por pago
+                          {/* Porcentaje comentado: ({commissionRates.paymentProcessingPercentage}) */}
                         </span>
                         <span className="font-medium text-red-600">
                           -${breakdown.paymentProcessing.toFixed(2)}
@@ -484,8 +485,8 @@ export function MultimediaStep({
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600 dark:text-gray-400  flex items-center">
                           <Percent className="h-3 w-3 mr-1" />
-                          Comisión de plataforma (
-                          {commissionRates.platformPercentage}):
+                          Comisión de plataforma
+                          {/* Porcentaje comentado: ({commissionRates.platformPercentage}) */}
                         </span>
                         <span className="font-medium text-red-600">
                           -${breakdown.platformFee.toFixed(2)}

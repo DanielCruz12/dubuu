@@ -15,6 +15,8 @@ export const toursColumns: ColumnDef<
 >[] = [
   {
     accessorKey: "name",
+    size: 220,
+    minSize: 160,
     header: ({ column }) => {
       return (
         <Button
@@ -28,7 +30,14 @@ export const toursColumns: ColumnDef<
     },
     cell: ({ row }) => {
       const name = row.getValue("name") as string;
-      return <div className="font-medium">{name}</div>;
+      return (
+        <div
+          className="font-medium max-w-[200px] sm:max-w-[280px] truncate"
+          title={name}
+        >
+          {name}
+        </div>
+      );
     },
   },
   {
