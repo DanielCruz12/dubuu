@@ -205,7 +205,7 @@ export function ProductsDataTable() {
       <Card>
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row gap-4 items-end mb-6">
-            <div className="w-full md:w-1/3">
+            <div className="w-full md:w-1/3 min-w-0">
               <label className="text-sm font-medium mb-1 block">Producto</label>
               <Popover open={openTourSelect} onOpenChange={setOpenTourSelect}>
                 <PopoverTrigger asChild>
@@ -213,13 +213,15 @@ export function ProductsDataTable() {
                     variant="outline"
                     role="combobox"
                     aria-expanded={openTourSelect}
-                    className="w-full justify-between"
+                    className="w-full justify-between min-w-0 text-left"
                   >
-                    {selectedTourId
-                      ? availableTours.find(
-                          (tour) => tour.id === selectedTourId
-                        )?.name
-                      : "Seleccionar producto..."}
+                    <span className="truncate">
+                      {selectedTourId
+                        ? availableTours.find(
+                            (tour) => tour.id === selectedTourId
+                          )?.name
+                        : "Seleccionar producto..."}
+                    </span>
                     <SearchIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
@@ -261,7 +263,7 @@ export function ProductsDataTable() {
               </Popover>
             </div>
 
-            <div className="w-full md:w-1/3">
+            <div className="w-full md:w-1/3 min-w-0">
               <label className="text-sm font-medium mb-1 block">
                 Fecha del producto
               </label>
