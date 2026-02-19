@@ -7,6 +7,7 @@ import {
   Clock,
   CreditCard,
   Landmark,
+  Zap,
 } from "lucide-react";
 import type { PaymentMethod } from "@/types/payment-types";
 
@@ -60,6 +61,8 @@ export function getPaymentMethodIcon(method: PaymentMethod | null) {
   switch (method) {
     case "bank":
       return <Landmark className="h-5 w-5" />;
+    case "blink":
+      return <Zap className="h-5 w-5" />;
     case "visa":
     case "mastercard":
       return <CreditCard className="h-5 w-5" />;
@@ -72,6 +75,8 @@ export function getPaymentMethodName(method: PaymentMethod | null) {
   switch (method) {
     case "bank":
       return "Transferencia bancaria";
+    case "blink":
+      return "Blink (Bitcoin / Lightning)";
     case "visa":
       return "Tarjeta Visa";
     case "mastercard":

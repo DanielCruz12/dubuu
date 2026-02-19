@@ -12,7 +12,10 @@ import {
 import ContactForm from "./forms/contact-form";
 import ShippingForm from "./forms/shipping-form";
 import PaymentMethodForm from "./forms/payment-form";
-import { useCreate3DSTransactionMutation } from "@/redux/slices/payment/payment-link";
+import {
+  useCreate3DSTransactionMutation,
+  useCreateBlinkPaymentMutation,
+} from "@/redux/slices/payment/payment-link";
 import { toast } from "sonner";
 import { useCreateBookingMutation } from "@/redux/slices/booking/booking-slice";
 import {
@@ -60,11 +63,14 @@ export default function CheckoutForm({
     mode: "onChange",
   });
 
-  const [create3DSTransaction, { isLoading }] =
+  const [create3DSTransaction, { isLoading: is3DSLoading }] =
     useCreate3DSTransactionMutation();
+  const [createBlinkPayment, { isLoading: isBlinkLoading }] =
+    useCreateBlinkPaymentMutation();
   const [updateUser] = useUpdateUserMutation();
 
   const [createBooking] = useCreateBookingMutation();
+  const isLoading = is3DSLoading || isBlinkLoading;
 
   const { data: currentUser } = useGetUserQuery(bookingData?.user_id ?? "", {
     skip: !bookingData?.user_id,
@@ -102,7 +108,7 @@ export default function CheckoutForm({
       return;
     }
 
-    if (isTestCard(values.cardNumber)) {
+    if (values.paymentMethod === "credit" && isTestCard(values.cardNumber)) {
       toast.error(t("home.checkout.toast.invalidCard"), {
         description: t("home.checkout.toast.invalidCardDesc"),
       });
@@ -135,6 +141,46 @@ export default function CheckoutForm({
       console.error("Error al actualizar usuario", err);
       toast.error(
         err?.data?.message || t("home.checkout.toast.updateError")
+      );
+      return;
+    }
+
+    const paymentMethod = values.paymentMethod;
+
+    if (paymentMethod === "blink") {
+      toast.promise(
+        (async () => {
+          const response = await createBlinkPayment(payload).unwrap();
+
+          const bookingPayload = {
+            ...bookingData,
+            user_id: bookingData.user_id,
+            product_id: bookingData.product_id,
+            is_live: true,
+            tickets: bookingData.tickets.adult,
+            total: bookingData.total,
+            tour_date_id: [bookingData.datetime],
+            paymentMethod: "blink",
+            idTransaccion: response.idTransaccion ?? "",
+          };
+
+          await createBooking(bookingPayload).unwrap();
+
+          if (response?.paymentUrl) {
+            setTimeout(() => {
+              window.location.href = response.paymentUrl;
+            }, 500);
+          } else {
+            throw new Error("No se pudo obtener la URL de pago Blink");
+          }
+        })(),
+        {
+          loading: t("home.checkout.toast.processing"),
+          success: t("home.checkout.toast.redirecting"),
+          error: (err) =>
+            err?.data?.message ||
+            t("home.checkout.toast.paymentError"),
+        }
       );
       return;
     }

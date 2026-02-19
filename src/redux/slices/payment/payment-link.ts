@@ -25,8 +25,24 @@ export const paymentApiSlice = createApi({
       }),
       invalidatesTags: [{ type: "Payment", id: "LIST" }],
     }),
+
+    /** Crea un pago con Blink (Bitcoin/Lightning). El backend debe devolver { paymentUrl, idTransaccion? }. */
+    createBlinkPayment: builder.mutation<
+      { paymentUrl: string; idTransaccion?: string },
+      unknown
+    >({
+      query: (body) => ({
+        url: "/api/v1/TransaccionCompra/blink",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: [{ type: "Payment", id: "LIST" }],
+    }),
   }),
 });
 
-export const { useCreatePaymentLinkMutation, useCreate3DSTransactionMutation } =
-  paymentApiSlice;
+export const {
+  useCreatePaymentLinkMutation,
+  useCreate3DSTransactionMutation,
+  useCreateBlinkPaymentMutation,
+} = paymentApiSlice;

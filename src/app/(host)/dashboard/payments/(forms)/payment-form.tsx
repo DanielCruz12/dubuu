@@ -23,10 +23,12 @@ import { Button } from "@/components/ui/button";
 import { StepIndicator } from "../(components)/step-indicator";
 import { PaymentMethodSelector } from "../(components)/payment-method-selector";
 import { BankForm } from "./bank-form";
+import { BlinkForm } from "./blink-form";
 import { getPaymentMethodIcon, getPaymentMethodName } from "@/utils";
 import type {
   PaymentMethod,
   BankFormValues,
+  BlinkFormValues,
   ExistingPaymentData,
 } from "@/types/payment-types";
 import { ExistingPaymentInfo } from "../(components)/existing-payment-info";
@@ -38,6 +40,11 @@ const emptyBankData: BankFormValues = {
   accountType: "",
   accountNumber: "",
   holderName: "",
+  email: "",
+};
+
+const emptyBlinkData: BlinkFormValues = {
+  walletAddress: "",
   email: "",
 };
 
@@ -55,6 +62,7 @@ export function PaymentForm() {
   const [existingData, setExistingData] = useState<ExistingPaymentData>({
     paymentMethod: "bank",
     bankData: emptyBankData,
+    blinkData: emptyBlinkData,
   });
   const [isCurrentlyUpdating, setIsUpdating] = useState(false);
   const [dataFetched, setDataFetched] = useState(false);
@@ -91,9 +99,10 @@ export function PaymentForm() {
           ? paymentData[0]
           : paymentData;
 
+        const paymentMethod = (accountData.payment_method || "bank") as PaymentMethod;
         // Mapear los datos de la API al formato que usa nuestro componente
         const mappedData: ExistingPaymentData = {
-          paymentMethod: accountData.payment_method || "bank",
+          paymentMethod,
           bankData: {
             bankName: accountData.bank_name || "",
             accountType: accountData.account_type || "",
@@ -101,6 +110,13 @@ export function PaymentForm() {
             holderName: accountData.holder_name || "",
             email: accountData.email || "",
           },
+          blinkData:
+            paymentMethod === "blink"
+              ? {
+                  walletAddress: accountData.blink_wallet_address || "",
+                  email: accountData.email || "",
+                }
+              : emptyBlinkData,
         };
 
         setExistingData(mappedData);
@@ -135,8 +151,6 @@ export function PaymentForm() {
   };
 
   const onBankSubmit = async (data: BankFormValues) => {
-    console.log("Datos del formulario bancario:", data);
-
     const dataToSend = {
       user_id: userId,
       bank_name: data.bankName,
@@ -149,27 +163,54 @@ export function PaymentForm() {
 
     try {
       if (isCurrentlyUpdating && paymentId) {
-        // Actualizar cuenta existente
         const result = await updatePaymentAccount({
           userId,
           paymentId,
           body: dataToSend,
         }).unwrap();
-
-        console.log("Respuesta del servidor (actualización):", result);
         toast.success("Información actualizada con éxito");
       } else {
-        // Crear nueva cuenta
         const result = await createPaymentAccount(dataToSend).unwrap();
-        console.log("Respuesta del servidor (creación):", result);
         toast.success("Información enviada con éxito");
-
-        // Guardar el ID de la cuenta recién creada
-        if (result && result.id) {
-          setPaymentId(result.id);
-        }
+        if (result && result.id) setPaymentId(result.id);
       }
+      setShowExistingData(true);
+      setStep(1);
+      setIsUpdating(false);
+    } catch (error) {
+      console.error("Error al procesar los datos:", error);
+      toast.error(
+        "Error al procesar la información. Inténtelo de nuevo más tarde."
+      );
+    }
+  };
 
+  const onBlinkSubmit = async (data: BlinkFormValues) => {
+    const dataToSend = {
+      user_id: userId,
+      email: data.email,
+      payment_method: "blink",
+      blink_wallet_address: data.walletAddress,
+    };
+
+    try {
+      if (isCurrentlyUpdating && paymentId) {
+        await updatePaymentAccount({
+          userId,
+          paymentId,
+          body: dataToSend,
+        }).unwrap();
+        toast.success("Información actualizada con éxito");
+      } else {
+        const result = await createPaymentAccount(dataToSend).unwrap();
+        toast.success("Información enviada con éxito");
+        if (result && result.id) setPaymentId(result.id);
+      }
+      setExistingData((prev) => ({
+        ...prev,
+        paymentMethod: "blink",
+        blinkData: data,
+      }));
       setShowExistingData(true);
       setStep(1);
       setIsUpdating(false);
@@ -256,6 +297,19 @@ export function PaymentForm() {
                         : emptyBankData
                     }
                     onSubmit={onBankSubmit}
+                    onBack={() => setStep(1)}
+                    isLoading={isCreating || isAccountUpdating}
+                    isUpdating={isCurrentlyUpdating}
+                  />
+                )}
+                {paymentMethod === "blink" && (
+                  <BlinkForm
+                    defaultValues={
+                      isCurrentlyUpdating && existingData.blinkData
+                        ? existingData.blinkData
+                        : emptyBlinkData
+                    }
+                    onSubmit={onBlinkSubmit}
                     onBack={() => setStep(1)}
                     isLoading={isCreating || isAccountUpdating}
                     isUpdating={isCurrentlyUpdating}

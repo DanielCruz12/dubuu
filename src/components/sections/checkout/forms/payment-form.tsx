@@ -25,6 +25,7 @@ import { CheckoutFormValues } from "@/schemas/checkout-schema";
 import CreditCardForm from "../payment-methods/credit-card-form";
 import Link from "next/link";
 import Image from "next/image";
+import { Zap } from "lucide-react";
 
 export default function PaymentMethodForm({
   isLoading,
@@ -66,7 +67,7 @@ export default function PaymentMethodForm({
                     field.onChange(value);
                     setPaymentTab(value);
 
-                    // Reset credit card fields if not using credit card
+                    // Reset credit card fields when not using credit card
                     if (value !== "credit") {
                       setValue("cardNumber", "");
                       setValue("cardName", "");
@@ -98,6 +99,30 @@ export default function PaymentMethodForm({
                           alt="tarjetas"
                         />
                         {t("home.checkout.payment.creditCard")}
+                      </FormLabel>
+                    </FormItem>
+                  </div>
+
+                  <div className="col-span-1">
+                    <FormItem className="flex flex-col space-y-1">
+                      <FormControl>
+                        <RadioGroupItem
+                          value="blink"
+                          className="peer sr-only"
+                          id="blink"
+                        />
+                      </FormControl>
+                      <FormLabel
+                        htmlFor="blink"
+                        className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                      >
+                        <Zap className="h-12 w-12 mb-3 text-amber-400" />
+                        <span className="text-center font-medium">
+                          {t("home.checkout.payment.blink")}
+                        </span>
+                        <span className="text-xs text-muted-foreground mt-1 text-center">
+                          Bitcoin / Lightning
+                        </span>
                       </FormLabel>
                     </FormItem>
                   </div>
@@ -134,6 +159,15 @@ export default function PaymentMethodForm({
         <Tabs value={paymentTab} className="mt-6">
           <TabsContent value="credit">
             <CreditCardForm />
+          </TabsContent>
+          <TabsContent value="blink">
+            <div className="rounded-lg border border-muted bg-muted/30 p-4 text-sm text-muted-foreground">
+              <p className="font-medium text-foreground mb-1">
+                {t("home.checkout.payment.blink")}
+              </p>
+              <p>{t("home.checkout.payment.blinkDescription")}</p>
+              <p className="mt-2">{t("home.checkout.payment.blinkProceedHint")}</p>
+            </div>
           </TabsContent>
           <TabsContent value="googlepay">google form</TabsContent>
         </Tabs>

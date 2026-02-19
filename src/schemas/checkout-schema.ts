@@ -65,7 +65,7 @@ export const creditCardSchema = z.object({
 });
 
 export const paymentMethodSchema = z.object({
-  paymentMethod: z.enum(["credit", "paypal", "wompi", "googlepay"]),
+  paymentMethod: z.enum(["credit", "blink", "paypal", "wompi", "googlepay"]),
 });
 
 // Esquema completo que combina todos los esquemas anteriores
@@ -78,7 +78,7 @@ export const checkoutFormSchema = z
     ...creditCardSchema.partial().shape,
   })
   .refine((data) => {
-    // Si el método de pago es tarjeta de crédito, los campos de tarjeta son obligatorios
+    // Solo tarjeta de crédito requiere los campos de tarjeta
     if (data.paymentMethod === "credit") {
       return (
         !!data.cardNumber &&

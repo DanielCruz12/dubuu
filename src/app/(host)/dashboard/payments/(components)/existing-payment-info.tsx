@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Building, Edit, User, Mail, ShieldCheck } from "lucide-react";
+import { Building, Edit, User, Mail, ShieldCheck, Zap } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import type { ExistingPaymentData } from "@/types/payment-types";
@@ -62,6 +62,27 @@ export function ExistingPaymentInfo({
                 <Mail className="h-5 w-5 mt-0.5 shrink-0" />
                 <div className="min-w-0">
                   <p className="font-medium">{data.bankData.email}</p>
+                  <p className="text-sm text-muted-foreground">Correo de contacto</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {data.paymentMethod === "blink" && data.blinkData && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex items-start space-x-3 p-3 rounded-md border border-border bg-muted/30">
+                <Zap className="h-5 w-5 mt-0.5 shrink-0" />
+                <div className="min-w-0">
+                  <p className="font-medium">Dirección Blink / Lightning</p>
+                  <p className="text-sm text-muted-foreground break-all">
+                    {data.blinkData.walletAddress}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-3 p-3 rounded-md border border-border bg-muted/30">
+                <Mail className="h-5 w-5 mt-0.5 shrink-0" />
+                <div className="min-w-0">
+                  <p className="font-medium">{data.blinkData.email}</p>
                   <p className="text-sm text-muted-foreground">Correo de contacto</p>
                 </div>
               </div>
