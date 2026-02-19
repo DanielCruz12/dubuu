@@ -15,8 +15,8 @@ export const toursColumns: ColumnDef<
 >[] = [
   {
     accessorKey: "name",
-    size: 220,
-    minSize: 160,
+    size: 140,
+    minSize: 100,
     header: ({ column }) => {
       return (
         <Button
@@ -32,7 +32,7 @@ export const toursColumns: ColumnDef<
       const name = row.getValue("name") as string;
       return (
         <div
-          className="font-medium max-w-[200px] sm:max-w-[280px] truncate"
+          className="font-medium max-w-[120px] sm:max-w-[160px] truncate"
           title={name}
         >
           {name}
@@ -218,8 +218,8 @@ export const toursColumns: ColumnDef<
   },
   {
     id: "actions",
+    header: "Acciones",
     cell: ({ row }) => {
-      // Usamos el componente ActionCell en lugar de definir la lógica aquí
       return (
         <ActionCell
           tour={row.original}

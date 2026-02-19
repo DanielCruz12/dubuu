@@ -219,8 +219,7 @@ export default function BookingForm({
             <span>{t("home.bookingForm.adults")}</span>
             <div className="flex items-center gap-2">
               {symbol}
-              {convert(product.price)}{" "}
-              <span className="text-sm text-muted-foreground">{t("home.bookingForm.perPerson")}</span>
+              {convert(product.price)}
               <Controller
                 control={control}
                 name="tickets.adult"
@@ -281,7 +280,7 @@ export default function BookingForm({
                   <span>{t("home.bookingForm.pricePerPerson")}</span>
                   <span>
                     {symbol}
-                    {price} {t("home.bookingForm.perPerson")}
+                    {price}
                   </span>
                 </div>
 

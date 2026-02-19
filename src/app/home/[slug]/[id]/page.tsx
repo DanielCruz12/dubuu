@@ -196,7 +196,7 @@ export default function ProductBooking() {
                 reviews={reviews}
                 isLoading={isLoadingReviews}
               />
-              {/* <CompanyInfo product={product} /> */}
+             <CompanyInfo product={product} />
             </div>
           </div>
         )}

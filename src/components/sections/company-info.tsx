@@ -1,15 +1,13 @@
 "use client";
 
+import { useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import {
-  MapPin,
-  Route,
-  Users,
-  ShieldCheck,
-} from "lucide-react";
+import { MapPin, Route, Users, ShieldCheck } from "lucide-react";
 import type { IProduct } from "@/types/product";
+import { useGetProductsByUserIdQuery } from "@/redux/slices/product/product-slice";
+import { isProductType } from "@/utils";
 
 function getProductUser(product: IProduct) {
   const u = product?.user;
@@ -24,14 +22,30 @@ const TEST_OPERATOR = {
   anosExperiencia: 3,
   detalles: [
     { icon: MapPin, label: "Especialidad:", value: "Senderismo y aventura" },
-    { icon: Route, label: "Tipo de experiencias:", value: "Rutas exigentes, naturaleza y montaña" },
-    { icon: Users, label: "Estilo:", value: "Grupos pequeños, atención personalizada" },
+    {
+      icon: Route,
+      label: "Tipo de experiencias:",
+      value: "Rutas exigentes, naturaleza y montaña",
+    },
+    {
+      icon: Users,
+      label: "Estilo:",
+      value: "Grupos pequeños, atención personalizada",
+    },
   ],
-  descripcion: "Operador con experiencia en rutas de montaña y naturaleza. Enfocado en seguridad y en que cada viajero viva una experiencia memorable.",
+  descripcion:
+    "Enfocado en seguridad y en que cada viajero viva una experiencia memorable.",
   indiceRespuesta: "100%",
   tiempoRespuesta: "Responde en menos de una hora",
-  intro: "Operador verificado con excelentes evaluaciones y años de experiencia en tours.",
-  tiposExperiencia: ["Senderismo", "Aventura", "Naturaleza", "Montaña", "Rutas exigentes"],
+  intro:
+    "Operador con experiencia en rutas de montaña y naturaleza.",
+  tiposExperiencia: [
+    "Senderismo",
+    "Aventura",
+    "Naturaleza",
+    "Montaña",
+    "Rutas exigentes",
+  ],
   idiomas: ["Español", "Inglés"],
 };
 
@@ -85,13 +99,25 @@ interface CompanyInfoProps {
 
 export default function CompanyInfo({ product }: CompanyInfoProps) {
   const user = product ? getProductUser(product) : null;
+  const { data: userProducts = [] } = useGetProductsByUserIdQuery(
+    user?.id ?? "",
+    {
+      skip: !user?.id,
+    },
+  );
+  const toursCount = useMemo(
+    () => userProducts.filter((p) => isProductType(p, "tours")).length,
+    [userProducts],
+  );
 
   if (!product) return null;
 
   if (!user) {
     return (
       <div className="mt-12">
-        <h2 className="text-xl md:text-2xl font-semibold mb-6">Quién organiza este tour</h2>
+        <h2 className="text-xl md:text-2xl font-semibold mb-6">
+          Quién organiza este tour
+        </h2>
         <CompanyInfoSkeleton />
       </div>
     );
@@ -104,41 +130,42 @@ export default function CompanyInfo({ product }: CompanyInfoProps) {
 
   return (
     <div className="mt-12 space-y-6">
-      <h2 className="text-xl md:text-2xl font-semibold">Quién organiza este tour</h2>
+      <h2 className="text-xl md:text-2xl font-semibold">
+        Quién organiza este tour
+      </h2>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Columna izquierda: card con borde */}
         <div className="lg:col-span-2 rounded-xl border bg-card p-6 space-y-6">
           <div className="flex flex-col sm:flex-row gap-4">
-            <div className="relative shrink-0">
-              <Avatar className="h-24 w-24">
-                {photo ? (
-                  <AvatarImage src={photo} alt={displayName} />
-                ) : null}
+            <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full">
+              <Avatar className="h-24 w-24 border-0">
+                {photo ? <AvatarImage src={photo} alt={displayName} /> : null}
                 <AvatarFallback className="bg-muted text-muted-foreground text-2xl">
                   {username.slice(0, 2).toUpperCase() || "?"}
                 </AvatarFallback>
               </Avatar>
-              <span className="absolute -bottom-1 -right-1 rounded-full bg-primary p-1.5 text-primary-foreground">
-                <ShieldCheck className="h-3.5 w-3.5" />
+              <span className="absolute bottom-0 right-0 flex h-5 w-5 items-center justify-center rounded-tl-md bg-green-500 text-primary-foreground">
+                <ShieldCheck className="h-3 w-3 text-white" />
               </span>
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="text-xl font-bold">{displayName}</h3>
               <div className="flex items-center gap-1.5 mt-1">
                 <span className="inline-flex items-center rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                  Operador verificado
+                  Operador Turistico
                 </span>
               </div>
               <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3 text-sm text-muted-foreground">
                 <span>{op.evaluaciones} evaluaciones</span>
-                <span>{op.calificacion}★ calificación</span>
+                <span>{toursCount} tours</span>
                 <span>{op.anosExperiencia} años de experiencia</span>
               </div>
             </div>
           </div>
-
-          <p className="text-sm text-muted-foreground">{op.intro}</p>
+          <div className="space-y-6">
+            <p className="text-sm text-muted-foreground">{op.intro}</p>
+          </div>
 
           <ul className="space-y-3">
             {op.detalles.map((item) => {
@@ -147,24 +174,22 @@ export default function CompanyInfo({ product }: CompanyInfoProps) {
                 <li key={item.label} className="flex gap-3 text-sm">
                   <Icon className="h-4 w-4 shrink-0 text-muted-foreground mt-0.5" />
                   <span>
-                    <span className="font-medium text-muted-foreground">{item.label} </span>
+                    <span className="font-medium text-muted-foreground">
+                      {item.label}{" "}
+                    </span>
                     {item.value}
                   </span>
                 </li>
               );
             })}
           </ul>
-          <p className="text-sm text-muted-foreground">{op.descripcion}</p>
         </div>
 
         {/* Columna derecha */}
         <div className="space-y-6">
           <div>
             <h4 className="font-semibold mb-2">Información del operador</h4>
-            <ul className="text-sm text-muted-foreground space-y-1">
-              <li>Índice de respuesta: {op.indiceRespuesta}</li>
-              <li>{op.tiempoRespuesta}</li>
-            </ul>
+            <p className="text-sm text-muted-foreground">{op.descripcion}</p>
           </div>
           <div>
             <h4 className="font-semibold mb-2">Tipos de experiencia</h4>

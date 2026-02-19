@@ -168,6 +168,7 @@ export function PaymentForm() {
           paymentId,
           body: dataToSend,
         }).unwrap();
+        console.log(result);
         toast.success("Información actualizada con éxito");
       } else {
         const result = await createPaymentAccount(dataToSend).unwrap();

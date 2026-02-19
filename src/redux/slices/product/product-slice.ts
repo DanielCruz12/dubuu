@@ -210,6 +210,7 @@ export const productsApiSlice = createApi({
         invalidatesTags: [
           { type: "Reviews", id: "LIST" } as const,
           { type: "Products", id: "LIST" } as const,
+          { type: "Products", id: "USER_PRODUCTS" } as const,
         ],
       }),
     };
