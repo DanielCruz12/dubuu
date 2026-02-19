@@ -123,6 +123,15 @@ export default function PDFButton({
       doc.setFontSize(11);
       doc.text(receiptData.date, 10, 70);
 
+      if (receiptData.reservationDate) {
+        doc.setFontSize(10);
+        doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
+        doc.text("FECHA DE RESERVA", 10, 75);
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(11);
+        doc.text(receiptData.reservationDate, 10, 80);
+      }
+
       // Información de pago (a la derecha)
       if (receiptData.paymentMethod) {
         doc.setFontSize(10);
@@ -170,10 +179,6 @@ export default function PDFButton({
       yPos = 100;
       doc.setFontSize(10);
       doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
-      if (receiptData.customerEmail) {
-        doc.text(`Email: ${receiptData.customerEmail}`, 10, yPos);
-        yPos += 5;
-      }
       if (receiptData.customerAddress) {
         doc.text(`Dirección: ${receiptData.customerAddress}`, 10, yPos);
         yPos += 5;

@@ -52,7 +52,7 @@ export interface IProductBase<T extends string = string> {
   product_category: { id: string; name: string };
   target_audience?: { id: string; name: string };
   amenities?: { id: string; name: string }[];
-  user?: { id: string; username: string; email: string }[];
+  user?: { id: string; username: string; email?: string } | { id: string; username: string; email?: string }[];
   product_type: { name: T };
   created_at: string;
   updated_at: string;

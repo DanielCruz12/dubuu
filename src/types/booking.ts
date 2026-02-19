@@ -46,9 +46,9 @@ export interface IBooking {
   user: {
     id: string;
     username: string;
-    fisrt_name: string;
-    last_name: string;
-    email: string;
+    first_name?: string;
+    last_name?: string;
+    email?: string;
   };
   // Puedes añadir más campos según sea necesario
 }

@@ -24,12 +24,11 @@ export const bookingsColumns: ColumnDef<Booking>[] = [
     },
     cell: ({ row }) => {
       const user = row.getValue("user") as IBooking["user"];
-      return (
-        <div>
-          <div className="font-medium">{user.username}</div>
-          <div className="text-sm text-muted-foreground">{user.email}</div>
-        </div>
-      );
+      const displayName =
+        user?.first_name && user?.last_name
+          ? `${user.first_name} ${user.last_name}`.trim()
+          : user?.username ?? "";
+      return <div className="font-medium">{displayName || "—"}</div>;
     },
   },
   {
@@ -87,14 +86,17 @@ export const bookingsColumns: ColumnDef<Booking>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Fecha
+          Fecha de reserva
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
     cell: ({ row }) => {
       const date = row.getValue("tourDate") as string;
-      return <div> {moment(date).format("dddd, D [de] MMMM - h:mm A")}</div>;
+      if (!date) return <div>—</div>;
+      return (
+        <div>{moment(date).locale("es").format("dddd, D [de] MMMM - h:mm A")}</div>
+      );
     },
     sortingFn: "datetime",
   },
@@ -121,23 +123,4 @@ export const bookingsColumns: ColumnDef<Booking>[] = [
     },
   },
 
-  {
-    accessorKey: "createdAt",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Fecha de Reserva
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      const date = row.getValue("createdAt") as string;
-      return <div>{moment(date).format("dddd, D [de] MMMM - h:mm A")}</div>;
-    },
-    sortingFn: "datetime",
-  },
 ];

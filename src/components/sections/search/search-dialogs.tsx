@@ -195,7 +195,7 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({
                             {symbol}
                             {convert(tourPrice)}{" "}
                             <span className="text-sm text-muted-foreground">
-                              p/p
+                              por persona
                             </span>
                           </div>
                         </div>

@@ -47,7 +47,7 @@ export const detailsSchema = z.object({
   available_dates: z
     .array(z.date())
     .min(1, { message: "Debe seleccionar al menos una fecha disponible" }),
-  difficulty: z.enum(["easy", "medium", "hard"], {
+  difficulty: z.enum(["easy", "medium", "hard", "extreme"], {
     message: "Debe seleccionar un nivel de dificultad",
   }),
   expenses: z.array(z.string()).optional(),
@@ -124,7 +124,7 @@ export interface TourAPIPayload {
   highlight: string;
   included: string;
   expenses: string[];
-  difficulty: "easy" | "medium" | "hard";
+  difficulty: "easy" | "medium" | "hard" | "extreme";
   packing_list: string[];
   max_people: number;
   lat: string;
