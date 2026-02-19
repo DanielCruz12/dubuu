@@ -256,35 +256,42 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
                 <FormLabel>Nivel de dificultad</FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={field.value}
+                  value={field.value}
                 >
                   <FormControl>
                     <SelectTrigger className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white">
-                      <SelectValue placeholder="Seleccione el nivel de dificultad" />
+                      <SelectValue placeholder="Seleccione el nivel de dificultad">
+                        {field.value ? (
+                          <TourDifficultyBadge
+                            difficulty={field.value}
+                            className="scale-90"
+                          />
+                        ) : null}
+                      </SelectValue>
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
                     <SelectItem value="easy">
                       <TourDifficultyBadge
-                        difficulty="fácil"
+                        difficulty="easy"
                         className="scale-90"
                       />
                     </SelectItem>
                     <SelectItem value="medium">
                       <TourDifficultyBadge
-                        difficulty="moderado"
+                        difficulty="medium"
                         className="scale-90"
                       />
                     </SelectItem>
                     <SelectItem value="hard">
                       <TourDifficultyBadge
-                        difficulty="difícil"
+                        difficulty="hard"
                         className="scale-90"
                       />
                     </SelectItem>
                     <SelectItem value="extreme">
                       <TourDifficultyBadge
-                        difficulty="extremo"
+                        difficulty="extreme"
                         className="scale-90"
                       />
                     </SelectItem>

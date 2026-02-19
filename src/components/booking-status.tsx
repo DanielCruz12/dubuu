@@ -55,6 +55,10 @@ export function BookingStatus({
   className,
 }: BookingStatusProps) {
   const { t } = useLanguage();
+  const customerName =
+    user?.firstName && user?.lastName
+      ? `${user.firstName} ${user.lastName}`.trim()
+      : user?.fullName ?? "";
   const receiptData: ReceiptProps = {
     receiptNumber: productId,
     date: new Date().toLocaleDateString("es-ES", {
@@ -65,8 +69,7 @@ export function BookingStatus({
     reservationDate: tourDate
       ? moment(tourDate).locale("es").format("dddd, D [de] MMMM - h:mm A")
       : undefined,
-    customerName: user?.fullName,
-    customerEmail: user.primaryEmailAddress,
+    customerName,
     items: [
       {
         id: tickets.adult.toString(),

@@ -179,10 +179,6 @@ export default function PDFButton({
       yPos = 100;
       doc.setFontSize(10);
       doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
-      if (receiptData.customerEmail) {
-        doc.text(`Email: ${receiptData.customerEmail}`, 10, yPos);
-        yPos += 5;
-      }
       if (receiptData.customerAddress) {
         doc.text(`Dirección: ${receiptData.customerAddress}`, 10, yPos);
         yPos += 5;

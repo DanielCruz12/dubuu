@@ -19,8 +19,10 @@ import {
 import { toast } from "sonner";
 import { generateSlug } from "@/lib/utils";
 import { useCurrency } from "@/hooks/use-currency-converter";
+import { useLanguage } from "@/lib/i18n-context";
 
 export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
+  const { t } = useLanguage();
   const {
     id,
     name,
@@ -262,7 +264,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
                 {symbol}
                 {convert(price)}{" "}
               </span>{" "}
-              p/p
+              <span className="text-sm md:text-base">{t("home.bookingForm.perPerson")}</span>
             </div>
           </div>
         </div>
@@ -406,7 +408,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
           <div className="font-semibold">
             {symbol}
             {convert(price)}{" "}
-            <span className="text-sm text-muted-foreground">p/p</span>
+            <span className="text-sm text-muted-foreground">por persona</span>
           </div>
           <Button
             variant="secondary"

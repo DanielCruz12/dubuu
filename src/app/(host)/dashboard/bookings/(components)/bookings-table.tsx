@@ -120,15 +120,18 @@ export function BookingsDataTable() {
     }
 
     const dataToExport = bookingsData.map((booking) => {
-      // Fecha del tour (día y hora que el usuario seleccionó), no la fecha de creación
       const tourDate = booking.tourDate ?? booking.bookingDate;
       const tourDateFormatted = tourDate
         ? moment(tourDate).format("dddd, D [de] MMMM - h:mm A")
         : "";
+      const u = booking.user;
+      const fullName =
+        u?.first_name && u?.last_name
+          ? `${u.first_name} ${u.last_name}`.trim()
+          : u?.username ?? "";
       return {
         ID: booking.bookingId,
-        Usuario: booking.user.username,
-        Email: booking.user.email,
+        Cliente: fullName,
         Producto: booking.name,
         Estado: booking.status,
         Boletos: booking.tickets,
@@ -165,7 +168,7 @@ export function BookingsDataTable() {
       <Card>
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row gap-4 items-end mb-6">
-            <div className="w-full md:w-1/3">
+            <div className="w-full md:w-1/3 min-w-0">
               <label className="text-sm font-medium mb-1 block">Producto</label>
               <Popover
                 open={openProductSelect}
@@ -176,13 +179,15 @@ export function BookingsDataTable() {
                     variant="outline"
                     role="combobox"
                     aria-expanded={openProductSelect}
-                    className="w-full md:w-[300px] justify-between"
+                    className="w-full justify-between min-w-0 text-left"
                   >
-                    {selectedProductId
-                      ? products.find(
-                          (product) => product.id === selectedProductId
-                        )?.name
-                      : "Seleccionar producto..."}
+                    <span className="truncate">
+                      {selectedProductId
+                        ? products.find(
+                            (product) => product.id === selectedProductId
+                          )?.name
+                        : "Seleccionar producto..."}
+                    </span>
                     <SearchIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>

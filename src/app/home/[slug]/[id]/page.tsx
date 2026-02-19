@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 import { useGetProductQuery } from "@/redux/slices/product/product-slice";
 import { useGetBookingsByUserIdQuery } from "@/redux/slices/booking/booking-slice";
 import ReviewSection from "@/components/sections/reviews/reviews-section";
+import CompanyInfo from "@/components/sections/company-info";
 import BookingForm from "@/components/sections/booking-form";
 import Rating from "@/components/rating";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -114,7 +115,7 @@ export default function ProductBooking() {
             />
           </div>
           <div className="flex justify-between items-start mb-2">
-            <h1 className="text-xl md:text-3xl font-semibold flex-1 pr-4">
+            <h1 className="text-xl md:text-3xl font-semibold flex-1 pr-4 line-clamp-2">
               {product?.name}
             </h1>
             <div className="flex items-center gap-2 flex-shrink-0">
@@ -140,8 +141,9 @@ export default function ProductBooking() {
               className="md:p-2 text-xl md:text-[2rem]"
             >
               {symbol}
-              {convert(product.price)}{" "}
+              {convert(product.price)}
             </Badge>
+            <span className="text-sm md:text-base">{t("home.bookingForm.perPerson")}</span>
           </div>
         </div>
 
@@ -194,6 +196,7 @@ export default function ProductBooking() {
                 reviews={reviews}
                 isLoading={isLoadingReviews}
               />
+              {/* <CompanyInfo product={product} /> */}
             </div>
           </div>
         )}
@@ -332,6 +335,7 @@ export default function ProductBooking() {
             reviews={reviews}
             isLoading={isLoadingReviews}
           />
+          <CompanyInfo product={product} />
         </div>
       )}
     </div>

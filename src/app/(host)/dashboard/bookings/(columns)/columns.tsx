@@ -24,12 +24,11 @@ export const bookingsColumns: ColumnDef<Booking>[] = [
     },
     cell: ({ row }) => {
       const user = row.getValue("user") as IBooking["user"];
-      return (
-        <div>
-          <div className="font-medium">{user.username}</div>
-          <div className="text-sm text-muted-foreground">{user.email}</div>
-        </div>
-      );
+      const displayName =
+        user?.first_name && user?.last_name
+          ? `${user.first_name} ${user.last_name}`.trim()
+          : user?.username ?? "";
+      return <div className="font-medium">{displayName || "—"}</div>;
     },
   },
   {
