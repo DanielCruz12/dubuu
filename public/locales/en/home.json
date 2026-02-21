@@ -1,4 +1,14 @@
 {
+  "tourCard": {
+    "loginToSave": "You must sign in to save products",
+    "removedFromSaved": "Product removed from your saved items",
+    "savedSuccess": "Product saved successfully",
+    "saveError": "An error occurred while updating your saved items",
+    "removeFromFavorites": "Remove from favorites",
+    "addToFavorites": "Add to favorites",
+    "perPerson": "p/p",
+    "viewDetails": "View details"
+  },
   "hero": {"subtitle": "Discover the treasures of the world"},
   "search": {"placeholder": "Search destinations, tours, experiences...", "placeholderNotLogged": "Sign in to search by text...", "placeholderInitial": "Loading..."},
   "popularDestinations": {"title": "Popular destinations", "subtitle": "The best tourist destinations preferred by the community", "tours": "Trips", "activities": "Activities"},
@@ -56,16 +66,24 @@
   },
   "bookingForm": {
     "title": "Book -",
-    "datetimeLabel": "Date and time:",
+    "datetimeLabel": "Date and time",
     "datetimePlaceholder": "Select date and time",
-    "ticketsLabel": "Tickets:",
+    "ticketsLabel": "Tickets",
     "adults": "Adults",
     "perPerson": "por persona",
-    "pricePerPerson": "Price per person:",
-    "subtotal": "Subtotal:",
+    "pricePerPerson": "Price",
+    "subtotal": "Subtotal",
     "total": "Total",
     "bookNow": "Book now",
-    "needHelp": "Need help?",
+    "cancellationPolicies": "Cancellation policies",
+    "cancellationModal": {
+      "title": "Cancellation policies",
+      "intro": "To offer the best experience for all participants, we apply the following conditions:",
+      "fullRefund": "Free cancellation and full refund up to 72 hours before the start of the experience.",
+      "partialRefund": "Between 72 and 48 hours before: 50% refund of the amount paid.",
+      "noRefund": "Less than 24 hours before or no-show on the day of the activity: no refund.",
+      "changes": "Date changes are subject to availability. To request a change or for any questions, contact us in advance."
+    },
     "validation": {
       "datetimeRequired": "Select a date and time",
       "minOneTicket": "Minimum 1 ticket"
@@ -98,7 +116,7 @@
     "bookingNumber": "Booking No.",
     "bookingDate": "Booking date",
     "paymentMethod": "Payment method",
-    "tickets": "Tickets:",
+    "tickets": "Tickets",
     "adult": "adult",
     "adults": "adults",
     "rebook": "Book again",
@@ -184,6 +202,11 @@
       "title": "Payment method",
       "description": "Select your preferred payment method.",
       "creditCard": "Credit/Debit Card",
+      "blink": "Bitcoin / Lightning",
+      "bitcoinLightning": "Bitcoin / Lightning",
+      "bitcoinLightningHint": "LN = Lightning Network: instant, low-cost payments.",
+      "blinkDescription": "Pay instantly with Bitcoin. LN (Lightning Network) enables fast transactions with minimal fees.",
+      "blinkProceedHint": "When you click \"Proceed to payment\", a link or code will be generated to pay with Bitcoin or Lightning.",
       "processing": "Processing...",
       "proceedToPay": "Proceed to payment",
       "cancel": "Cancel",
@@ -199,7 +222,15 @@
       "placeholderName": "John Doe",
       "placeholderExpiry": "MM/YY",
       "placeholderCvc": "123",
-      "testCardWarning": "This card number is not valid for real payments"
+      "testCardWarning": "This card number is not valid for real payments",
+      "blinkModal": {
+        "title": "Pay with Lightning",
+        "scanQr": "Scan the QR code with your Lightning wallet",
+        "orCopy": "or copy the Lightning invoice",
+        "copy": "Copy",
+        "copied": "Copied",
+        "close": "Close"
+      }
     },
     "toast": {
       "invalidCard": "Payment error",
@@ -207,6 +238,7 @@
       "updateError": "Could not update user information",
       "processing": "Processing payment.",
       "redirecting": "Redirecting to bank...",
+      "blinkReady": "Ready. Scan the QR or copy the invoice to pay.",
       "paymentError": "Error processing payment"
     }
   }

@@ -7,6 +7,7 @@ import {
   Clock,
   CreditCard,
   Landmark,
+  Zap,
 } from "lucide-react";
 import type { PaymentMethod } from "@/types/payment-types";
 
@@ -23,7 +24,7 @@ export function isTourProduct(product: IProduct): product is ITourProduct {
 // Genérico: puedes usar cualquier string literal si el tipado está bien
 export function isProductType<T extends string>(
   product: IProduct,
-  type: T
+  type: T,
 ): product is Extract<IProduct, { product_type: { name: T } }> {
   return product.product_type?.name === type;
 }
@@ -43,7 +44,7 @@ export const getCountryById = (id: string): Country | undefined => {
 
 export const getRegionById = (
   countryId: string,
-  regionId: string
+  regionId: string,
 ): Region | undefined => {
   const country = getCountryById(countryId);
   if (!country) return undefined;
@@ -60,6 +61,8 @@ export function getPaymentMethodIcon(method: PaymentMethod | null) {
   switch (method) {
     case "bank":
       return <Landmark className="h-5 w-5" />;
+    case "blink":
+      return <Zap className="h-5 w-5" />;
     case "visa":
     case "mastercard":
       return <CreditCard className="h-5 w-5" />;
@@ -72,10 +75,9 @@ export function getPaymentMethodName(method: PaymentMethod | null) {
   switch (method) {
     case "bank":
       return "Transferencia bancaria";
-    case "visa":
-      return "Tarjeta Visa";
-    case "mastercard":
-      return "Tarjeta Mastercard";
+    case "blink":
+      return "Bitcoin / Lightning";
+
     default:
       return "";
   }
@@ -84,7 +86,7 @@ export function getPaymentMethodName(method: PaymentMethod | null) {
 export function calculateRentalPrice(
   pricePerDay: number,
   from: Date,
-  to: Date
+  to: Date,
 ): number {
   const msInHour = 1000 * 60 * 60;
   const totalHours = Math.ceil((to.getTime() - from.getTime()) / msInHour);

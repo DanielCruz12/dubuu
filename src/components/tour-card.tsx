@@ -22,7 +22,6 @@ import { useCurrency } from "@/hooks/use-currency-converter";
 import { useLanguage } from "@/lib/i18n-context";
 
 export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
-  const { t } = useLanguage();
   const {
     id,
     name,
@@ -45,11 +44,12 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
   const router = useRouter();
   const { user } = useUser();
   const { convert, symbol } = useCurrency();
+  const { t } = useLanguage();
 
   // Get favorites from API
   const { data: favorites } = useGetUserFavoritesQuery(
     { userId: user?.id || "" },
-    { skip: !user?.id }
+    { skip: !user?.id },
   );
 
   // Check if this product is in favorites
@@ -77,7 +77,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
     e.stopPropagation();
     if (images && images.length > 0) {
       setCurrentImageIndex((prev) =>
-        prev === images.length - 1 ? 0 : prev + 1
+        prev === images.length - 1 ? 0 : prev + 1,
       );
     }
   };
@@ -86,7 +86,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
     e.stopPropagation();
     if (images && images.length > 0) {
       setCurrentImageIndex((prev) =>
-        prev === 0 ? images.length - 1 : prev - 1
+        prev === 0 ? images.length - 1 : prev - 1,
       );
     }
   };
@@ -108,13 +108,13 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
 
     if (isLeftSwipe && images && images.length > 0) {
       setCurrentImageIndex((prev) =>
-        prev === images.length - 1 ? 0 : prev + 1
+        prev === images.length - 1 ? 0 : prev + 1,
       );
     }
 
     if (isRightSwipe && images && images.length > 0) {
       setCurrentImageIndex((prev) =>
-        prev === 0 ? images.length - 1 : prev - 1
+        prev === 0 ? images.length - 1 : prev - 1,
       );
     }
 
@@ -125,7 +125,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
 
   const toggleFavorite = async (productId: string) => {
     if (!user?.id) {
-      toast.error("Debes iniciar sesión para guardar productos");
+      toast.error(t("home.tourCard.loginToSave"));
       return;
     }
 
@@ -135,16 +135,16 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
           productId,
           userId: user.id,
         }).unwrap();
-        toast.success("Producto eliminado de tus guardados");
+        toast.success(t("home.tourCard.removedFromSaved"));
       } else {
         await saveProduct({
           productId,
           userId: user.id,
         }).unwrap();
-        toast.success("Producto guardado exitosamente");
+        toast.success(t("home.tourCard.savedSuccess"));
       }
     } catch (error) {
-      toast.error("Ocurrió un error al actualizar tus guardados");
+      toast.error(t("home.tourCard.saveError"));
       console.error("Error toggling favorite:", error);
     }
   };
@@ -154,7 +154,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
       name,
       country,
       product_type.name,
-      product_category?.name
+      product_category?.name,
     );
     router.push(`/home/${slug}/${id}`);
   };
@@ -219,7 +219,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
             }}
             disabled={isSaving || isUnsaving}
             aria-label={
-              isFavorited ? "Quitar de favoritos" : "Añadir a favoritos"
+              isFavorited ? t("home.tourCard.removeFromFavorites") : t("home.tourCard.addToFavorites")
             }
           >
             <Heart
@@ -244,27 +244,27 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
           )}
         </div>
 
-        <div className="p-2">
+        <div className="p-2 w-full min-w-0">
           {/* Título y ubicación */}
-          <div className="flex flex-col gap-0.5">
-            <div className="flex items-start justify-between">
-              <div className="text-xs  line-clamp-1">{name}</div>
-              <div className="flex items-center gap-1 text-xs">
-                <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />
-                <span>{formattedRating}</span>
-              </div>
+          <div className="flex flex-col gap-0.5 w-full min-w-0">
+            <div className="text-xs font-semibold line-clamp-1 w-full">
+              {name}
             </div>
-            <span className="text-xs line-clamp-1 text-muted-foreground">
-              {country}, {address}
-            </span>
+            <p className="text-xs line-clamp-1 text-muted-foreground w-full">
+              {description}
+            </p>
 
-            {/* Precio */}
-            <div className="text-xs">
+            {/* Precio y rating en la misma fila */}
+            <div className="flex items-center justify-between gap-2 text-sm">
               <span className="font-semibold">
                 {symbol}
                 {convert(price)}{" "}
-              </span>{" "}
-              <span className="text-sm md:text-base">{t("home.bookingForm.perPerson")}</span>
+                <span className="text-muted-foreground font-normal">{t("home.tourCard.perPerson")}</span>
+              </span>
+              <div className="flex items-center gap-1">
+                <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />
+                <span>{formattedRating}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -369,19 +369,19 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
 
       <div className="flex flex-col">
         <CardContent className="pt-1">
-          <div className="flex items-center justify-between">
-            {/* Título */}
-            <h3 className="text-[0.875rem]  pt-2 md:text-[1rem] font-bold text-wrap line-clamp-1 ">
+          <div className="flex items-center justify-between gap-2 pt-2">
+            <h3 className="text-[0.875rem] md:text-[1rem] font-bold text-wrap line-clamp-1 min-w-0 flex-1">
               {name}
             </h3>
-            {/* Rating */}
             {total_reviews > 0 && (
               <Rating
                 averageRating={average_rating}
                 reviewsCount={total_reviews}
-                maxStars={total_reviews > 0 ? 5 : 1}
+                maxStars={1}
+                hideReviewCount
                 activeStarClassName="text-yellow-400 fill-yellow-400"
                 inactiveStarClassName="text-gray-300"
+                isMobileOptimized
               />
             )}
           </div>
@@ -392,7 +392,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
           </p>
 
           {/* Ubicación y audiencia */}
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 ">
+          <div className="flex flex-wrap items-center gap-x-2 ">
             {country && (
               <div className="flex items-center text-sm text-muted-foreground">
                 <MapPin className="w-3.5 h-3.5 mr-1 flex-shrink-0" />
@@ -408,14 +408,16 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
           <div className="font-semibold">
             {symbol}
             {convert(price)}{" "}
-            <span className="text-sm text-muted-foreground">por persona</span>
+            <span className="text-sm text-muted-foreground font-normal">
+              {t("home.tourCard.perPerson")}
+            </span>
           </div>
           <Button
             variant="secondary"
             className="rounded-full"
             onClick={() => navigateToTour(name, id, country)}
           >
-            Ver detalles
+            {t("home.tourCard.viewDetails")}
           </Button>
         </CardFooter>
       </div>

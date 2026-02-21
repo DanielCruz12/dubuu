@@ -195,6 +195,10 @@ export function ProductsDataTable() {
           "Punto de Partida",
           "Máx. Personas",
           "Reservas",
+          "Plazas Disp.",
+          "Disponibilidad",
+          "Estado",
+          "Acciones",
         ]}
       />
     );
