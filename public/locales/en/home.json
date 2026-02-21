@@ -229,7 +229,8 @@
         "orCopy": "or copy the Lightning invoice",
         "copy": "Copy",
         "copied": "Copied",
-        "close": "Close"
+        "close": "Close",
+        "protocolNote": "Protocol: lightning:"
       }
     },
     "toast": {
