@@ -229,7 +229,8 @@
         "orCopy": "o copia la factura Lightning",
         "copy": "Copiar",
         "copied": "Copiado",
-        "close": "Cerrar"
+        "close": "Cerrar",
+        "protocolNote": "Protocolo: lightning:"
       }
     },
     "toast": {

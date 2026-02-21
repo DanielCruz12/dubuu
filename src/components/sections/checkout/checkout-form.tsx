@@ -173,10 +173,10 @@ export default function CheckoutForm({
       userUpdateData.country = values.country;
     }
     try {
-      await updateUser({
+       await updateUser({
         id: bookingData.user_id,
         data: userUpdateData,
-      }).unwrap();
+      }).unwrap(); 
     } catch (err: unknown) {
       console.error("Error al actualizar usuario", err);
       toast.error(
@@ -251,9 +251,12 @@ export default function CheckoutForm({
     );
   }
 
+  const lightningUri = blinkResponse
+    ? `lightning:${blinkResponse.paymentRequest}`
+    : "";
   const copyPaymentRequest = () => {
-    if (!blinkResponse?.paymentRequest) return;
-    navigator.clipboard.writeText(blinkResponse.paymentRequest);
+    if (!lightningUri) return;
+    navigator.clipboard.writeText(lightningUri);
     setCopiedBlink(true);
     toast.success(t("home.checkout.payment.blinkModal.copied"));
     setTimeout(() => setCopiedBlink(false), 2000);
@@ -342,7 +345,7 @@ export default function CheckoutForm({
               </p>
               <div className="flex flex-col items-center gap-2 min-w-0">
                 <QRCodeSVG
-                  value={blinkResponse.paymentRequest}
+                  value={lightningUri}
                   size={220}
                   level="M"
                   marginSize={2}
@@ -367,7 +370,7 @@ export default function CheckoutForm({
                       maxHeight: "2.5rem",
                     }}
                   >
-                    {blinkResponse.paymentRequest}
+                    {lightningUri}
                   </span>
                 </button>
               </div>
