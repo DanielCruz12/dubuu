@@ -7,8 +7,8 @@ import { useParams } from "next/navigation";
 import { useGetProductQuery } from "@/redux/slices/product/product-slice";
 import { useGetBookingsByUserIdQuery } from "@/redux/slices/booking/booking-slice";
 import ReviewSection from "@/components/sections/reviews/reviews-section";
-import CompanyInfo from "@/components/sections/company-info";
-import BookingForm from "@/components/sections/booking-form";
+/* import CompanyInfo from "@/components/sections/company-info";
+ */import BookingForm from "@/components/sections/booking-form";
 import Rating from "@/components/rating";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
@@ -92,11 +92,13 @@ export default function ProductBooking() {
 
   if (isLoading || isLoadingBooking) return <ProductsSkeleton />;
   if (isError || !product)
-    return <div className="h-screen">{t("home.landing.productDetail.notFound")}</div>;
+    return (
+      <div className="h-screen">{t("home.landing.productDetail.notFound")}</div>
+    );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const existingBooking: any = userBookings?.find(
-    (b) => b.product_id === product.id
+    (b) => b.product_id === product.id,
   );
   const isTour = isProductType(product, "tours");
 
@@ -143,7 +145,9 @@ export default function ProductBooking() {
               {symbol}
               {convert(product.price)}
             </Badge>
-            <span className="text-sm md:text-base">{t("home.bookingForm.perPerson")}</span>
+            <span className="text-sm font-normal">
+              Por persona
+            </span>
           </div>
         </div>
 
@@ -196,7 +200,7 @@ export default function ProductBooking() {
                 reviews={reviews}
                 isLoading={isLoadingReviews}
               />
-             <CompanyInfo product={product} />
+             {/*  <CompanyInfo product={product} /> */}
             </div>
           </div>
         )}
@@ -213,7 +217,7 @@ export default function ProductBooking() {
                 "rounded-lg mb-10",
                 existingBooking?.status === "completed"
                   ? "p-0 "
-                  : "p-3 md:p-5 sm:p-6 border"
+                  : "p-3 md:p-5 sm:p-6 border",
               )}
             >
               {user ? (
@@ -235,7 +239,9 @@ export default function ProductBooking() {
                         productId={product.id}
                         paymentMethod={existingBooking.paymentMethod}
                         total={Number(existingBooking.total)}
-                        onViewDetails={() => alert(t("home.landing.productDetail.viewDetails"))}
+                        onViewDetails={() =>
+                          alert(t("home.landing.productDetail.viewDetails"))
+                        }
                         onRebook={() => {
                           setShowPaymentStep(false);
                         }}
@@ -277,7 +283,11 @@ export default function ProductBooking() {
                               productId={product.id}
                               paymentMethod={existingBooking.paymentMethod}
                               total={Number(existingBooking.total)}
-                              onViewDetails={() => alert(t("home.landing.productDetail.viewDetails"))}
+                              onViewDetails={() =>
+                                alert(
+                                  t("home.landing.productDetail.viewDetails"),
+                                )
+                              }
                               onRebook={() => {
                                 setShowPaymentStep(false);
                               }}
@@ -335,7 +345,7 @@ export default function ProductBooking() {
             reviews={reviews}
             isLoading={isLoadingReviews}
           />
-          <CompanyInfo product={product} />
+          {/* <CompanyInfo product={product} /> */}
         </div>
       )}
     </div>

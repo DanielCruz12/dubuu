@@ -235,8 +235,15 @@ export function PaymentForm() {
   }
 
   // Mostrar datos existentes
-  if (showExistingData) {
-    return <ExistingPaymentInfo data={existingData} onUpdate={startUpdate} />;
+  if (showExistingData && userId && paymentId) {
+    return (
+      <ExistingPaymentInfo
+        data={existingData}
+        onUpdate={startUpdate}
+        userId={userId}
+        accountId={paymentId}
+      />
+    );
   }
 
   return (

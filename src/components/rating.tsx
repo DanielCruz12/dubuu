@@ -6,6 +6,7 @@ import { useLanguage } from "@/lib/i18n-context";
 
 export interface RatingProps {
   averageRating: number | string;
+  hideReviewCount?: boolean;
   reviewsCount: number;
   maxStars?: number;
   inactiveStarClassName?: string;
@@ -22,6 +23,7 @@ const formatRating = (rating: number): string =>
 export const Rating: React.FC<RatingProps> = ({
   averageRating,
   reviewsCount,
+  hideReviewCount = false,
   maxStars = 5,
   inactiveStarClassName = "text-gray-300",
   activeStarClassName = "text-yellow-400 fill-yellow-400",
@@ -66,11 +68,13 @@ export const Rating: React.FC<RatingProps> = ({
       </span>
 
       {/* Número de reseñas */}
-      <span
+      {!hideReviewCount && (
+        <span
         className={`text-muted-foreground ${isMobileOptimized ? "text-xs" : "text-sm"} truncate`}
       >
-        {reviewText}
-      </span>
+          {reviewText}
+        </span>
+      )}
     </div>
   );
 };

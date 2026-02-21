@@ -16,27 +16,17 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { CheckoutFormValues } from "@/schemas/checkout-schema";
 import CreditCardForm from "../payment-methods/credit-card-form";
-import Link from "next/link";
 import Image from "next/image";
-import { Zap } from "lucide-react";
 
-export default function PaymentMethodForm({
-  isLoading,
-  setShowPaymentStep,
-}: {
-  isLoading: boolean;
-  setShowPaymentStep: (show: boolean) => void;
-}) {
+export default function PaymentMethodForm() {
   const { t } = useLanguage();
   const { control, watch, setValue } = useFormContext<CheckoutFormValues>();
-  const [paymentTab, setPaymentTab] = useState("credit");
+  const [paymentTab, setPaymentTab] = useState("blink");
 
   // Watch for payment method changes
   const paymentMethod = watch("paymentMethod");
@@ -50,7 +40,9 @@ export default function PaymentMethodForm({
   return (
     <Card className="overflow-hidden border pb-4">
       <CardHeader className=" pb-8">
-        <CardTitle className="text-xl">{t("home.checkout.payment.title")}</CardTitle>
+        <CardTitle className="text-xl">
+          {t("home.checkout.payment.title")}
+        </CardTitle>
         <CardDescription>
           {t("home.checkout.payment.description")}
         </CardDescription>
@@ -75,34 +67,9 @@ export default function PaymentMethodForm({
                       setValue("cardCvc", "");
                     }
                   }}
-                  defaultValue={field.value}
+                  value={field.value}
                   className="grid grid-cols-2 gap-4"
                 >
-                  <div className="col-span-1">
-                    <FormItem className="flex flex-col space-y-1">
-                      <FormControl>
-                        <RadioGroupItem
-                          value="credit"
-                          className="peer sr-only"
-                          id="credit"
-                        />
-                      </FormControl>
-                      <FormLabel
-                        htmlFor="credit"
-                        className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
-                      >
-                        <Image
-                          src={"/tarjetas.svg"}
-                          className="mb-3"
-                          width={60}
-                          height={60}
-                          alt="tarjetas"
-                        />
-                        {t("home.checkout.payment.creditCard")}
-                      </FormLabel>
-                    </FormItem>
-                  </div>
-
                   <div className="col-span-1">
                     <FormItem className="flex flex-col space-y-1">
                       <FormControl>
@@ -116,39 +83,50 @@ export default function PaymentMethodForm({
                         htmlFor="blink"
                         className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
                       >
-                        <Zap className="h-12 w-12 mb-3 text-amber-400" />
-                        <span className="text-center font-medium">
-                          {t("home.checkout.payment.blink")}
-                        </span>
-                        <span className="text-xs text-muted-foreground mt-1 text-center">
-                          Bitcoin / Lightning
+                        <div className=" flex  items-center justify-center shrink-0">
+                          <Image
+                            src="/btc-logo.svg"
+                            alt="Bitcoin"
+                            className="object-contain max-w-full"
+                            width={112}
+                            height={112}
+                          />
+                        </div>
+                        <span className="text-center pt-2 font-medium">
+                          {t("home.checkout.payment.bitcoinLightning")}
                         </span>
                       </FormLabel>
                     </FormItem>
                   </div>
 
-                  {/*    <div className="col-span-1">
+                  <div className="col-span-1">
                     <FormItem className="flex flex-col space-y-1">
                       <FormControl>
                         <RadioGroupItem
-                          value="googlepay"
+                          value="credit"
                           className="peer sr-only"
-                          id="googlepay"
+                          id="credit"
                         />
                       </FormControl>
                       <FormLabel
-                        htmlFor="googlepay"
+                        htmlFor="credit"
                         className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
                       >
-                        <Image
-                          width={100}
-                          height={100}
-                          src={"/Google-Pay-logo.png"}
-                          alt="google-pay"
-                        />
+                        <div className=" flex  items-center justify-center shrink-0">
+                          <Image
+                            src={"/tarjetas.svg"}
+                            className="object-contain max-w-full"
+                            width={112}
+                            height={112}
+                            alt="tarjetas"
+                          />
+                        </div>
+                        <span className="text-center pt-2 font-medium">
+                          {t("home.checkout.payment.creditCard")}
+                        </span>
                       </FormLabel>
                     </FormItem>
-                  </div> */}
+                  </div>
                 </RadioGroup>
               </FormControl>
               <FormMessage />
@@ -163,47 +141,14 @@ export default function PaymentMethodForm({
           <TabsContent value="blink">
             <div className="rounded-lg border border-muted bg-muted/30 p-4 text-sm text-muted-foreground">
               <p className="font-medium text-foreground mb-1">
-                {t("home.checkout.payment.blink")}
+                {t("home.checkout.payment.bitcoinLightning")}
               </p>
               <p>{t("home.checkout.payment.blinkDescription")}</p>
-              <p className="mt-2">{t("home.checkout.payment.blinkProceedHint")}</p>
             </div>
           </TabsContent>
           <TabsContent value="googlepay">google form</TabsContent>
         </Tabs>
       </CardContent>
-      <CardFooter className="flex flex-col gap-3 pt-6 sm:pt-8">
-        <Button
-          size="lg"
-          disabled={isLoading}
-          type="submit"
-          className="w-full text-base py-2"
-        >
-          {isLoading ? t("home.checkout.payment.processing") : t("home.checkout.payment.proceedToPay")}
-        </Button>
-
-        <Button
-          onClick={() => setShowPaymentStep(false)}
-          type="button"
-          variant="ghost"
-          className="w-full text-sm text-muted-foreground hover:text-primary transition hover:underline"
-        >
-          {t("home.checkout.payment.cancel")}
-        </Button>
-
-        <p className="text-xs sm:text-sm text-center text-muted-foreground mt-1 px-2 sm:px-6">
-          {t("home.checkout.payment.termsAgreeBefore")}
-          <strong>{t("home.checkout.payment.termsAgreeButton")}</strong>
-          {t("home.checkout.payment.termsAgreeAfter")}
-          <Link
-            href="/terms"
-            className="underline underline-offset-4 hover:text-primary"
-          >
-            {t("home.checkout.payment.termsLink")}
-          </Link>
-          .
-        </p>
-      </CardFooter>
     </Card>
   );
 }

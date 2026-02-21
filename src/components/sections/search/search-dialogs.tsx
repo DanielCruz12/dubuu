@@ -132,7 +132,6 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({
                     const tourName = tour?.name || "Sin nombre";
                     const tourPrice = tour?.price || 0;
                     const tourRating = Number(tour?.average_rating) || 0;
-                    const tourReviews = tour?.total_reviews || 0;
                     const tourImages = tour?.images || [];
                     const tourCategory = tour?.product_category;
 
@@ -144,7 +143,7 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({
                             tourName,
                             tour?.country,
                             tour?.product_type?.name,
-                            tour?.product_category?.name
+                            tour?.product_category?.name,
                           );
                           window.open(`/home/${slug}/${tourId}`, "_blank");
                         }}
@@ -185,18 +184,11 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({
                             <span className="text-xs">
                               {tourRating.toFixed(1)}
                             </span>
-                            <span className="text-xs text-muted-foreground">
-                              ({tourReviews}{" "}
-                              {tourReviews === 1 ? "reseña" : "reseñas"})
-                            </span>
                           </div>
 
                           <div className="mt-1 font-medium text-sm">
                             {symbol}
-                            {convert(tourPrice)}{" "}
-                            <span className="text-sm text-muted-foreground">
-                              por persona
-                            </span>
+                            {convert(tourPrice)}
                           </div>
                         </div>
                       </div>
@@ -279,7 +271,9 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
                 onValueChange={setTempProductType}
               >
                 <SelectTrigger className="h-8 text-xs">
-                  <SelectValue placeholder={t("filters.dialog.productTypePlaceholder")} />
+                  <SelectValue
+                    placeholder={t("filters.dialog.productTypePlaceholder")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all" className="text-xs">
@@ -301,12 +295,16 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
               </label>
               <Select value={tempRating} onValueChange={setTempRating}>
                 <SelectTrigger className="h-8 text-xs">
-                  <SelectValue placeholder={t("filters.dialog.ratingPlaceholder")} />
+                  <SelectValue
+                    placeholder={t("filters.dialog.ratingPlaceholder")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {ratingOptions.map(({ value }) => (
                     <SelectItem key={value} value={value} className="text-xs">
-                      {t(`filters.rating.${RATING_VALUE_TO_KEY[value] ?? "none"}`)}
+                      {t(
+                        `filters.rating.${RATING_VALUE_TO_KEY[value] ?? "none"}`,
+                      )}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -349,7 +347,9 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
             </div>
 
             <div>
-              <label className="text-xs font-medium mb-2 block">{t("filters.dialog.durationLabel")}</label>
+              <label className="text-xs font-medium mb-2 block">
+                {t("filters.dialog.durationLabel")}
+              </label>
               <div className="space-y-2">
                 {["1-dia", "2-3-dias", "mas-de-3-dias"].map((duration) => (
                   <div key={duration} className="flex items-center space-x-2">

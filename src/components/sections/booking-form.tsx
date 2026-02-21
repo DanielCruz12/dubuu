@@ -15,7 +15,13 @@ import {
 } from "@/components/ui/select";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
-import { Users } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { FileText } from "lucide-react";
 import type { IProduct } from "@/types/product";
 import { Separator } from "../ui/separator";
 import { useUser } from "@clerk/nextjs";
@@ -69,6 +75,8 @@ export default function BookingForm({
     peopleBooked: number;
     availableSpots: number;
   } | null>(null);
+
+  const [cancellationModalOpen, setCancellationModalOpen] = useState(false);
 
   const isTour = isProductType(product, "tours");
 
@@ -277,7 +285,7 @@ export default function BookingForm({
             return (
               <>
                 <div className="flex justify-between text-sm">
-                  <span>{t("home.bookingForm.pricePerPerson")}</span>
+                  <span>{t("home.bookingForm.pricePerPerson")} {t("home.bookingForm.perPerson")}</span>
                   <span>
                     {symbol}
                     {price}
@@ -285,7 +293,7 @@ export default function BookingForm({
                 </div>
 
                 <div className="flex justify-between text-sm">
-                  <span>Subtotal:</span>
+                  <span>{t("home.bookingForm.subtotal")}</span>
                   <span>
                     {symbol}
                     {breakdown.userPays.toFixed(2)}
@@ -320,12 +328,30 @@ export default function BookingForm({
         <div className="text-center">
           <button
             type="button"
-            className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-2 mx-auto"
+            onClick={() => setCancellationModalOpen(true)}
+            className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-2 mx-auto transition-colors"
           >
-            <Users className="w-4 h-4" />
-            {t("home.bookingForm.needHelp")}
+            <FileText className="w-4 h-4" />
+            {t("home.bookingForm.cancellationPolicies")}
           </button>
         </div>
+
+        <Dialog open={cancellationModalOpen} onOpenChange={setCancellationModalOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>{t("home.bookingForm.cancellationModal.title")}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3 text-sm text-muted-foreground">
+              <p>{t("home.bookingForm.cancellationModal.intro")}</p>
+              <ul className="list-disc list-inside space-y-2 pl-1">
+                <li>{t("home.bookingForm.cancellationModal.fullRefund")}</li>
+                <li>{t("home.bookingForm.cancellationModal.partialRefund")}</li>
+                <li>{t("home.bookingForm.cancellationModal.noRefund")}</li>
+              </ul>
+              <p>{t("home.bookingForm.cancellationModal.changes")}</p>
+            </div>
+          </DialogContent>
+        </Dialog>
       </form>
     </div>
   );

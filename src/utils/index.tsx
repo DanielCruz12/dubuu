@@ -24,7 +24,7 @@ export function isTourProduct(product: IProduct): product is ITourProduct {
 // Genérico: puedes usar cualquier string literal si el tipado está bien
 export function isProductType<T extends string>(
   product: IProduct,
-  type: T
+  type: T,
 ): product is Extract<IProduct, { product_type: { name: T } }> {
   return product.product_type?.name === type;
 }
@@ -44,7 +44,7 @@ export const getCountryById = (id: string): Country | undefined => {
 
 export const getRegionById = (
   countryId: string,
-  regionId: string
+  regionId: string,
 ): Region | undefined => {
   const country = getCountryById(countryId);
   if (!country) return undefined;
@@ -76,11 +76,8 @@ export function getPaymentMethodName(method: PaymentMethod | null) {
     case "bank":
       return "Transferencia bancaria";
     case "blink":
-      return "Blink (Bitcoin / Lightning)";
-    case "visa":
-      return "Tarjeta Visa";
-    case "mastercard":
-      return "Tarjeta Mastercard";
+      return "Bitcoin / Lightning";
+
     default:
       return "";
   }
@@ -89,7 +86,7 @@ export function getPaymentMethodName(method: PaymentMethod | null) {
 export function calculateRentalPrice(
   pricePerDay: number,
   from: Date,
-  to: Date
+  to: Date,
 ): number {
   const msInHour = 1000 * 60 * 60;
   const totalHours = Math.ceil((to.getTime() - from.getTime()) / msInHour);

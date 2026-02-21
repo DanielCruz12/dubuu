@@ -70,7 +70,7 @@ export function PaymentMethodSelector({
             <RadioGroupItem value="blink" id="blink" />
             <Label htmlFor="blink" className="flex items-center cursor-pointer">
               <Zap className="h-4 w-4 mr-2" />
-              <span>Blink (Bitcoin / Lightning)</span>
+              <span>Bitcoin / Lightning (LN)</span>
             </Label>
           </div>
           {selectedMethod === "blink" && (
@@ -80,8 +80,8 @@ export function PaymentMethodSelector({
               className="mt-2 pl-6 text-xs text-gray-500 dark:text-gray-400"
             >
               <ul className="list-disc pl-4 space-y-1">
-                <li>Recibe en Bitcoin o USD (Stablesats) al instante</li>
-                <li>Sin comisión entre usuarios Blink; tarifas muy bajas</li>
+                <li>Recibe en Bitcoin al instante</li>
+                <li>LN (Lightning Network): transacciones rápidas y tarifas muy bajas</li>
               </ul>
             </motion.div>
           )}

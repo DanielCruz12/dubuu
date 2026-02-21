@@ -1,21 +1,55 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Building, Edit, User, Mail, ShieldCheck, Zap } from "lucide-react";
+import { Building, Edit, User, Mail, ShieldCheck, Zap, Trash2 } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import type { ExistingPaymentData } from "@/types/payment-types";
 import { getPaymentMethodIcon, getPaymentMethodName } from "@/utils";
+import { useDeletePaymentAccountMutation } from "@/redux/slices/payment/payment-account";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface ExistingPaymentInfoProps {
   data: ExistingPaymentData;
   onUpdate: () => void;
+  userId: string;
+  accountId: string;
 }
 
 export function ExistingPaymentInfo({
   data,
   onUpdate,
+  userId,
+  accountId,
 }: ExistingPaymentInfoProps) {
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [deletePaymentAccount, { isLoading: isDeleting }] =
+    useDeletePaymentAccountMutation();
+
+  const handleDelete = async () => {
+    try {
+      await deletePaymentAccount({ userId, accountId }).unwrap();
+      toast.success("Método de pago eliminado correctamente");
+      setConfirmOpen(false);
+    } catch (err: unknown) {
+      const message =
+        (err as { data?: { message?: string } })?.data?.message ||
+        "No se pudo eliminar el método de pago";
+      toast.error(message);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -89,7 +123,7 @@ export function ExistingPaymentInfo({
             </div>
           )}
         </CardContent>
-        <CardFooter className="flex justify-end space-y-3">
+        <CardFooter className="flex flex-wrap justify-end gap-2">
           <Button
             variant="outline"
             className="border-gray-200 dark:border-gray-800"
@@ -98,7 +132,41 @@ export function ExistingPaymentInfo({
             <Edit className="h-4 w-4 mr-2" />
             Actualizar información
           </Button>
+          <Button
+            variant="outline"
+            className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950 dark:hover:text-red-300"
+            onClick={() => setConfirmOpen(true)}
+            disabled={isDeleting}
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Eliminar método de pago
+          </Button>
         </CardFooter>
+
+        <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>¿Eliminar método de pago?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Esta acción no se puede deshacer. Dejarás de recibir pagos en esta
+                cuenta hasta que agregues un nuevo método de pago.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleDelete();
+                }}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Eliminando..." : "Eliminar"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         <div className="flex justify-center pb-4">
           <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">

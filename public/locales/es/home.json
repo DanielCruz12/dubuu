@@ -1,4 +1,14 @@
 {
+  "tourCard": {
+    "loginToSave": "Debes iniciar sesión para guardar productos",
+    "removedFromSaved": "Producto eliminado de tus guardados",
+    "savedSuccess": "Producto guardado exitosamente",
+    "saveError": "Ocurrió un error al actualizar tus guardados",
+    "removeFromFavorites": "Quitar de favoritos",
+    "addToFavorites": "Añadir a favoritos",
+    "perPerson": "p/p",
+    "viewDetails": "Ver detalles"
+  },
   "hero": {"subtitle": "Descubra los tesoros del mundo"},
   "search": {"placeholder": "Buscar destinos, tours, experiencias...", "placeholderNotLogged": "Inicia sesión para buscar por texto...", "placeholderInitial": "Cargando..."},
   "popularDestinations": {"title": "Destinos populares", "subtitle": "Los mejores destinos turisticos preferidos por la comunidad", "tours": "Viajes", "activities": "Actividades"},
@@ -56,16 +66,24 @@
   },
   "bookingForm": {
     "title": "Reservar -",
-    "datetimeLabel": "Fecha y hora:",
+    "datetimeLabel": "Fecha y hora",
     "datetimePlaceholder": "Selecciona una fecha y hora",
-    "ticketsLabel": "Entradas:",
+    "ticketsLabel": "Entradas",
     "adults": "Adultos",
     "perPerson": "por persona",
-    "pricePerPerson": "Precio por persona:",
-    "subtotal": "Subtotal:",
+    "pricePerPerson": "Precio",
+    "subtotal": "Subtotal",
     "total": "Total",
     "bookNow": "Reservar ahora",
-    "needHelp": "¿Necesitas ayuda?",
+    "cancellationPolicies": "Políticas de cancelación",
+    "cancellationModal": {
+      "title": "Políticas de cancelación",
+      "intro": "Con el fin de ofrecer la mejor experiencia a todos los participantes, aplicamos las siguientes condiciones:",
+      "fullRefund": "Cancelación gratuita y reembolso total hasta 72 horas antes del inicio de la experiencia.",
+      "partialRefund": "Entre 72 y 48 horas antes: reembolso del 50% del monto pagado.",
+      "noRefund": "Menos de 24 horas antes o no presentarse el día de la actividad: no hay reembolso.",
+      "changes": "Los cambios de fecha están sujetos a disponibilidad. Para solicitar un cambio o resolver dudas, contáctanos con antelación."
+    },
     "validation": {
       "datetimeRequired": "Selecciona una fecha y hora",
       "minOneTicket": "Mínimo 1 entrada"
@@ -184,9 +202,11 @@
       "title": "Método de Pago",
       "description": "Selecciona tu método de pago preferido.",
       "creditCard": "Tarjeta de Crédito/Débito",
-      "blink": "Blink (Bitcoin / Lightning)",
-      "blinkDescription": "Paga al instante con Bitcoin o USD. Sin comisiones entre usuarios Blink.",
-      "blinkProceedHint": "Al hacer clic en \"Proceder al pago\" se generará un enlace o código para pagar con Blink (Bitcoin o Lightning).",
+      "blink": "Bitcoin / Lightning",
+      "bitcoinLightning": "Bitcoin / Lightning",
+      "bitcoinLightningHint": "LN = Lightning Network: pagos instantáneos y de bajo costo.",
+      "blinkDescription": "Paga al instante con Bitcoin. LN (Lightning Network) permite transacciones rápidas y con comisiones mínimas.",
+      "blinkProceedHint": "Al hacer clic en \"Proceder al pago\" se generará un enlace o código para pagar con Bitcoin o Lightning.",
       "processing": "Procesando...",
       "proceedToPay": "Proceder al pago",
       "cancel": "Cancelar",
@@ -202,7 +222,15 @@
       "placeholderName": "Juan Pérez",
       "placeholderExpiry": "MM/YY",
       "placeholderCvc": "123",
-      "testCardWarning": "Este número de tarjeta no es válido para pagos reales"
+      "testCardWarning": "Este número de tarjeta no es válido para pagos reales",
+      "blinkModal": {
+        "title": "Paga con Lightning",
+        "scanQr": "Escanea el código QR con tu wallet Lightning",
+        "orCopy": "o copia la factura Lightning",
+        "copy": "Copiar",
+        "copied": "Copiado",
+        "close": "Cerrar"
+      }
     },
     "toast": {
       "invalidCard": "Error de pago",
@@ -210,6 +238,7 @@
       "updateError": "No se pudo actualizar la información del usuario",
       "processing": "Procesando pago.",
       "redirecting": "Redirigiendo al banco...",
+      "blinkReady": "Listo. Escanea el QR o copia la factura para pagar.",
       "paymentError": "Error al procesar el pago"
     }
   }

@@ -160,8 +160,7 @@ export function BookingStatus({
               <span>{t("home.bookingForm.total")}</span>
               <span>
                 {symbol}
-                {convert(total)}{" "}
-                <span className="text-sm text-muted-foreground">{t("home.bookingForm.perPerson")}</span>
+                {convert(total)}
               </span>
             </div>
           </div>

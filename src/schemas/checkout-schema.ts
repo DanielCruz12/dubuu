@@ -16,24 +16,21 @@ export const contactInfoSchema = z.object({
     .min(2, { message: "El apellido debe tener al menos 2 caracteres." }),
   email: z
     .string()
-    .email({ message: "Por favor ingresa un correo electrónico válido." }),
+    .optional()
+    .refine((val) => !val || z.string().email().safeParse(val).success, {
+      message: "Por favor ingresa un correo electrónico válido.",
+    }),
   phone: z
     .string()
     .min(8, { message: "Por favor ingresa un número de teléfono válido." }),
 });
 
 export const shippingInfoSchema = z.object({
-  address: z
-    .string()
-    .min(5, { message: "La dirección debe tener al menos 5 caracteres." })
-    .max(50, { message: "La dirección no puede tener más de 50 caracteres." }),
-  city: z
-    .string()
-    .min(2, { message: "La ciudad debe tener al menos 2 caracteres." })
-    .optional(),
-  state: z.string().min(2, { message: "Por favor selecciona una región." }),
+  address: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
   zipCode: z.string().optional(),
-  country: z.string().min(2, { message: "Por favor selecciona un país." }),
+  country: z.string().optional(),
 });
 
 export const creditCardSchema = z.object({
@@ -68,26 +65,136 @@ export const paymentMethodSchema = z.object({
   paymentMethod: z.enum(["credit", "blink", "paypal", "wompi", "googlepay"]),
 });
 
-// Esquema completo que combina todos los esquemas anteriores
-export const checkoutFormSchema = z
-  .object({
-    ...contactInfoSchema.shape,
-    ...shippingInfoSchema.shape,
-    ...paymentMethodSchema.shape,
-    // Campos de tarjeta de crédito opcionales dependiendo del método de pago
-    ...creditCardSchema.partial().shape,
-  })
-  .refine((data) => {
-    // Solo tarjeta de crédito requiere los campos de tarjeta
-    if (data.paymentMethod === "credit") {
-      return (
-        !!data.cardNumber &&
-        !!data.cardName &&
-        !!data.cardExpiry &&
-        !!data.cardCvc
-      );
+// Esquema base: todos los campos opcionales/permisivos para que superRefine decida
+const checkoutFormSchemaBase = z.object({
+  firstName: z.string(),
+  lastName: z.string(),
+  email: z.string().optional(),
+  phone: z.string(),
+  address: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  zipCode: z.string().optional(),
+  country: z.string().optional(),
+  paymentMethod: z.enum(["credit", "blink", "paypal", "wompi", "googlepay"]),
+  cardNumber: z.string().optional(),
+  cardName: z.string().optional(),
+  cardExpiry: z.string().optional(),
+  cardCvc: z.string().optional(),
+});
+
+// Validación condicional: solo exigir lo que corresponde al método de pago
+export const checkoutFormSchema = checkoutFormSchemaBase.superRefine(
+  (data, ctx) => {
+    const isBlink = data.paymentMethod === "blink";
+    const isCredit = data.paymentMethod === "credit";
+
+    // Contacto: siempre nombre, apellido y teléfono (para todos los métodos)
+    if ((data.firstName?.trim() ?? "").length < 2) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "El nombre debe tener al menos 2 caracteres.",
+        path: ["firstName"],
+      });
     }
-    return true;
-  });
+    if ((data.lastName?.trim() ?? "").length < 2) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "El apellido debe tener al menos 2 caracteres.",
+        path: ["lastName"],
+      });
+    }
+    if ((data.phone?.replace(/\D/g, "") ?? "").length < 8) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Por favor ingresa un número de teléfono válido.",
+        path: ["phone"],
+      });
+    }
+
+    // Con Bitcoin no se valida nada más
+    if (isBlink) return;
+
+    // Tarjeta: exige email y dirección
+    if (isCredit) {
+      const email = (data.email ?? "").trim();
+      if (!email || !z.string().email().safeParse(email).success) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Por favor ingresa un correo electrónico válido.",
+          path: ["email"],
+        });
+      }
+      if (
+        !data.cardNumber?.replace(/\D/g, "") ||
+        data.cardNumber.replace(/\D/g, "").length !== 16
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "El número de tarjeta debe tener exactamente 16 dígitos",
+          path: ["cardNumber"],
+        });
+      } else if (!validateCardNumber(data.cardNumber)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Número de tarjeta inválido",
+          path: ["cardNumber"],
+        });
+      } else if (isTestCard(data.cardNumber)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Este número de tarjeta no es válido para pagos reales",
+          path: ["cardNumber"],
+        });
+      }
+      if ((data.cardName?.trim() ?? "").length < 3) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Por favor ingrese el nombre completo",
+          path: ["cardName"],
+        });
+      }
+      if (!data.cardExpiry || data.cardExpiry.length !== 5 || !validateExpiryDate(data.cardExpiry)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Fecha de expiración inválida o vencida",
+          path: ["cardExpiry"],
+        });
+      }
+      if (!data.cardCvc || data.cardCvc.length < 3 || !validateCVC(data.cardCvc)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "CVC inválido",
+          path: ["cardCvc"],
+        });
+      }
+    }
+
+    // Dirección: solo cuando no es blink
+    if (!isBlink) {
+      if ((data.address?.trim() ?? "").length < 5) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "La dirección debe tener al menos 5 caracteres.",
+          path: ["address"],
+        });
+      }
+      if ((data.country?.trim() ?? "").length < 2) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Por favor selecciona un país.",
+          path: ["country"],
+        });
+      }
+      if ((data.state?.trim() ?? "").length < 2) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Por favor selecciona una región.",
+          path: ["state"],
+        });
+      }
+    }
+  }
+);
 
 export type CheckoutFormValues = z.infer<typeof checkoutFormSchema>;

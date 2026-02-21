@@ -39,6 +39,13 @@ export const paymentAccountApiSlice = createApi({
       }),
       invalidatesTags: [{ type: "Payments", id: "LIST" }],
     }),
+    deletePaymentAccount: builder.mutation<void, { userId: string; accountId: string }>({
+      query: ({ userId, accountId }) => ({
+        url: `/api/v1/payments/${userId}/${accountId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: [{ type: "Payments", id: "LIST" }],
+    }),
   }),
 });
 
@@ -46,4 +53,5 @@ export const {
   useCreatePaymentAccountMutation,
   useGetPaymentAccountByUserIdQuery,
   useUpdatePaymentAccountMutation,
+  useDeletePaymentAccountMutation,
 } = paymentAccountApiSlice;
