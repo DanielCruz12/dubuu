@@ -43,6 +43,7 @@ import searchReducer from "@/redux/slices/product/search/search-slice";
 
 import authReducer from "./slices/auth/auth-slice";
 import { exchangesApiSlice } from "./slices/exchange/exchange-slice";
+import { panelApiSlice } from "./slices/panel/panel-slice";
 
 // Función para crear un almacenamiento "inerte" en entornos sin window (server-side)
 const createNoopStorage = () => {
@@ -105,6 +106,7 @@ const rootReducer = combineReducers({
   [productAmenitiesApiSlice.reducerPath]: productAmenitiesApiSlice.reducer,
   [productAudiencesApiSlice.reducerPath]: productAudiencesApiSlice.reducer,
   [exchangesApiSlice.reducerPath]: exchangesApiSlice.reducer,
+  [panelApiSlice.reducerPath]: panelApiSlice.reducer,
   currency: currencyReducer,
   auth: authReducer,
   search: searchReducer,
@@ -134,7 +136,8 @@ export const makeStore = () =>
         productCategoriesApiSlice.middleware,
         productAmenitiesApiSlice.middleware,
         productAudiencesApiSlice.middleware,
-        exchangesApiSlice.middleware
+        exchangesApiSlice.middleware,
+        panelApiSlice.middleware
       ),
   });
 

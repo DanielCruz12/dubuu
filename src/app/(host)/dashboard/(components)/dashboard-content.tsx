@@ -12,10 +12,8 @@ import { Overview } from "./overview";
 import { RecentBookings } from "./recent-bookings";
 import { DashboardTitle } from "@/components/dashboard-title";
 import { useUser } from "@clerk/nextjs";
-import { useSelector } from "react-redux";
-import type { RootState } from "@/redux/store";
 import { useLanguage } from "@/lib/i18n-context";
-import { usePanelSummary } from "../use-panel-summary";
+import { useGetPanelSummaryQuery } from "@/redux/slices/panel/panel-slice";
 
 function getStatusLabelKey(status: string): string {
   if (status === "in-process") return "dashboard.status_inProcess";
@@ -28,9 +26,10 @@ function getStatusLabelKey(status: string): string {
 export function DashboardContent() {
   const { user } = useUser();
   const userId = user?.id;
-  const token = useSelector((state: RootState) => state.auth?.token ?? null);
   const { t } = useLanguage();
-  const { data, isLoading, error } = usePanelSummary(userId, token);
+  const { data, isLoading, error } = useGetPanelSummaryQuery(userId ?? "", {
+    skip: !userId,
+  });
 
   const getStatusLabel = (status: string) => {
     const key = getStatusLabelKey(status);
