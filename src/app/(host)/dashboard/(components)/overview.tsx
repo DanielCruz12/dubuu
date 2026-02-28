@@ -1,26 +1,38 @@
-"use client"
+"use client";
 
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts"
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
+import type { ReservationActivityItem } from "@/types/panel";
 
-const data = [
+interface OverviewProps {
+  data?: ReservationActivityItem[];
+}
+
+const defaultData: { name: string; total: number }[] = [
   { name: "Ene", total: 0 },
-  { name: "Feb", total: 1 },
+  { name: "Feb", total: 0 },
   { name: "Mar", total: 0 },
-  { name: "Abr", total: 2 },
+  { name: "Abr", total: 0 },
   { name: "May", total: 0 },
-  { name: "Jun", total: 1 },
-  { name: "Jul", total: 3 },
-  { name: "Ago", total: 2 },
-  { name: "Sep", total: 1 },
+  { name: "Jun", total: 0 },
+  { name: "Jul", total: 0 },
+  { name: "Ago", total: 0 },
+  { name: "Sep", total: 0 },
   { name: "Oct", total: 0 },
-  { name: "Nov", total: 1 },
-  { name: "Dic", total: 2 },
-]
+  { name: "Nov", total: 0 },
+  { name: "Dic", total: 0 },
+];
 
-export function Overview() {
+function toChartData(items: ReservationActivityItem[]): { name: string; total: number }[] {
+  if (!items?.length) return defaultData;
+  return items.map((item) => ({ name: item.label, total: item.count }));
+}
+
+export function Overview({ data }: OverviewProps) {
+  const chartData = data?.length ? toChartData(data) : defaultData;
+
   return (
     <ResponsiveContainer width="100%" height={290}>
-      <BarChart data={data}>
+      <BarChart data={chartData}>
         <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
         <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value}`} />
         <Tooltip
