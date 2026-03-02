@@ -30,7 +30,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { CalendarIcon, X, Plus, Clock } from "lucide-react";
+import { CalendarIcon, X, Plus, Clock, GripVertical } from "lucide-react";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  useSortable,
+  arrayMove,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 import { type DetailsFormValues, detailsSchema } from "./types";
 import { scrollToFirstError } from "./utils";
@@ -49,6 +64,71 @@ interface TimeOption {
 interface DetailsStepProps {
   onSubmit: (data: DetailsFormValues) => void;
   defaultValues?: Partial<DetailsFormValues>;
+}
+
+function SortableItineraryItem({
+  id,
+  index,
+  item,
+  onRemove,
+}: {
+  id: number;
+  index: number;
+  item: string;
+  onRemove: () => void;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        "flex items-center justify-between p-2 border rounded-md border-gray-200 dark:border-gray-800",
+        isDragging && "opacity-60 shadow-md z-10 bg-background"
+      )}
+    >
+      <div className="flex items-center gap-2 flex-1 min-w-0">
+        <button
+          type="button"
+          ref={setActivatorNodeRef}
+          {...attributes}
+          {...listeners}
+          className="touch-none p-1 rounded cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground hover:bg-muted/50"
+          aria-label="Mover punto de itinerario"
+        >
+          <GripVertical className="h-4 w-4 shrink-0" />
+        </button>
+        <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 text-xs shrink-0">
+          {index + 1}
+        </span>
+        <span className="text-sm truncate">{item}</span>
+      </div>
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        onClick={onRemove}
+        className="h-8 w-8 p-0 shrink-0"
+      >
+        <span className="sr-only">Eliminar</span>
+        <X className="h-4 w-4" />
+      </Button>
+    </div>
+  );
 }
 
 export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
@@ -96,6 +176,18 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
     setItineraryItems(updatedItems);
     form.setValue("itinerary", updatedItems);
   };
+
+  const reorderItineraryItems = (oldIndex: number, newIndex: number) => {
+    const reordered = arrayMove(itineraryItems, oldIndex, newIndex);
+    setItineraryItems(reordered);
+    form.setValue("itinerary", reordered);
+  };
+
+  const itinerarySensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 8 },
+    })
+  );
 
   const addExpenseItem = () => {
     if (newExpenseItem.trim()) {
@@ -331,31 +423,44 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
-                  <div className="space-y-2 max-h-[200px] overflow-y-auto">
-                    {itineraryItems.map((item, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between p-2 border rounded-md border-gray-200 dark:border-gray-800"
-                      >
-                        <div className="flex items-center">
-                          <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 text-xs mr-2">
-                            {index + 1}
-                          </span>
-                          <span className="text-sm">{item}</span>
-                        </div>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeItineraryItem(index)}
-                          className="h-8 w-8 p-0"
-                        >
-                          <span className="sr-only">Eliminar</span>
-                          <X className="h-4 w-4" />
-                        </Button>
+                  <DndContext
+                    sensors={itinerarySensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={(event: DragEndEvent) => {
+                      const { active, over } = event;
+                      if (over != null && active.id !== over.id) {
+                        const oldIndex = Number(active.id);
+                        const newIndex = Number(over.id);
+                        if (
+                          !Number.isNaN(oldIndex) &&
+                          !Number.isNaN(newIndex) &&
+                          oldIndex >= 0 &&
+                          newIndex >= 0 &&
+                          oldIndex < itineraryItems.length &&
+                          newIndex < itineraryItems.length
+                        ) {
+                          reorderItineraryItems(oldIndex, newIndex);
+                        }
+                      }
+                    }}
+                  >
+                    <SortableContext
+                      items={itineraryItems.map((_, i) => i)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <div className="space-y-2 max-h-[200px] overflow-y-auto">
+                        {itineraryItems.map((item, index) => (
+                          <SortableItineraryItem
+                            key={index}
+                            id={index}
+                            index={index}
+                            item={item}
+                            onRemove={() => removeItineraryItem(index)}
+                          />
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    </SortableContext>
+                  </DndContext>
                   {form.formState.errors.itinerary && (
                     <p className="text-xs text-red-500">
                       {form.formState.errors.itinerary.message}

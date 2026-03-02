@@ -74,8 +74,8 @@ export const metadata: Metadata = {
     description:
       "Diseñamos experiencias únicas de viaje en El Salvador y Centroamérica. Tours de lujo, alquiler de vehículos y propiedades exclusivas.",
     images: ["https://www.dubuu.com/og-image.jpg"],
-    creator: "@dubuu",
-    site: "@dubuu",
+    creator: "@Dubuu_sv",
+    site: "@Dubuu_sv",
   },
   robots: {
     index: true,
@@ -140,8 +140,8 @@ export default async function RootLayout({
 
           {/* ✅ Twitter Card habilitado */}
           <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:site" content="@dubuu" />
-          <meta name="twitter:creator" content="@dubuu" />
+          <meta name="twitter:site" content="@Dubuu_sv" />
+          <meta name="twitter:creator" content="@Dubuu_sv" />
           <meta
             name="twitter:title"
             content="Dubuu - Experiencias de Viaje Únicas en El Salvador y Centroamérica"

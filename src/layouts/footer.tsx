@@ -29,9 +29,9 @@ const footerNavigation = {
     { key: "privacy", href: "/privacy" },
   ],
   social: [
-    { key: "instagram", icon: Instagram, href: "#" },
-    { key: "facebook", icon: Facebook, href: "#" },
-    { key: "twitter", icon: Twitter, href: "#" },
+    { key: "instagram", icon: Instagram, href: "https://www.instagram.com/dubuu_sv/" },
+    { key: "facebook", icon: Facebook, href: "https://www.facebook.com/share/1FreatcUm9/" },
+    { key: "twitter", icon: Twitter, href: "https://x.com/Dubuu_sv?s=20" },
   ],
 };
 
