@@ -19,7 +19,7 @@ import moment from "moment";
 import { ReceiptProps } from "@/types/pdf";
 import PDFButton from "./pdf/pdf-button";
 import { statusConfig } from "@/utils";
-import { useCurrency } from "@/hooks/use-currency-converter";
+import { formatUsd, USD_SYMBOL } from "@/utils/currency";
 
 type BookingStatusProps = {
   id: string;
@@ -101,7 +101,8 @@ export function BookingStatus({
   };
   const Icon = config.icon;
 
-  const { convert, symbol } = useCurrency();
+  const convert = formatUsd;
+  const symbol = USD_SYMBOL;
 
   return (
     <Card

@@ -31,7 +31,7 @@ import { useState, useRef } from "react";
 import { getHostEarningsFromFinalPrice } from "@/lib/price";
 
 import "moment/locale/es";
-import { useCurrency } from "@/hooks/use-currency-converter";
+import { formatUsd, USD_SYMBOL } from "@/utils/currency";
 import { useLanguage } from "@/lib/i18n-context";
 
 function getBookingFormSchema(t: (key: string) => string) {
@@ -66,7 +66,8 @@ export default function BookingForm({
 }) {
   const { t } = useLanguage();
   const { user } = useUser();
-  const { convert, symbol } = useCurrency();
+  const convert = formatUsd;
+  const symbol = USD_SYMBOL;
 
   const datetimeRef = useRef<HTMLDivElement>(null);
 

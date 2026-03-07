@@ -29,7 +29,7 @@ import { productTypes, ratingOptions } from "@/utils/data";
 import { setSearchTerm } from "@/redux/slices/product/search/search-slice";
 import { PriceRangeHistogram } from "@/components/price-range-histogram";
 import { generateSlug } from "@/lib/utils";
-import { useCurrency } from "@/hooks/use-currency-converter";
+import { formatUsd, USD_SYMBOL } from "@/utils/currency";
 import { useLanguage } from "@/lib/i18n-context";
 
 interface SearchDialogProps {
@@ -49,7 +49,8 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({
   filteredProducts,
   dispatch,
 }) => {
-  const { convert, symbol } = useCurrency();
+  const convert = formatUsd;
+  const symbol = USD_SYMBOL;
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px] max-w-[95%] md:max-w-[85%] lg:max-w-[75%] xl:max-w-[65%] p-0 overflow-hidden rounded-xl border-none shadow-xl">

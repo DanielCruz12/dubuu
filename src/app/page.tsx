@@ -8,7 +8,7 @@ import { tours } from "@/utils/data";
 import UpTop from "@/components/up-top";
 import Link from "next/link";
 import { Star } from "lucide-react";
-import { useCurrency } from "@/hooks/use-currency-converter";
+import { formatUsd, USD_SYMBOL } from "@/utils/currency";
 import {
   Carousel,
   CarouselContent,
@@ -23,7 +23,8 @@ const HERO_SLIDE_KEYS = ["slide1", "slide2", "slide3", "slide4", "slide5"] as co
 const HERO_SLIDE_IMAGES = ["/homepage/banner1.png", "/homepage/banner2.png", "/homepage/banner3.png", "/homepage/banner4.png", "/homepage/banner5.png"];
 
 export default function Home() {
-  const { convert, symbol } = useCurrency();
+  const convert = formatUsd;
+  const symbol = USD_SYMBOL;
   const { t } = useLanguage();
 
   const containerRef = useRef(null);

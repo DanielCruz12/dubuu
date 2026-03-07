@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { destinations } from "@/utils/data";
-import { useCurrency } from "@/hooks/use-currency-converter";
+import { formatUsd, USD_SYMBOL } from "@/utils/currency";
 import { useLanguage } from "@/lib/i18n-context";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -34,7 +34,8 @@ function PopularDestinationsSkeleton() {
 }
 
 export default function PopularDestinations() {
-  const { convert, symbol } = useCurrency();
+  const convert = formatUsd;
+  const symbol = USD_SYMBOL;
   const { t, isReady } = useLanguage();
 
   if (!isReady) {

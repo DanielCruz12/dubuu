@@ -32,7 +32,7 @@ import { useGetReviewsQuery } from "@/redux/slices/product/review-slice";
 import { isProductType } from "@/utils";
 import UpTop from "@/components/up-top";
 import { ShareModal } from "@/components/share-modal";
-import { useCurrency } from "@/hooks/use-currency-converter";
+import { formatUsd, USD_SYMBOL } from "@/utils/currency";
 import { useLanguage } from "@/lib/i18n-context";
 
 export default function ProductBooking() {
@@ -40,7 +40,8 @@ export default function ProductBooking() {
   const { user } = useUser();
   const { id } = useParams();
   const { data, isLoading, isError } = useGetProductQuery(id as string);
-  const { convert, symbol } = useCurrency();
+  const convert = formatUsd;
+  const symbol = USD_SYMBOL;
 
   const [bookingData, setBookingData] = useState<{
     datetime: string;
