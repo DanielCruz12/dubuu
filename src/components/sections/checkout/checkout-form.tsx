@@ -188,8 +188,10 @@ export default function CheckoutForm({
     if (paymentMethod === "blink") {
       const blinkPayload = {
         total: bookingData.total,
-        userId: bookingData.user_id,
-        productId: bookingData.product_id,
+        user_id: bookingData.user_id,
+        product_id: bookingData.product_id,
+        tickets: bookingData.tickets.adult,
+        tour_date_id: bookingData.datetime,
       };
       try {
         const response = await createBlinkPayment(blinkPayload).unwrap();
