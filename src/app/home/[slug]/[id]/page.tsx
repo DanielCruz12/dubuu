@@ -54,6 +54,7 @@ export default function ProductBooking() {
     }
 
     function onPaymentCompleted(_data: { bookingId: string; status: string }) {
+      console.log(_data);
       toast.success(t("home.checkout.toast.paymentConfirmed"));
       router.push("/account/bookings");
     }
