@@ -240,6 +240,7 @@
       "processing": "Procesando pago.",
       "redirecting": "Redirigiendo al banco...",
       "blinkReady": "Listo. Escanea el QR o copia la factura para pagar.",
+      "paymentConfirmed": "Pago confirmado",
       "paymentError": "Error al procesar el pago"
     }
   }
