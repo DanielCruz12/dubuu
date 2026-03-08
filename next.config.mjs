@@ -12,7 +12,17 @@ const nextConfig = {
       ""
     );
     return [
-      // Socket.io: la barra final en destination es crítica para el handshake WebSocket.
+      // Socket.io bajo /backend: el cliente usa path "/backend/socket.io". La barra final
+      // en destination es crítica para el handshake WebSocket (issue #23147).
+      {
+        source: "/backend/socket.io",
+        destination: `${base}/socket.io/`,
+      },
+      {
+        source: "/backend/socket.io/:path*",
+        destination: `${base}/socket.io/:path*/`,
+      },
+      // Alternativa si el cliente usara path "/socket.io" (sin /backend)
       {
         source: "/socket.io/:path*",
         destination: `${base}/socket.io/:path*/`,
