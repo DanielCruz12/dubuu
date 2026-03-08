@@ -1,9 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { MapPin } from "lucide-react";
-import { toast } from "sonner";
 import ImageCollage from "@/components/sections/image-collage";
 import { useParams } from "next/navigation";
 import { useGetProductQuery } from "@/redux/slices/product/product-slice";
@@ -36,24 +34,12 @@ import UpTop from "@/components/up-top";
 import { ShareModal } from "@/components/share-modal";
 import { formatUsd, USD_SYMBOL } from "@/utils/currency";
 import { useLanguage } from "@/lib/i18n-context";
-import { PaymentCompletedPayload, usePaymentSocket } from "@/hooks/usePaymentSocket";
 
 export default function ProductBooking() {
   const { t } = useLanguage();
-  const router = useRouter();
   const { user } = useUser();
   const { id } = useParams();
 
-  const handlePaymentCompleted = useCallback(
-    (_data: PaymentCompletedPayload) => {
-      console.log(_data);
-      toast.success(t("home.checkout.toast.paymentConfirmed"));
-      router.push("/account/bookings");
-    },
-    [router, t],
-  );
-
-  usePaymentSocket(user?.id ?? null, handlePaymentCompleted);
   const { data, isLoading, isError } = useGetProductQuery(id as string);
   const convert = formatUsd;
   const symbol = USD_SYMBOL;
