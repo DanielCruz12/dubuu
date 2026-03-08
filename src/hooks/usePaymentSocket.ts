@@ -5,10 +5,10 @@ import { io, Socket } from "socket.io-client";
 
 /**
  * URL del backend donde corre Socket.IO (mismo host/puerto que la API).
- * En .env.local: NEXT_PUBLIC_API_URL=http://localhost:3002 (dev) o https://api.tudominio.com (prod)
+ * En .env.local: BACKEND_URL=http://localhost:3002 (dev) o https://api.tudominio.com (prod)
  */
 const SOCKET_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002";
+  process.env.BACKEND_URL || "http://localhost:3002";
 
 export type PaymentCompletedPayload = {
   bookingId: string;
