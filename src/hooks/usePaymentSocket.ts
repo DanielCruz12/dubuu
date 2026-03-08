@@ -4,11 +4,11 @@ import { useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 
 /**
- * URL del backend donde corre Socket.IO (mismo host/puerto que la API).
- * En .env.local: BACKEND_URL=http://localhost:3002 (dev) o https://api.tudominio.com (prod)
+ * Socket.IO usa el mismo patrón que el resto de la API: mismo origen + path /backend.
+ * Next.js reescribe /backend/:path* → BACKEND_URL (next.config). La URL del backend
+ * nunca se expone al cliente.
  */
-const SOCKET_URL =
-  process.env.BACKEND_URL || "http://localhost:3002";
+const SOCKET_PATH = "/backend/socket.io";
 
 export type PaymentCompletedPayload = {
   bookingId: string;
@@ -22,9 +22,12 @@ export function usePaymentSocket(
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId || typeof window === "undefined") return;
 
-    const socket = io(SOCKET_URL, { path: "/socket.io", autoConnect: true });
+    const socket = io(window.location.origin, {
+      path: SOCKET_PATH,
+      autoConnect: true,
+    });
     socketRef.current = socket;
 
     socket.on("connect", () => {
