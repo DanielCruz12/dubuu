@@ -4,9 +4,8 @@ import { useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 
 /**
- * Socket.IO usa el mismo patrón que el resto de la API: mismo origen + path /backend.
- * Next.js reescribe /backend/:path* → BACKEND_URL (next.config). La URL del backend
- * nunca se expone al cliente.
+ * Socket.IO por rewrite: mismo origen + path /backend/socket.io.
+ * next.config tiene reglas explícitas para socket.io (con y sin trailing slash).
  */
 const SOCKET_PATH = "/backend/socket.io";
 

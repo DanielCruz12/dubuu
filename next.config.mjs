@@ -3,10 +3,18 @@ const nextConfig = {
   reactStrictMode: true,
 
   async rewrites() {
+    const backend = process.env.BACKEND_URL;
+    if (!backend) return [];
+    const base = backend.replace(/\/$/, "");
     return [
+      // Socket.IO: el cliente pide /backend/socket.io/ (con barra final). Sin reglas
+      // explícitas, /backend/:path* puede no matchear por el trailing slash.
+      { source: "/backend/socket.io", destination: `${base}/socket.io` },
+      { source: "/backend/socket.io/", destination: `${base}/socket.io/` },
+      { source: "/backend/socket.io/:path*", destination: `${base}/socket.io/:path*` },
       {
-        source: "/backend/:path*", // Captura cualquier endpoint que venga después
-        destination: `${process.env.BACKEND_URL}/:path*`, // Redirige correctamente
+        source: "/backend/:path*",
+        destination: `${base}/:path*`,
       },
     ];
   },
