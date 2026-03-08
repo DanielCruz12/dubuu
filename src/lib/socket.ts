@@ -6,7 +6,7 @@ import { io, Socket } from "socket.io-client";
 // Next rewrites a BACKEND_URL/socket.io (el backend no queda expuesto)
 const socketOptions = {
   path: "/backend/socket.io",
-  transports: ["websocket"] as const,
+  transports: ["websocket"],
 };
 
 export const socket: Socket =
