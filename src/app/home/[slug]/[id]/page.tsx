@@ -46,6 +46,7 @@ export default function ProductBooking() {
 
   const handlePaymentCompleted = useCallback(
     (_data: PaymentCompletedPayload) => {
+      console.log(_data);
       toast.success(t("home.checkout.toast.paymentConfirmed"));
       router.push("/account/bookings");
     },
