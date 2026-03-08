@@ -3,10 +3,7 @@
 import { useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 
-/**
- * Socket.IO por rewrite: mismo origen + path /backend/socket.io.
- * next.config tiene reglas explícitas para socket.io (con y sin trailing slash).
- */
+// Opción B: mismo origen + rewrite en next.config → /backend/socket.io → BACKEND_URL/socket.io
 const SOCKET_PATH = "/backend/socket.io";
 
 export type PaymentCompletedPayload = {
@@ -25,6 +22,7 @@ export function usePaymentSocket(
 
     const socket = io(window.location.origin, {
       path: SOCKET_PATH,
+      transports: ["websocket"],
       autoConnect: true,
     });
     socketRef.current = socket;
@@ -34,6 +32,10 @@ export function usePaymentSocket(
     });
 
     socket.on("payment:completed", onPaymentCompleted);
+
+    socket.on("connect_error", (err) => {
+      console.error("Socket connect_error", err.message);
+    });
 
     return () => {
       socket.off("payment:completed");
