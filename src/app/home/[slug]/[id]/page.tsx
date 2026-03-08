@@ -36,7 +36,7 @@ import UpTop from "@/components/up-top";
 import { ShareModal } from "@/components/share-modal";
 import { formatUsd, USD_SYMBOL } from "@/utils/currency";
 import { useLanguage } from "@/lib/i18n-context";
-import { usePaymentSocket } from "@/hooks/usePaymentSocket";
+import { PaymentCompletedPayload, usePaymentSocket } from "@/hooks/usePaymentSocket";
 
 export default function ProductBooking() {
   const { t } = useLanguage();
@@ -45,7 +45,8 @@ export default function ProductBooking() {
   const { id } = useParams();
 
   const handlePaymentCompleted = useCallback(
-    (_data: { bookingId: string; status: string }) => {
+    (data: PaymentCompletedPayload) => {
+      console.log(data);
       toast.success(t("home.checkout.toast.paymentConfirmed"));
       router.push("/account/bookings");
     },
