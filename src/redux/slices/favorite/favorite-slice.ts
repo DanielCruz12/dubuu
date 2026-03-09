@@ -1,5 +1,6 @@
 "use client";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { urlWithLocale } from "@/redux/url-with-locale";
 
 // Define the type for a favorite item
 interface FavoriteItem {
@@ -9,9 +10,7 @@ interface FavoriteItem {
 
 export const favoritesApiSlice = createApi({
   reducerPath: "favorites",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "/backend",
-  }),
+  baseQuery: fetchBaseQuery({ baseUrl: "/backend" }),
   tagTypes: ["Favorites"],
   endpoints: (builder) => {
     return {
@@ -20,7 +19,7 @@ export const favoritesApiSlice = createApi({
         { productId: string; userId: string }
       >({
         query: ({ productId, userId }) => ({
-          url: `/api/v1/favorite`,
+          url: urlWithLocale("/api/v1/favorite"),
           method: "POST",
           body: { productId, userId },
         }),
@@ -32,7 +31,7 @@ export const favoritesApiSlice = createApi({
         { productId: string; userId: string }
       >({
         query: ({ productId, userId }) => ({
-          url: `/api/v1/favorite`,
+          url: urlWithLocale("/api/v1/favorite"),
           method: "DELETE",
           body: { productId, userId },
         }),
@@ -41,7 +40,7 @@ export const favoritesApiSlice = createApi({
 
       getUserFavorites: builder.query<FavoriteItem[], { userId: string }>({
         query: ({ userId }) => ({
-          url: `/api/v1/favorite/user/${userId}`,
+          url: urlWithLocale(`/api/v1/favorite/user/${userId}`),
           method: "GET",
         }),
         providesTags: [{ type: "Favorites", id: "LIST" }],

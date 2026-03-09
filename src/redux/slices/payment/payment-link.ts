@@ -1,5 +1,6 @@
 "use client";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { urlWithLocale } from "@/redux/url-with-locale";
 
 export const paymentApiSlice = createApi({
   reducerPath: "payment",
@@ -19,7 +20,7 @@ export const paymentApiSlice = createApi({
   endpoints: (builder) => ({
     createPaymentLink: builder.mutation({
       query: (body) => ({
-        url: "/api/enlacePago",
+        url: urlWithLocale("/api/enlacePago"),
         method: "POST",
         body,
       }),
@@ -28,7 +29,7 @@ export const paymentApiSlice = createApi({
 
     create3DSTransaction: builder.mutation({
       query: (body) => ({
-        url: "/api/v1/TransaccionCompra/3DS",
+        url: urlWithLocale("/api/v1/TransaccionCompra/3DS"),
         method: "POST",
         body,
       }),
@@ -41,7 +42,7 @@ export const paymentApiSlice = createApi({
       unknown
     >({
       query: (body) => ({
-        url: "/api/v1/TransaccionCompra/blink",
+        url: urlWithLocale("/api/v1/TransaccionCompra/blink"),
         method: "POST",
         body,
       }),

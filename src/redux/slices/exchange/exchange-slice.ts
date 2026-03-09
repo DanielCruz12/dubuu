@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { urlWithLocale } from "@/redux/url-with-locale";
 
 export const exchangesApiSlice = createApi({
   reducerPath: "exchange",
@@ -9,7 +10,7 @@ export const exchangesApiSlice = createApi({
   endpoints: (builder) => ({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getExchanges: builder.query<any, string>({
-      query: (currency) => `/exchange/${currency}`, // llama a /exchange/:base
+      query: (currency) => urlWithLocale(`/exchange/${currency}`), // llama a /exchange/:base
       keepUnusedDataFor: 43200, // 12 horas
       providesTags: (result) =>
         result

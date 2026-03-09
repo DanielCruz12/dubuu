@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import type { PanelSummary } from "@/types/panel";
+import { urlWithLocale } from "@/redux/url-with-locale";
 
 const API_URL = "/backend/api/v1/panel/summary";
 
@@ -18,13 +19,13 @@ export function usePanelSummary(userId: string | undefined, token: string | null
     setIsLoading(true);
     setError(null);
     try {
-      const res = await fetch(API_URL, {
+      const url = urlWithLocale(`${API_URL}/${userId}`);
+      const res = await fetch(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ userId }),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = (await res.json()) as PanelSummary;

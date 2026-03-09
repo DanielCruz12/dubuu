@@ -1,6 +1,7 @@
 "use client";
 import type { IProductCategory } from "@/types/product";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { urlWithLocale } from "@/redux/url-with-locale";
 
 // Tipos para las mutaciones
 interface CreateProductCategoryRequest {
@@ -11,15 +12,13 @@ interface CreateProductCategoryRequest {
 
 export const productCategoriesApiSlice = createApi({
   reducerPath: "productCategories",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "/backend",
-  }),
+  baseQuery: fetchBaseQuery({ baseUrl: "/backend" }),
   tagTypes: ["ProductCategories"],
   endpoints: (builder) => {
     return {
       // 🔍 Obtener todas las categorías de producto
       getProductCategories: builder.query<IProductCategory[], void>({
-        query: () => `/api/v1/product-category/`,
+        query: () => urlWithLocale("/api/v1/product-category/"),
         providesTags: (result) =>
           result
             ? [
@@ -34,7 +33,7 @@ export const productCategoriesApiSlice = createApi({
 
       // 🔍 Obtener una categoría por ID
       getProductCategoryById: builder.query<IProductCategory, string>({
-        query: (id) => `/api/v1/product-category/${id}`,
+        query: (id) => urlWithLocale(`/api/v1/product-category/${id}`),
         providesTags: (result, error, id) => [
           { type: "ProductCategories", id },
         ],
@@ -46,7 +45,7 @@ export const productCategoriesApiSlice = createApi({
         CreateProductCategoryRequest
       >({
         query: (newProductCategory) => ({
-          url: `/api/v1/product-category/`,
+          url: urlWithLocale("/api/v1/product-category/"),
           method: "POST",
           body: newProductCategory,
         }),
@@ -56,7 +55,7 @@ export const productCategoriesApiSlice = createApi({
       // ❌ Eliminar categoría de producto
       deleteProductCategory: builder.mutation<IProductCategory, string>({
         query: (id) => ({
-          url: `/api/v1/product-category/${id}`,
+          url: urlWithLocale(`/api/v1/product-category/${id}`),
           method: "DELETE",
         }),
         invalidatesTags: (result, error, id) => [

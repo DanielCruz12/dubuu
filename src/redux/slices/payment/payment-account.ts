@@ -1,6 +1,7 @@
 "use client";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "@/redux/store";
+import { urlWithLocale } from "@/redux/url-with-locale";
 
 export const paymentAccountApiSlice = createApi({
   reducerPath: "payments", // nombre del slice (puede cambiarse si lo deseas)
@@ -18,7 +19,7 @@ export const paymentAccountApiSlice = createApi({
   endpoints: (builder) => ({
     createPaymentAccount: builder.mutation({
       query: (body) => ({
-        url: "/api/v1/payments",
+        url: urlWithLocale("/api/v1/payments"),
         method: "POST",
         body,
       }),
@@ -26,14 +27,14 @@ export const paymentAccountApiSlice = createApi({
     }),
     getPaymentAccountByUserId: builder.query({
       query: (userId) => ({
-        url: `/api/v1/payments/user/${userId}`,
+        url: urlWithLocale(`/api/v1/payments/user/${userId}`),
         method: "GET",
       }),
       providesTags: [{ type: "Payments", id: "LIST" }],
     }),
     updatePaymentAccount: builder.mutation({
       query: ({ userId, paymentId, body }) => ({
-        url: `/api/v1/payments/${userId}/${paymentId}`,
+        url: urlWithLocale(`/api/v1/payments/${userId}/${paymentId}`),
         method: "PUT",
         body,
       }),
@@ -41,7 +42,7 @@ export const paymentAccountApiSlice = createApi({
     }),
     deletePaymentAccount: builder.mutation<void, { userId: string; accountId: string }>({
       query: ({ userId, accountId }) => ({
-        url: `/api/v1/payments/${userId}/${accountId}`,
+        url: urlWithLocale(`/api/v1/payments/${userId}/${accountId}`),
         method: "DELETE",
       }),
       invalidatesTags: [{ type: "Payments", id: "LIST" }],

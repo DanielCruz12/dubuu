@@ -2,6 +2,7 @@
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { Booking, IBookingUser } from "@/types/booking";
+import { urlWithLocale } from "@/redux/url-with-locale";
 
 export type CreateBookingInput = Omit<
   Booking,
@@ -30,7 +31,7 @@ export const bookingsApiSlice = createApi({
   endpoints: (builder) => ({
     // 🔹 Get bookings by user
     getBookingsByUserId: builder.query<IBookingUser[], string>({
-      query: (userId) => `/api/v1/bookings/user/${userId}`,
+      query: (userId) => urlWithLocale(`/api/v1/bookings/user/${userId}`),
       providesTags: (result) =>
         result
           ? [
@@ -58,14 +59,14 @@ export const bookingsApiSlice = createApi({
 
     // 🔹 Get a single booking
     getBookingById: builder.query<Booking, string>({
-      query: (id) => `/api/v1/bookings/${id}`,
+      query: (id) => urlWithLocale(`/api/v1/bookings/${id}`),
       providesTags: (result, error, id) => [{ type: "Bookings", id }],
     }),
 
     // 🔹 Create booking
     createBooking: builder.mutation<Booking, CreateBookingInput>({
       query: (data) => ({
-        url: "/api/v1/bookings/",
+        url: urlWithLocale("/api/v1/bookings/"),
         method: "POST",
         body: data,
       }),
@@ -75,7 +76,7 @@ export const bookingsApiSlice = createApi({
     // 🔹 Delete booking
     deleteBooking: builder.mutation<{ success: boolean }, string>({
       query: (id) => ({
-        url: `/api/v1/bookings/${id}`,
+        url: urlWithLocale(`/api/v1/bookings/${id}`),
         method: "DELETE",
       }),
       invalidatesTags: (result, error, id) => [

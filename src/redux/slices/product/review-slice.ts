@@ -1,6 +1,7 @@
 "use client";
 import type { Review } from "@/types/review";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { urlWithLocale } from "@/redux/url-with-locale";
 
 export const reviewsApiSlice = createApi({
   reducerPath: "reviews",
@@ -23,7 +24,7 @@ export const reviewsApiSlice = createApi({
   endpoints: (builder) => {
     return {
       getReviews: builder.query<Review[], string>({
-        query: (productId) => `/api/v1/ratings/${productId}`,
+        query: (productId) => urlWithLocale(`/api/v1/ratings/${productId}`),
         providesTags: (result) =>
           result
             ? [
@@ -34,7 +35,7 @@ export const reviewsApiSlice = createApi({
       }),
       createReview: builder.mutation<Review, Omit<Review, "id">>({
         query: (post) => ({
-          url: "api/v1/ratings",
+          url: urlWithLocale("/api/v1/ratings"),
           method: "POST",
           body: post,
         }),

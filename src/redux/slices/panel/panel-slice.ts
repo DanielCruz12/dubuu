@@ -3,6 +3,7 @@
 import type { RootState } from "@/redux/store";
 import type { PanelSummary } from "@/types/panel";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { urlWithLocale } from "@/redux/url-with-locale";
 
 export const panelApiSlice = createApi({
   reducerPath: "panelApi",
@@ -19,7 +20,7 @@ export const panelApiSlice = createApi({
   tagTypes: ["PanelSummary"],
   endpoints: (builder) => ({
     getPanelSummary: builder.query<PanelSummary, string>({
-      query: (userId) => `/api/v1/panel/summary/${userId}`,
+      query: (userId) => urlWithLocale(`/api/v1/panel/summary/${userId}`),
       providesTags: (result, error, userId) => [
         { type: "PanelSummary", id: userId },
       ],

@@ -1,6 +1,7 @@
 import { RootState } from "@/redux/store";
 import { IUser } from "@/types/user";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { urlWithLocale } from "@/redux/url-with-locale";
 
 export const usersApiSlice = createApi({
   reducerPath: "users",
@@ -50,13 +51,13 @@ export const usersApiSlice = createApi({
     }),
 
     getUser: builder.query<IUser, string>({
-      query: (id) => `/api/v1/users/${id}`,
+      query: (id) => urlWithLocale(`/api/v1/users/${id}`),
       providesTags: (result, error, id) => [{ type: "Users", id }],
     }),
 
     createUser: builder.mutation<IUser, Partial<IUser>>({
       query: (data) => ({
-        url: "/api/v1/users",
+        url: urlWithLocale("/api/v1/users"),
         method: "POST",
         body: data,
       }),
@@ -65,7 +66,7 @@ export const usersApiSlice = createApi({
 
     updateUser: builder.mutation<IUser, { id: string; data: Partial<IUser> }>({
       query: ({ id, data }) => ({
-        url: `/api/v1/users/${id}`,
+        url: urlWithLocale(`/api/v1/users/${id}`),
         method: "PUT",
         body: data,
       }),
@@ -77,7 +78,7 @@ export const usersApiSlice = createApi({
 
     deleteUser: builder.mutation<{ success: boolean }, string>({
       query: (id) => ({
-        url: `/api/v1/users/${id}`,
+        url: urlWithLocale(`/api/v1/users/${id}`),
         method: "DELETE",
       }),
       invalidatesTags: [{ type: "Users", id: "LIST" }],

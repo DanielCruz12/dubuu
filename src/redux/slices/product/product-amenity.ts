@@ -1,6 +1,7 @@
 "use client";
 import type { IProductAmenity } from "@/types/product";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { urlWithLocale } from "@/redux/url-with-locale";
 
 // Tipos para las mutaciones
 interface CreateProductAmenityRequest {
@@ -11,15 +12,13 @@ interface CreateProductAmenityRequest {
 
 export const productAmenitiesApiSlice = createApi({
   reducerPath: "productAmenities",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "/backend",
-  }),
+  baseQuery: fetchBaseQuery({ baseUrl: "/backend" }),
   tagTypes: ["ProductAmenities"],
   endpoints: (builder) => {
     return {
       // 🔍 Obtener todos los amenities de producto
       getProductAmenities: builder.query<IProductAmenity[], void>({
-        query: () => `/api/v1/product-amenities/`,
+        query: () => urlWithLocale("/api/v1/product-amenities/"),
         providesTags: (result) =>
           result
             ? [
@@ -34,7 +33,7 @@ export const productAmenitiesApiSlice = createApi({
 
       // 🔍 Obtener un amenity por ID
       getProductAmenityById: builder.query<IProductAmenity, string>({
-        query: (id) => `/api/v1/product-amenities/${id}`,
+        query: (id) => urlWithLocale(`/api/v1/product-amenities/${id}`),
         providesTags: (result, error, id) => [{ type: "ProductAmenities", id }],
       }),
 
@@ -44,7 +43,7 @@ export const productAmenitiesApiSlice = createApi({
         CreateProductAmenityRequest
       >({
         query: (newProductAmenity) => ({
-          url: `/api/v1/product-amenities/`,
+          url: urlWithLocale("/api/v1/product-amenities/"),
           method: "POST",
           body: newProductAmenity,
         }),
@@ -54,7 +53,7 @@ export const productAmenitiesApiSlice = createApi({
       // ❌ Eliminar amenity de producto
       deleteProductAmenity: builder.mutation<IProductAmenity, string>({
         query: (id) => ({
-          url: `/api/v1/product-amenities/${id}`,
+          url: urlWithLocale(`/api/v1/product-amenities/${id}`),
           method: "DELETE",
         }),
         invalidatesTags: (result, error, id) => [

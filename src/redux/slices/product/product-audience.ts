@@ -1,6 +1,7 @@
 "use client";
 import type { IProductAudience } from "@/types/product";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { urlWithLocale } from "@/redux/url-with-locale";
 
 // Tipos para las mutaciones
 interface CreateProductAudienceRequest {
@@ -10,15 +11,13 @@ interface CreateProductAudienceRequest {
 
 export const productAudiencesApiSlice = createApi({
   reducerPath: "productAudiences",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "/backend",
-  }),
+  baseQuery: fetchBaseQuery({ baseUrl: "/backend" }),
   tagTypes: ["ProductAudiences"],
   endpoints: (builder) => {
     return {
       // 🔍 Obtener todas las audiencias objetivo
       getProductAudiences: builder.query<IProductAudience[], void>({
-        query: () => `/api/v1/product-audience/`,
+        query: () => urlWithLocale("/api/v1/product-audience/"),
         providesTags: (result) =>
           result
             ? [
@@ -33,7 +32,7 @@ export const productAudiencesApiSlice = createApi({
 
       // 🔍 Obtener una audiencia por ID
       getProductAudienceById: builder.query<IProductAudience, string>({
-        query: (id) => `/api/v1/product-audience/${id}`,
+        query: (id) => urlWithLocale(`/api/v1/product-audience/${id}`),
         providesTags: (result, error, id) => [{ type: "ProductAudiences", id }],
       }),
 
@@ -43,7 +42,7 @@ export const productAudiencesApiSlice = createApi({
         CreateProductAudienceRequest
       >({
         query: (newProductAudience) => ({
-          url: `/api/v1/product-audience/`,
+          url: urlWithLocale("/api/v1/product-audience/"),
           method: "POST",
           body: newProductAudience,
         }),
@@ -53,7 +52,7 @@ export const productAudiencesApiSlice = createApi({
       // ❌ Eliminar audiencia objetivo
       deleteProductAudience: builder.mutation<IProductAudience, string>({
         query: (id) => ({
-          url: `/api/v1/product-audience/${id}`,
+          url: urlWithLocale(`/api/v1/product-audience/${id}`),
           method: "DELETE",
         }),
         invalidatesTags: (result, error, id) => [

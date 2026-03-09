@@ -1,12 +1,11 @@
 "use client";
 import type { IProduct } from "@/types/product";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { urlWithLocale } from "@/redux/url-with-locale";
 
 export const productsApiSlice = createApi({
   reducerPath: "products",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "/backend",
-  }),
+  baseQuery: fetchBaseQuery({ baseUrl: "/backend" }),
   tagTypes: ["Products", "Reviews"],
   refetchOnFocus: false,
   refetchOnReconnect: false,
@@ -53,7 +52,7 @@ export const productsApiSlice = createApi({
             }
           });
 
-          return `/api/v1/products?${searchParams.toString()}`;
+          return urlWithLocale(`/api/v1/products?${searchParams.toString()}`);
         },
         providesTags: (result) =>
           result?.data
@@ -143,14 +142,14 @@ export const productsApiSlice = createApi({
             searchParams.append("is_active", String(params.is_active));
           }
 
-          return `/api/v1/products?${searchParams.toString()}`;
+          return urlWithLocale(`/api/v1/products?${searchParams.toString()}`);
         },
         providesTags: ["Products"],
       }),
 
       createProduct: builder.mutation<IProduct, FormData>({
         query: (post) => ({
-          url: "/api/v1/products",
+          url: urlWithLocale("/api/v1/products"),
           method: "POST",
           body: post,
         }),
@@ -161,13 +160,13 @@ export const productsApiSlice = createApi({
       }),
 
       getProduct: builder.query<IProduct, string>({
-        query: (id) => `/api/v1/products/${id}`,
+        query: (id) => urlWithLocale(`/api/v1/products/${id}`),
         keepUnusedDataFor: 0,
         providesTags: (result, error, id) => [{ type: "Products", id }],
       }),
 
       getProductsByUserId: builder.query<IProduct[], string>({
-        query: (userId) => `/api/v1/products/user/${userId}`,
+        query: (userId) => urlWithLocale(`/api/v1/products/user/${userId}`),
         providesTags: (result) => [
           { type: "Products", id: "USER_PRODUCTS" },
           ...(result?.map(({ id }) => ({ type: "Products" as const, id })) ||
@@ -176,7 +175,8 @@ export const productsApiSlice = createApi({
       }),
 
       getProductsByUserIdUsersimplified: builder.query<IProduct[], string>({
-        query: (userId) => `/api/v1/products/usersimplified/${userId}`,
+        query: (userId) =>
+          urlWithLocale(`/api/v1/products/usersimplified/${userId}`),
         providesTags: (result, error, id) => [{ type: "Products", id }],
       }),
 
@@ -191,7 +191,7 @@ export const productsApiSlice = createApi({
         }
       >({
         query: ({ id, data }) => ({
-          url: `/api/v1/products/${id}`,
+          url: urlWithLocale(`/api/v1/products/${id}`),
           method: "PATCH",
           body: data,
         }),
@@ -204,7 +204,7 @@ export const productsApiSlice = createApi({
 
       deleteProduct: builder.mutation<{ success: boolean }, string>({
         query: (id) => ({
-          url: `/api/v1/products/${id}`,
+          url: urlWithLocale(`/api/v1/products/${id}`),
           method: "DELETE",
         }),
         invalidatesTags: [

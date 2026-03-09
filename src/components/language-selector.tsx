@@ -12,6 +12,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useLanguage } from "@/lib/i18n-context";
+import {
+  useAppDispatch,
+  invalidateApiCacheOnLocaleChange,
+} from "@/redux/store";
 
 const languages = [
   { code: "en" as const, name: "English", short: "EN", flag: US },
@@ -20,10 +24,13 @@ const languages = [
 
 export function LanguageSelector() {
   const { language, setLanguage } = useLanguage();
+  const dispatch = useAppDispatch();
   const current = languages.find((l) => l.code === language) ?? languages[0];
 
   const handleChange = (newCode: "es" | "en") => {
     setLanguage(newCode);
+    // Refetch datos del API con el nuevo locale (?locale=en o ?locale=es)
+    dispatch(invalidateApiCacheOnLocaleChange());
   };
 
   return (

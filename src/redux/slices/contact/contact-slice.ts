@@ -2,6 +2,7 @@
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { ContactMessage } from "@/types/contact";
+import { urlWithLocale } from "@/redux/url-with-locale";
 
 export const contactsApiSlice = createApi({
   reducerPath: "contacts",
@@ -25,7 +26,7 @@ export const contactsApiSlice = createApi({
       ContactMessage
     >({
       query: (data) => ({
-        url: "/api/v1/contact",
+        url: urlWithLocale("/api/v1/contact"),
         method: "POST",
         body: data,
       }),

@@ -148,6 +148,30 @@ export type AppDispatch = AppStore["dispatch"];
 export const useAppDispatch = () => useDispatch<AppDispatch>();
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
+/** Limpia el caché de todos los API slices (para refetch con el nuevo ?locale= al cambiar idioma). */
+export function invalidateApiCacheOnLocaleChange() {
+  return (dispatch: AppDispatch) => {
+    [
+      productsApiSlice,
+      productCategoriesApiSlice,
+      productAmenitiesApiSlice,
+      productAudiencesApiSlice,
+      productTypesApiSlice,
+      reviewsApiSlice,
+      bookingsApiSlice,
+      favoritesApiSlice,
+      panelApiSlice,
+      exchangesApiSlice,
+      contactsApiSlice,
+      usersApiSlice,
+      paymentApiSlice,
+      paymentAccountApiSlice,
+    ].forEach((slice) => {
+      dispatch(slice.util.resetApiState());
+    });
+  };
+}
+
 /* Provider */
 export default function StoreProvider({
   children,
