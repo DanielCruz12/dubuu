@@ -243,7 +243,7 @@
       "paymentConfirmed": "Payment confirmed",
       "paymentError": "Error processing payment",
       "paymentCompletedSuccess": "Payment completed! Your booking is confirmed.",
-      "viewMyBookings": "View my bookings"
+      "viewMyBookings": "Go to my bookings"
     }
   }
 }

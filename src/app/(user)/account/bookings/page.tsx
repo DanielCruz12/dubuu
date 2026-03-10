@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Search, Filter } from "lucide-react";
+import moment from "moment";
 import type { IBookingUser } from "@/types/booking";
 import { Button } from "@/components/ui/button";
 import {
@@ -68,14 +69,16 @@ export default function BookingsPage() {
     return matchesSearch && matchesStatus;
   });
 
+  const todayStart = moment().startOf("day");
+
   const upcomingBookings = filteredBookings.filter((booking: IBookingUser) => {
-    const uiStatus = mapStatus(booking.status);
-    return uiStatus === "confirmado" || uiStatus === "pendiente";
+    const tourDate = moment(booking.tourDate);
+    return tourDate.isSameOrAfter(todayStart);
   });
 
   const pastBookings = filteredBookings.filter((booking: IBookingUser) => {
-    const uiStatus = mapStatus(booking.status);
-    return uiStatus === "completado" || uiStatus === "cancelado";
+    const tourDate = moment(booking.tourDate);
+    return tourDate.isBefore(todayStart);
   });
 
   return (
