@@ -71,3 +71,14 @@ export function getCommissionRates() {
     paymentProcessingPercentage: `${(COMMISSION_RATES.PAYMENT_PROCESSING_RATE * 100).toFixed(0)}%`,
   };
 }
+
+const TOTAL_COMMISSION_RATE =
+  COMMISSION_RATES.PLATFORM_RATE + COMMISSION_RATES.PAYMENT_PROCESSING_RATE;
+
+/**
+ * Calcula lo que recibe el host a partir del total cobrado (suma de precios finales).
+ * Usado en el panel para mostrar "Ingresos totales" después de comisión.
+ */
+export function getHostEarningsFromTotalSum(totalCollected: number): number {
+  return totalCollected * (1 - TOTAL_COMMISSION_RATE);
+}

@@ -123,7 +123,6 @@ export default function CheckoutForm({
   useOnPaymentCompleted(() => {
     setBlinkModalOpen(false);
     setBlinkResponse(null);
-    setShowPaymentStep(false);
     toast.success(t("home.checkout.toast.paymentCompletedSuccess"), {
       action: {
         label: t("home.checkout.toast.viewMyBookings"),

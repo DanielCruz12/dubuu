@@ -8,11 +8,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CalendarDays, CreditCard, Users } from "lucide-react";
+import moment from "moment";
+import "moment/locale/es";
 import { Overview } from "./overview";
 import { RecentBookings } from "./recent-bookings";
 import { DashboardTitle } from "@/components/dashboard-title";
 import { useUser } from "@clerk/nextjs";
 import { useLanguage } from "@/lib/i18n-context";
+import { getHostEarningsFromTotalSum } from "@/lib/price";
 import { useGetPanelSummaryQuery } from "@/redux/slices/panel/panel-slice";
 
 function getStatusLabelKey(status: string): string {
@@ -75,56 +78,71 @@ export function DashboardContent() {
 
   const { activeReservations, totalRevenue, frequentTravelers, reservationActivity, upcomingReservations } = data;
 
-  const activeChangeText =
-    activeReservations.changeFromLastMonth === 0
-      ? t("dashboard.noChangeSinceLastMonth")
-      : activeReservations.changeFromLastMonth > 0
-        ? `+${activeReservations.changeFromLastMonth} ${t("dashboard.sinceLastMonth")}`
-        : `${activeReservations.changeFromLastMonth} ${t("dashboard.sinceLastMonth")}`;
+  const totalCollected = Number(totalRevenue.total) || 0;
+  const revenueAfterCommission = getHostEarningsFromTotalSum(totalCollected);
 
-  const revenueChangeText =
-    totalRevenue.percentChangeFromLastYear === 0
-      ? t("dashboard.noChangeSinceLastYear")
-      : `${totalRevenue.percentChangeFromLastYear > 0 ? "+" : ""}${totalRevenue.percentChangeFromLastYear}% ${t("dashboard.sinceLastYear")}`;
+  const activeSubtext =
+    activeReservations.lastReservationAt != null
+      ? t("dashboard.lastReservation").replace(
+          "{{date}}",
+          moment(activeReservations.lastReservationAt).format("D MMM YYYY")
+        )
+      : activeReservations.changeFromLastMonth === 0
+        ? t("dashboard.noChangeSinceLastMonth")
+        : activeReservations.changeFromLastMonth > 0
+          ? `+${activeReservations.changeFromLastMonth} ${t("dashboard.sinceLastMonth")}`
+          : `${activeReservations.changeFromLastMonth} ${t("dashboard.sinceLastMonth")}`;
+
+  const revenueSubtext =
+    totalRevenue.lastIncomeAt != null
+      ? t("dashboard.lastIncome").replace(
+          "{{date}}",
+          moment(totalRevenue.lastIncomeAt).format("D MMM YYYY")
+        )
+      : totalRevenue.percentChangeFromLastYear === 0
+        ? t("dashboard.noChangeSinceLastYear")
+        : `${totalRevenue.percentChangeFromLastYear > 0 ? "+" : ""}${totalRevenue.percentChangeFromLastYear}% ${t("dashboard.sinceLastYear")}`;
 
   return (
-    <div className="flex flex-col gap-8 px-3 md:px-0">
+    <div className="flex min-w-0 flex-col gap-8 px-3 md:px-0">
       <DashboardTitle
         heading={t("dashboard.title")}
         description={t("dashboard.description")}
       />
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
+      <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <Card className="min-w-0">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {t("dashboard.activeReservations")}
             </CardTitle>
-            <CalendarDays className="h-4 w-4 text-muted-foreground" />
+            <CalendarDays className="h-4 w-4 shrink-0 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{activeReservations.total}</div>
-            <p className="text-xs text-muted-foreground">{activeChangeText}</p>
+            <p className="text-xs text-muted-foreground">{activeSubtext}</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="min-w-0">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {t("dashboard.totalRevenue")}
             </CardTitle>
-            <CreditCard className="h-4 w-4 text-muted-foreground" />
+            <CreditCard className="h-4 w-4 shrink-0 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalRevenue.total}</div>
-            <p className="text-xs text-muted-foreground">{revenueChangeText}</p>
+            <div className="text-2xl font-bold">
+              ${revenueAfterCommission.toFixed(2)}
+            </div>
+            <p className="text-xs text-muted-foreground">{revenueSubtext}</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="min-w-0">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {t("dashboard.frequentTravelers")}
             </CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="h-4 w-4 shrink-0 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{frequentTravelers.count}</div>
@@ -135,19 +153,19 @@ export function DashboardContent() {
         </Card>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
+      <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <Card className="min-w-0 md:col-span-2 lg:col-span-4">
           <CardHeader>
             <CardTitle>{t("dashboard.reservationActivity")}</CardTitle>
             <CardDescription>
               {t("dashboard.reservationActivityDescription")}
             </CardDescription>
           </CardHeader>
-          <CardContent className="pl-2">
+          <CardContent className="min-w-0 overflow-x-auto pl-2">
             <Overview data={reservationActivity} />
           </CardContent>
         </Card>
-        <Card className="col-span-4 lg:col-span-3">
+        <Card className="min-w-0 md:col-span-2 lg:col-span-3">
           <CardHeader>
             <CardTitle>{t("dashboard.upcomingReservations")}</CardTitle>
             <CardDescription>
