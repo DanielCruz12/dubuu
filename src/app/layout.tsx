@@ -1,13 +1,12 @@
 import type React from "react";
 import { Raleway } from "next/font/google";
 import GlobalProviders from "../components/providers/global-providers";
-import { ClerkProvider } from "@clerk/nextjs";
-import "./globals.css";
 import type { Metadata } from "next";
 import Script from "next/script";
 import { Toaster } from "sonner";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
+import "./globals.css";
 
 const raleway = Raleway({ weight: "400", subsets: ["latin"] });
 
@@ -99,17 +98,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider
-      appearance={{
-        variables: {
-          colorPrimary: "hsl(262, 4%, 45%)",
-        },
-        layout: {
-          socialButtonsPlacement: "bottom",
-        },
-      }}
-    >
-      <html lang="es" suppressHydrationWarning>
+    <html lang="es" suppressHydrationWarning>
         <head>
           <meta charSet="UTF-8" />
           <meta
@@ -226,7 +215,6 @@ export default async function RootLayout({
             <Toaster richColors />
           </GlobalProviders>
         </body>
-      </html>
-    </ClerkProvider>
+    </html>
   );
 }

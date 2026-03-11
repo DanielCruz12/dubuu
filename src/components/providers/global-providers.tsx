@@ -12,30 +12,32 @@ import { AuthProvider } from "./auth-provider";
 import { LanguageProvider } from "@/lib/i18n-context";
 import NextTopLoader from "nextjs-toploader";
 import { SocketProvider } from "@/contexts/socket-context";
+import { ClerkLocalizedProvider } from "./clerk-localized-provider";
 
 const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
   return (
-    <StoreProvider>
-      <AuthProvider>
-        <SocketProvider>
-          <LanguageProvider>
-          <ThemeProvider attribute="class" defaultTheme="light">
-            <NextTopLoader />
-
-          <div className="flex flex-col min-h-screen">
-            <div className="max-w-[2000px] mx-auto w-full">
-              <Header />
-              <main className="flex-1">
-                <section className="h-full">{children}</section>
-              </main>
-              <Footer />
-            </div>
-          </div>
-        </ThemeProvider>
-          </LanguageProvider>
-        </SocketProvider>
-      </AuthProvider>
-    </StoreProvider>
+    <LanguageProvider>
+      <ClerkLocalizedProvider>
+        <StoreProvider>
+          <AuthProvider>
+            <SocketProvider>
+              <ThemeProvider attribute="class" defaultTheme="light">
+                <NextTopLoader />
+                <div className="flex flex-col min-h-screen">
+                  <div className="max-w-[2000px] mx-auto w-full">
+                    <Header />
+                    <main className="flex-1">
+                      <section className="h-full">{children}</section>
+                    </main>
+                    <Footer />
+                  </div>
+                </div>
+              </ThemeProvider>
+            </SocketProvider>
+          </AuthProvider>
+        </StoreProvider>
+      </ClerkLocalizedProvider>
+    </LanguageProvider>
   );
 };
 
