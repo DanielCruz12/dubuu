@@ -129,7 +129,7 @@ export const makeStore = () =>
         productCategoriesApiSlice.middleware,
         productAmenitiesApiSlice.middleware,
         productAudiencesApiSlice.middleware,
-        panelApiSlice.middleware
+        panelApiSlice.middleware,
       ),
   });
 
@@ -153,7 +153,6 @@ export function invalidateApiCacheOnLocaleChange() {
       bookingsApiSlice,
       favoritesApiSlice,
       panelApiSlice,
-      exchangesApiSlice,
       contactsApiSlice,
       usersApiSlice,
       paymentApiSlice,
