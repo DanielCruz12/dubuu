@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { MapPin } from "lucide-react";
+import { toast } from "sonner";
 import ImageCollage from "@/components/sections/image-collage";
 import { useParams } from "next/navigation";
+import { socket } from "@/lib/socket";
 import { useGetProductQuery } from "@/redux/slices/product/product-slice";
 import { useGetBookingsByUserIdQuery } from "@/redux/slices/booking/booking-slice";
 import ReviewSection from "@/components/sections/reviews/reviews-section";
@@ -32,15 +35,44 @@ import { useGetReviewsQuery } from "@/redux/slices/product/review-slice";
 import { isProductType } from "@/utils";
 import UpTop from "@/components/up-top";
 import { ShareModal } from "@/components/share-modal";
-import { useCurrency } from "@/hooks/use-currency-converter";
+import { formatUsd, USD_SYMBOL } from "@/utils/currency";
 import { useLanguage } from "@/lib/i18n-context";
 
 export default function ProductBooking() {
   const { t } = useLanguage();
+  const router = useRouter();
   const { user } = useUser();
   const { id } = useParams();
+
+  // Socket: join con userId y escuchar payment:completed (toast + redirect)
+  useEffect(() => {
+    const userId = user?.id;
+    if (!userId) return;
+
+    function onConnect() {
+      socket.emit("join", { userId });
+    }
+
+    function onPaymentCompleted(_data: { bookingId: string; status: string }) {
+      console.log(_data);
+      toast.success(t("home.checkout.toast.paymentConfirmed"));
+      router.push("/account/bookings");
+    }
+
+    if (socket.connected) onConnect();
+
+    socket.on("connect", onConnect);
+    socket.on("payment:completed", onPaymentCompleted);
+
+    return () => {
+      socket.off("connect", onConnect);
+      socket.off("payment:completed", onPaymentCompleted);
+    };
+  }, [user?.id, router, t]);
+
   const { data, isLoading, isError } = useGetProductQuery(id as string);
-  const { convert, symbol } = useCurrency();
+  const convert = formatUsd;
+  const symbol = USD_SYMBOL;
 
   const [bookingData, setBookingData] = useState<{
     datetime: string;

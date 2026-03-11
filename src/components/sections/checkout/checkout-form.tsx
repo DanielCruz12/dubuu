@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
+import { useRouter } from "next/navigation";
 import { useLanguage } from "@/lib/i18n-context";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, FormProvider } from "react-hook-form";
@@ -16,7 +17,12 @@ import {
   useCreateBlinkPaymentMutation,
 } from "@/redux/slices/payment/payment-link";
 import { toast } from "sonner";
-import { useCreateBookingMutation } from "@/redux/slices/booking/booking-slice";
+import {
+  useCreateBookingMutation,
+  bookingsApiSlice,
+} from "@/redux/slices/booking/booking-slice";
+import { useDispatch } from "react-redux";
+import { useOnPaymentCompleted } from "@/contexts/socket-context";
 import {
   useGetUserQuery,
   useUpdateUserMutation,
@@ -51,6 +57,8 @@ export default function CheckoutForm({
 }) {
   const { t } = useLanguage();
   const user = useUser();
+  const router = useRouter();
+  const dispatch = useDispatch();
 
   const methods = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutFormSchema),
@@ -110,6 +118,20 @@ export default function CheckoutForm({
 
   const { data: currentUser } = useGetUserQuery(bookingData?.user_id ?? "", {
     skip: !bookingData?.user_id,
+  });
+
+  useOnPaymentCompleted(() => {
+    setBlinkModalOpen(false);
+    setBlinkResponse(null);
+    toast.success(t("home.checkout.toast.paymentCompletedSuccess"), {
+      action: {
+        label: t("home.checkout.toast.viewMyBookings"),
+        onClick: () => router.push("/account/bookings"),
+      },
+    });
+    dispatch(
+      bookingsApiSlice.util.invalidateTags([{ type: "Bookings", id: "USER_LIST" }])
+    );
   });
 
   useEffect(() => {
@@ -188,8 +210,10 @@ export default function CheckoutForm({
     if (paymentMethod === "blink") {
       const blinkPayload = {
         total: bookingData.total,
-        userId: bookingData.user_id,
-        productId: bookingData.product_id,
+        user_id: bookingData.user_id,
+        product_id: bookingData.product_id,
+        tickets: bookingData.tickets.adult,
+        tour_date_id: bookingData.datetime,
       };
       try {
         const response = await createBlinkPayment(blinkPayload).unwrap();

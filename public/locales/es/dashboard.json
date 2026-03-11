@@ -7,6 +7,8 @@
   "totalRevenue": "Ingresos Totales",
   "sinceLastYear": "desde el año pasado",
   "noChangeSinceLastYear": "Sin cambios desde el año pasado",
+  "lastReservation": "Última reserva: {{date}}",
+  "lastIncome": "Último ingreso: {{date}}",
   "frequentTravelers": "Viajeros Frecuentes",
   "frequentTravelersSub": "Personas en tu grupo habitual",
   "reservationActivity": "Actividad de Reservas",

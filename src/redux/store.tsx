@@ -37,12 +37,9 @@ import { contactsApiSlice } from "@/redux/slices/contact/contact-slice";
 import { productCategoriesApiSlice } from "@/redux/slices/product/product-category";
 import { productAmenitiesApiSlice } from "@/redux/slices/product/product-amenity";
 import { productAudiencesApiSlice } from "@/redux/slices/product/product-audience";
-import currencyReducer from "./slices/exchange/currency-slice";
-
 import searchReducer from "@/redux/slices/product/search/search-slice";
 
 import authReducer from "./slices/auth/auth-slice";
-import { exchangesApiSlice } from "./slices/exchange/exchange-slice";
 import { panelApiSlice } from "./slices/panel/panel-slice";
 
 // Función para crear un almacenamiento "inerte" en entornos sin window (server-side)
@@ -78,8 +75,6 @@ const persistConfig = {
     "productCategories",
     "productAmenities",
     "productAudiences",
-    "exchangesApiSlice",
-    "currency", // Reducer para la moneda, si lo deseas persistir
     // Aquí puedes indicar qué reducers deseas persistir
     // "productsApiSlice", // Si deseas persistir el slice de productos
     // "paymentApiSlice", // Si deseas persistir el slice de pagos
@@ -105,9 +100,7 @@ const rootReducer = combineReducers({
   [productCategoriesApiSlice.reducerPath]: productCategoriesApiSlice.reducer,
   [productAmenitiesApiSlice.reducerPath]: productAmenitiesApiSlice.reducer,
   [productAudiencesApiSlice.reducerPath]: productAudiencesApiSlice.reducer,
-  [exchangesApiSlice.reducerPath]: exchangesApiSlice.reducer,
   [panelApiSlice.reducerPath]: panelApiSlice.reducer,
-  currency: currencyReducer,
   auth: authReducer,
   search: searchReducer,
 });
@@ -136,7 +129,6 @@ export const makeStore = () =>
         productCategoriesApiSlice.middleware,
         productAmenitiesApiSlice.middleware,
         productAudiencesApiSlice.middleware,
-        exchangesApiSlice.middleware,
         panelApiSlice.middleware
       ),
   });

@@ -61,7 +61,7 @@ export function RecentBookings({
         </div>
       ))}
       <Button asChild variant="outline" className="w-full">
-        <Link href="/dashboard/reservas">{viewAllLabel}</Link>
+        <Link href="/dashboard/bookings">{viewAllLabel}</Link>
       </Button>
     </div>
   );

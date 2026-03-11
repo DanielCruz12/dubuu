@@ -3,6 +3,8 @@ export interface PanelActiveReservations {
   changeFromLastMonth: number;
   thisMonth: number;
   lastMonth: number;
+  /** Fecha de la última reserva (ISO) para mostrar "Última reserva: ..." */
+  lastReservationAt?: string | null;
 }
 
 export interface PanelTotalRevenue {
@@ -10,6 +12,8 @@ export interface PanelTotalRevenue {
   percentChangeFromLastYear: number;
   thisYearTotal: number;
   lastYearTotal: number;
+  /** Fecha del último ingreso (ISO) para mostrar "Último ingreso: ..." */
+  lastIncomeAt?: string | null;
 }
 
 export interface PanelFrequentTravelers {

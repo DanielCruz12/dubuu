@@ -8,7 +8,7 @@ import type { IBookingUser } from "@/types/booking";
 import moment from "moment";
 import "moment/locale/es";
 import Image from "next/image";
-import { statusColors, statusText } from "@/utils/data";
+import { statusText } from "@/utils/data";
 
 interface BookingCardProps {
   booking: IBookingUser;
@@ -45,7 +45,7 @@ export function BookingCard({ booking, onClick }: BookingCardProps) {
           />
         </div>
         <Badge
-          className={`absolute bottom-3 left-3 font-normal py-1 px-2 ${statusColors[uiStatus as keyof typeof statusColors]}`}
+          className="absolute bottom-3 left-3 font-normal py-1.5 px-2.5 bg-white/95 backdrop-blur-sm text-gray-900 border border-gray-200 shadow-md"
           variant="outline"
         >
           {statusText[uiStatus as keyof typeof statusText]}

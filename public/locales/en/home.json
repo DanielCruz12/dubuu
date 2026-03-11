@@ -240,7 +240,10 @@
       "processing": "Processing payment.",
       "redirecting": "Redirecting to bank...",
       "blinkReady": "Ready. Scan the QR or copy the invoice to pay.",
-      "paymentError": "Error processing payment"
+      "paymentConfirmed": "Payment confirmed",
+      "paymentError": "Error processing payment",
+      "paymentCompletedSuccess": "Payment completed! Your booking is confirmed.",
+      "viewMyBookings": "Go to my bookings"
     }
   }
 }

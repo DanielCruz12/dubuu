@@ -4,7 +4,7 @@ import type React from "react";
 
 import { useState } from "react";
 import { Globe } from "lucide-react";
-import * as Flags from "country-flag-icons/react/3x2"; 
+import * as Flags from "country-flag-icons/react/3x2";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -15,13 +15,12 @@ import {
 } from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
 import { countriesCurrency } from "@/utils/data";
-import { useGetExchangesQuery } from "@/redux/slices/exchange/exchange-slice";
-import { useCurrency } from "@/hooks/use-currency-converter";
+
+const CURRENCY_CODE = "USD";
 
 export default function CountryCurrencySelector() {
   const [isOpen, setIsOpen] = useState(false);
-  const { data, isLoading } = useGetExchangesQuery("USD");
-  const { currencyCode, setCurrencyCode } = useCurrency();
+  const [currencyCode, setCurrencyCode] = useState(CURRENCY_CODE);
 
   const selectedCurrency = countriesCurrency.find(
     (country) => country.currencyCode === currencyCode
@@ -53,7 +52,7 @@ export default function CountryCurrencySelector() {
                 key={country.countryCode}
                 onClick={() => {
                   setCurrencyCode(country.currencyCode);
-                  setIsOpen(false); // cerrar el drawer al seleccionar
+                  setIsOpen(false);
                 }}
                 className={cn(
                   "flex items-center justify-between p-2 rounded-lg",
@@ -89,16 +88,6 @@ export default function CountryCurrencySelector() {
                     <span className="text-left text-sm sm:text-base">
                       {country.currencyCode} {country.symbol}
                     </span>
-                    {!isLoading &&
-                      data?.conversion_rates?.[country.currencyCode] && (
-                        <span className="text-xs text-left sm:text-sm">
-                          1 USD ≈{" "}
-                          {data.conversion_rates[country.currencyCode].toFixed(
-                            2
-                          )}{" "}
-                          {country.currencyCode}
-                        </span>
-                      )}
                   </div>
                 </div>
               </button>

@@ -18,7 +18,7 @@ import {
 } from "@/redux/slices/favorite/favorite-slice";
 import { toast } from "sonner";
 import { generateSlug } from "@/lib/utils";
-import { useCurrency } from "@/hooks/use-currency-converter";
+import { formatUsd, USD_SYMBOL } from "@/utils/currency";
 import { useLanguage } from "@/lib/i18n-context";
 
 export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
@@ -43,7 +43,8 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
   const carouselRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { user } = useUser();
-  const { convert, symbol } = useCurrency();
+  const convert = formatUsd;
+  const symbol = USD_SYMBOL;
   const { t } = useLanguage();
 
   // Get favorites from API

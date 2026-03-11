@@ -31,8 +31,9 @@ export function Overview({ data }: OverviewProps) {
   const chartData = data?.length ? toChartData(data) : defaultData;
 
   return (
-    <ResponsiveContainer width="100%" height={290}>
-      <BarChart data={chartData}>
+    <div className="min-w-[280px] w-full" style={{ height: 290 }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={chartData}>
         <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
         <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value}`} />
         <Tooltip
@@ -48,6 +49,7 @@ export function Overview({ data }: OverviewProps) {
         />
         <Bar dataKey="total" fill="currentColor" radius={[4, 4, 0, 0]} className="fill-primary" />
       </BarChart>
-    </ResponsiveContainer>
+      </ResponsiveContainer>
+    </div>
   )
 }

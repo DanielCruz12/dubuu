@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -114,7 +114,10 @@ export function EditProductModal({
   });
 
   // Actualizar la fecha seleccionada local cuando cambia la prop
-  const tourDates = tour.tour?.tour_dates ?? [];
+  const tourDates = useMemo(
+    () => tour.tour?.tour_dates ?? [],
+    [tour.tour?.tour_dates]
+  );
   useEffect(() => {
     if (selectedDateId) {
       setLocalSelectedDateId(selectedDateId);

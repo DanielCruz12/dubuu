@@ -240,7 +240,10 @@
       "processing": "Procesando pago.",
       "redirecting": "Redirigiendo al banco...",
       "blinkReady": "Listo. Escanea el QR o copia la factura para pagar.",
-      "paymentError": "Error al procesar el pago"
+      "paymentConfirmed": "Pago confirmado",
+      "paymentError": "Error al procesar el pago",
+      "paymentCompletedSuccess": "¡Pago completado! Tu reserva está confirmada.",
+      "viewMyBookings": "Ir a mis reservas"
     }
   }
 }

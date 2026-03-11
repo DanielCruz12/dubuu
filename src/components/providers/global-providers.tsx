@@ -11,12 +11,14 @@ import { Header } from "@/layouts/header";
 import { AuthProvider } from "./auth-provider";
 import { LanguageProvider } from "@/lib/i18n-context";
 import NextTopLoader from "nextjs-toploader";
+import { SocketProvider } from "@/contexts/socket-context";
 
 const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
   return (
     <StoreProvider>
       <AuthProvider>
-        <LanguageProvider>
+        <SocketProvider>
+          <LanguageProvider>
           <ThemeProvider attribute="class" defaultTheme="light">
             <NextTopLoader />
 
@@ -30,7 +32,8 @@ const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
             </div>
           </div>
         </ThemeProvider>
-      </LanguageProvider>
+          </LanguageProvider>
+        </SocketProvider>
       </AuthProvider>
     </StoreProvider>
   );
