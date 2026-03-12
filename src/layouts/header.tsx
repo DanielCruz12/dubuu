@@ -89,7 +89,10 @@ export function Header() {
       <header className="top-0 z-40 w-full">
         <div className="flex h-16 items-center px-4 md:px-20">
           <MenuProfileSheet
-            dashboardNavItems={navItemsToUse}
+            dashboardNavItems={navItemsToUse.map((item) => ({
+              ...item,
+              title: t(item.title),
+            }))}
             open={open}
             setOpen={setOpen}
             pathname={pathname}

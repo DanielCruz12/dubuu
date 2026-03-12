@@ -1,6 +1,18 @@
 {
   "title": "Panel",
   "description": "Bienvenido a tu panel de control",
+  "nav": {
+    "profile": "Perfil",
+    "myBookings": "Mis reservas",
+    "saved": "Guardados",
+    "dashboard": "Panel",
+    "bookings": "Reservas",
+    "products": "Productos",
+    "payments": "Pagos"
+  },
+  "addProduct": {
+    "title": "Agregar producto"
+  },
   "activeReservations": "Reservas Activas",
   "sinceLastMonth": "desde el mes pasado",
   "noChangeSinceLastMonth": "Sin cambios desde el mes pasado",
@@ -38,5 +50,44 @@
     "oneDay": "1 día",
     "tripInfo": "Información del viaje",
     "downloadVoucher": "Descargar voucher"
+  },
+  "addTour": {
+    "progress": "Paso {{step}} de {{total}}",
+    "steps": {
+      "basicInfo": {
+        "title": "Información básica",
+        "description": "Ingresa la información básica del tour"
+      },
+      "location": {
+        "title": "Ubicación",
+        "description": "Selecciona la ubicación exacta en el mapa"
+      },
+      "details": {
+        "title": "Detalles del tour",
+        "description": "Agrega detalles específicos del tour"
+      },
+      "categorization": {
+        "title": "Categorización",
+        "description": "Categoriza tu tour para mejor visibilidad"
+      },
+      "multimedia": {
+        "title": "Multimedia y precio",
+        "description": "Agrega imágenes, videos, archivos y establece el precio"
+      }
+    },
+    "buttons": {
+      "back": "Atrás",
+      "continue": "Continuar",
+      "creating": "Creando tour...",
+      "create": "Crear tour"
+    },
+    "auth": {
+      "title": "Necesitas iniciar sesión para crear el producto",
+      "description": "Inicia sesión o crea una cuenta para poder crear y disfrutar de nuestra plataforma exclusiva.",
+      "signIn": "Iniciar sesión"
+    },
+    "security": {
+      "secureInfo": "Información segura"
+    }
   }
 }

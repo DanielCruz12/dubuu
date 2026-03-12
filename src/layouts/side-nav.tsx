@@ -13,12 +13,14 @@ import {
   hostDashboardItems,
 } from "@/utils/menu-options";
 import { useEffect, useState } from "react";
+import { useLanguage } from "@/lib/i18n-context";
 
 export function SideNav() {
   const pathname = usePathname();
   const router = useRouter();
   const { hasRole, isLoadingRole } = useClerkToken();
   const [navItems, setNavItems] = useState(accountNavItems);
+  const { t } = useLanguage();
 
   // Handle all redirects and navigation items in a single useEffect
   useEffect(() => {
@@ -82,7 +84,7 @@ export function SideNav() {
             )}
           >
             {item.icon}
-            {item.title}
+            {t(item.title)}
           </Link>
         );
       })}

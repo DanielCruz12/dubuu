@@ -41,6 +41,7 @@ import {
 import { useCreateProductMutation } from "@/redux/slices/product/product-slice";
 import { SignInButton, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "@/lib/i18n-context";
 
 export function TourForm() {
   const [step, setStep] = useState(1);
@@ -67,6 +68,7 @@ export function TourForm() {
     videoFiles: [],
     fileAttachments: [],
   });
+  const { t } = useLanguage();
 
   // Restaurar borrador al montar (solo cliente)
   useEffect(() => {
@@ -257,15 +259,14 @@ export function TourForm() {
     return (
       <div className="text-center">
         <h2 className="text-xl font-semibold mb-4">
-          Necesitas iniciar sesión para crear el producto
+          {t("dashboard.addTour.auth.title")}
         </h2>
         <p className="text-sm text-muted-foreground mb-4">
-          Inicia sesión o crea una cuenta para poder crear y disfrutar de
-          nuestra plataforma exclusiva.
+          {t("dashboard.addTour.auth.description")}
           <br />
         </p>
         <SignInButton>
-          <Button>Iniciar sesión</Button>
+          <Button>{t("dashboard.addTour.auth.signIn")}</Button>
         </SignInButton>
       </div>
     );
@@ -305,32 +306,36 @@ export function TourForm() {
                 </div>
               ))}
             </div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">{`Paso ${step} de ${totalSteps}`}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">
+              {t("dashboard.addTour.progress")
+                .replace("{{step}}", String(step))
+                .replace("{{total}}", String(totalSteps))}
+            </div>
           </div>
         </div>
 
         <CardHeader className="pb-2">
           <CardTitle className="text-xl font-medium">
             {step === 1
-              ? "Información básica"
+              ? t("dashboard.addTour.steps.basicInfo.title")
               : step === 2
-                ? "Ubicación"
+                ? t("dashboard.addTour.steps.location.title")
                 : step === 3
-                  ? "Detalles del tour"
+                  ? t("dashboard.addTour.steps.details.title")
                   : step === 4
-                    ? "Categorización"
-                    : "Multimedia y precio"}
+                    ? t("dashboard.addTour.steps.categorization.title")
+                    : t("dashboard.addTour.steps.multimedia.title")}
           </CardTitle>
           <CardDescription>
             {step === 1
-              ? "Ingresa la información básica del tour"
+              ? t("dashboard.addTour.steps.basicInfo.description")
               : step === 2
-                ? "Selecciona la ubicación exacta en el mapa"
+                ? t("dashboard.addTour.steps.location.description")
                 : step === 3
-                  ? "Agrega detalles específicos del tour"
+                  ? t("dashboard.addTour.steps.details.description")
                   : step === 4
-                    ? "Categoriza tu tour para mejor visibilidad"
-                    : "Agrega imágenes, videos, archivos y establece el precio"}
+                    ? t("dashboard.addTour.steps.categorization.description")
+                    : t("dashboard.addTour.steps.multimedia.description")}
           </CardDescription>
         </CardHeader>
 
@@ -424,7 +429,9 @@ export function TourForm() {
                 disabled={isCreating}
               >
                 <ArrowLeft className="mr-1 sm:mr-2 h-4 w-4" />
-                <span className="sm:inline">Atrás</span>
+                <span className="sm:inline">
+                  {t("dashboard.addTour.buttons.back")}
+                </span>
               </Button>
             ) : (
               <div></div>
@@ -437,7 +444,9 @@ export function TourForm() {
                 disabled={isCreating}
               >
                 <span className="flex items-center">
-                  <span className="sm:inline">Continuar</span>
+                  <span className="sm:inline">
+                    {t("dashboard.addTour.buttons.continue")}
+                  </span>
                   <ChevronRight className="ml-1 sm:ml-2 h-4 w-4" />
                 </span>
               </Button>
@@ -450,10 +459,10 @@ export function TourForm() {
                 {isCreating ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creando tour...
+                    {t("dashboard.addTour.buttons.creating")}
                   </>
                 ) : (
-                  "Crear tour"
+                  t("dashboard.addTour.buttons.create")
                 )}
               </Button>
             )}
@@ -464,7 +473,7 @@ export function TourForm() {
         <div className="flex justify-center pb-4">
           <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
             <ShieldCheck className="h-3 w-3 mr-1" />
-            Información segura
+            {t("dashboard.addTour.security.secureInfo")}
           </div>
         </div>
       </Card>

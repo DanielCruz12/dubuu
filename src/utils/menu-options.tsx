@@ -91,17 +91,17 @@ export const authenticatedHostOrAdminMenuItems: MenuNavItem[] = [
 // SideNav for normal users (/account)
 export const accountNavItems: NavItem[] = [
   {
-    title: "Perfil",
+    title: "dashboard.nav.profile",
     href: "/account/profile",
     icon: <User className="h-4 w-4 mr-2" />,
   },
   {
-    title: "Mis reservas",
+    title: "dashboard.nav.myBookings",
     href: "/account/bookings",
     icon: <CalendarDays className="h-4 w-4 mr-2" />,
   },
   {
-    title: "Guardados",
+    title: "dashboard.nav.saved",
     href: "/account/saved",
     icon: <Bookmark className="h-4 w-4 mr-2" />,
   },
@@ -110,7 +110,7 @@ export const accountNavItems: NavItem[] = [
 // Common dashboard items for all roles
 export const commonDashboardItems: NavItem[] = [
   {
-    title: "Perfil",
+    title: "dashboard.nav.profile",
     href: "/dashboard/profile",
     icon: <User className="h-4 w-4 mr-2" />,
   },
@@ -133,27 +133,27 @@ export const adminDashboardItems: NavItem[] = [
 // Host-only dashboard items
 export const hostDashboardItems: NavItem[] = [
   {
-    title: "Panel",
+    title: "dashboard.nav.dashboard",
     href: "/dashboard",
     icon: <LayoutDashboardIcon className="h-4 w-4 mr-2" />,
   },
   {
-    title: "Reservas",
+    title: "dashboard.nav.bookings",
     href: "/dashboard/bookings",
     icon: <CalendarDays className="h-4 w-4 mr-2" />,
   },
   {
-    title: "Productos",
+    title: "dashboard.nav.products",
     href: "/dashboard/products",
     icon: <List className="h-4 w-4 mr-2" />,
   },
   {
-    title: "Pagos",
+    title: "dashboard.nav.payments",
     href: "/dashboard/payments",
     icon: <CreditCard className="h-4 w-4 mr-2" />,
   },
   {
-    title: "Guardados",
+    title: "dashboard.nav.saved",
     href: "/dashboard/saved",
     icon: <Bookmark className="h-4 w-4 mr-2" />,
   },

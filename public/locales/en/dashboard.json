@@ -1,6 +1,18 @@
 {
   "title": "Dashboard",
   "description": "Welcome to your control panel",
+  "nav": {
+    "profile": "Profile",
+    "myBookings": "My bookings",
+    "saved": "Saved",
+    "dashboard": "Dashboard",
+    "bookings": "Bookings",
+    "products": "Products",
+    "payments": "Payments"
+  },
+  "addProduct": {
+    "title": "Add product"
+  },
   "activeReservations": "Active Reservations",
   "sinceLastMonth": "from last month",
   "noChangeSinceLastMonth": "No change from last month",
@@ -38,5 +50,44 @@
     "oneDay": "1 day",
     "tripInfo": "Trip information",
     "downloadVoucher": "Download voucher"
+  },
+  "addTour": {
+    "progress": "Step {{step}} of {{total}}",
+    "steps": {
+      "basicInfo": {
+        "title": "Basic information",
+        "description": "Enter the basic information of the tour"
+      },
+      "location": {
+        "title": "Location",
+        "description": "Select the exact location on the map"
+      },
+      "details": {
+        "title": "Tour details",
+        "description": "Add specific details about the tour"
+      },
+      "categorization": {
+        "title": "Categorization",
+        "description": "Categorize your tour for better visibility"
+      },
+      "multimedia": {
+        "title": "Media and price",
+        "description": "Add images, videos, files and set the price"
+      }
+    },
+    "buttons": {
+      "back": "Back",
+      "continue": "Continue",
+      "creating": "Creating tour...",
+      "create": "Create tour"
+    },
+    "auth": {
+      "title": "You need to sign in to create a product",
+      "description": "Sign in or create an account to create and enjoy our exclusive platform.",
+      "signIn": "Sign in"
+    },
+    "security": {
+      "secureInfo": "Secure information"
+    }
   }
 }
