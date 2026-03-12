@@ -39,10 +39,7 @@ export function CategorizationStep({
 }: CategorizationStepProps) {
   // Estados para manejar las dependencias entre selectores
   const [selectedProductTypeId, setSelectedProductTypeId] = useState<string>(
-    defaultValues?.product_type_id || ""
-  );
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string>(
-    defaultValues?.product_category_id || ""
+    defaultValues?.product_type_id || "",
   );
 
   const { data: productTypes = [], isLoading: isLoadingTypes } =
@@ -66,7 +63,7 @@ export function CategorizationStep({
   // Filtrar categorías por tipo de producto seleccionado
   const filteredCategories = selectedProductTypeId
     ? productCategories.filter(
-        (category) => category.product_type.id === selectedProductTypeId
+        (category) => category.product_type.id === selectedProductTypeId,
       )
     : [];
 
@@ -74,7 +71,7 @@ export function CategorizationStep({
     (category) => ({
       value: category.id,
       label: category.name,
-    })
+    }),
   );
 
   // Mostrar todos los amenities (sin filtrarlos por categoría)
@@ -87,7 +84,7 @@ export function CategorizationStep({
     (audience) => ({
       value: audience.id,
       label: audience.name,
-    })
+    }),
   );
 
   const form = useForm<CategorizationFormValues>({
@@ -107,14 +104,12 @@ export function CategorizationStep({
     form.setValue("product_type_id", value);
 
     // Limpiar categoría y amenities cuando cambia el tipo de producto
-    setSelectedCategoryId("");
     form.setValue("product_category_id", "");
     form.setValue("amenities", []);
   };
 
   // Manejar cambio de categoría
   const handleCategoryChange = (value: string) => {
-    setSelectedCategoryId(value);
     form.setValue("product_category_id", value);
 
     // Limpiar amenities cuando cambia la categoría
@@ -128,7 +123,7 @@ export function CategorizationStep({
     (errors) => {
       // Hacer scroll al primer error
       scrollToFirstError(errors);
-    }
+    },
   );
 
   // Mostrar estado de carga
