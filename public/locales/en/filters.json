@@ -18,6 +18,8 @@
     "priceRangeDescription": "Trip price, includes all fees",
     "categoriesLabel": "Categories",
     "durationLabel": "Duration",
+    "allCategories": "All categories",
+    "allDurations": "Any duration",
     "category": {"aventura": "Adventure", "cultural": "Cultural", "relajacion": "Relaxation"},
     "duration": {"1-dia": "1 day", "2-3-dias": "2-3 days", "mas-de-3-dias": "More than 3 days"},
     "reset": "Reset",

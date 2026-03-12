@@ -17,7 +17,9 @@ export const productCategoriesApiSlice = createApi({
   endpoints: (builder) => {
     return {
       // 🔍 Obtener todas las categorías de producto
-      getProductCategories: builder.query<IProductCategory[], void>({
+      // Nota: se acepta un arg opcional (ej. locale) para variar la cache key
+      // y permitir refetch al cambiar idioma aunque la URL se construya con localStorage.
+      getProductCategories: builder.query<IProductCategory[], string | void>({
         query: () => urlWithLocale("/api/v1/product-category/"),
         providesTags: (result) =>
           result

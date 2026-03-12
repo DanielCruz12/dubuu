@@ -4,7 +4,7 @@ import { useRef } from "react";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { buttonVariants } from "@/components/ui/button";
-import { tours } from "@/utils/data";
+import { toursTranslations } from "@/utils/data";
 import UpTop from "@/components/up-top";
 import Link from "next/link";
 import { Star } from "lucide-react";
@@ -23,7 +23,8 @@ import { HERO_SLIDE_KEYS, HERO_SLIDE_IMAGES } from "@/utils/data";
 export default function Home() {
   const convert = formatUsd;
   const symbol = USD_SYMBOL;
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const tours = toursTranslations[language];
 
   const containerRef = useRef(null);
   const aboutRef = useRef(null);

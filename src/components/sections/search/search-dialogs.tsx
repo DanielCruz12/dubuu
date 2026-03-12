@@ -272,22 +272,42 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
   ] = useLazyGetProductCategoriesQuery();
 
   const ensureCategoriesLoaded = () => {
-    if (isUninitialized) fetchCategories(undefined);
+    // pasar `language` para variar cache key y refetch al cambiar idioma
+    if (isUninitialized) fetchCategories(language);
   };
 
   // Cargar categorías solo cuando se abre el diálogo (evita llamadas al cargar la página)
   useEffect(() => {
-    if (isOpen) ensureCategoriesLoaded();
+    if (isOpen) fetchCategories(language);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
+  // Si cambia el idioma con el modal abierto, refetch para reflejar traducciones del API
+  useEffect(() => {
+    if (isOpen) fetchCategories(language);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [language]);
+
   const categoryOptions = apiCategories
-    .filter((c) => tempProductType === "all" || c.product_type.name === tempProductType)
     .map((c) => ({
       key: c.id,
       value: toFilterSlug(c.name),
       label: c.name,
     }));
+
+  const selectedCategory = tempCategories[0] ?? "all";
+  const selectedDuration = tempDurations[0] ?? "all";
+
+  const setSingleCategory = (value: string) => {
+    // limpiar previas
+    tempCategories.forEach((c) => onCategoryChange(c, false));
+    if (value !== "all") onCategoryChange(value, true);
+  };
+
+  const setSingleDuration = (value: string) => {
+    tempDurations.forEach((d) => onDurationChange(d, false));
+    if (value !== "all") onDurationChange(value, true);
+  };
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px] max-w-[95%] md:max-w-[85%] lg:max-w-[75%] xl:max-w-[55%] p-0 overflow-hidden rounded-xl border-none shadow-xl">
@@ -366,69 +386,57 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
               <label className="text-xs font-medium mb-2 block">
                 {t("filters.dialog.categoriesLabel")}
               </label>
-              <div
-                className="space-y-2"
-                onClick={ensureCategoriesLoaded}
-                onMouseEnter={ensureCategoriesLoaded}
-                onFocusCapture={ensureCategoriesLoaded}
-              >
-                {isFetchingCategories && (
-                  <div className="text-xs text-muted-foreground">
-                    {t("common.loading")}
-                  </div>
-                )}
-                {!isFetchingCategories && categoryOptions.length === 0 && (
-                  <div className="text-xs text-muted-foreground">
-                    {t("filters.dialog.noCategories")}
-                  </div>
-                )}
-                {!isFetchingCategories &&
-                  categoryOptions.map((category) => (
-                    <div
+              <Select value={selectedCategory} onValueChange={setSingleCategory}>
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue
+                    placeholder={
+                      isFetchingCategories
+                        ? t("common.loading")
+                        : t("filters.dialog.allCategories")
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all" className="text-xs">
+                    {t("filters.dialog.allCategories")}
+                  </SelectItem>
+                  {categoryOptions.length === 0 && !isFetchingCategories && (
+                    <SelectItem value="__none" disabled className="text-xs">
+                      {t("filters.dialog.noCategories")}
+                    </SelectItem>
+                  )}
+                  {categoryOptions.map((category) => (
+                    <SelectItem
                       key={category.key}
-                      className="flex items-center space-x-2"
+                      value={category.value}
+                      className="text-xs"
                     >
-                      <Checkbox
-                        id={category.value}
-                        checked={tempCategories.includes(category.value)}
-                        onCheckedChange={(checked) =>
-                          onCategoryChange(category.value, checked === true)
-                        }
-                      />
-                      <label
-                        htmlFor={category.value}
-                        className="text-xs font-medium leading-none"
-                      >
-                        {category.label}
-                      </label>
-                    </div>
+                      {category.label}
+                    </SelectItem>
                   ))}
-              </div>
+                </SelectContent>
+              </Select>
             </div>
 
             <div>
               <label className="text-xs font-medium mb-2 block">
                 {t("filters.dialog.durationLabel")}
               </label>
-              <div className="space-y-2">
-                {["1-dia", "2-3-dias", "mas-de-3-dias"].map((duration) => (
-                  <div key={duration} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={duration}
-                      checked={tempDurations.includes(duration)}
-                      onCheckedChange={(checked) =>
-                        onDurationChange(duration, checked === true)
-                      }
-                    />
-                    <label
-                      htmlFor={duration}
-                      className="text-xs font-medium leading-none"
-                    >
+              <Select value={selectedDuration} onValueChange={setSingleDuration}>
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue placeholder={t("filters.dialog.allDurations")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all" className="text-xs">
+                    {t("filters.dialog.allDurations")}
+                  </SelectItem>
+                  {["1-dia", "2-3-dias", "mas-de-3-dias"].map((duration) => (
+                    <SelectItem key={duration} value={duration} className="text-xs">
                       {t(`filters.dialog.duration.${duration}`)}
-                    </label>
-                  </div>
-                ))}
-              </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 

@@ -18,6 +18,8 @@
     "priceRangeDescription": "Precio del viaje, incluye todas las tarifas",
     "categoriesLabel": "Categorías",
     "durationLabel": "Duración",
+    "allCategories": "Todas las categorías",
+    "allDurations": "Cualquier duración",
     "category": {"aventura": "Aventura", "cultural": "Cultural", "relajacion": "Relajación"},
     "duration": {"1-dia": "1 día", "2-3-dias": "2-3 días", "mas-de-3-dias": "Más de 3 días"},
     "reset": "Restablecer",

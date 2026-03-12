@@ -392,3 +392,30 @@ export const tours = [
     image: "/homepage/3.webp", // Roatán, Honduras
   },
 ];
+
+export const toursTranslations = {
+  es: tours,
+  en: [
+    {
+      title: "El Salvador",
+      duration: "1 day",
+      description: "Explore Surf City, hidden waterfalls, and colonial towns",
+      price: 50,
+      image: "/homepage/4.webp",
+    },
+    {
+      title: "Guatemala",
+      duration: "1 day",
+      description: "Cultural trip through Antigua, Atitlán, and Tikal",
+      price: 45,
+      image: "/homepage/6.webp",
+    },
+    {
+      title: "Honduras",
+      duration: "2 days",
+      description: "Discover Roatán, Copán, and its biodiversity",
+      price: 100,
+      image: "/homepage/3.webp",
+    },
+  ],
+};
