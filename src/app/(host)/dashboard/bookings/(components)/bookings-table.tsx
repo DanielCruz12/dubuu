@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DownloadIcon, SearchIcon } from "lucide-react";
@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/popover";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { bookingsColumns } from "../(columns)/columns";
+import { getBookingsColumns } from "../(columns)/columns";
 import moment from "moment";
 import "moment/locale/es";
 import { DataTableSkeleton } from "@/components/skeletons/datatable-skeleton";
@@ -41,7 +41,11 @@ export function BookingsDataTable() {
   const [bookingsData, setBookingsData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const columns = useMemo(
+    () => getBookingsColumns(t, language),
+    [t, language]
+  );
 
   // Fetch products for the user
   const { data: products, isLoading } = useGetProductsByUserIdQuery(userId, {
@@ -258,7 +262,7 @@ export function BookingsDataTable() {
               <Skeleton className="h-20 w-full" />
             </div>
           ) : (
-            <DataTable columns={bookingsColumns} data={bookingsData || []} />
+            <DataTable columns={columns} data={bookingsData || []} />
           )}
         </CardContent>
       </Card>

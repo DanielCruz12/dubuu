@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DownloadIcon, PlusCircle, SearchIcon } from "lucide-react";
-import { toursColumns } from "../(columns)/columns";
+import { getToursColumns } from "../(columns)/columns";
 import {
   Select,
   SelectContent,
@@ -48,7 +48,11 @@ export function ProductsDataTable() {
   const [availableTours, setAvailableTours] = useState<ITourProduct[]>([]);
   const [openTourSelect, setOpenTourSelect] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const columns = useMemo(
+    () => getToursColumns(t, language),
+    [t, language]
+  );
 
   const { data, isLoading } = useGetProductsByUserIdQuery(user?.id as string, {
     skip: !user?.id,
@@ -330,7 +334,7 @@ export function ProductsDataTable() {
           </div>
 
           <DataTable
-            columns={toursColumns}
+            columns={columns}
             data={filteredTours}
             showSearch={false}
           />

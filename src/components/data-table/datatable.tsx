@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { useLanguage } from "@/lib/i18n-context";
 import {
   Select,
   SelectContent,
@@ -54,13 +55,16 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   searchKey,
-  searchPlaceholder = "Buscar...",
+  searchPlaceholder,
   showSearch = true,
   showPagination = true,
   pageSizeOptions = [5, 10, 25, 50],
   defaultPageSize = 10,
 }: DataTableProps<TData, TValue>) {
+  const { t } = useLanguage();
   const [sorting, setSorting] = useState<SortingState>([]);
+  const placeholder =
+    searchPlaceholder ?? t("dashboard.dataTable.searchPlaceholder");
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
@@ -167,7 +171,7 @@ export function DataTable<TData, TValue>({
       {showSearch && searchKey && (
         <div className="flex items-center py-4">
           <Input
-            placeholder={searchPlaceholder}
+            placeholder={placeholder}
             value={
               (table.getColumn(searchKey)?.getFilterValue() as string) ?? ""
             }
@@ -221,7 +225,7 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No se encontraron resultados.
+                  {t("dashboard.dataTable.noResults")}
                 </TableCell>
               </TableRow>
             )}
@@ -230,11 +234,10 @@ export function DataTable<TData, TValue>({
       </div>
 
       {showPagination && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">
-              {/* This is a generic label; dashboard-specific pages wrap this table with translated context */}
-              Mostrar
+              {t("dashboard.dataTable.show")}
             </span>
             <Select
               value={`${table.getState().pagination.pageSize}`}
@@ -255,23 +258,37 @@ export function DataTable<TData, TValue>({
                 ))}
               </SelectContent>
             </Select>
-            <span className="text-sm text-muted-foreground">por página</span>
+            <span className="text-sm text-muted-foreground">
+              {t("dashboard.dataTable.perPage")}
+            </span>
           </div>
 
           <div className="text-sm text-muted-foreground">
-            Mostrando{" "}
-            {table.getFilteredRowModel().rows.length > 0
-              ? table.getState().pagination.pageIndex *
-                  table.getState().pagination.pageSize +
-                1
-              : 0}{" "}
-            a{" "}
-            {Math.min(
-              (table.getState().pagination.pageIndex + 1) *
-                table.getState().pagination.pageSize,
-              table.getFilteredRowModel().rows.length
-            )}{" "}
-            de {table.getFilteredRowModel().rows.length} resultados
+            {t("dashboard.dataTable.showingResults")
+              .replace(
+                "{{from}}",
+                String(
+                  table.getFilteredRowModel().rows.length > 0
+                    ? table.getState().pagination.pageIndex *
+                        table.getState().pagination.pageSize +
+                      1
+                    : 0
+                )
+              )
+              .replace(
+                "{{to}}",
+                String(
+                  Math.min(
+                    (table.getState().pagination.pageIndex + 1) *
+                      table.getState().pagination.pageSize,
+                    table.getFilteredRowModel().rows.length
+                  )
+                )
+              )
+              .replace(
+                "{{total}}",
+                String(table.getFilteredRowModel().rows.length)
+              )}
           </div>
 
           {table.getPageCount() > 1 && (

@@ -67,6 +67,13 @@
   "addProduct": {
     "title": "Agregar producto"
   },
+  "dataTable": {
+    "noResults": "No se encontraron resultados.",
+    "show": "Mostrar",
+    "perPage": "por página",
+    "showingResults": "Mostrando {{from}} a {{to}} de {{total}} resultados",
+    "searchPlaceholder": "Buscar..."
+  },
   "activeReservations": "Reservas Activas",
   "sinceLastMonth": "desde el mes pasado",
   "noChangeSinceLastMonth": "Sin cambios desde el mes pasado",
@@ -118,7 +125,7 @@
       "searchProduct": "Buscar producto...",
       "noProductsFound": "No se encontraron productos.",
       "export": "Exportar",
-      "newTour": "Nuevo Tour"
+      "newTour": "Crear"
     },
     "table": {
       "name": "Nombre",
@@ -130,7 +137,13 @@
       "availableSpots": "Plazas Disp.",
       "availability": "Disponibilidad",
       "status": "Estado",
-      "actions": "Acciones"
+      "actions": "Acciones",
+      "notAvailable": "No disponible",
+      "notSpecified": "No especificado",
+      "visible": "Visible",
+      "hidden": "Oculto",
+      "approved": "Aprobado",
+      "pending": "Pendiente"
     }
   },
   "bookings": {

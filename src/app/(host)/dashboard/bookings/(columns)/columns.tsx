@@ -7,8 +7,13 @@ import type { Booking, IBooking } from "@/types/booking";
 import { Badge } from "@/components/ui/badge";
 import moment from "moment";
 import "moment/locale/es";
-// Define las columnas para la tabla de reservas
-export const bookingsColumns: ColumnDef<Booking>[] = [
+
+export function getBookingsColumns(
+  t: (key: string) => string,
+  language: string
+): ColumnDef<Booking>[] {
+  const locale = language === "en" ? "en" : "es";
+  return [
   {
     accessorKey: "user",
     header: ({ column }) => {
@@ -17,7 +22,7 @@ export const bookingsColumns: ColumnDef<Booking>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Cliente
+          {t("dashboard.bookings.table.client")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -40,7 +45,7 @@ export const bookingsColumns: ColumnDef<Booking>[] = [
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Boletos
+            {t("dashboard.bookings.table.tickets")}
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         </div>
@@ -61,7 +66,7 @@ export const bookingsColumns: ColumnDef<Booking>[] = [
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Total
+            {t("dashboard.bookings.table.total")}
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         </div>
@@ -86,7 +91,7 @@ export const bookingsColumns: ColumnDef<Booking>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Fecha de reserva
+          {t("dashboard.bookings.table.bookingDate")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -95,7 +100,9 @@ export const bookingsColumns: ColumnDef<Booking>[] = [
       const date = row.getValue("tourDate") as string;
       if (!date) return <div>—</div>;
       return (
-        <div>{moment(date).locale("es").format("dddd, D [de] MMMM - h:mm A")}</div>
+        <div>
+          {moment(date).locale(locale).format("dddd, D [de] MMMM - h:mm A")}
+        </div>
       );
     },
     sortingFn: "datetime",
@@ -103,7 +110,7 @@ export const bookingsColumns: ColumnDef<Booking>[] = [
 
   {
     accessorKey: "status",
-    header: "Estado",
+    header: t("dashboard.bookings.table.status"),
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
       return (
@@ -122,5 +129,5 @@ export const bookingsColumns: ColumnDef<Booking>[] = [
       );
     },
   },
-
-];
+  ];
+}

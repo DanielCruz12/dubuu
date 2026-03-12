@@ -9,10 +9,12 @@ import type { ITourProduct } from "@/types/product";
 import moment from "moment";
 import "moment/locale/es";
 
-// Define las columnas para la tabla de tours
-export const toursColumns: ColumnDef<
-  ITourProduct & { selectedDateId?: string }
->[] = [
+export function getToursColumns(
+  t: (key: string) => string,
+  language: string
+): ColumnDef<ITourProduct & { selectedDateId?: string }>[] {
+  const locale = language === "en" ? "en" : "es";
+  return [
   {
     accessorKey: "name",
     size: 140,
@@ -23,7 +25,7 @@ export const toursColumns: ColumnDef<
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Nombre
+          {t("dashboard.products.table.name")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -48,7 +50,7 @@ export const toursColumns: ColumnDef<
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Precio
+          {t("dashboard.products.table.price")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -64,14 +66,14 @@ export const toursColumns: ColumnDef<
   },
   {
     id: "current_date",
-    header: "Fecha",
+    header: t("dashboard.products.table.date"),
     cell: ({ row }) => {
       const tour = row.original;
       const selectedDateId = tour.selectedDateId;
 
       const tourDates = tour.tour?.tour_dates ?? [];
       if (!selectedDateId || tourDates.length === 0) {
-        return <div>No disponible</div>;
+        return <div>{t("dashboard.products.table.notAvailable")}</div>;
       }
 
       const selectedDate = tourDates.find(
@@ -79,22 +81,27 @@ export const toursColumns: ColumnDef<
       );
 
       if (!selectedDate) {
-        return <div>No disponible</div>;
+        return <div>{t("dashboard.products.table.notAvailable")}</div>;
       }
 
       return (
         <div>
-          {moment(selectedDate.date).format("dddd, D [de] MMMM - h:mm A")}
+          {moment(selectedDate.date).locale(locale).format("dddd, D [de] MMMM - h:mm A")}
         </div>
       );
     },
   },
   {
     id: "departure_point",
-    header: "Punto de Salida",
+    header: t("dashboard.products.table.departurePoint"),
     cell: ({ row }) => {
       const tour = row.original;
-      return <div>{tour.tour?.departure_point || "No especificado"}</div>;
+      return (
+        <div>
+          {tour.tour?.departure_point ||
+            t("dashboard.products.table.notSpecified")}
+        </div>
+      );
     },
   },
   {
@@ -105,7 +112,7 @@ export const toursColumns: ColumnDef<
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Máx. Personas
+          {t("dashboard.products.table.maxPeople")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -132,7 +139,7 @@ export const toursColumns: ColumnDef<
   },
   {
     id: "people_booked",
-    header: "Reservas",
+    header: t("dashboard.products.table.bookings"),
     cell: ({ row }) => {
       const tour = row.original;
       const selectedDateId = tour.selectedDateId;
@@ -161,7 +168,7 @@ export const toursColumns: ColumnDef<
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Plazas Disp.
+          {t("dashboard.products.table.availableSpots")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -190,13 +197,15 @@ export const toursColumns: ColumnDef<
   },
   {
     accessorKey: "is_active",
-    header: "Disponibilidad",
+    header: t("dashboard.products.table.availability"),
     cell: ({ row }) => {
       const isActive = row.getValue("is_active") as boolean;
       return (
         <div className="flex items-center gap-2">
           <Badge variant={isActive ? "default" : "destructive"}>
-            {isActive ? "Visible" : "Oculto"}
+            {isActive
+              ? t("dashboard.products.table.visible")
+              : t("dashboard.products.table.hidden")}
           </Badge>
         </div>
       );
@@ -204,13 +213,15 @@ export const toursColumns: ColumnDef<
   },
   {
     accessorKey: "is_approved",
-    header: "Estado",
+    header: t("dashboard.products.table.status"),
     cell: ({ row }) => {
       const isActive = row.getValue("is_approved") as boolean;
       return (
         <div className="flex items-center gap-2">
           <Badge variant={isActive ? "default" : "destructive"}>
-            {isActive ? "Aprobado" : "Pendiente"}
+            {isActive
+              ? t("dashboard.products.table.approved")
+              : t("dashboard.products.table.pending")}
           </Badge>
         </div>
       );
@@ -218,7 +229,7 @@ export const toursColumns: ColumnDef<
   },
   {
     id: "actions",
-    header: "Acciones",
+    header: t("dashboard.products.table.actions"),
     cell: ({ row }) => {
       return (
         <ActionCell
@@ -228,4 +239,5 @@ export const toursColumns: ColumnDef<
       );
     },
   },
-];
+  ];
+}
