@@ -21,7 +21,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search, X, Star, MapPin, RefreshCw } from "lucide-react";
 import Image from "next/image";
@@ -268,13 +267,8 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
 
   const [
     fetchCategories,
-    { data: apiCategories = [], isFetching: isFetchingCategories, isUninitialized },
+    { data: apiCategories = [], isFetching: isFetchingCategories },
   ] = useLazyGetProductCategoriesQuery();
-
-  const ensureCategoriesLoaded = () => {
-    // pasar `language` para variar cache key y refetch al cambiar idioma
-    if (isUninitialized) fetchCategories(language);
-  };
 
   // Cargar categorías solo cuando se abre el diálogo (evita llamadas al cargar la página)
   useEffect(() => {
@@ -288,12 +282,11 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language]);
 
-  const categoryOptions = apiCategories
-    .map((c) => ({
-      key: c.id,
-      value: toFilterSlug(c.name),
-      label: c.name,
-    }));
+  const categoryOptions = apiCategories.map((c) => ({
+    key: c.id,
+    value: toFilterSlug(c.name),
+    label: c.name,
+  }));
 
   const selectedCategory = tempCategories[0] ?? "all";
   const selectedDuration = tempDurations[0] ?? "all";
@@ -386,7 +379,10 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
               <label className="text-xs font-medium mb-2 block">
                 {t("filters.dialog.categoriesLabel")}
               </label>
-              <Select value={selectedCategory} onValueChange={setSingleCategory}>
+              <Select
+                value={selectedCategory}
+                onValueChange={setSingleCategory}
+              >
                 <SelectTrigger className="h-8 text-xs">
                   <SelectValue
                     placeholder={
@@ -422,7 +418,10 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
               <label className="text-xs font-medium mb-2 block">
                 {t("filters.dialog.durationLabel")}
               </label>
-              <Select value={selectedDuration} onValueChange={setSingleDuration}>
+              <Select
+                value={selectedDuration}
+                onValueChange={setSingleDuration}
+              >
                 <SelectTrigger className="h-8 text-xs">
                   <SelectValue placeholder={t("filters.dialog.allDurations")} />
                 </SelectTrigger>
@@ -431,7 +430,11 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
                     {t("filters.dialog.allDurations")}
                   </SelectItem>
                   {["1-dia", "2-3-dias", "mas-de-3-dias"].map((duration) => (
-                    <SelectItem key={duration} value={duration} className="text-xs">
+                    <SelectItem
+                      key={duration}
+                      value={duration}
+                      className="text-xs"
+                    >
                       {t(`filters.dialog.duration.${duration}`)}
                     </SelectItem>
                   ))}
