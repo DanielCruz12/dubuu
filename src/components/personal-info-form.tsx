@@ -2,12 +2,13 @@
 
 import type React from "react";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/lib/i18n-context";
 import {
   Form,
   FormControl,
@@ -43,26 +44,38 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const personalInfoSchema = z.object({
-  firstName: z.string().min(2, {
-    message: "El nombre debe tener al menos 2 caracteres.",
-  }),
-  lastName: z.string().min(2, {
-    message: "El apellido debe tener al menos 2 caracteres.",
-  }),
-  username: z.string().min(3, {
-    message: "El nombre de usuario debe tener al menos 3 caracteres.",
-  }),
-});
+type PersonalInfoValues = {
+  firstName: string;
+  lastName: string;
+  username: string;
+};
 
-type PersonalInfoValues = z.infer<typeof personalInfoSchema>;
+function getPersonalInfoSchema(t: (key: string) => string) {
+  return z.object({
+    firstName: z.string().min(2, {
+      message: t("dashboard.profile.validation.firstNameMin"),
+    }),
+    lastName: z.string().min(2, {
+      message: t("dashboard.profile.validation.lastNameMin"),
+    }),
+    username: z.string().min(3, {
+      message: t("dashboard.profile.validation.usernameMin"),
+    }),
+  });
+}
 
 export default function PersonalInfoForm() {
   const { user, isLoaded } = useUser();
+  const { t, language } = useLanguage();
   const [isUpdating, setIsUpdating] = useState(false);
   const [isChangingEmail, setIsChangingEmail] = useState(false);
   const [isUpdatingPhoto, setIsUpdatingPhoto] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const personalInfoSchema = useMemo(
+    () => getPersonalInfoSchema(t),
+    [t, language]
+  );
 
   const form = useForm<PersonalInfoValues>({
     resolver: zodResolver(personalInfoSchema),
@@ -84,13 +97,13 @@ export default function PersonalInfoForm() {
         username: data.username,
       });
 
-      toast.success("¡Perfil actualizado!", {
-        description: "Tu información personal ha sido actualizada",
+      toast.success(t("dashboard.profile.toast.profileUpdated"), {
+        description: t("dashboard.profile.toast.profileUpdatedDescription"),
       });
     } catch (error) {
       console.error(error);
-      toast.error("Error al actualizar información", {
-        description: "Hubo un error actualizando tu información.",
+      toast.error(t("dashboard.profile.toast.profileError"), {
+        description: t("dashboard.profile.toast.profileErrorDescription"),
       });
     } finally {
       setIsUpdating(false);
@@ -106,17 +119,17 @@ export default function PersonalInfoForm() {
         primaryEmailAddressId: emailAddressId,
       });
 
-      toast.success("¡Email actualizado!", {
-        description: "Tu email principal ha sido actualizado",
+      toast.success(t("dashboard.profile.toast.emailUpdated"), {
+        description: t("dashboard.profile.toast.emailUpdatedDescription"),
       });
     } catch (e) {
       if (e instanceof Error && e.message.includes("verification")) {
-        toast.error("Verificación cancelada", {
-          description: "Has cancelado el proceso de verificación",
+        toast.error(t("dashboard.profile.toast.verificationCancelled"), {
+          description: t("dashboard.profile.toast.verificationCancelledDescription"),
         });
       } else {
-        toast.error("Error al actualizar email", {
-          description: "Hubo un error actualizando tu email principal",
+        toast.error(t("dashboard.profile.toast.emailError"), {
+          description: t("dashboard.profile.toast.emailErrorDescription"),
         });
       }
       console.error(e);
@@ -132,16 +145,16 @@ export default function PersonalInfoForm() {
 
     // Validate file type
     if (!file.type.startsWith("image/")) {
-      toast.error("Tipo de archivo no válido", {
-        description: "Por favor, selecciona una imagen.",
+      toast.error(t("dashboard.profile.toast.invalidFileType"), {
+        description: t("dashboard.profile.toast.invalidFileTypeDescription"),
       });
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("Archivo demasiado grande", {
-        description: "La imagen debe ser menor a 5MB.",
+      toast.error(t("dashboard.profile.toast.fileTooLarge"), {
+        description: t("dashboard.profile.toast.fileTooLargeDescription"),
       });
       return;
     }
@@ -149,8 +162,8 @@ export default function PersonalInfoForm() {
     setIsUpdatingPhoto(true);
     try {
       await user.setProfileImage({ file });
-      toast.success("¡Foto actualizada!", {
-        description: "Tu foto de perfil ha sido actualizada",
+      toast.success(t("dashboard.profile.toast.photoUpdated"), {
+        description: t("dashboard.profile.toast.photoUpdatedDescription"),
       });
       // Reset the file input
       if (fileInputRef.current) {
@@ -158,8 +171,8 @@ export default function PersonalInfoForm() {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error al actualizar foto", {
-        description: "Hubo un error actualizando tu foto de perfil.",
+      toast.error(t("dashboard.profile.toast.photoError"), {
+        description: t("dashboard.profile.toast.photoErrorDescription"),
       });
     } finally {
       setIsUpdatingPhoto(false);
@@ -172,13 +185,13 @@ export default function PersonalInfoForm() {
     setIsUpdatingPhoto(true);
     try {
       await user.setProfileImage({ file: null });
-      toast.success("¡Foto eliminada!", {
-        description: "Tu foto de perfil ha sido eliminada",
+      toast.success(t("dashboard.profile.toast.photoRemoved"), {
+        description: t("dashboard.profile.toast.photoRemovedDescription"),
       });
     } catch (error) {
       console.error(error);
-      toast.error("Error al eliminar foto", {
-        description: "Hubo un error eliminando tu foto de perfil.",
+      toast.error(t("dashboard.profile.toast.photoRemoveError"), {
+        description: t("dashboard.profile.toast.photoRemoveErrorDescription"),
       });
     } finally {
       setIsUpdatingPhoto(false);
@@ -202,10 +215,11 @@ export default function PersonalInfoForm() {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   };
 
-  // Format date for profile display
+  // Format date for profile display (respects current language)
   const formatDate = (date: Date | null | undefined) => {
-    if (!date) return "No disponible";
-    return new Intl.DateTimeFormat("es-ES", {
+    if (!date) return t("dashboard.profile.notAvailable");
+    const locale = language === "en" ? "en-US" : "es-ES";
+    return new Intl.DateTimeFormat(locale, {
       day: "numeric",
       month: "long",
       year: "numeric",
@@ -256,12 +270,15 @@ export default function PersonalInfoForm() {
             <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-3">
               <Badge variant="secondary" className="flex items-center gap-1">
                 <Calendar className="h-3 w-3" />
-                Miembro desde {formatDate(user?.createdAt)}
+                {t("dashboard.profile.memberSince").replace(
+                  "{{date}}",
+                  formatDate(user?.createdAt)
+                )}
               </Badge>
 
               <Badge variant="success" className="flex items-center gap-1">
                 <Shield className="h-3 w-3" />
-                Cuenta verificada
+                {t("dashboard.profile.verifiedAccount")}
               </Badge>
             </div>
           </div>
@@ -280,7 +297,7 @@ export default function PersonalInfoForm() {
               ) : (
                 <Upload className="mr-2 h-3 w-3" />
               )}
-              <span className="">Actualizar</span> foto
+              {t("dashboard.profile.updatePhoto")}
             </Button>
 
             {user?.imageUrl && (
@@ -293,7 +310,7 @@ export default function PersonalInfoForm() {
                 className=" text-red-500 hover:text-red-600"
               >
                 <X className="mr-2 h-3 w-3" />
-                <span className="">Eliminar</span>
+                {t("dashboard.profile.delete")}
               </Button>
             )}
           </div>
@@ -308,14 +325,14 @@ export default function PersonalInfoForm() {
             className="flex items-center justify-center gap-2"
           >
             <User className="h-4 w-4" />
-            <span className="hidden sm:inline">Información</span> personal
+            {t("dashboard.profile.tabPersonalInfo")}
           </TabsTrigger>
           <TabsTrigger
             value="email"
             className="flex items-center justify-center gap-2"
           >
             <Mail className="h-4 w-4" />
-            <span className="hidden sm:inline">Correos</span> electrónicos
+            {t("dashboard.profile.tabEmails")}
           </TabsTrigger>
         </TabsList>
 
@@ -323,10 +340,10 @@ export default function PersonalInfoForm() {
           <Card>
             <CardHeader>
               <CardTitle className="text-lg md:text-xl">
-                Información personal
+                {t("dashboard.profile.personalInfoTitle")}
               </CardTitle>
               <CardDescription>
-                Actualiza tu información personal y de contacto
+                {t("dashboard.profile.personalInfoDescription")}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -341,7 +358,7 @@ export default function PersonalInfoForm() {
                       name="firstName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Nombre</FormLabel>
+                          <FormLabel>{t("dashboard.profile.firstName")}</FormLabel>
                           <FormControl>
                             <Input placeholder="John" {...field} />
                           </FormControl>
@@ -354,7 +371,7 @@ export default function PersonalInfoForm() {
                       name="lastName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Apellido</FormLabel>
+                          <FormLabel>{t("dashboard.profile.lastName")}</FormLabel>
                           <FormControl>
                             <Input placeholder="Doe" {...field} />
                           </FormControl>
@@ -369,12 +386,12 @@ export default function PersonalInfoForm() {
                     name="username"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Nombre de usuario</FormLabel>
+                        <FormLabel>{t("dashboard.profile.username")}</FormLabel>
                         <FormControl>
                           <Input placeholder="johndoe" {...field} />
                         </FormControl>
                         <FormDescription>
-                          Este es su nombre público.
+                          {t("dashboard.profile.usernameDescription")}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -386,7 +403,7 @@ export default function PersonalInfoForm() {
                       {isUpdating && (
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       )}
-                      Guardar cambios
+                      {t("dashboard.profile.saveChanges")}
                     </Button>
                   </div>
                 </form>
@@ -399,15 +416,17 @@ export default function PersonalInfoForm() {
           <Card>
             <CardHeader>
               <CardTitle className="text-lg md:text-xl">
-                Gestión de correos electrónicos
+                {t("dashboard.profile.emailManagementTitle")}
               </CardTitle>
               <CardDescription>
-                Administra tus direcciones de correo electrónico
+                {t("dashboard.profile.emailManagementDescription")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className=" p-4 rounded-lg">
-                <h3 className="text-sm font-medium mb-2">Email principal</h3>
+                <h3 className="text-sm font-medium mb-2">
+                  {t("dashboard.profile.primaryEmail")}
+                </h3>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3  p-4 rounded-md shadow-sm">
                   <div className=" p-2 rounded-full">
                     <Mail className="h-5 w-5 " />
@@ -417,12 +436,12 @@ export default function PersonalInfoForm() {
                       {user?.primaryEmailAddress?.emailAddress}
                     </p>
                     <p className="text-xs text-gray-500 mt-1">
-                      Esta dirección se usa para inicios de sesión y
-                      notificaciones
+                      {t("dashboard.profile.primaryEmailDescription")}
                     </p>
                   </div>
                   <Badge className="bg-green-100 text-green-800 hover:bg-green-100 border-0 mt-2 sm:mt-0">
-                    <Check className="h-3 w-3 mr-1" /> Principal
+                    <Check className="h-3 w-3 mr-1" />{" "}
+                    {t("dashboard.profile.primaryBadge")}
                   </Badge>
                 </div>
               </div>
@@ -430,7 +449,7 @@ export default function PersonalInfoForm() {
               {user?.emailAddresses && user.emailAddresses.length > 1 && (
                 <div>
                   <h3 className="text-sm font-medium text-gray-700 mb-3">
-                    Correos adicionales
+                    {t("dashboard.profile.additionalEmails")}
                   </h3>
                   <ul className="space-y-3">
                     {user.emailAddresses.map(
@@ -460,7 +479,7 @@ export default function PersonalInfoForm() {
                               ) : (
                                 <Check className="mr-2 h-3 w-3" />
                               )}
-                              Hacer principal
+                              {t("dashboard.profile.makePrimary")}
                             </Button>
                           </li>
                         )

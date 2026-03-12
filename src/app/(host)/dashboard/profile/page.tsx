@@ -1,17 +1,17 @@
+"use client";
+
 import { DashboardTitle } from "@/components/dashboard-title";
 import PersonalInfoForm from "@/components/personal-info-form";
-import { Metadata } from "next";
-export const metadata: Metadata = {
-  title: "Perfil de Usuario",
-  description: "Gestiona tu información personal y preferencias en tu perfil.",
-};
+import { useLanguage } from "@/lib/i18n-context";
 
 export default function ProfilePage() {
+  const { t } = useLanguage();
+
   return (
     <div className="px-3 md:px-0">
       <DashboardTitle
-        heading="Perfil"
-        description="Gestiona tu información personal"
+        heading={t("dashboard.profile.heading")}
+        description={t("dashboard.profile.description")}
       />
       <PersonalInfoForm />
     </div>
