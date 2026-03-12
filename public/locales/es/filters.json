@@ -1,6 +1,11 @@
 {
   "productType": {"tours": "Viajes", "rental": "Alquiler"},
   "rating": {"five": "5 estrellas", "fourPlus": "+4 estrellas", "threePlus": "+3 estrellas", "twoPlus": "+2 estrellas", "onePlus": "+1 estrellas", "none": "Sin calificación"},
+  "searchDialog": {
+    "title": "Descubre los tesoros del mundo",
+    "description": "Explora tus sueños de viaje y hazlos realidad",
+    "placeholder": "¿Qué estás buscando?"
+  },
   "dialog": {
     "title": "Filtrar resultados",
     "description": "Ajusta los filtros para encontrar productos según tus preferencias.",
@@ -16,6 +21,7 @@
     "category": {"aventura": "Aventura", "cultural": "Cultural", "relajacion": "Relajación"},
     "duration": {"1-dia": "1 día", "2-3-dias": "2-3 días", "mas-de-3-dias": "Más de 3 días"},
     "reset": "Restablecer",
-    "apply": "Aplicar filtros"
+    "apply": "Aplicar filtros",
+    "noCategories": "No hay categorías disponibles"
   }
 }

@@ -2,6 +2,7 @@
 "use client";
 
 import type React from "react";
+import { useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -64,16 +65,17 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({
 }) => {
   const convert = formatUsd;
   const symbol = USD_SYMBOL;
+  const { t } = useLanguage();
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px] max-w-[95%] md:max-w-[85%] lg:max-w-[75%] xl:max-w-[65%] p-0 overflow-hidden rounded-xl border-none shadow-xl">
         <div className="bg-gradient-to-r dark:from-black dark:to-primary/5 px-5">
           <DialogHeader>
             <DialogTitle className="text-center pt-6">
-              Descubre los tesoros del mundo
+              {t("filters.searchDialog.title")}
             </DialogTitle>
             <DialogDescription className="text-center">
-              Explora tus sueños de viaje y hazlos realidad
+              {t("filters.searchDialog.description")}
             </DialogDescription>
           </DialogHeader>
 
@@ -83,7 +85,7 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({
               <Input
                 type="text"
                 className="pl-10 pr-10 h-10 text-sm rounded-full"
-                placeholder="¿Qué estás buscando?"
+                placeholder={t("filters.searchDialog.placeholder")}
                 value={searchTerm}
                 onChange={onSearchChange}
               />
@@ -270,8 +272,14 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
   ] = useLazyGetProductCategoriesQuery();
 
   const ensureCategoriesLoaded = () => {
-    if (isUninitialized) fetchCategories();
+    if (isUninitialized) fetchCategories(undefined);
   };
+
+  // Cargar categorías solo cuando se abre el diálogo (evita llamadas al cargar la página)
+  useEffect(() => {
+    if (isOpen) ensureCategoriesLoaded();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   const categoryOptions = apiCategories
     .filter((c) => tempProductType === "all" || c.product_type.name === tempProductType)
@@ -367,6 +375,11 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
                 {isFetchingCategories && (
                   <div className="text-xs text-muted-foreground">
                     {t("common.loading")}
+                  </div>
+                )}
+                {!isFetchingCategories && categoryOptions.length === 0 && (
+                  <div className="text-xs text-muted-foreground">
+                    {t("filters.dialog.noCategories")}
                   </div>
                 )}
                 {!isFetchingCategories &&
