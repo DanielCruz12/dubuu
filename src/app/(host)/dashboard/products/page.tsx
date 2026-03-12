@@ -1,17 +1,16 @@
+"use client"
 import { DashboardTitle } from "@/components/dashboard-title";
 import { ProductsDataTable } from "./(components)/products-table";
-import { Metadata } from "next";
-export const metadata: Metadata = {
-  title: "Productos",
-  description: "Lista de todos tus productos",
-};
+import { useLanguage } from "@/lib/i18n-context";
 
 const Products = () => {
+  const { t } = useLanguage();
+
   return (
     <div className="px-3 md:px-0">
       <DashboardTitle
-        heading="Productos"
-        description="Lista de todos tus productos"
+        heading={t("dashboard.products.title")}
+        description={t("dashboard.products.description")}
       />
       <ProductsDataTable />
     </div>

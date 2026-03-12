@@ -33,6 +33,7 @@ import type {
 } from "@/types/payment-types";
 import { ExistingPaymentInfo } from "../(components)/existing-payment-info";
 import { PaymentSkeleton } from "@/components/skeletons/payment-account-skeleton";
+import { useLanguage } from "@/lib/i18n-context";
 
 // Valores por defecto para cuando no hay datos
 const emptyBankData: BankFormValues = {
@@ -51,6 +52,7 @@ const emptyBlinkData: BlinkFormValues = {
 export function PaymentForm() {
   const { user } = useUser();
   const userId = user?.id;
+  const { t } = useLanguage();
 
   // Estado para controlar si estamos mostrando datos existentes o el formulario
   const [showExistingData, setShowExistingData] = useState(false);
@@ -169,10 +171,10 @@ export function PaymentForm() {
           body: dataToSend,
         }).unwrap();
         console.log(result);
-        toast.success("Información actualizada con éxito");
+        toast.success(t("dashboard.payments.notifications.updated"));
       } else {
         const result = await createPaymentAccount(dataToSend).unwrap();
-        toast.success("Información enviada con éxito");
+        toast.success(t("dashboard.payments.notifications.sent"));
         if (result && result.id) setPaymentId(result.id);
       }
       setShowExistingData(true);
@@ -180,9 +182,7 @@ export function PaymentForm() {
       setIsUpdating(false);
     } catch (error) {
       console.error("Error al procesar los datos:", error);
-      toast.error(
-        "Error al procesar la información. Inténtelo de nuevo más tarde."
-      );
+      toast.error(t("dashboard.payments.notifications.processError"));
     }
   };
 
@@ -201,10 +201,10 @@ export function PaymentForm() {
           paymentId,
           body: dataToSend,
         }).unwrap();
-        toast.success("Información actualizada con éxito");
+        toast.success(t("dashboard.payments.notifications.updated"));
       } else {
         const result = await createPaymentAccount(dataToSend).unwrap();
-        toast.success("Información enviada con éxito");
+        toast.success(t("dashboard.payments.notifications.sent"));
         if (result && result.id) setPaymentId(result.id);
       }
       setExistingData((prev) => ({
@@ -217,9 +217,7 @@ export function PaymentForm() {
       setIsUpdating(false);
     } catch (error) {
       console.error("Error al procesar los datos:", error);
-      toast.error(
-        "Error al procesar la información. Inténtelo de nuevo más tarde."
-      );
+      toast.error(t("dashboard.payments.notifications.processError"));
     }
   };
 
@@ -259,18 +257,19 @@ export function PaymentForm() {
           <CardTitle className="text-xl font-medium">
             {isCurrentlyUpdating
               ? step === 1
-                ? "Actualizar método de pago"
-                : "Actualizar detalles"
+                ? t("dashboard.payments.steps.method.titleUpdate")
+                : t("dashboard.payments.steps.details.titleUpdate")
               : step === 1
-                ? "Método de pago"
-                : "Detalles de pago"}
+                ? t("dashboard.payments.steps.method.title")
+                : t("dashboard.payments.steps.details.title")}
           </CardTitle>
           <CardDescription>
             {step === 1
-              ? isCurrentlyUpdating
-                ? "Selecciona cómo quieres recibir tu dinero"
-                : "Selecciona cómo quieres recibir tu dinero"
-              : `Completa la información para ${getPaymentMethodName(paymentMethod)}`}
+              ? t("dashboard.payments.steps.method.description")
+              : t("dashboard.payments.steps.details.description").replace(
+                  "{{methodName}}",
+                  getPaymentMethodName(paymentMethod)
+                )}
           </CardDescription>
         </CardHeader>
 
@@ -337,7 +336,7 @@ export function PaymentForm() {
                 disabled={!paymentMethod}
               >
                 <span className="flex items-center">
-                  Continuar
+                  {t("dashboard.payments.buttons.continue")}
                   <ChevronRight className="ml-2 h-4 w-4" />
                 </span>
               </Button>

@@ -36,6 +36,7 @@ import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DataTableSkeleton } from "@/components/skeletons/datatable-skeleton";
 import Link from "next/link";
+import { useLanguage } from "@/lib/i18n-context";
 
 export function ProductsDataTable() {
   const { user } = useUser();
@@ -47,6 +48,7 @@ export function ProductsDataTable() {
   const [availableTours, setAvailableTours] = useState<ITourProduct[]>([]);
   const [openTourSelect, setOpenTourSelect] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const { t } = useLanguage();
 
   const { data, isLoading } = useGetProductsByUserIdQuery(user?.id as string, {
     skip: !user?.id,
@@ -164,41 +166,42 @@ export function ProductsDataTable() {
 
       return {
         ID: tour.id,
-        Nombre: tour.name,
-        Descripción: tour.description,
-        Precio: tour.price,
-        País: tour.country,
-        Dirección: tour.address,
-        "Punto de Partida": tour.tour?.departure_point ?? "",
-        Fecha: selectedDate
+        [t("dashboard.products.table.name")]: tour.name,
+        Description: tour.description,
+        [t("dashboard.products.table.price")]: tour.price,
+        Country: tour.country,
+        Address: tour.address,
+        [t("dashboard.products.table.departurePoint")]:
+          tour.tour?.departure_point ?? "",
+        [t("dashboard.products.table.date")]: selectedDate
           ? format(new Date(selectedDate.date), "dd/MM/yyyy HH:mm")
           : "",
-        "Máximo de Personas": selectedDate?.max_people || "",
-        "Personas Reservadas": selectedDate?.people_booked || "",
-        "Plazas Disponibles": selectedDate
+        MaxPeople: selectedDate?.max_people || "",
+        PeopleBooked: selectedDate?.people_booked || "",
+        AvailableSpots: selectedDate
           ? selectedDate.max_people - selectedDate.people_booked
           : "",
-        Estado: tour.is_active ? "Activo" : "Inactivo",
+        Status: tour.is_active ? "Active" : "Inactive",
       };
     });
 
-    exportToExcel(dataToExport, "Tours");
+    exportToExcel(dataToExport, t("dashboard.products.title"));
   };
 
   if (isLoading || !user) {
     return (
       <DataTableSkeleton
         headers={[
-          "Nombre",
-          "Precio",
-          "Fecha",
-          "Punto de Partida",
-          "Máx. Personas",
-          "Reservas",
-          "Plazas Disp.",
-          "Disponibilidad",
-          "Estado",
-          "Acciones",
+          t("dashboard.products.table.name"),
+          t("dashboard.products.table.price"),
+          t("dashboard.products.table.date"),
+          t("dashboard.products.table.departurePoint"),
+          t("dashboard.products.table.maxPeople"),
+          t("dashboard.products.table.bookings"),
+          t("dashboard.products.table.availableSpots"),
+          t("dashboard.products.table.availability"),
+          t("dashboard.products.table.status"),
+          t("dashboard.products.table.actions"),
         ]}
       />
     );
@@ -210,7 +213,9 @@ export function ProductsDataTable() {
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row gap-4 items-end mb-6">
             <div className="w-full md:w-1/3 min-w-0">
-              <label className="text-sm font-medium mb-1 block">Producto</label>
+              <label className="text-sm font-medium mb-1 block">
+                {t("dashboard.products.filters.product")}
+              </label>
               <Popover open={openTourSelect} onOpenChange={setOpenTourSelect}>
                 <PopoverTrigger asChild>
                   <Button
@@ -224,7 +229,7 @@ export function ProductsDataTable() {
                         ? availableTours.find(
                             (tour) => tour.id === selectedTourId
                           )?.name
-                        : "Seleccionar producto..."}
+                        : t("dashboard.products.filters.selectProduct")}
                     </span>
                     <SearchIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
@@ -234,10 +239,12 @@ export function ProductsDataTable() {
                     <CommandInput
                       value={searchTerm}
                       onValueChange={setSearchTerm}
-                      placeholder="Buscar producto..."
+                      placeholder={t("dashboard.products.filters.searchProduct")}
                     />
                     <CommandList>
-                      <CommandEmpty>No se encontraron productos.</CommandEmpty>
+                      <CommandEmpty>
+                        {t("dashboard.products.filters.noProductsFound")}
+                      </CommandEmpty>
                       <CommandGroup className="max-h-64 overflow-y-auto">
                         {filteredProducts.map((tour) => (
                           <CommandItem
@@ -269,11 +276,11 @@ export function ProductsDataTable() {
 
             <div className="w-full md:w-1/3 min-w-0">
               <label className="text-sm font-medium mb-1 block">
-                Fecha del producto
+                {t("dashboard.products.filters.productDate")}
               </label>
               {!selectedTourId ? (
                 <div className="flex h-10 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm text-muted-foreground">
-                  Seleccione un producto primero
+                  {t("dashboard.products.filters.selectProductFirst")}
                 </div>
               ) : (
                 <Select
@@ -282,7 +289,9 @@ export function ProductsDataTable() {
                   disabled={availableDates.length === 0}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar fecha" />
+                    <SelectValue
+                      placeholder={t("dashboard.products.filters.selectDate")}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {availableDates.length > 0 ? (
@@ -293,7 +302,7 @@ export function ProductsDataTable() {
                       ))
                     ) : (
                       <SelectItem value="no-dates" disabled>
-                        No hay fechas disponibles
+                        {t("dashboard.products.filters.noDates")}
                       </SelectItem>
                     )}
                   </SelectContent>
@@ -308,13 +317,13 @@ export function ProductsDataTable() {
                 className="flex items-center gap-2"
               >
                 <DownloadIcon className="h-4 w-4" />
-                <span>Exportar</span>
+                <span>{t("dashboard.products.filters.export")}</span>
               </Button>
 
               <Button asChild className="flex items-center gap-2">
                 <Link href="/dashboard/products/add">
                   <PlusCircle className="h-4 w-4" />
-                  <span>Nuevo Tour</span>
+                  <span>{t("dashboard.products.filters.newTour")}</span>
                 </Link>
               </Button>
             </div>

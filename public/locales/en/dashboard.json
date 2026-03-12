@@ -51,6 +51,81 @@
     "tripInfo": "Trip information",
     "downloadVoucher": "Download voucher"
   },
+  "products": {
+    "title": "Products",
+    "description": "List of all your products",
+    "filters": {
+      "product": "Product",
+      "productDate": "Product date",
+      "selectProduct": "Select product...",
+      "selectDate": "Select date",
+      "selectProductFirst": "Select a product first",
+      "noDates": "No dates available",
+      "searchProduct": "Search product...",
+      "noProductsFound": "No products found.",
+      "export": "Export",
+      "newTour": "New tour"
+    },
+    "table": {
+      "name": "Name",
+      "price": "Price",
+      "date": "Date",
+      "departurePoint": "Departure point",
+      "maxPeople": "Max. people",
+      "bookings": "Bookings",
+      "availableSpots": "Available spots",
+      "availability": "Availability",
+      "status": "Status",
+      "actions": "Actions"
+    }
+  },
+  "bookings": {
+    "title": "Bookings",
+    "description": "List of all your bookings",
+    "filters": {
+      "product": "Product",
+      "selectProduct": "Select product...",
+      "searchProduct": "Search product...",
+      "noProductsFound": "No products found.",
+      "export": "Export"
+    },
+    "table": {
+      "client": "Client",
+      "tickets": "Tickets",
+      "total": "Total",
+      "date": "Date",
+      "status": "Status",
+      "bookingDate": "Booking date"
+    },
+    "exportSheetName": "Bookings"
+  },
+  "payments": {
+    "title": "Payment information",
+    "description": "To receive payments, you must tell us where to send the money.",
+    "steps": {
+      "method": {
+        "title": "Payment method",
+        "titleUpdate": "Update payment method",
+        "description": "Select how you want to receive your money"
+      },
+      "details": {
+        "title": "Payment details",
+        "titleUpdate": "Update details",
+        "description": "Complete the information for {{methodName}}"
+      }
+    },
+    "buttons": {
+      "continue": "Continue"
+    },
+    "notifications": {
+      "updated": "Information updated successfully",
+      "sent": "Information submitted successfully",
+      "processError": "Error processing the information. Please try again later."
+    },
+    "existing": {
+      "deleted": "Payment method successfully deleted"
+    }
+  },
   "addTour": {
     "progress": "Step {{step}} of {{total}}",
     "steps": {

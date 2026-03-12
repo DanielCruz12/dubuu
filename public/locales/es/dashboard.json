@@ -51,6 +51,81 @@
     "tripInfo": "Información del viaje",
     "downloadVoucher": "Descargar voucher"
   },
+  "products": {
+    "title": "Productos",
+    "description": "Lista de todos tus productos",
+    "filters": {
+      "product": "Producto",
+      "productDate": "Fecha del producto",
+      "selectProduct": "Seleccionar producto...",
+      "selectDate": "Seleccionar fecha",
+      "selectProductFirst": "Seleccione un producto primero",
+      "noDates": "No hay fechas disponibles",
+      "searchProduct": "Buscar producto...",
+      "noProductsFound": "No se encontraron productos.",
+      "export": "Exportar",
+      "newTour": "Nuevo Tour"
+    },
+    "table": {
+      "name": "Nombre",
+      "price": "Precio",
+      "date": "Fecha",
+      "departurePoint": "Punto de Partida",
+      "maxPeople": "Máx. Personas",
+      "bookings": "Reservas",
+      "availableSpots": "Plazas Disp.",
+      "availability": "Disponibilidad",
+      "status": "Estado",
+      "actions": "Acciones"
+    }
+  },
+  "bookings": {
+    "title": "Reservas",
+    "description": "Lista de todas tus reservas",
+    "filters": {
+      "product": "Producto",
+      "selectProduct": "Seleccionar producto...",
+      "searchProduct": "Buscar producto...",
+      "noProductsFound": "No se encontraron productos.",
+      "export": "Exportar"
+    },
+    "table": {
+      "client": "Cliente",
+      "tickets": "Boletos",
+      "total": "Total",
+      "date": "Fecha",
+      "status": "Estado",
+      "bookingDate": "Fecha de reserva"
+    },
+    "exportSheetName": "Reservas"
+  },
+  "payments": {
+    "title": "Información de pago",
+    "description": "Para recibir pagos, debes decirnos a dónde enviar el dinero.",
+    "steps": {
+      "method": {
+        "title": "Método de pago",
+        "titleUpdate": "Actualizar método de pago",
+        "description": "Selecciona cómo quieres recibir tu dinero"
+      },
+      "details": {
+        "title": "Detalles de pago",
+        "titleUpdate": "Actualizar detalles",
+        "description": "Completa la información para {{methodName}}"
+      }
+    },
+    "buttons": {
+      "continue": "Continuar"
+    },
+    "notifications": {
+      "updated": "Información actualizada con éxito",
+      "sent": "Información enviada con éxito",
+      "processError": "Error al procesar la información. Inténtelo de nuevo más tarde."
+    },
+    "existing": {
+      "deleted": "Método de pago eliminado correctamente"
+    }
+  },
   "addTour": {
     "progress": "Paso {{step}} de {{total}}",
     "steps": {

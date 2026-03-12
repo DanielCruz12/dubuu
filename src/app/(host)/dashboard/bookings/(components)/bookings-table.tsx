@@ -30,6 +30,7 @@ import moment from "moment";
 import "moment/locale/es";
 import { DataTableSkeleton } from "@/components/skeletons/datatable-skeleton";
 import { useUser } from "@clerk/nextjs";
+import { useLanguage } from "@/lib/i18n-context";
 
 export function BookingsDataTable() {
   const { user } = useUser();
@@ -40,6 +41,7 @@ export function BookingsDataTable() {
   const [bookingsData, setBookingsData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+  const { t } = useLanguage();
 
   // Fetch products for the user
   const { data: products, isLoading } = useGetProductsByUserIdQuery(userId, {
@@ -131,20 +133,20 @@ export function BookingsDataTable() {
           : u?.username ?? "";
       return {
         ID: booking.bookingId,
-        Cliente: fullName,
-        Producto: booking.name,
-        Estado: booking.status,
-        Boletos: booking.tickets,
-        Fecha: tourDateFormatted,
-        "Fecha de reserva": tourDateFormatted,
-        Total: new Intl.NumberFormat("en-US", {
+        [t("dashboard.bookings.table.client")]: fullName,
+        [t("dashboard.products.filters.product")]: booking.name,
+        [t("dashboard.bookings.table.status")]: booking.status,
+        [t("dashboard.bookings.table.tickets")]: booking.tickets,
+        [t("dashboard.bookings.table.date")]: tourDateFormatted,
+        [t("dashboard.bookings.table.bookingDate")]: tourDateFormatted,
+        [t("dashboard.bookings.table.total")]: new Intl.NumberFormat("en-US", {
           style: "currency",
           currency: "USD",
         }).format(Number.parseFloat(booking.total.toString())),
       };
     });
 
-    exportToExcel(dataToExport, "Reservas");
+    exportToExcel(dataToExport, t("dashboard.bookings.exportSheetName"));
   };
 
   // Solo mostrar skeleton mientras carga los productos iniciales
@@ -152,12 +154,12 @@ export function BookingsDataTable() {
     return (
       <DataTableSkeleton
         headers={[
-          "Cliente",
-          "Boletos",
-          "Total",
-          "Fecha",
-          "Estado",
-          "Fecha de reserva",
+          t("dashboard.bookings.table.client"),
+          t("dashboard.bookings.table.tickets"),
+          t("dashboard.bookings.table.total"),
+          t("dashboard.bookings.table.date"),
+          t("dashboard.bookings.table.status"),
+          t("dashboard.bookings.table.bookingDate"),
         ]}
       />
     );
@@ -169,7 +171,9 @@ export function BookingsDataTable() {
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row gap-4 items-end mb-6">
             <div className="w-full md:w-1/3 min-w-0">
-              <label className="text-sm font-medium mb-1 block">Producto</label>
+              <label className="text-sm font-medium mb-1 block">
+                {t("dashboard.bookings.filters.product")}
+              </label>
               <Popover
                 open={openProductSelect}
                 onOpenChange={setOpenProductSelect}
@@ -186,7 +190,7 @@ export function BookingsDataTable() {
                         ? products.find(
                             (product) => product.id === selectedProductId
                           )?.name
-                        : "Seleccionar producto..."}
+                        : t("dashboard.bookings.filters.selectProduct")}
                     </span>
                     <SearchIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
@@ -194,14 +198,16 @@ export function BookingsDataTable() {
                 <PopoverContent className="w-full p-0" align="start">
                   <Command>
                     <CommandInput
-                      placeholder="Buscar producto..."
+                      placeholder={t(
+                        "dashboard.bookings.filters.searchProduct"
+                      )}
                       value={searchTerm}
                       onValueChange={handleCommandSearch}
                     />
                     <CommandList>
                       {filteredProducts.length === 0 ? (
                         <CommandEmpty>
-                          No se encontraron productos.
+                          {t("dashboard.bookings.filters.noProductsFound")}
                         </CommandEmpty>
                       ) : (
                         <CommandGroup className="max-h-64 overflow-y-auto">
@@ -237,11 +243,11 @@ export function BookingsDataTable() {
             <div className="flex gap-2 ml-auto">
               <Button
                 onClick={handleExport}
-                title="Exportar a Excel"
+                title={t("dashboard.bookings.filters.export")}
                 disabled={!bookingsData || bookingsData.length === 0}
               >
                 <DownloadIcon className="h-4 w-4 mr-2" />
-                <span>Exportar</span>
+                <span>{t("dashboard.bookings.filters.export")}</span>
               </Button>
             </div>
           </div>

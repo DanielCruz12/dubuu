@@ -19,6 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useLanguage } from "@/lib/i18n-context";
 
 interface ExistingPaymentInfoProps {
   data: ExistingPaymentData;
@@ -37,10 +38,12 @@ export function ExistingPaymentInfo({
   const [deletePaymentAccount, { isLoading: isDeleting }] =
     useDeletePaymentAccountMutation();
 
+  const { t } = useLanguage();
+
   const handleDelete = async () => {
     try {
       await deletePaymentAccount({ userId, accountId }).unwrap();
-      toast.success("Método de pago eliminado correctamente");
+      toast.success(t("dashboard.payments.existing.deleted"));
       setConfirmOpen(false);
     } catch (err: unknown) {
       const message =
