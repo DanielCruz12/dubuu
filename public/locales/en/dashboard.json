@@ -22,5 +22,21 @@
   "status_pending": "Pending",
   "status_cancelled": "Cancelled",
   "loading": "Loading dashboard...",
-  "error": "Could not load panel summary."
+  "error": "Could not load panel summary.",
+  "bookingDetails": {
+    "title": "Booking details",
+    "description": "Detailed information about your booking",
+    "close": "Close",
+    "bookingId": "Booking #{{id}}",
+    "tabDetails": "Details",
+    "dates": "Dates",
+    "location": "Location",
+    "participants": "Participants",
+    "person": "person",
+    "people": "people",
+    "duration": "Duration",
+    "oneDay": "1 day",
+    "tripInfo": "Trip information",
+    "downloadVoucher": "Download voucher"
+  }
 }

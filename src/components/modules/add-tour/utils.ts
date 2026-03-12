@@ -1,3 +1,91 @@
+import type {
+  BasicInfoFormValues,
+  LocationFormValues,
+  DetailsFormValues,
+  CategorizationFormValues,
+  MultimediaFormValues,
+} from "./types";
+
+const ADD_TOUR_DRAFT_KEY = "dubuu-add-tour-draft";
+
+/** Borrador serializable para localStorage (fechas como ISO string) */
+export interface AddTourDraftStored {
+  step: number;
+  basicInfo: BasicInfoFormValues | null;
+  location: LocationFormValues | null;
+  details: DetailsFormValuesStored | null;
+  categorization: CategorizationFormValues | null;
+  multimedia: MultimediaFormValues | null;
+}
+
+interface DetailsFormValuesStored
+  extends Omit<DetailsFormValues, "available_dates"> {
+  available_dates: string[];
+}
+
+export function getAddTourDraft(): AddTourDraftStored | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(ADD_TOUR_DRAFT_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as AddTourDraftStored;
+    if (!parsed || typeof parsed.step !== "number") return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+/** Borrador listo para el formulario (fechas como Date) */
+export interface AddTourDraftRestored {
+  step: number;
+  basicInfo: BasicInfoFormValues | null;
+  location: LocationFormValues | null;
+  details: DetailsFormValues | null;
+  categorization: CategorizationFormValues | null;
+  multimedia: MultimediaFormValues | null;
+}
+
+/** Convierte el borrador guardado a valores listos para el formulario (fechas como Date) */
+export function getAddTourDraftForForm(): AddTourDraftRestored | null {
+  const draft = getAddTourDraft();
+  if (!draft) return null;
+  const details = draft.details
+    ? {
+        ...draft.details,
+        available_dates: draft.details.available_dates.map(
+          (d) => new Date(d)
+        ) as DetailsFormValues["available_dates"],
+      }
+    : null;
+  return {
+    step: draft.step,
+    basicInfo: draft.basicInfo,
+    location: draft.location,
+    details,
+    categorization: draft.categorization,
+    multimedia: draft.multimedia,
+  };
+}
+
+export function setAddTourDraft(draft: AddTourDraftStored): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(ADD_TOUR_DRAFT_KEY, JSON.stringify(draft));
+  } catch {
+    // quota or disabled
+  }
+}
+
+export function clearAddTourDraft(): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.removeItem(ADD_TOUR_DRAFT_KEY);
+  } catch {
+    // ignore
+  }
+}
+
 // Función para calcular precios
 export const calculatePrices = (basePrice: number) => {
   const tourismTax = basePrice * 0.05; // 5% impuesto de turismo

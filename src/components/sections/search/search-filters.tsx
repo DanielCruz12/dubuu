@@ -6,7 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { FilterIcon, Navigation, Star, X, DollarSign } from "lucide-react";
-import { productTypes, ratingOptions } from "@/utils/data";
+import {
+  productTypesTranslations,
+  ratingOptionsTranslations,
+} from "@/utils/data";
 import {
   setRating,
   setCategories,
@@ -47,7 +50,9 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
   onResetFilters,
   dispatch,
 }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const productTypes = productTypesTranslations[language];
+  const ratingOptions = ratingOptionsTranslations[language];
   return (
     <>
       {/* Filtros rápidos con scroll horizontal */}

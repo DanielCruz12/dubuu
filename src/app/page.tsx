@@ -18,9 +18,7 @@ import {
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { useLanguage } from "@/lib/i18n-context";
-
-const HERO_SLIDE_KEYS = ["slide1", "slide2", "slide3", "slide4", "slide5"] as const;
-const HERO_SLIDE_IMAGES = ["/homepage/banner1.png", "/homepage/banner2.png", "/homepage/banner3.png", "/homepage/banner4.png", "/homepage/banner5.png"];
+import { HERO_SLIDE_KEYS, HERO_SLIDE_IMAGES } from "@/utils/data";
 
 export default function Home() {
   const convert = formatUsd;
@@ -104,7 +102,9 @@ export default function Home() {
             <motion.div style={{ opacity: aboutOpacity, x: aboutX }}>
               <h2 className="text-4xl md:text-5xl font-light tracking-tight mb-8">
                 {t("home.landing.about.titlePrefix")}
-                <span className="font-bold">{t("home.landing.about.titleBold")}</span>
+                <span className="font-bold">
+                  {t("home.landing.about.titleBold")}
+                </span>
                 {t("home.landing.about.titleSuffix")}
               </h2>
               <p className="text-gray-600 mb-6 leading-relaxed">
@@ -180,7 +180,9 @@ export default function Home() {
           >
             <h2 className="text-4xl md:text-5xl font-light tracking-tight mb-6">
               {t("home.landing.tours.titlePrefix")}
-              <span className="font-bold">{t("home.landing.tours.titleBold")}</span>
+              <span className="font-bold">
+                {t("home.landing.tours.titleBold")}
+              </span>
               {t("home.landing.tours.titleSuffix")}
             </h2>
             <p className="text-gray-400 text-lg">

@@ -22,5 +22,21 @@
   "status_pending": "Pendiente",
   "status_cancelled": "Cancelada",
   "loading": "Cargando panel...",
-  "error": "No se pudo cargar el resumen del panel."
+  "error": "No se pudo cargar el resumen del panel.",
+  "bookingDetails": {
+    "title": "Detalles de la reserva",
+    "description": "Información detallada de su reserva",
+    "close": "Cerrar",
+    "bookingId": "Reserva #{{id}}",
+    "tabDetails": "Detalles",
+    "dates": "Fechas",
+    "location": "Ubicación",
+    "participants": "Participantes",
+    "person": "persona",
+    "people": "personas",
+    "duration": "Duración",
+    "oneDay": "1 día",
+    "tripInfo": "Información del viaje",
+    "downloadVoucher": "Descargar voucher"
+  }
 }

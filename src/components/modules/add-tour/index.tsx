@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, ArrowLeft, ShieldCheck, Loader2 } from "lucide-react";
 
@@ -30,6 +30,12 @@ import type {
   TourFiles,
   TourData,
 } from "./types";
+import {
+  getAddTourDraftForForm,
+  setAddTourDraft,
+  clearAddTourDraft,
+  type AddTourDraftStored,
+} from "./utils";
 
 // Importar la mutación de crear producto
 import { useCreateProductMutation } from "@/redux/slices/product/product-slice";
@@ -61,6 +67,41 @@ export function TourForm() {
     videoFiles: [],
     fileAttachments: [],
   });
+
+  // Restaurar borrador al montar (solo cliente)
+  useEffect(() => {
+    const draft = getAddTourDraftForForm();
+    if (!draft) return;
+    setStep(draft.step);
+    setBasicInfo(draft.basicInfo);
+    setLocation(draft.location);
+    setDetails(draft.details);
+    setCategorization(draft.categorization);
+    setMultimedia(draft.multimedia);
+  }, []);
+
+  // Persistir borrador cuando hay progreso (los archivos no se guardan)
+  useEffect(() => {
+    const hasProgress = step > 1 || basicInfo != null;
+    if (!hasProgress) return;
+
+    const stored: AddTourDraftStored = {
+      step,
+      basicInfo,
+      location,
+      details: details
+        ? {
+            ...details,
+            available_dates: details.available_dates.map((d) =>
+              d instanceof Date ? d.toISOString() : new Date(d).toISOString()
+            ),
+          }
+        : null,
+      categorization,
+      multimedia,
+    };
+    setAddTourDraft(stored);
+  }, [step, basicInfo, location, details, categorization, multimedia]);
 
   // Función para crear FormData
   const createFormData = (formData: TourData): FormData => {
@@ -179,6 +220,8 @@ export function TourForm() {
       const apiFormData = createFormData(formData);
 
       await createProduct(apiFormData).unwrap();
+
+      clearAddTourDraft();
 
       toast.success("¡Tour creado con éxito!", {
         description: "El tour ha sido registrado correctamente en el sistema.",

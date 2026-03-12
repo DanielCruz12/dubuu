@@ -8,7 +8,8 @@ import type { IBookingUser } from "@/types/booking";
 import moment from "moment";
 import "moment/locale/es";
 import Image from "next/image";
-import { statusText } from "@/utils/data";
+import { statusTextTranslations } from "@/utils/data";
+import { useLanguage } from "@/lib/i18n-context";
 
 interface BookingCardProps {
   booking: IBookingUser;
@@ -16,6 +17,9 @@ interface BookingCardProps {
 }
 
 export function BookingCard({ booking, onClick }: BookingCardProps) {
+  const { language } = useLanguage();
+  const statusText = statusTextTranslations[language];
+
   // Map API status to UI status
   const mapStatus = (status: string) => {
     const statusMap: Record<string, string> = {

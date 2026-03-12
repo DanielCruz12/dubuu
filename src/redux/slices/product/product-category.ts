@@ -69,6 +69,7 @@ export const productCategoriesApiSlice = createApi({
 
 export const {
   useGetProductCategoriesQuery,
+  useLazyGetProductCategoriesQuery,
   useGetProductCategoryByIdQuery,
   useCreateProductCategoryMutation,
   useDeleteProductCategoryMutation,

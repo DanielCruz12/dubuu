@@ -1,6 +1,22 @@
 import { Country } from "@/types/payment-types";
 import { Destination } from "@/types/product";
 
+export const HERO_SLIDE_KEYS = [
+  "slide1",
+  "slide2",
+  "slide3",
+  "slide4",
+  "slide5",
+] as const;
+
+export const HERO_SLIDE_IMAGES = [
+  "/homepage/banner1.webp",
+  "/homepage/banner2.webp",
+  "/homepage/banner3.webp",
+  "/homepage/banner4.webp",
+  "/homepage/banner5.webp",
+];
+
 export const ratingOptions = [
   { label: " 5 estrellas", value: "5" },
   { label: "+4 estrellas", value: "4" },
@@ -10,10 +26,30 @@ export const ratingOptions = [
   { label: "Sin calificación", value: "0" },
 ];
 
+export const ratingOptionsTranslations = {
+  es: ratingOptions,
+  en: [
+    { label: " 5 stars", value: "5" },
+    { label: "+4 stars", value: "4" },
+    { label: "+3 stars", value: "3" },
+    { label: "+2 stars", value: "2" },
+    { label: "+1 stars", value: "1" },
+    { label: "No rating", value: "0" },
+  ],
+};
+
 export const productTypes = [
   { description: "Viajes", name: "tours", id: 1 },
-  { description: "Alquiler", name: "rental", id: 2 },
+  /* { description: "Alquiler", name: "rental", id: 2 }, */
 ];
+
+export const productTypesTranslations = {
+  es: productTypes,
+  en: [
+    { description: "Trips", name: "tours", id: 1 },
+    /* { description: "Rental", name: "rental", id: 2 }, */
+  ],
+};
 
 export const countriesCurrency = [
   {
@@ -173,7 +209,7 @@ export const countries: Country[] = [
       { id: "SV-US", nombre: "Usulutan", codigoPostal: "3401" },
     ],
   },
-  {
+  /*  {
     id: "GT",
     nombre: "Guatemala",
     orden: 2,
@@ -201,7 +237,7 @@ export const countries: Country[] = [
       { id: "GT-TO", nombre: "Totonicapan", codigoPostal: null },
       { id: "GT-ZA", nombre: "Zacapa", codigoPostal: null },
     ],
-  },
+  }, */
 ];
 
 export const statusColors = {
@@ -218,12 +254,22 @@ export const statusText = {
   cancelado: "Cancelado",
 };
 
+export const statusTextTranslations = {
+  es: statusText,
+  en: {
+    confirmado: "Confirmed",
+    pendiente: "Pending",
+    completado: "Completed",
+    cancelado: "Cancelled",
+  },
+};
+
 export const destinations: Destination[] = [
   {
     id: "1",
     name: "El Salvador",
     country: "El Salvador",
-    image: "/elsalvador.jpg",
+    image: "/elsalvador.webp",
     tours: 156,
     activities: 248,
     category: "Ciudad",
@@ -235,7 +281,7 @@ export const destinations: Destination[] = [
     id: "2",
     name: "Guatemala",
     country: "Guatemala",
-    image: "/homepage/7.jpg",
+    image: "/homepage/7.webp",
     tours: 143,
     activities: 200,
     category: "Ciudad",
@@ -247,7 +293,7 @@ export const destinations: Destination[] = [
     id: "3",
     name: "Honduras",
     country: "Honduras",
-    image: "/homepage/banner5.png",
+    image: "/homepage/banner5.webp",
     tours: 132,
     activities: 220,
     category: "Ciudad",
@@ -259,7 +305,7 @@ export const destinations: Destination[] = [
     id: "4",
     name: "Nicaragua",
     country: "Nicaragua",
-    image: "/homepage/3.jpg",
+    image: "/homepage/3.webp",
     tours: 128,
     activities: 180,
     category: "Playa",
@@ -269,70 +315,80 @@ export const destinations: Destination[] = [
   },
 ];
 
+export const destinationsTranslations = {
+  es: destinations,
+  en: [
+    {
+      id: "1",
+      name: "El Salvador",
+      country: "El Salvador",
+      image: "/elsalvador.webp",
+      tours: 156,
+      activities: 248,
+      category: "City",
+      duration: "5-7 days",
+      rating: 4.8,
+      priceRange: 13,
+    },
+    {
+      id: "2",
+      name: "Guatemala",
+      country: "Guatemala",
+      image: "/homepage/7.webp",
+      tours: 143,
+      activities: 200,
+      category: "City",
+      duration: "4-7 days",
+      rating: 4.9,
+      priceRange: 14.99,
+    },
+    {
+      id: "3",
+      name: "Honduras",
+      country: "Honduras",
+      image: "/homepage/banner5.webp",
+      tours: 132,
+      activities: 220,
+      category: "City",
+      duration: "3-5 days",
+      rating: 4.7,
+      priceRange: 20.99,
+    },
+    {
+      id: "4",
+      name: "Nicaragua",
+      country: "Nicaragua",
+      image: "/homepage/3.webp",
+      tours: 128,
+      activities: 180,
+      category: "Beach",
+      duration: "2-4 days",
+      rating: 4.6,
+      priceRange: 30.99,
+    },
+  ],
+};
+
 export const tours = [
   {
     title: "El Salvador",
     duration: "1 día",
     description: "Explora Surf City, cascadas escondidas y pueblos coloniales",
     price: 50,
-    image: "/homepage/4.jpg", // Playa de El Salvador
+    image: "/homepage/4.webp", // Playa de El Salvador
   },
   {
     title: "Guatemala",
     duration: "1 día",
     description: "Viaje cultural por Antigua, Atitlán y Tikal",
     price: 45,
-    image: "/homepage/6.jpg", // Antigua Guatemala
+    image: "/homepage/6.webp", // Antigua Guatemala
   },
   {
     title: "Honduras",
     duration: "2 días",
     description: "Descubre Roatán, Copán y su biodiversidad",
     price: 100,
-    image: "/homepage/3.jpg", // Roatán, Honduras
-  },
-];
-
-
-export const mockTours = [
-  {
-    id: "e9cbb500-8c57-4225-a3de-5673423b438c",
-    name: "Exploración Volcán de Santa Ana",
-    description:
-      "Ascenso guiado al majestuoso volcán Ilamatepec, disfrutando vistas panorámicas y un merecido descanso en aguas termales al finalizar.",
-    price: 20.99,
-    departure_point: "Multiplaza, San Salvador",
-    address: "Volcán de Santa Ana, Cerro Verde",
-    country: "El Salvador",
-  },
-  {
-    id: "f7a2b3c4-5d6e-7f8g-9h0i-1j2k3l4m5n6o",
-    name: "Ruta de las Flores",
-    description:
-      "Recorrido por los pintorescos pueblos de la Ruta de las Flores, con visitas a cascadas y degustación de gastronomía local.",
-    price: 35.5,
-    departure_point: "Centro Comercial Galerías, San Salvador",
-    address: "Ruta de las Flores, Sonsonate",
-    country: "El Salvador",
-  },
-  {
-    id: "7p8q9r0s-1t2u-3v4w-5x6y-7z8a9b0c1d2e",
-    name: "Playa El Tunco",
-    description:
-      "Día de playa en El Tunco, con clases de surf para principiantes y tiempo libre para disfrutar del mar y la gastronomía local.",
-    price: 25.0,
-    departure_point: "Metrocentro, San Salvador",
-    address: "Playa El Tunco, La Libertad",
-    country: "El Salvador",
-  },
-  {
-    id: "3f4g5h6i-7j8k-9l0m-1n2o-3p4q5r6s7t8u",
-    name: "Suchitoto Colonial",
-    description:
-      "Visita a la ciudad colonial de Suchitoto, con recorrido por sus calles empedradas, iglesias y talleres artesanales.",
-    price: 18.75,
-    departure_point: "Plaza Mundo, Soyapango",
-    address: "Suchitoto, Cuscatlán",
-    country: "El Salvador",
+    image: "/homepage/3.webp", // Roatán, Honduras
   },
 ];

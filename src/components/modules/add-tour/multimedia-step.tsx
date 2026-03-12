@@ -5,7 +5,8 @@ import type React from "react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { DollarSign, FileText, Upload, Video, X } from "lucide-react";
+import imageCompression from "browser-image-compression";
+import { DollarSign, FileText, Loader2, Upload, Video, X } from "lucide-react";
 
 import {
   Form,
@@ -31,6 +32,39 @@ import Image from "next/image";
 import { getHostEarningsFromFinalPrice } from "@/lib/price";
 // getCommissionRates comentado: solo se usaba para mostrar % en el desglose
 
+// Límites de subida (el usuario no puede subir por encima de esto)
+const MAX_BANNER_IMAGE_MB = 5;
+const MAX_GALLERY_IMAGE_MB = 5;
+const MAX_VIDEO_MB = 50;
+const MAX_PDF_MB = 10;
+
+// Compresión: reducir lo máximo posible con un estándar razonable (WebP, máx. 350 KB)
+const IMAGE_COMPRESSION_OPTIONS = {
+  maxSizeMB: 0.35,
+  maxWidthOrHeight: 1920,
+  useWebWorker: true,
+  fileType: "image/webp" as const,
+};
+
+const VIDEO_MAX_DURATION_SECONDS = 30;
+
+function getVideoDurationSeconds(file: File): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const video = document.createElement("video");
+    video.preload = "metadata";
+    video.onloadedmetadata = () => {
+      URL.revokeObjectURL(url);
+      resolve(video.duration);
+    };
+    video.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("No se pudo leer el video"));
+    };
+    video.src = url;
+  });
+}
+
 interface MultimediaStepProps {
   onSubmit: (data: MultimediaFormValues, files: TourFiles) => void;
   defaultValues?: Partial<MultimediaFormValues>;
@@ -47,6 +81,9 @@ export function MultimediaStep({
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [videoFiles, setVideoFiles] = useState<File[]>([]);
   const [fileAttachments, setFileAttachments] = useState<File[]>([]);
+  const [isCompressingBanner, setIsCompressingBanner] = useState(false);
+  const [isCompressingImages, setIsCompressingImages] = useState(false);
+  const [isCheckingVideos, setIsCheckingVideos] = useState(false);
 
   const form = useForm<MultimediaFormValues>({
     resolver: zodResolver(multimediaSchema),
@@ -55,106 +92,133 @@ export function MultimediaStep({
     },
   });
 
-  // Manejar la carga de archivos
-  const handleBannerUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-
-      // Validar tamaño
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error("El archivo excede el tamaño máximo de 5MB");
-        return;
-      }
-
-      setBannerFile(file);
-
-      const reader = new FileReader();
-      reader.onload = () => {
-        setBannerPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+  // Manejar la carga de archivos (banner e imágenes se comprimen a WebP, máx. 1MB)
+  const handleBannerUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    if (!e.target.files?.[0]) return;
+    const file = e.target.files[0];
+    if (file.size > MAX_BANNER_IMAGE_MB * 1024 * 1024) {
+      toast.error(`El banner no puede superar ${MAX_BANNER_IMAGE_MB}MB`);
+      return;
     }
+    setIsCompressingBanner(true);
+    try {
+      const compressed = await imageCompression(file, IMAGE_COMPRESSION_OPTIONS);
+      setBannerFile(compressed);
+      const reader = new FileReader();
+      reader.onload = () => setBannerPreview(reader.result as string);
+      reader.readAsDataURL(compressed);
+    } catch (err) {
+      console.error(err);
+      toast.error("Error al procesar la imagen del banner");
+    } finally {
+      setIsCompressingBanner(false);
+    }
+    e.target.value = "";
   };
 
-  const handleImagesUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const selectedFiles = Array.from(e.target.files);
-
-      // Validar número máximo
-      if (imageFiles.length + selectedFiles.length > 10) {
-        toast.error("Máximo 10 imágenes permitidas");
-        return;
-      }
-
-      // Validar tamaño
-      const oversizedFiles = selectedFiles.filter(
-        (file) => file.size > 5 * 1024 * 1024,
+  const handleImagesUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    if (!e.target.files?.length) return;
+    const selectedFiles = Array.from(e.target.files);
+    if (imageFiles.length + selectedFiles.length > 10) {
+      toast.error("Máximo 10 imágenes permitidas");
+      return;
+    }
+    const oversized = selectedFiles.filter(
+      (f) => f.size > MAX_GALLERY_IMAGE_MB * 1024 * 1024,
+    );
+    if (oversized.length > 0) {
+      toast.error(`Cada imagen puede tener como máximo ${MAX_GALLERY_IMAGE_MB}MB`);
+      return;
+    }
+    setIsCompressingImages(true);
+    try {
+      const compressed = await Promise.all(
+        selectedFiles.map((f) =>
+          imageCompression(f, IMAGE_COMPRESSION_OPTIONS),
+        ),
       );
-      if (oversizedFiles.length > 0) {
-        toast.error("Algunas imágenes exceden el tamaño máximo de 5MB");
-        return;
-      }
-
-      const newFiles = [...imageFiles, ...selectedFiles];
+      const newFiles = [...imageFiles, ...compressed];
       setImageFiles(newFiles);
-
-      // Crear previsualizaciones
-      selectedFiles.forEach((file) => {
+      compressed.forEach((file) => {
         const reader = new FileReader();
-        reader.onload = () => {
+        reader.onload = () =>
           setImagePreviews((prev) => [...prev, reader.result as string]);
-        };
         reader.readAsDataURL(file);
       });
+    } catch (err) {
+      console.error(err);
+      toast.error("Error al comprimir algunas imágenes");
+    } finally {
+      setIsCompressingImages(false);
     }
+    e.target.value = "";
   };
 
-  const handleVideosUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const selectedFiles = Array.from(e.target.files);
-
-      // Validar número máximo
-      if (videoFiles.length + selectedFiles.length > 5) {
-        toast.error("Máximo 5 videos permitidos");
-        return;
-      }
-
-      // Validar tamaño
-      const oversizedFiles = selectedFiles.filter(
-        (file) => file.size > 50 * 1024 * 1024,
-      );
-      if (oversizedFiles.length > 0) {
-        toast.error("Algunos videos exceden el tamaño máximo de 50MB");
-        return;
-      }
-
-      const newFiles = [...videoFiles, ...selectedFiles];
-      setVideoFiles(newFiles);
+  const handleVideosUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    if (!e.target.files?.length) return;
+    const selectedFiles = Array.from(e.target.files);
+    if (videoFiles.length + selectedFiles.length > 5) {
+      toast.error("Máximo 5 videos permitidos");
+      return;
     }
+    const oversized = selectedFiles.filter(
+      (f) => f.size > MAX_VIDEO_MB * 1024 * 1024,
+    );
+    if (oversized.length > 0) {
+      toast.error(`Cada video puede tener como máximo ${MAX_VIDEO_MB}MB`);
+      return;
+    }
+    setIsCheckingVideos(true);
+    try {
+      const valid: File[] = [];
+      for (const file of selectedFiles) {
+        const duration = await getVideoDurationSeconds(file);
+        if (duration > VIDEO_MAX_DURATION_SECONDS) {
+          toast.error(
+            `"${file.name}" supera los ${VIDEO_MAX_DURATION_SECONDS} segundos (tipo stories). Duración: ${Math.ceil(duration)}s`,
+          );
+          continue;
+        }
+        valid.push(file);
+      }
+      if (valid.length > 0) setVideoFiles((prev) => [...prev, ...valid]);
+    } catch {
+      toast.error("No se pudo verificar la duración de algún video");
+    } finally {
+      setIsCheckingVideos(false);
+    }
+    e.target.value = "";
   };
 
   const handleFilesUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const selectedFiles = Array.from(e.target.files);
-
-      // Validar número máximo
-      if (fileAttachments.length + selectedFiles.length > 5) {
-        toast.error("Máximo 5 archivos permitidos");
-        return;
-      }
-
-      // Validar tamaño
-      const oversizedFiles = selectedFiles.filter(
-        (file) => file.size > 10 * 1024 * 1024,
-      );
-      if (oversizedFiles.length > 0) {
-        toast.error("Algunos archivos exceden el tamaño máximo de 10MB");
-        return;
-      }
-
-      const newFiles = [...fileAttachments, ...selectedFiles];
-      setFileAttachments(newFiles);
+    if (!e.target.files?.length) return;
+    const selectedFiles = Array.from(e.target.files);
+    const pdfs = selectedFiles.filter((f) => f.type === "application/pdf");
+    const invalid = selectedFiles.filter((f) => f.type !== "application/pdf");
+    if (invalid.length > 0) {
+      toast.error("Solo se permiten archivos PDF");
+      e.target.value = "";
+      return;
     }
+    if (fileAttachments.length + pdfs.length > 5) {
+      toast.error("Máximo 5 archivos permitidos");
+      return;
+    }
+    const oversized = pdfs.filter(
+      (f) => f.size > MAX_PDF_MB * 1024 * 1024,
+    );
+    if (oversized.length > 0) {
+      toast.error(`Cada PDF puede tener como máximo ${MAX_PDF_MB}MB`);
+      return;
+    }
+    setFileAttachments((prev) => [...prev, ...pdfs]);
+    e.target.value = "";
   };
 
   const removeImage = (index: number) => {
@@ -211,22 +275,41 @@ export function MultimediaStep({
           <div className="space-y-2">
             <Label htmlFor="banner">Imagen de banner (obligatorio)</Label>
             <div
-              className="border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-md p-4 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
-              onClick={() => document.getElementById("banner-upload")?.click()}
+              className={`relative border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-md p-4 text-center transition-colors ${
+                isCompressingBanner
+                  ? "cursor-wait bg-gray-50 dark:bg-gray-900/50"
+                  : "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900"
+              }`}
+              onClick={() =>
+                !isCompressingBanner &&
+                document.getElementById("banner-upload")?.click()
+              }
             >
-              <Upload className="h-6 w-6 mx-auto mb-2 text-gray-400" />
-              <p className="text-sm text-gray-500">
-                Haz clic para subir una imagen de banner
-              </p>
-              <p className="text-xs text-gray-400 mt-1">
-                PNG, JPG o WEBP (máx. 5MB)
-              </p>
+              {isCompressingBanner ? (
+                <>
+                  <Loader2 className="h-6 w-6 mx-auto mb-2 text-gray-500 animate-spin" />
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Comprimiendo imagen...
+                  </p>
+                </>
+              ) : (
+                <>
+                  <Upload className="h-6 w-6 mx-auto mb-2 text-gray-400" />
+                  <p className="text-sm text-gray-500">
+                    Haz clic para subir una imagen de banner
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Máx. {MAX_BANNER_IMAGE_MB}MB
+                  </p>
+                </>
+              )}
               <input
                 id="banner-upload"
                 type="file"
                 accept="image/*"
                 className="hidden"
                 onChange={handleBannerUpload}
+                disabled={isCompressingBanner}
               />
             </div>
             {bannerPreview && (
@@ -269,16 +352,35 @@ export function MultimediaStep({
             </div>
 
             <div
-              className="border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-md p-4 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
-              onClick={() => document.getElementById("images-upload")?.click()}
+              className={`relative border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-md p-4 text-center transition-colors ${
+                isCompressingImages
+                  ? "cursor-wait bg-gray-50 dark:bg-gray-900/50"
+                  : "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900"
+              }`}
+              onClick={() =>
+                !isCompressingImages &&
+                imageFiles.length < 10 &&
+                document.getElementById("images-upload")?.click()
+              }
             >
-              <Upload className="h-6 w-6 mx-auto mb-2 text-gray-400" />
-              <p className="text-sm text-gray-500">
-                Haz clic para subir imágenes
-              </p>
-              <p className="text-xs text-gray-400 mt-1">
-                PNG, JPG o WEBP (máx. 5MB cada una)
-              </p>
+              {isCompressingImages ? (
+                <>
+                  <Loader2 className="h-6 w-6 mx-auto mb-2 text-gray-500 animate-spin" />
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Comprimiendo imágenes...
+                  </p>
+                </>
+              ) : (
+                <>
+                  <Upload className="h-6 w-6 mx-auto mb-2 text-gray-400" />
+                  <p className="text-sm text-gray-500">
+                    Haz clic para subir imágenes
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Máx. {MAX_GALLERY_IMAGE_MB}MB por imagen
+                  </p>
+                </>
+              )}
               <input
                 id="images-upload"
                 type="file"
@@ -286,7 +388,7 @@ export function MultimediaStep({
                 multiple
                 className="hidden"
                 onChange={handleImagesUpload}
-                disabled={imageFiles.length >= 10}
+                disabled={imageFiles.length >= 10 || isCompressingImages}
               />
             </div>
             {imagePreviews.length > 0 && (
@@ -322,16 +424,34 @@ export function MultimediaStep({
           <div className="space-y-2">
             <Label htmlFor="videos">Videos (opcional, máx. 5)</Label>
             <div
-              className="border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-md p-4 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
-              onClick={() => document.getElementById("videos-upload")?.click()}
+              className={`relative border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-md p-4 text-center transition-colors ${
+                isCheckingVideos
+                  ? "cursor-wait bg-gray-50 dark:bg-gray-900/50"
+                  : "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900"
+              }`}
+              onClick={() =>
+                !isCheckingVideos &&
+                document.getElementById("videos-upload")?.click()
+              }
             >
-              <Video className="h-6 w-6 mx-auto mb-2 text-gray-400" />
-              <p className="text-sm text-gray-500">
-                Haz clic para subir videos
-              </p>
-              <p className="text-xs text-gray-400 mt-1">
-                MP4, WEBM o MOV (máx. 50MB cada uno)
-              </p>
+              {isCheckingVideos ? (
+                <>
+                  <Loader2 className="h-6 w-6 mx-auto mb-2 text-gray-500 animate-spin" />
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Comprobando duración...
+                  </p>
+                </>
+              ) : (
+                <>
+                  <Video className="h-6 w-6 mx-auto mb-2 text-gray-400" />
+                  <p className="text-sm text-gray-500">
+                    Haz clic para subir videos
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Máx. {MAX_VIDEO_MB}MB. Duración máx. {VIDEO_MAX_DURATION_SECONDS} s
+                  </p>
+                </>
+              )}
               <input
                 id="videos-upload"
                 type="file"
@@ -339,6 +459,7 @@ export function MultimediaStep({
                 multiple
                 className="hidden"
                 onChange={handleVideosUpload}
+                disabled={isCheckingVideos}
               />
             </div>
             {videoFiles.length > 0 && (
@@ -384,11 +505,12 @@ export function MultimediaStep({
                 Haz clic para subir archivos
               </p>
               <p className="text-xs text-gray-400 mt-1">
-                PDF, DOC, DOCX, etc. (máx. 10MB cada uno)
+                Solo PDF. Máx. {MAX_PDF_MB}MB por archivo
               </p>
               <input
                 id="files-upload"
                 type="file"
+                accept="application/pdf"
                 multiple
                 className="hidden"
                 onChange={handleFilesUpload}

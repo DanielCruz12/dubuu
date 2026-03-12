@@ -25,12 +25,25 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search, X, Star, MapPin, RefreshCw } from "lucide-react";
 import Image from "next/image";
 import type { IProduct } from "@/types/product";
-import { productTypes, ratingOptions } from "@/utils/data";
+import {
+  productTypesTranslations,
+  ratingOptionsTranslations,
+} from "@/utils/data";
 import { setSearchTerm } from "@/redux/slices/product/search/search-slice";
 import { PriceRangeHistogram } from "@/components/price-range-histogram";
 import { generateSlug } from "@/lib/utils";
 import { formatUsd, USD_SYMBOL } from "@/utils/currency";
 import { useLanguage } from "@/lib/i18n-context";
+import { useLazyGetProductCategoriesQuery } from "@/redux/slices/product/product-category";
+
+function toFilterSlug(input: string): string {
+  return input
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
 
 interface SearchDialogProps {
   isOpen: boolean;
@@ -152,7 +165,7 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({
                       >
                         <div className="w-20 h-20 md:w-24 md:h-24 relative rounded-lg overflow-hidden flex-shrink-0">
                           <Image
-                            src={tourImages[0] || "/elsalvador.jpg"}
+                            src={tourImages[0] || "/elsalvador.webp"}
                             width={100}
                             height={100}
                             alt={tourName}
@@ -247,7 +260,26 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
   onApplyFilters,
   onResetFilters,
 }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const productTypes = productTypesTranslations[language];
+  const ratingOptions = ratingOptionsTranslations[language];
+
+  const [
+    fetchCategories,
+    { data: apiCategories = [], isFetching: isFetchingCategories, isUninitialized },
+  ] = useLazyGetProductCategoriesQuery();
+
+  const ensureCategoriesLoaded = () => {
+    if (isUninitialized) fetchCategories();
+  };
+
+  const categoryOptions = apiCategories
+    .filter((c) => tempProductType === "all" || c.product_type.name === tempProductType)
+    .map((c) => ({
+      key: c.id,
+      value: toFilterSlug(c.name),
+      label: c.name,
+    }));
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px] max-w-[95%] md:max-w-[85%] lg:max-w-[75%] xl:max-w-[55%] p-0 overflow-hidden rounded-xl border-none shadow-xl">
@@ -326,24 +358,38 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
               <label className="text-xs font-medium mb-2 block">
                 {t("filters.dialog.categoriesLabel")}
               </label>
-              <div className="space-y-2">
-                {["aventura", "cultural", "relajacion"].map((category) => (
-                  <div key={category} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={category}
-                      checked={tempCategories.includes(category)}
-                      onCheckedChange={(checked) =>
-                        onCategoryChange(category, checked === true)
-                      }
-                    />
-                    <label
-                      htmlFor={category}
-                      className="text-xs font-medium leading-none"
-                    >
-                      {t(`filters.dialog.category.${category}`)}
-                    </label>
+              <div
+                className="space-y-2"
+                onClick={ensureCategoriesLoaded}
+                onMouseEnter={ensureCategoriesLoaded}
+                onFocusCapture={ensureCategoriesLoaded}
+              >
+                {isFetchingCategories && (
+                  <div className="text-xs text-muted-foreground">
+                    {t("common.loading")}
                   </div>
-                ))}
+                )}
+                {!isFetchingCategories &&
+                  categoryOptions.map((category) => (
+                    <div
+                      key={category.key}
+                      className="flex items-center space-x-2"
+                    >
+                      <Checkbox
+                        id={category.value}
+                        checked={tempCategories.includes(category.value)}
+                        onCheckedChange={(checked) =>
+                          onCategoryChange(category.value, checked === true)
+                        }
+                      />
+                      <label
+                        htmlFor={category.value}
+                        className="text-xs font-medium leading-none"
+                      >
+                        {category.label}
+                      </label>
+                    </div>
+                  ))}
               </div>
             </div>
 

@@ -28,114 +28,6 @@ import { useGetProductCategoriesQuery } from "@/redux/slices/product/product-cat
 import { useGetProductAmenitiesQuery } from "@/redux/slices/product/product-amenity";
 import { useGetProductAudiencesQuery } from "@/redux/slices/product/product-audience";
 
-// Datos de fallback actualizados
-const FALLBACK_PRODUCT_TYPES = [
-  {
-    id: "9b1c117f-1317-48d3-bd89-c5c35d760544",
-    name: "tours",
-    description: "Tours y excursiones guiadas",
-  },
-];
-
-const FALLBACK_PRODUCT_CATEGORIES = [
-  {
-    id: "447c58d7-9398-45e8-828f-92a1abb31472",
-    name: "Aventura",
-    description:
-      "Opciones ágiles y económicas para recorrer ciudades o destinos turísticos.",
-    product_type: {
-      id: "9b1c117f-1317-48d3-bd89-c5c35d760544",
-      name: "tours",
-    },
-  },
-  {
-    id: "981c1cb3-12e7-4729-88cc-8a212195fd65",
-    name: "Gastronómico",
-    description:
-      "Recorridos que incluyen degustaciones, visitas a mercados, bodegas o clases de cocina.",
-    product_type: {
-      id: "9b1c117f-1317-48d3-bd89-c5c35d760544",
-      name: "tours",
-    },
-  },
-  {
-    id: "cac6e50a-b5e1-48c1-b69d-307a1bda6582",
-    name: "Naturaleza",
-    description:
-      "Exploración de parques, reservas, playas, montañas o selvas con enfoque ecológico.",
-    product_type: {
-      id: "9b1c117f-1317-48d3-bd89-c5c35d760544",
-      name: "tours",
-    },
-  },
-  {
-    id: "ecf366d4-f3a5-4c0a-a30a-f8531e11f1e4",
-    name: "Relajación",
-    description:
-      "Experiencias enfocadas en el descanso, spas, termales o yoga en la naturaleza.",
-    product_type: {
-      id: "9b1c117f-1317-48d3-bd89-c5c35d760544",
-      name: "tours",
-    },
-  },
-];
-
-const FALLBACK_PRODUCT_AMENITIES = [
-  {
-    id: "41a7c86a-c63d-4cd0-8d57-ac606b6000e8",
-    name: "Guía turístico",
-    description: "Servicio de guía profesional durante el recorrido",
-    category_id: "447c58d7-9398-45e8-828f-92a1abb31472",
-  },
-  {
-    id: "b2a7c86a-c63d-4cd0-8d57-ac606b6000e9",
-    name: "Transporte incluido",
-    description: "Servicio de transporte durante la actividad",
-    category_id: "447c58d7-9398-45e8-828f-92a1abb31472",
-  },
-  {
-    id: "c3a7c86a-c63d-4cd0-8d57-ac606b6000ea",
-    name: "Comidas incluidas",
-    description: "Servicio de alimentación durante la actividad",
-    category_id: "981c1cb3-12e7-4729-88cc-8a212195fd65",
-  },
-  {
-    id: "d4a7c86a-c63d-4cd0-8d57-ac606b6000eb",
-    name: "Equipo especializado",
-    description: "Equipamiento necesario para la actividad",
-    category_id: "cac6e50a-b5e1-48c1-b69d-307a1bda6582",
-  },
-  {
-    id: "e5a7c86a-c63d-4cd0-8d57-ac606b6000ec",
-    name: "Seguro de viaje",
-    description: "Cobertura de seguro durante la actividad",
-    category_id: "ecf366d4-f3a5-4c0a-a30a-f8531e11f1e4",
-  },
-];
-
-const FALLBACK_PRODUCT_AUDIENCES = [
-  {
-    id: "23995798-bd50-467d-ad2a-f2eaa780f1e9",
-    name: "Familias",
-    description: "Actividades orientadas a grupos familiares con niños",
-  },
-  {
-    id: "33995798-bd50-467d-ad2a-f2eaa780f1ea",
-    name: "Parejas",
-    description: "Experiencias románticas o para dos personas",
-  },
-  {
-    id: "43995798-bd50-467d-ad2a-f2eaa780f1eb",
-    name: "Aventureros",
-    description: "Actividades para personas que buscan adrenalina",
-  },
-  {
-    id: "53995798-bd50-467d-ad2a-f2eaa780f1ec",
-    name: "Adultos mayores",
-    description: "Experiencias adaptadas para personas de la tercera edad",
-  },
-];
-
 interface CategorizationStepProps {
   onSubmit: (data: CategorizationFormValues) => void;
   defaultValues?: Partial<CategorizationFormValues>;
@@ -153,34 +45,17 @@ export function CategorizationStep({
     defaultValues?.product_category_id || ""
   );
 
-  // Consultas RTK Query con fallback a datos locales
-  const { data: productTypesApi = [], isLoading: isLoadingTypes } =
+  const { data: productTypes = [], isLoading: isLoadingTypes } =
     useGetProductTypesQuery();
 
-  const { data: productCategoriesApi = [], isLoading: isLoadingCategories } =
+  const { data: productCategories = [], isLoading: isLoadingCategories } =
     useGetProductCategoriesQuery();
 
-  const { data: productAmenitiesApi = [], isLoading: isLoadingAmenities } =
+  const { data: productAmenities = [], isLoading: isLoadingAmenities } =
     useGetProductAmenitiesQuery();
 
-  const { data: productAudiencesApi = [], isLoading: isLoadingAudiences } =
+  const { data: productAudiences = [], isLoading: isLoadingAudiences } =
     useGetProductAudiencesQuery();
-
-  // Usar datos de fallback si las APIs no devuelven datos
-  const productTypes =
-    productTypesApi.length > 0 ? productTypesApi : FALLBACK_PRODUCT_TYPES;
-  const productCategories =
-    productCategoriesApi.length > 0
-      ? productCategoriesApi
-      : FALLBACK_PRODUCT_CATEGORIES;
-  const productAmenities =
-    productAmenitiesApi.length > 0
-      ? productAmenitiesApi
-      : FALLBACK_PRODUCT_AMENITIES;
-  const productAudiences =
-    productAudiencesApi.length > 0
-      ? productAudiencesApi
-      : FALLBACK_PRODUCT_AUDIENCES;
 
   // Opciones para los selectores
   const productTypeOptions: ComboboxOption[] = productTypes.map((type) => ({
@@ -205,7 +80,7 @@ export function CategorizationStep({
   // Filtrar amenities por categoría seleccionada usando category_id
   const filteredAmenities = selectedCategoryId
     ? productAmenities.filter(
-        (amenity) => amenity.category_id === selectedCategoryId
+        (amenity) => amenity.category_id.id === selectedCategoryId
       )
     : [];
 

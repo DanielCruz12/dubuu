@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { destinations } from "@/utils/data";
+import { destinationsTranslations } from "@/utils/data";
 import { formatUsd, USD_SYMBOL } from "@/utils/currency";
 import { useLanguage } from "@/lib/i18n-context";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -36,7 +36,8 @@ function PopularDestinationsSkeleton() {
 export default function PopularDestinations() {
   const convert = formatUsd;
   const symbol = USD_SYMBOL;
-  const { t, isReady } = useLanguage();
+  const { t, language, isReady } = useLanguage();
+  const destinations = destinationsTranslations[language];
 
   if (!isReady) {
     return <PopularDestinationsSkeleton />;

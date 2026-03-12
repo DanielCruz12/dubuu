@@ -17,7 +17,8 @@ import {
 import type { IBookingUser } from "@/types/booking";
 import moment from "moment";
 import "moment/locale/es";
-import { statusColors, statusText } from "@/utils/data";
+import { statusColors, statusTextTranslations } from "@/utils/data";
+import { useLanguage } from "@/lib/i18n-context";
 
 interface BookingDetailsProps {
   booking: IBookingUser;
@@ -30,6 +31,10 @@ export function BookingDetails({
   open,
   onClose,
 }: BookingDetailsProps) {
+  const { language, t } = useLanguage();
+  const statusText = statusTextTranslations[language];
+  const bookingIdShort = booking.id.split("-").pop() ?? "";
+
   // Map API status to UI status
   const mapStatus = (status: string) => {
     const statusMap: Record<string, string> = {
@@ -49,15 +54,17 @@ export function BookingDetails({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogTrigger asChild></DialogTrigger>
       <DialogContent className="sm:max-w-[425px] max-w-[95%] md:max-w-[85%] lg:max-w-[75%] xl:max-w-[55%] p-0 overflow-hidden rounded-xl border-none shadow-xl">
-        <DialogTitle className="sr-only">Detalles de la reserva</DialogTitle>
+        <DialogTitle className="sr-only">
+          {t("dashboard.bookingDetails.title")}
+        </DialogTitle>
         <DialogDescription className="sr-only">
-          Información detallada de su reserva
+          {t("dashboard.bookingDetails.description")}
         </DialogDescription>
         <div className="absolute right-4 top-4 z-10">
           <button
             onClick={onClose}
             className="rounded-full p-1.5 bg-black/50 backdrop-blur-sm text-white hover:bg-black/30 transition-colors"
-            aria-label="Cerrar"
+            aria-label={t("dashboard.bookingDetails.close")}
           >
             <svg
               width="15"
@@ -95,7 +102,10 @@ export function BookingDetails({
                 {booking.product_name}
               </h3>
               <p className="text-sm opacity-90">
-                Reserva #{booking.id.split("-").pop()}
+                {t("dashboard.bookingDetails.bookingId").replace(
+                  "{{id}}",
+                  bookingIdShort
+                )}
               </p>
             </div>
           </div>
@@ -107,7 +117,7 @@ export function BookingDetails({
                   value="details"
                   className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1"
                 >
-                  Detalles
+                  {t("dashboard.bookingDetails.tabDetails")}
                 </TabsTrigger>
               </TabsList>
 
@@ -116,36 +126,52 @@ export function BookingDetails({
                   <div className="flex items-start">
                     <Calendar className="h-4 w-4 mr-3 mt-0.5 text-primary" />
                     <div>
-                      <p className="font-medium">Fechas</p>
+                      <p className="font-medium">
+                        {t("dashboard.bookingDetails.dates")}
+                      </p>
                       <p className="text-muted-foreground">
-                        {moment(booking.tourDate).format(
-                          "dddd, D [de] MMMM - h:mm A"
-                        )}
+                        {moment(booking.tourDate)
+                          .locale(language === "es" ? "es" : "en")
+                          .format(
+                            language === "es"
+                              ? "dddd, D [de] MMMM - h:mm A"
+                              : "dddd, MMMM D - h:mm A"
+                          )}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-start">
                     <MapPin className="h-4 w-4 mr-3 mt-0.5 text-primary" />
                     <div>
-                      <p className="font-medium">Ubicación</p>
+                      <p className="font-medium">
+                        {t("dashboard.bookingDetails.location")}
+                      </p>
                       <p className="text-muted-foreground">{`${booking.product_address}, ${booking.country}`}</p>
                     </div>
                   </div>
                   <div className="flex items-start">
                     <Users className="h-4 w-4 mr-3 mt-0.5 text-primary" />
                     <div>
-                      <p className="font-medium">Participantes</p>
+                      <p className="font-medium">
+                        {t("dashboard.bookingDetails.participants")}
+                      </p>
                       <p className="text-muted-foreground">
                         {booking.tickets}{" "}
-                        {booking.tickets === 1 ? "persona" : "personas"}
+                        {booking.tickets === 1
+                          ? t("dashboard.bookingDetails.person")
+                          : t("dashboard.bookingDetails.people")}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-start">
                     <Clock className="h-4 w-4 mr-3 mt-0.5 text-primary" />
                     <div>
-                      <p className="font-medium">Duración</p>
-                      <p className="text-muted-foreground">1 día</p>
+                      <p className="font-medium">
+                        {t("dashboard.bookingDetails.duration")}
+                      </p>
+                      <p className="text-muted-foreground">
+                        {t("dashboard.bookingDetails.oneDay")}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -155,7 +181,7 @@ export function BookingDetails({
                 <div>
                   <h4 className="font-medium mb-1 pt-4 flex items-center">
                     <Info className="h-4 w-4 mr-2 text-primary" />
-                    Información del viaje
+                    {t("dashboard.bookingDetails.tripInfo")}
                   </h4>
                   <p className="text-sm text-muted-foreground line-clamp-2">
                     {booking.product_description}
@@ -174,7 +200,7 @@ export function BookingDetails({
               )} */}
               <Button variant="secondary" size="sm" className="gap-1.5">
                 <Download className="h-3.5 w-3.5" />
-                Descargar voucher
+                {t("dashboard.bookingDetails.downloadVoucher")}
               </Button>
             </div>
           </div>

@@ -5,10 +5,10 @@ const nextConfig = {
   async rewrites() {
     const base = (process.env.BACKEND_URL || "http://localhost:3002").replace(
       /\/$/,
-      ""
+      "",
     );
     return [
-    {
+      {
         source: "/backend/socket.io",
         destination: `${base}/socket.io/`,
       },
@@ -16,14 +16,9 @@ const nextConfig = {
         source: "/backend/socket.io/:path*",
         destination: `${base}/socket.io/:path*/`,
       },
-      // Alternativa si el cliente usara path "/socket.io" (sin /backend)
       {
         source: "/socket.io/:path*",
         destination: `${base}/socket.io/:path*/`,
-      },
-      {
-        source: "/api/:path*",
-        destination: `${base}/api/:path*`,
       },
       {
         source: "/backend/:path*",
