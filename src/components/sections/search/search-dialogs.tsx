@@ -330,9 +330,6 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
                   />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all" className="text-xs">
-                    {t("filters.dialog.allTypes")}
-                  </SelectItem>
                   {productTypes.map(({ name }) => (
                     <SelectItem key={name} value={name} className="text-xs">
                       {t(`filters.productType.${name}`)}

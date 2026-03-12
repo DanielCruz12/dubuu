@@ -77,14 +77,8 @@ export function CategorizationStep({
     })
   );
 
-  // Filtrar amenities por categoría seleccionada usando category_id
-  const filteredAmenities = selectedCategoryId
-    ? productAmenities.filter(
-        (amenity) => amenity.category_id.id === selectedCategoryId
-      )
-    : [];
-
-  const amenityOptions: ComboboxOption[] = filteredAmenities.map((amenity) => ({
+  // Mostrar todos los amenities (sin filtrarlos por categoría)
+  const amenityOptions: ComboboxOption[] = productAmenities.map((amenity) => ({
     value: amenity.id,
     label: amenity.name,
   }));
@@ -238,14 +232,9 @@ export function CategorizationStep({
                     options={amenityOptions}
                     value={field.value}
                     onChange={field.onChange}
-                    placeholder={
-                      selectedCategoryId
-                        ? "Selecciona las comodidades"
-                        : "Primero selecciona una categoría"
-                    }
-                    emptyMessage="No se encontraron comodidades para esta categoría"
+                    placeholder="Selecciona las comodidades"
+                    emptyMessage="No se encontraron comodidades"
                     className="w-full"
-                    disabled={!selectedCategoryId}
                   />
                 </FormControl>
                 <FormMessage className="text-xs text-red-500" />

@@ -19,10 +19,9 @@ export interface IProductAmenity {
   id: string;
   name: string;
   description: string;
-  category_id: {
-    id: string;
-    name: string;
-  };
+  // La API a veces devuelve `category_id` como string (id),
+  // y en otros casos como objeto (id + name).
+  category_id: string | { id: string; name: string };
 }
 
 export interface IProductAudience {
