@@ -166,7 +166,7 @@ export default async function RootLayout({
               },
               "contactPoint": {
                 "@type": "ContactPoint",
-                "telephone": "+(503) 77886116",
+                "telephone": "+(503) 64562432",
                 "contactType": "Customer Service",
                 "areaServed": "El Salvador",
                 "availableLanguage": "Spanish"

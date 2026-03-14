@@ -67,6 +67,16 @@
   "addProduct": {
     "title": "Agregar producto"
   },
+  "saved": {
+    "heading": "Guardados",
+    "description": "Vuelve a ver los productos que guardaste anteriormente",
+    "emptyStateMessage": "No tienes productos guardados",
+    "exploreLinkText": "Explorar productos",
+    "signInMessage": "Inicia sesión para ver tus productos guardados",
+    "loadError": "Error al cargar tus productos guardados",
+    "cardLoadError": "Error al cargar el producto",
+    "cardLoadErrorDescription": "No se pudieron cargar los detalles del producto"
+  },
   "dataTable": {
     "noResults": "No se encontraron resultados.",
     "show": "Mostrar",

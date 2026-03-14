@@ -4,7 +4,7 @@
 import { useUser } from "@clerk/nextjs";
 import { DashboardTitle } from "@/components/dashboard-title";
 import { FavoritedTourCard } from "@/components/favorited-tour-card";
-
+import { useLanguage } from "@/lib/i18n-context";
 import { Loader2, Heart } from "lucide-react";
 import Link from "next/link";
 import { useGetUserFavoritesQuery } from "@/redux/slices/favorite/favorite-slice";
@@ -19,13 +19,14 @@ interface SavedProductsProps {
 }
 
 export const SavedProducts = ({
-  heading = "Guardados",
-  description = "Vuelve a ver los productos que guardaste anteriormente",
-  emptyStateMessage = "No tienes productos guardados",
+  heading,
+  description,
+  emptyStateMessage,
   exploreLink = "/home",
-  exploreLinkText = "Explorar productos",
+  exploreLinkText,
   className = "px-3 md:px-0",
 }: SavedProductsProps) => {
+  const { t } = useLanguage();
   const { user, isSignedIn, isLoaded } = useUser();
   const {
     data: favorites,
@@ -36,11 +37,15 @@ export const SavedProducts = ({
     { skip: !isSignedIn || !user?.id }
   );
 
-  // Wait for Clerk to load user data
+  const headingText = heading ?? t("dashboard.saved.heading");
+  const descriptionText = description ?? t("dashboard.saved.description");
+  const emptyText = emptyStateMessage ?? t("dashboard.saved.emptyStateMessage");
+  const exploreText = exploreLinkText ?? t("dashboard.saved.exploreLinkText");
+
   if (!isLoaded) {
     return (
       <div className={className}>
-        <DashboardTitle heading={heading} description={description} />
+        <DashboardTitle heading={headingText} description={descriptionText} />
         <div className="mt-8 flex justify-center">
           <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
         </div>
@@ -51,9 +56,9 @@ export const SavedProducts = ({
   if (!isSignedIn) {
     return (
       <div className={className}>
-        <DashboardTitle heading={heading} description={description} />
+        <DashboardTitle heading={headingText} description={descriptionText} />
         <div className="mt-8 text-center">
-          <p>Inicia sesión para ver tus productos guardados</p>
+          <p>{t("dashboard.saved.signInMessage")}</p>
         </div>
       </div>
     );
@@ -61,7 +66,7 @@ export const SavedProducts = ({
 
   return (
     <div className={className}>
-      <DashboardTitle heading={heading} description={description} />
+      <DashboardTitle heading={headingText} description={descriptionText} />
 
       {isLoading && (
         <div className="mt-8 flex justify-center">
@@ -71,23 +76,21 @@ export const SavedProducts = ({
 
       {error && (
         <div className="mt-8 text-center">
-          <p className="text-red-500">
-            Error al cargar tus productos guardados
-          </p>
+          <p className="text-red-500">{t("dashboard.saved.loadError")}</p>
         </div>
       )}
 
       {favorites && favorites.length === 0 && (
         <div className="mt-8 text-center">
-          <div className="w-24 h-24 mx-auto bg-gray-100 rounded-full flex items-center justify-center">
-            <Heart className="h-12 w-12 text-gray-300" />
+          <div className="w-24 h-24 mx-auto bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+            <Heart className="h-12 w-12 text-gray-300 dark:text-gray-600" />
           </div>
-          <p className="mt-4 text-gray-500">{emptyStateMessage}</p>
+          <p className="mt-4 text-gray-500 dark:text-gray-400">{emptyText}</p>
           <Link
             href={exploreLink}
             className="mt-4 inline-block text-blue-500 hover:underline"
           >
-            {exploreLinkText}
+            {exploreText}
           </Link>
         </div>
       )}

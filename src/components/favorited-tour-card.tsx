@@ -4,12 +4,14 @@
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useGetProductQuery } from "@/redux/slices/product/product-slice";
 import { TourCard } from "@/components/tour-card";
+import { useLanguage } from "@/lib/i18n-context";
 
 interface FavoritedTourCardProps {
   productId: string;
 }
 
 export function FavoritedTourCard({ productId }: FavoritedTourCardProps) {
+  const { t } = useLanguage();
   const { data: product, isLoading, error } = useGetProductQuery(productId);
 
   // Loading state
@@ -31,15 +33,14 @@ export function FavoritedTourCard({ productId }: FavoritedTourCardProps) {
     );
   }
 
-  // Error state
   if (error || !product) {
     return (
       <Card className="overflow-hidden rounded-xl border-none shadow-lg">
-        <div className="aspect-[16/10] rounded-t-lg bg-gray-100 flex items-center justify-center">
-          <p className="text-sm text-gray-500">Error loading product</p>
+        <div className="aspect-[16/10] rounded-t-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+          <p className="text-sm text-gray-500 dark:text-gray-400">{t("dashboard.saved.cardLoadError")}</p>
         </div>
         <CardContent className="pt-3">
-          <p className="text-red-500">Failed to load product details</p>
+          <p className="text-red-500">{t("dashboard.saved.cardLoadErrorDescription")}</p>
         </CardContent>
       </Card>
     );

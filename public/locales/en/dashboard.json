@@ -67,6 +67,16 @@
   "addProduct": {
     "title": "Add product"
   },
+  "saved": {
+    "heading": "Saved",
+    "description": "See again the products you previously saved",
+    "emptyStateMessage": "You have no saved products",
+    "exploreLinkText": "Explore products",
+    "signInMessage": "Sign in to see your saved products",
+    "loadError": "Error loading your saved products",
+    "cardLoadError": "Error loading product",
+    "cardLoadErrorDescription": "Failed to load product details"
+  },
   "dataTable": {
     "noResults": "No results found.",
     "show": "Show",
