@@ -190,7 +190,81 @@
       "processError": "Error al procesar la información. Inténtelo de nuevo más tarde."
     },
     "existing": {
-      "deleted": "Método de pago eliminado correctamente"
+      "deleted": "Método de pago eliminado correctamente",
+      "updateInfo": "Actualizar información",
+      "deleteMethod": "Eliminar método de pago",
+      "deleteConfirmTitle": "¿Eliminar método de pago?",
+      "deleteConfirmDescription": "Esta acción no se puede deshacer. Dejarás de recibir pagos en esta cuenta hasta que agregues un nuevo método de pago.",
+      "cancel": "Cancelar",
+      "deleting": "Eliminando...",
+      "delete": "Eliminar",
+      "accountLabel": "Cuenta",
+      "holderLabel": "Titular",
+      "contactEmail": "Correo de contacto",
+      "blinkAddressLabel": "Dirección Blink / Lightning",
+      "accountTypeAhorro": "Cuenta de Ahorro",
+      "accountTypeCorriente": "Cuenta Corriente",
+      "secureConnection": "Conexión segura",
+      "deleteError": "No se pudo eliminar el método de pago"
+    },
+    "stepLabel": "Paso {{step}} de {{total}}",
+    "methods": {
+      "bank": "Transferencia bancaria",
+      "blink": "Bitcoin / Lightning (LN)"
+    },
+    "methodDetails": {
+      "bankLine1": "De 1 a 3 días hábiles",
+      "bankLine2": "Es posible que se te cobre alguna tarifa",
+      "blinkLine1": "Recibe en Bitcoin al instante",
+      "blinkLine2": "LN (Lightning Network): transacciones rápidas y tarifas muy bajas"
+    },
+    "bankForm": {
+      "bankName": "Nombre del banco",
+      "bankNamePlaceholder": "Ingrese el nombre del banco",
+      "accountType": "Tipo de cuenta",
+      "accountTypePlaceholder": "Seleccione el tipo de cuenta",
+      "accountTypeAhorro": "Cuenta de Ahorro",
+      "accountTypeCorriente": "Cuenta Corriente",
+      "accountNumber": "Número de cuenta",
+      "accountNumberPlaceholder": "Ingrese el número de cuenta",
+      "holderName": "Nombre completo (titular)",
+      "holderNamePlaceholder": "Ingrese el nombre del titular",
+      "email": "Correo electrónico",
+      "emailPlaceholder": "ejemplo@correo.com",
+      "back": "Atrás",
+      "submit": "Enviar información",
+      "updating": "Actualizar información",
+      "processing": "Procesando...",
+      "validation": {
+        "bankNameRequired": "El nombre del banco es requerido",
+        "accountTypeRequired": "Seleccione un tipo de cuenta",
+        "accountNumberMin": "El número de cuenta debe tener al menos 5 caracteres",
+        "accountNumberNumeric": "El número de cuenta debe contener solo números",
+        "holderNameRequired": "El nombre del titular es requerido",
+        "emailInvalid": "Ingrese un correo electrónico válido"
+      }
+    },
+    "blinkForm": {
+      "walletAddress": "Dirección Blink / Lightning",
+      "walletAddressPlaceholder": "ej: usuario@blink.sv o tu wallet ID",
+      "walletAddressHelp": "Indica dónde quieres recibir los pagos (Lightning address o identificador de tu wallet Blink).",
+      "email": "Correo electrónico de contacto",
+      "emailPlaceholder": "ejemplo@correo.com",
+      "back": "Atrás",
+      "submit": "Enviar información",
+      "updating": "Actualizar información",
+      "processing": "Procesando...",
+      "validation": {
+        "walletRequired": "La dirección o Lightning address es requerida",
+        "emailInvalid": "Ingrese un correo electrónico válido"
+      }
+    },
+    "verification": {
+      "title": "Verificación de datos bancarios",
+      "description1": "Los datos bancarios que proporcionas serán utilizados para transferir el dinero de todas tus reservaciones.",
+      "description2": "Una vez procesados los pagos, será difícil recuperar fondos enviados a cuentas incorrectas.",
+      "cancel": "Revisar datos",
+      "confirm": "Confirmo que son correctos"
     }
   },
   "addTour": {
@@ -217,6 +291,139 @@
         "description": "Agrega imágenes, videos, archivos y establece el precio"
       }
     },
+    "basicInfo": {
+      "name": "Nombre del tour",
+      "namePlaceholder": "Ej. Exploración Volcán de Santa Ana",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Describe el tour de manera detallada",
+      "departure_point": "Punto de partida",
+      "departure_pointPlaceholder": "Ej. Multiplaza, San Salvador",
+      "max_people": "Máximo de personas",
+      "max_peoplePlaceholder": "Ej. 10",
+      "address": "Dirección del destino",
+      "addressPlaceholder": "Ej. Volcán de Santa Ana, Cerro Verde",
+      "country": "País",
+      "countryPlaceholder": "Seleccione un país",
+      "duration": "Duración (días)",
+      "durationPlaceholder": "Ej. 1",
+      "validation": {
+        "nameMin": "El nombre debe tener al menos 5 caracteres",
+        "descriptionMin": "La descripción debe tener al menos 20 caracteres",
+        "departure_pointMin": "El punto de partida es requerido",
+        "addressMin": "La dirección es requerida",
+        "countryMin": "El país es requerido",
+        "max_peoplePositive": "El número máximo de personas debe ser mayor a 0",
+        "durationPositive": "La duración debe ser mayor a 0"
+      }
+    },
+    "location": {
+      "address": "Dirección",
+      "lat": "Latitud",
+      "lng": "Longitud",
+      "validation": {
+        "addressMin": "La dirección es requerida"
+      }
+    },
+    "details": {
+      "highlight": "Aspectos destacados",
+      "highlightPlaceholder": "Ej. Ascenso al volcán, vistas espectaculares y aguas termales.",
+      "included": "¿Qué incluye?",
+      "includedPlaceholder": "Ej. Guía especializado, transporte, entradas y almuerzo tipo picnic.",
+      "difficulty": "Nivel de dificultad",
+      "difficultyPlaceholder": "Seleccione el nivel de dificultad",
+      "itinerary": "Itinerario",
+      "itineraryItemPlaceholder": "Agregar punto de itinerario",
+      "moveItineraryItem": "Mover punto de itinerario",
+      "expenses": "Gastos no incluidos (opcional)",
+      "expensesPlaceholder": "Ej. Bebidas adicionales, souvenirs",
+      "packing_list": "Lista de empaque (opcional)",
+      "packing_listPlaceholder": "Ej. Ropa cómoda, protector solar, agua",
+      "available_dates": "Fechas y horarios disponibles",
+      "datesSelected": "{{count}} fecha seleccionada",
+      "datesSelected_other": "{{count}} fechas seleccionadas",
+      "selectDates": "Seleccionar fechas",
+      "schedulePerDate": "Horarios para cada fecha:",
+      "delete": "Eliminar",
+      "validation": {
+        "highlightMin": "Los aspectos destacados deben tener al menos 10 caracteres",
+        "includedMin": "Lo incluido debe tener al menos 10 caracteres",
+        "itineraryMin": "Debe incluir al menos un punto en el itinerario",
+        "available_datesMin": "Debe seleccionar al menos una fecha disponible",
+        "difficultyRequired": "Debe seleccionar un nivel de dificultad"
+      }
+    },
+    "categorization": {
+      "targetAudience": "Audiencia Objetivo",
+      "targetAudiencePlaceholder": "Selecciona una audiencia objetivo",
+      "targetAudienceEmpty": "No se encontraron audiencias objetivo",
+      "productType": "Tipo de Producto",
+      "productTypePlaceholder": "Selecciona un tipo de producto",
+      "productTypeEmpty": "No se encontraron tipos de producto",
+      "productCategory": "Categoría de Producto",
+      "productCategoryPlaceholder": "Selecciona una categoría",
+      "productCategoryEmpty": "No se encontraron categorías para este tipo de producto",
+      "selectCategoryFirst": "Primero selecciona un tipo de producto",
+      "amenities": "Comodidades",
+      "amenitiesPlaceholder": "Selecciona las comodidades",
+      "amenitiesEmpty": "No se encontraron comodidades",
+      "loading": "Cargando datos...",
+      "validation": {
+        "productTypeRequired": "Debe seleccionar un tipo de producto",
+        "productCategoryRequired": "Debe seleccionar una categoría",
+        "targetAudienceRequired": "Debe seleccionar una audiencia objetivo",
+        "amenitiesMin": "Debe seleccionar al menos una comodidad"
+      }
+    },
+    "multimedia": {
+      "bannerLabel": "Imagen de banner (obligatorio)",
+      "bannerClick": "Haz clic para subir una imagen de banner",
+      "bannerMax": "Máx. {{max}}MB",
+      "imagesLabel": "Imágenes del tour (obligatorio, mín. 5, máx. 10)",
+      "imagesCount": "{{count}}/10",
+      "imagesClick": "Haz clic para subir imágenes",
+      "imagesMaxPer": "Máx. {{max}}MB por imagen",
+      "videosLabel": "Videos (opcional, máx. 5)",
+      "videosClick": "Haz clic para subir videos",
+      "videosMax": "Máx. {{max}}MB. Duración máx. {{seconds}} s",
+      "filesLabel": "Archivos adicionales (opcional, máx. 5)",
+      "filesClick": "Haz clic para subir archivos",
+      "filesPdfMax": "Solo PDF. Máx. {{max}}MB por archivo",
+      "priceLabel": "Precio por persona ($)",
+      "pricePlaceholder": "Ej. 20.99",
+      "priceBreakdown": "Desglose de precios",
+      "finalPrice": "Precio final (usuario paga):",
+      "paymentCommission": "Comisión por pago",
+      "platformCommission": "Comisión de plataforma",
+      "youReceive": "Tú recibes:",
+      "compressingImage": "Comprimiendo imagen...",
+      "compressingImages": "Comprimiendo imágenes...",
+      "checkingDuration": "Comprobando duración...",
+      "delete": "Eliminar",
+      "validation": {
+        "pricePositive": "El precio debe ser mayor a 0",
+        "bannerRequired": "Debe subir una imagen de banner",
+        "imagesMin": "Debe subir al menos 5 imágenes",
+        "imagesMax": "No puede subir más de 10 imágenes",
+        "bannerMaxSize": "El banner no debe exceder {{max}}MB",
+        "imagesMaxSize": "Algunas imágenes exceden el tamaño máximo de {{max}}MB",
+        "videosMaxSize": "Algunos videos exceden el tamaño máximo de {{max}}MB",
+        "filesMaxSize": "Algunos archivos exceden el tamaño máximo de {{max}}MB"
+      },
+      "toast": {
+        "bannerSize": "El banner no puede superar {{max}}MB",
+        "maxImages": "Máximo 10 imágenes permitidas",
+        "imageSize": "Cada imagen puede tener como máximo {{max}}MB",
+        "maxVideos": "Máximo 5 videos permitidos",
+        "videoSize": "Cada video puede tener como máximo {{max}}MB",
+        "videoDuration": "\"{{name}}\" supera los {{seconds}} segundos (tipo stories). Duración: {{duration}}s",
+        "pdfOnly": "Solo se permiten archivos PDF",
+        "maxFiles": "Máximo 5 archivos permitidos",
+        "pdfSize": "Cada PDF puede tener como máximo {{max}}MB",
+        "processBannerError": "Error al procesar la imagen del banner",
+        "compressError": "Error al comprimir algunas imágenes",
+        "verifyDurationError": "No se pudo verificar la duración de algún video"
+      }
+    },
     "buttons": {
       "back": "Atrás",
       "continue": "Continuar",
@@ -230,6 +437,12 @@
     },
     "security": {
       "secureInfo": "Información segura"
+    },
+    "toast": {
+      "success": "¡Tour creado con éxito!",
+      "successDescription": "El tour ha sido registrado correctamente en el sistema.",
+      "error": "Error al crear el tour",
+      "errorDescription": "Hubo un problema al guardar el tour. Por favor, inténtalo de nuevo."
     }
   }
 }

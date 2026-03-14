@@ -1,22 +1,26 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
-import { type LocationFormValues, locationSchema, type Location } from "./types"
-import { scrollToFirstError } from "./utils"
-import LocationPicker from "@/components/location-picker"
+import { type LocationFormValues, getLocationSchema, type Location } from "./types";
+import { scrollToFirstError } from "./utils";
+import LocationPicker from "@/components/location-picker";
+import { useLanguage } from "@/lib/i18n-context";
 
 interface LocationStepProps {
-  onSubmit: (data: LocationFormValues) => void
-  defaultValues?: Partial<LocationFormValues>
+  onSubmit: (data: LocationFormValues) => void;
+  defaultValues?: Partial<LocationFormValues>;
 }
 
 export function LocationStep({ onSubmit, defaultValues }: LocationStepProps) {
+  const { t } = useLanguage();
+  const locationSchema = useMemo(() => getLocationSchema(t), [t]);
+
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(
     defaultValues?.lat && defaultValues?.lng && defaultValues?.address
       ? {
@@ -25,7 +29,7 @@ export function LocationStep({ onSubmit, defaultValues }: LocationStepProps) {
           address: defaultValues.address,
         }
       : null,
-  )
+  );
 
   const form = useForm<LocationFormValues>({
     resolver: zodResolver(locationSchema),
@@ -34,27 +38,24 @@ export function LocationStep({ onSubmit, defaultValues }: LocationStepProps) {
       lng: defaultValues?.lng || 0,
       address: defaultValues?.address || "",
     },
-  })
+  });
 
   const handleLocationSelect = (location: Location) => {
-    setSelectedLocation(location)
-    form.setValue("lat", location.lat)
-    form.setValue("lng", location.lng)
-    form.setValue("address", location.address)
-
-    // Disparar validación para que el botón "Siguiente" funcione correctamente
-    form.trigger(["lat", "lng", "address"])
-  }
+    setSelectedLocation(location);
+    form.setValue("lat", location.lat);
+    form.setValue("lng", location.lng);
+    form.setValue("address", location.address);
+    form.trigger(["lat", "lng", "address"]);
+  };
 
   const handleSubmit = form.handleSubmit(
     (data) => {
-      onSubmit(data)
+      onSubmit(data);
     },
     (errors) => {
-      // Hacer scroll al primer error
-      scrollToFirstError(errors)
+      scrollToFirstError(errors);
     },
-  )
+  );
 
   return (
     <Form {...form}>
@@ -65,7 +66,7 @@ export function LocationStep({ onSubmit, defaultValues }: LocationStepProps) {
             name="address"
             render={({ field }) => (
               <FormItem className="hidden">
-                <FormLabel>Dirección</FormLabel>
+                <FormLabel>{t("dashboard.addTour.location.address")}</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -79,7 +80,7 @@ export function LocationStep({ onSubmit, defaultValues }: LocationStepProps) {
             name="lat"
             render={({ field }) => (
               <FormItem className="hidden">
-                <FormLabel>Latitud</FormLabel>
+                <FormLabel>{t("dashboard.addTour.location.lat")}</FormLabel>
                 <FormControl>
                   <Input {...field} type="number" step="any" />
                 </FormControl>
@@ -93,7 +94,7 @@ export function LocationStep({ onSubmit, defaultValues }: LocationStepProps) {
             name="lng"
             render={({ field }) => (
               <FormItem className="hidden">
-                <FormLabel>Longitud</FormLabel>
+                <FormLabel>{t("dashboard.addTour.location.lng")}</FormLabel>
                 <FormControl>
                   <Input {...field} type="number" step="any" />
                 </FormControl>
@@ -106,5 +107,5 @@ export function LocationStep({ onSubmit, defaultValues }: LocationStepProps) {
         </div>
       </form>
     </Form>
-  )
+  );
 }

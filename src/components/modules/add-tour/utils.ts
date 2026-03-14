@@ -117,68 +117,86 @@ export const scrollToFirstError = (errors: Record<string, any>) => {
   }
 };
 
-// Función para validar archivos
-export const validateFiles = (
+type TFunction = (key: string) => string;
+
+const MAX_BANNER_MB = 5;
+const MAX_IMAGE_MB = 5;
+const MAX_VIDEO_MB = 50;
+const MAX_PDF_MB = 10;
+
+/** Validates tour files and returns translated error messages. */
+export function validateFiles(
+  t: TFunction,
   bannerFile: File | null,
   imageFiles: File[],
   videoFiles: File[],
   fileAttachments: File[]
-) => {
+): string[] {
   const errors: string[] = [];
 
-  // Validar banner
   if (!bannerFile) {
-    errors.push("Debe subir una imagen de banner");
+    errors.push(t("dashboard.addTour.multimedia.validation.bannerRequired"));
   }
 
-  // Validar imágenes (mínimo 5, máximo 10)
   if (imageFiles.length < 5) {
-    errors.push("Debe subir al menos 5 imágenes");
+    errors.push(t("dashboard.addTour.multimedia.validation.imagesMin"));
   }
 
   if (imageFiles.length > 10) {
-    errors.push("No puede subir más de 10 imágenes");
+    errors.push(t("dashboard.addTour.multimedia.validation.imagesMax"));
   }
 
-  // Validar tamaño máximo de archivos
-  const maxSizeMB = 5; // 5MB
-  const maxSizeBytes = maxSizeMB * 1024 * 1024;
-
-  if (bannerFile && bannerFile.size > maxSizeBytes) {
-    errors.push(`El banner no debe exceder ${maxSizeMB}MB`);
-  }
-
-  const oversizedImages = imageFiles.filter((file) => file.size > maxSizeBytes);
-  if (oversizedImages.length > 0) {
-    errors.push(`Algunas imágenes exceden el tamaño máximo de ${maxSizeMB}MB`);
-  }
-
-  const oversizedVideos = videoFiles.filter(
-    (file) => file.size > maxSizeBytes * 10
-  ); // 50MB para videos
-  if (oversizedVideos.length > 0) {
+  const bannerMaxBytes = MAX_BANNER_MB * 1024 * 1024;
+  if (bannerFile && bannerFile.size > bannerMaxBytes) {
     errors.push(
-      `Algunos videos exceden el tamaño máximo de ${maxSizeMB * 10}MB`
+      t("dashboard.addTour.multimedia.validation.bannerMaxSize").replace(
+        "{{max}}",
+        String(MAX_BANNER_MB)
+      )
     );
   }
 
-  const oversizedFiles = fileAttachments.filter(
-    (file) => file.size > maxSizeBytes * 2
-  ); // 10MB para archivos
+  const imageMaxBytes = MAX_IMAGE_MB * 1024 * 1024;
+  const oversizedImages = imageFiles.filter((file) => file.size > imageMaxBytes);
+  if (oversizedImages.length > 0) {
+    errors.push(
+      t("dashboard.addTour.multimedia.validation.imagesMaxSize").replace(
+        "{{max}}",
+        String(MAX_IMAGE_MB)
+      )
+    );
+  }
+
+  const videoMaxBytes = MAX_VIDEO_MB * 1024 * 1024;
+  const oversizedVideos = videoFiles.filter((file) => file.size > videoMaxBytes);
+  if (oversizedVideos.length > 0) {
+    errors.push(
+      t("dashboard.addTour.multimedia.validation.videosMaxSize").replace(
+        "{{max}}",
+        String(MAX_VIDEO_MB)
+      )
+    );
+  }
+
+  const fileMaxBytes = MAX_PDF_MB * 1024 * 1024;
+  const oversizedFiles = fileAttachments.filter((file) => file.size > fileMaxBytes);
   if (oversizedFiles.length > 0) {
     errors.push(
-      `Algunos archivos exceden el tamaño máximo de ${maxSizeMB * 2}MB`
+      t("dashboard.addTour.multimedia.validation.filesMaxSize").replace(
+        "{{max}}",
+        String(MAX_PDF_MB)
+      )
     );
   }
 
   return errors;
-};
+}
 
-// Función para formatear fecha
-export const formatDate = (date: Date): string => {
-  return new Intl.DateTimeFormat("es-ES", {
+/** Formats a date using the given locale (e.g. "es", "en"). */
+export function formatDate(date: Date, locale: string = "es"): string {
+  return new Intl.DateTimeFormat(locale === "en" ? "en-US" : "es-ES", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
   }).format(date);
-};
+}

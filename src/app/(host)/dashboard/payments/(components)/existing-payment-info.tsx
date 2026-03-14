@@ -48,7 +48,7 @@ export function ExistingPaymentInfo({
     } catch (err: unknown) {
       const message =
         (err as { data?: { message?: string } })?.data?.message ||
-        "No se pudo eliminar el método de pago";
+        t("dashboard.payments.existing.deleteError");
       toast.error(message);
     }
   };
@@ -64,7 +64,7 @@ export function ExistingPaymentInfo({
           <div className="flex items-center space-x-2 p-3 rounded-md">
             {getPaymentMethodIcon(data.paymentMethod)}
             <span className="font-medium">
-              {getPaymentMethodName(data.paymentMethod)}
+              {t(getPaymentMethodName(data.paymentMethod))}
             </span>
           </div>
 
@@ -76,13 +76,14 @@ export function ExistingPaymentInfo({
                   <p className="font-medium">{data.bankData.bankName}</p>
                   <p className="text-sm text-muted-foreground">
                     {data.bankData.accountType === "ahorro"
-                      ? "Cuenta de Ahorro"
+                      ? t("dashboard.payments.existing.accountTypeAhorro")
                       : data.bankData.accountType === "corriente"
-                        ? "Cuenta Corriente"
+                        ? t("dashboard.payments.existing.accountTypeCorriente")
                         : ""}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Cuenta: •••• {data.bankData.accountNumber?.slice(-4)}
+                    {t("dashboard.payments.existing.accountLabel")}: ••••{" "}
+                    {data.bankData.accountNumber?.slice(-4)}
                   </p>
                 </div>
               </div>
@@ -91,7 +92,9 @@ export function ExistingPaymentInfo({
                 <User className="h-5 w-5 mt-0.5 shrink-0" />
                 <div className="min-w-0">
                   <p className="font-medium">{data.bankData.holderName}</p>
-                  <p className="text-sm text-muted-foreground">Titular</p>
+                  <p className="text-sm text-muted-foreground">
+                    {t("dashboard.payments.existing.holderLabel")}
+                  </p>
                 </div>
               </div>
 
@@ -99,7 +102,9 @@ export function ExistingPaymentInfo({
                 <Mail className="h-5 w-5 mt-0.5 shrink-0" />
                 <div className="min-w-0">
                   <p className="font-medium">{data.bankData.email}</p>
-                  <p className="text-sm text-muted-foreground">Correo de contacto</p>
+                  <p className="text-sm text-muted-foreground">
+                    {t("dashboard.payments.existing.contactEmail")}
+                  </p>
                 </div>
               </div>
             </div>
@@ -110,7 +115,9 @@ export function ExistingPaymentInfo({
               <div className="flex items-start space-x-3 p-3 rounded-md border border-border bg-muted/30">
                 <Zap className="h-5 w-5 mt-0.5 shrink-0" />
                 <div className="min-w-0">
-                  <p className="font-medium">Dirección Blink / Lightning</p>
+                  <p className="font-medium">
+                    {t("dashboard.payments.existing.blinkAddressLabel")}
+                  </p>
                   <p className="text-sm text-muted-foreground break-all">
                     {data.blinkData.walletAddress}
                   </p>
@@ -120,7 +127,9 @@ export function ExistingPaymentInfo({
                 <Mail className="h-5 w-5 mt-0.5 shrink-0" />
                 <div className="min-w-0">
                   <p className="font-medium">{data.blinkData.email}</p>
-                  <p className="text-sm text-muted-foreground">Correo de contacto</p>
+                  <p className="text-sm text-muted-foreground">
+                    {t("dashboard.payments.existing.contactEmail")}
+                  </p>
                 </div>
               </div>
             </div>
@@ -133,7 +142,7 @@ export function ExistingPaymentInfo({
             onClick={onUpdate}
           >
             <Edit className="h-4 w-4 mr-2" />
-            Actualizar información
+            {t("dashboard.payments.existing.updateInfo")}
           </Button>
           <Button
             variant="outline"
@@ -142,21 +151,24 @@ export function ExistingPaymentInfo({
             disabled={isDeleting}
           >
             <Trash2 className="h-4 w-4 mr-2" />
-            Eliminar método de pago
+            {t("dashboard.payments.existing.deleteMethod")}
           </Button>
         </CardFooter>
 
         <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>¿Eliminar método de pago?</AlertDialogTitle>
+              <AlertDialogTitle>
+                {t("dashboard.payments.existing.deleteConfirmTitle")}
+              </AlertDialogTitle>
               <AlertDialogDescription>
-                Esta acción no se puede deshacer. Dejarás de recibir pagos en esta
-                cuenta hasta que agregues un nuevo método de pago.
+                {t("dashboard.payments.existing.deleteConfirmDescription")}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogCancel>
+                {t("dashboard.payments.existing.cancel")}
+              </AlertDialogCancel>
               <AlertDialogAction
                 onClick={(e) => {
                   e.preventDefault();
@@ -165,7 +177,9 @@ export function ExistingPaymentInfo({
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 disabled={isDeleting}
               >
-                {isDeleting ? "Eliminando..." : "Eliminar"}
+                {isDeleting
+                  ? t("dashboard.payments.existing.deleting")
+                  : t("dashboard.payments.existing.delete")}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -174,7 +188,7 @@ export function ExistingPaymentInfo({
         <div className="flex justify-center pb-4">
           <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
             <ShieldCheck className="h-3 w-3 mr-1" />
-            Conexión segura
+            {t("dashboard.payments.existing.secureConnection")}
           </div>
         </div>
       </Card>

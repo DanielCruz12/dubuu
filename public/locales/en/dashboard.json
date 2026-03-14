@@ -190,7 +190,81 @@
       "processError": "Error processing the information. Please try again later."
     },
     "existing": {
-      "deleted": "Payment method successfully deleted"
+      "deleted": "Payment method successfully deleted",
+      "updateInfo": "Update information",
+      "deleteMethod": "Delete payment method",
+      "deleteConfirmTitle": "Delete payment method?",
+      "deleteConfirmDescription": "This action cannot be undone. You will stop receiving payments to this account until you add a new payment method.",
+      "cancel": "Cancel",
+      "deleting": "Deleting...",
+      "delete": "Delete",
+      "accountLabel": "Account",
+      "holderLabel": "Holder",
+      "contactEmail": "Contact email",
+      "blinkAddressLabel": "Blink / Lightning address",
+      "accountTypeAhorro": "Savings account",
+      "accountTypeCorriente": "Checking account",
+      "secureConnection": "Secure connection",
+      "deleteError": "Could not delete the payment method"
+    },
+    "stepLabel": "Step {{step}} of {{total}}",
+    "methods": {
+      "bank": "Bank transfer",
+      "blink": "Bitcoin / Lightning (LN)"
+    },
+    "methodDetails": {
+      "bankLine1": "1 to 3 business days",
+      "bankLine2": "You may be charged a fee",
+      "blinkLine1": "Receive in Bitcoin instantly",
+      "blinkLine2": "LN (Lightning Network): fast transactions and very low fees"
+    },
+    "bankForm": {
+      "bankName": "Bank name",
+      "bankNamePlaceholder": "Enter the bank name",
+      "accountType": "Account type",
+      "accountTypePlaceholder": "Select account type",
+      "accountTypeAhorro": "Savings account",
+      "accountTypeCorriente": "Checking account",
+      "accountNumber": "Account number",
+      "accountNumberPlaceholder": "Enter the account number",
+      "holderName": "Full name (holder)",
+      "holderNamePlaceholder": "Enter the holder's name",
+      "email": "Email",
+      "emailPlaceholder": "example@email.com",
+      "back": "Back",
+      "submit": "Submit information",
+      "updating": "Update information",
+      "processing": "Processing...",
+      "validation": {
+        "bankNameRequired": "Bank name is required",
+        "accountTypeRequired": "Select an account type",
+        "accountNumberMin": "Account number must be at least 5 characters",
+        "accountNumberNumeric": "Account number must contain only numbers",
+        "holderNameRequired": "Holder name is required",
+        "emailInvalid": "Enter a valid email address"
+      }
+    },
+    "blinkForm": {
+      "walletAddress": "Blink / Lightning address",
+      "walletAddressPlaceholder": "e.g. user@blink.sv or your wallet ID",
+      "walletAddressHelp": "Specify where you want to receive payments (Lightning address or your Blink wallet ID).",
+      "email": "Contact email",
+      "emailPlaceholder": "example@email.com",
+      "back": "Back",
+      "submit": "Submit information",
+      "updating": "Update information",
+      "processing": "Processing...",
+      "validation": {
+        "walletRequired": "Lightning address or wallet ID is required",
+        "emailInvalid": "Enter a valid email address"
+      }
+    },
+    "verification": {
+      "title": "Bank details verification",
+      "description1": "The bank details you provide will be used to transfer the money from all your reservations.",
+      "description2": "Once payments are processed, it will be difficult to recover funds sent to incorrect accounts.",
+      "cancel": "Review data",
+      "confirm": "I confirm they are correct"
     }
   },
   "addTour": {
@@ -217,6 +291,139 @@
         "description": "Add images, videos, files and set the price"
       }
     },
+    "basicInfo": {
+      "name": "Tour name",
+      "namePlaceholder": "E.g. Santa Ana Volcano Exploration",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe the tour in detail",
+      "departure_point": "Starting point",
+      "departure_pointPlaceholder": "E.g. Multiplaza, San Salvador",
+      "max_people": "Maximum number of people",
+      "max_peoplePlaceholder": "E.g. 10",
+      "address": "Destination address",
+      "addressPlaceholder": "E.g. Santa Ana Volcano, Cerro Verde",
+      "country": "Country",
+      "countryPlaceholder": "Select a country",
+      "duration": "Duration (days)",
+      "durationPlaceholder": "E.g. 1",
+      "validation": {
+        "nameMin": "Name must be at least 5 characters",
+        "descriptionMin": "Description must be at least 20 characters",
+        "departure_pointMin": "Starting point is required",
+        "addressMin": "Address is required",
+        "countryMin": "Country is required",
+        "max_peoplePositive": "Maximum number of people must be greater than 0",
+        "durationPositive": "Duration must be greater than 0"
+      }
+    },
+    "location": {
+      "address": "Address",
+      "lat": "Latitude",
+      "lng": "Longitude",
+      "validation": {
+        "addressMin": "Address is required"
+      }
+    },
+    "details": {
+      "highlight": "Highlights",
+      "highlightPlaceholder": "E.g. Volcano ascent, spectacular views and hot springs.",
+      "included": "What's included?",
+      "includedPlaceholder": "E.g. Expert guide, transport, entrance fees and picnic lunch.",
+      "difficulty": "Difficulty level",
+      "difficultyPlaceholder": "Select difficulty level",
+      "itinerary": "Itinerary",
+      "itineraryItemPlaceholder": "Add itinerary point",
+      "moveItineraryItem": "Move itinerary point",
+      "expenses": "Expenses not included (optional)",
+      "expensesPlaceholder": "E.g. Extra drinks, souvenirs",
+      "packing_list": "Packing list (optional)",
+      "packing_listPlaceholder": "E.g. Comfortable clothes, sunscreen, water",
+      "available_dates": "Available dates and times",
+      "datesSelected": "{{count}} date selected",
+      "datesSelected_other": "{{count}} dates selected",
+      "selectDates": "Select dates",
+      "schedulePerDate": "Schedule for each date:",
+      "delete": "Remove",
+      "validation": {
+        "highlightMin": "Highlights must be at least 10 characters",
+        "includedMin": "What's included must be at least 10 characters",
+        "itineraryMin": "Add at least one itinerary point",
+        "available_datesMin": "Select at least one available date",
+        "difficultyRequired": "Select a difficulty level"
+      }
+    },
+    "categorization": {
+      "targetAudience": "Target audience",
+      "targetAudiencePlaceholder": "Select a target audience",
+      "targetAudienceEmpty": "No target audiences found",
+      "productType": "Product type",
+      "productTypePlaceholder": "Select a product type",
+      "productTypeEmpty": "No product types found",
+      "productCategory": "Product category",
+      "productCategoryPlaceholder": "Select a category",
+      "productCategoryEmpty": "No categories found for this product type",
+      "selectCategoryFirst": "First select a product type",
+      "amenities": "Amenities",
+      "amenitiesPlaceholder": "Select amenities",
+      "amenitiesEmpty": "No amenities found",
+      "loading": "Loading data...",
+      "validation": {
+        "productTypeRequired": "Select a product type",
+        "productCategoryRequired": "Select a category",
+        "targetAudienceRequired": "Select a target audience",
+        "amenitiesMin": "Select at least one amenity"
+      }
+    },
+    "multimedia": {
+      "bannerLabel": "Banner image (required)",
+      "bannerClick": "Click to upload a banner image",
+      "bannerMax": "Max. {{max}}MB",
+      "imagesLabel": "Tour images (required, min. 5, max. 10)",
+      "imagesCount": "{{count}}/10",
+      "imagesClick": "Click to upload images",
+      "imagesMaxPer": "Max. {{max}}MB per image",
+      "videosLabel": "Videos (optional, max. 5)",
+      "videosClick": "Click to upload videos",
+      "videosMax": "Max. {{max}}MB. Max. duration {{seconds}} s",
+      "filesLabel": "Additional files (optional, max. 5)",
+      "filesClick": "Click to upload files",
+      "filesPdfMax": "PDF only. Max. {{max}}MB per file",
+      "priceLabel": "Price per person ($)",
+      "pricePlaceholder": "E.g. 20.99",
+      "priceBreakdown": "Price breakdown",
+      "finalPrice": "Final price (user pays):",
+      "paymentCommission": "Payment processing fee",
+      "platformCommission": "Platform commission",
+      "youReceive": "You receive:",
+      "compressingImage": "Compressing image...",
+      "compressingImages": "Compressing images...",
+      "checkingDuration": "Checking duration...",
+      "delete": "Remove",
+      "validation": {
+        "pricePositive": "Price must be greater than 0",
+        "bannerRequired": "Upload a banner image",
+        "imagesMin": "Upload at least 5 images",
+        "imagesMax": "You cannot upload more than 10 images",
+        "bannerMaxSize": "Banner must not exceed {{max}}MB",
+        "imagesMaxSize": "Some images exceed the maximum size of {{max}}MB",
+        "videosMaxSize": "Some videos exceed the maximum size of {{max}}MB",
+        "filesMaxSize": "Some files exceed the maximum size of {{max}}MB"
+      },
+      "toast": {
+        "bannerSize": "Banner cannot exceed {{max}}MB",
+        "maxImages": "Maximum 10 images allowed",
+        "imageSize": "Each image can be at most {{max}}MB",
+        "maxVideos": "Maximum 5 videos allowed",
+        "videoSize": "Each video can be at most {{max}}MB",
+        "videoDuration": "\"{{name}}\" exceeds {{seconds}} seconds (stories type). Duration: {{duration}}s",
+        "pdfOnly": "Only PDF files are allowed",
+        "maxFiles": "Maximum 5 files allowed",
+        "pdfSize": "Each PDF can be at most {{max}}MB",
+        "processBannerError": "Error processing banner image",
+        "compressError": "Error compressing some images",
+        "verifyDurationError": "Could not verify video duration"
+      }
+    },
     "buttons": {
       "back": "Back",
       "continue": "Continue",
@@ -230,6 +437,12 @@
     },
     "security": {
       "secureInfo": "Secure information"
+    },
+    "toast": {
+      "success": "Tour created successfully!",
+      "successDescription": "The tour has been registered in the system.",
+      "error": "Error creating tour",
+      "errorDescription": "There was a problem saving the tour. Please try again."
     }
   }
 }

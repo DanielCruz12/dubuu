@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -17,13 +17,16 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { VerificationDialog } from "../(components)/verification-dialog";
 import type { BlinkFormValues } from "@/types/payment-types";
+import { useLanguage } from "@/lib/i18n-context";
 
-const blinkSchema = z.object({
-  walletAddress: z
-    .string()
-    .min(3, { message: "La dirección o Lightning address es requerida" }),
-  email: z.string().email({ message: "Ingrese un correo electrónico válido" }),
-});
+function getBlinkSchema(t: (key: string) => string) {
+  return z.object({
+    walletAddress: z
+      .string()
+      .min(3, { message: t("dashboard.payments.blinkForm.validation.walletRequired") }),
+    email: z.string().email({ message: t("dashboard.payments.blinkForm.validation.emailInvalid") }),
+  });
+}
 
 interface BlinkFormProps {
   defaultValues: BlinkFormValues;
@@ -40,6 +43,8 @@ export function BlinkForm({
   isLoading,
   isUpdating,
 }: BlinkFormProps) {
+  const { t } = useLanguage();
+  const blinkSchema = useMemo(() => getBlinkSchema(t), [t]);
   const [showVerificationDialog, setShowVerificationDialog] = useState(false);
   const [formData, setFormData] = useState<BlinkFormValues | null>(null);
 
@@ -77,18 +82,17 @@ export function BlinkForm({
               name="walletAddress"
               render={({ field }) => (
                 <FormItem className="md:col-span-2">
-                  <FormLabel>Dirección Blink / Lightning</FormLabel>
+                  <FormLabel>{t("dashboard.payments.blinkForm.walletAddress")}</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="ej: usuario@blink.sv o tu wallet ID"
+                      placeholder={t("dashboard.payments.blinkForm.walletAddressPlaceholder")}
                       className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
                     />
                   </FormControl>
                   <FormMessage className="text-xs text-red-500" />
                   <p className="text-xs text-muted-foreground mt-1">
-                    Indica dónde quieres recibir los pagos (Lightning address o
-                    identificador de tu wallet Blink).
+                    {t("dashboard.payments.blinkForm.walletAddressHelp")}
                   </p>
                 </FormItem>
               )}
@@ -99,12 +103,12 @@ export function BlinkForm({
               name="email"
               render={({ field }) => (
                 <FormItem className="md:col-span-2">
-                  <FormLabel>Correo electrónico de contacto</FormLabel>
+                  <FormLabel>{t("dashboard.payments.blinkForm.email")}</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       type="email"
-                      placeholder="ejemplo@correo.com"
+                      placeholder={t("dashboard.payments.blinkForm.emailPlaceholder")}
                       className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
                     />
                   </FormControl>
@@ -122,7 +126,7 @@ export function BlinkForm({
               className="border-gray-200 dark:border-gray-800 hover:bg-transparent hover:text-black dark:hover:text-white mr-2"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Atrás
+              {t("dashboard.payments.blinkForm.back")}
             </Button>
             <Button
               type="submit"
@@ -151,12 +155,12 @@ export function BlinkForm({
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  Procesando...
+                  {t("dashboard.payments.blinkForm.processing")}
                 </span>
               ) : isUpdating ? (
-                "Actualizar información"
+                t("dashboard.payments.blinkForm.updating")
               ) : (
-                "Enviar información"
+                t("dashboard.payments.blinkForm.submit")
               )}
             </Button>
           </div>

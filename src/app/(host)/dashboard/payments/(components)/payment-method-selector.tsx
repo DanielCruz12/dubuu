@@ -5,6 +5,7 @@ import { Building, Zap } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import type { PaymentMethod } from "@/types/payment-types";
+import { useLanguage } from "@/lib/i18n-context";
 
 interface PaymentMethodSelectorProps {
   selectedMethod: PaymentMethod | null;
@@ -15,6 +16,8 @@ export function PaymentMethodSelector({
   selectedMethod,
   onMethodSelect,
 }: PaymentMethodSelectorProps) {
+  const { t } = useLanguage();
+
   return (
     <motion.div
       key="step1"
@@ -42,7 +45,7 @@ export function PaymentMethodSelector({
             <RadioGroupItem value="bank" id="bank" />
             <Label htmlFor="bank" className="flex items-center cursor-pointer">
               <Building className="h-4 w-4 mr-2" />
-              <span>Transferencia bancaria</span>
+              <span>{t("dashboard.payments.methods.bank")}</span>
             </Label>
           </div>
           {selectedMethod === "bank" && (
@@ -52,8 +55,8 @@ export function PaymentMethodSelector({
               className="mt-2 pl-6 text-xs text-gray-500 dark:text-gray-400"
             >
               <ul className="list-disc pl-4 space-y-1">
-                <li>De 1 a 3 días hábiles</li>
-                <li>Es posible que se te cobre alguna tarifa</li>
+                <li>{t("dashboard.payments.methodDetails.bankLine1")}</li>
+                <li>{t("dashboard.payments.methodDetails.bankLine2")}</li>
               </ul>
             </motion.div>
           )}
@@ -70,7 +73,7 @@ export function PaymentMethodSelector({
             <RadioGroupItem value="blink" id="blink" />
             <Label htmlFor="blink" className="flex items-center cursor-pointer">
               <Zap className="h-4 w-4 mr-2" />
-              <span>Bitcoin / Lightning (LN)</span>
+              <span>{t("dashboard.payments.methods.blink")}</span>
             </Label>
           </div>
           {selectedMethod === "blink" && (
@@ -80,8 +83,8 @@ export function PaymentMethodSelector({
               className="mt-2 pl-6 text-xs text-gray-500 dark:text-gray-400"
             >
               <ul className="list-disc pl-4 space-y-1">
-                <li>Recibe en Bitcoin al instante</li>
-                <li>LN (Lightning Network): transacciones rápidas y tarifas muy bajas</li>
+                <li>{t("dashboard.payments.methodDetails.blinkLine1")}</li>
+                <li>{t("dashboard.payments.methodDetails.blinkLine2")}</li>
               </ul>
             </motion.div>
           )}

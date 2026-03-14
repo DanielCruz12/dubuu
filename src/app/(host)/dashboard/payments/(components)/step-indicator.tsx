@@ -1,4 +1,7 @@
+"use client";
+
 import React from "react";
+import { useLanguage } from "@/lib/i18n-context";
 
 interface StepIndicatorProps {
   currentStep: number;
@@ -6,6 +9,11 @@ interface StepIndicatorProps {
 }
 
 export function StepIndicator({ currentStep, totalSteps }: StepIndicatorProps) {
+  const { t } = useLanguage();
+  const stepText = t("dashboard.payments.stepLabel")
+    .replace("{{step}}", String(currentStep))
+    .replace("{{total}}", String(totalSteps));
+
   return (
     <div className="px-6 pt-6">
       <div className="flex items-center justify-between mb-4">
@@ -34,7 +42,7 @@ export function StepIndicator({ currentStep, totalSteps }: StepIndicatorProps) {
           ))}
         </div>
         <div className="text-xs text-gray-500 dark:text-gray-400">
-          Paso {currentStep} de {totalSteps}
+          {stepText}
         </div>
       </div>
     </div>

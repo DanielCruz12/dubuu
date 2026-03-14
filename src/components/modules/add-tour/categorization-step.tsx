@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
@@ -19,8 +19,9 @@ import {
   type ComboboxOption,
 } from "@/components/ui/combobox";
 
-import { type CategorizationFormValues, categorizationSchema } from "./types";
+import { type CategorizationFormValues, getCategorizationSchema } from "./types";
 import { scrollToFirstError } from "./utils";
+import { useLanguage } from "@/lib/i18n-context";
 
 // Importar los hooks de RTK Query con las nuevas rutas
 import { useGetProductTypesQuery } from "@/redux/slices/product/product-types";
@@ -37,7 +38,9 @@ export function CategorizationStep({
   onSubmit,
   defaultValues,
 }: CategorizationStepProps) {
-  // Estados para manejar las dependencias entre selectores
+  const { t } = useLanguage();
+  const categorizationSchema = useMemo(() => getCategorizationSchema(t), [t]);
+
   const [selectedProductTypeId, setSelectedProductTypeId] = useState<string>(
     defaultValues?.product_type_id || "",
   );
@@ -126,7 +129,6 @@ export function CategorizationStep({
     },
   );
 
-  // Mostrar estado de carga
   if (
     isLoadingTypes ||
     isLoadingCategories ||
@@ -136,7 +138,7 @@ export function CategorizationStep({
     return (
       <div className="flex flex-col items-center justify-center py-10">
         <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
-        <p className="mt-2 text-sm text-gray-500">Cargando datos...</p>
+        <p className="mt-2 text-sm text-gray-500">{t("dashboard.addTour.categorization.loading")}</p>
       </div>
     );
   }
@@ -145,20 +147,19 @@ export function CategorizationStep({
     <Form {...form}>
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 gap-4">
-          {/* Audiencia Objetivo */}
           <FormField
             control={form.control}
             name="target_product_audience_id"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Audiencia Objetivo</FormLabel>
+                <FormLabel>{t("dashboard.addTour.categorization.targetAudience")}</FormLabel>
                 <FormControl>
                   <SingleCombobox
                     options={audienceOptions}
                     value={field.value}
                     onChange={field.onChange}
-                    placeholder="Selecciona una audiencia objetivo"
-                    emptyMessage="No se encontraron audiencias objetivo"
+                    placeholder={t("dashboard.addTour.categorization.targetAudiencePlaceholder")}
+                    emptyMessage={t("dashboard.addTour.categorization.targetAudienceEmpty")}
                     className="w-full"
                   />
                 </FormControl>
@@ -166,20 +167,19 @@ export function CategorizationStep({
               </FormItem>
             )}
           />
-          {/* Tipo de Producto */}
           <FormField
             control={form.control}
             name="product_type_id"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Tipo de Producto</FormLabel>
+                <FormLabel>{t("dashboard.addTour.categorization.productType")}</FormLabel>
                 <FormControl>
                   <SingleCombobox
                     options={productTypeOptions}
                     value={field.value}
                     onChange={handleProductTypeChange}
-                    placeholder="Selecciona un tipo de producto"
-                    emptyMessage="No se encontraron tipos de producto"
+                    placeholder={t("dashboard.addTour.categorization.productTypePlaceholder")}
+                    emptyMessage={t("dashboard.addTour.categorization.productTypeEmpty")}
                     className="w-full"
                   />
                 </FormControl>
@@ -188,13 +188,12 @@ export function CategorizationStep({
             )}
           />
 
-          {/* Categoría de Producto */}
           <FormField
             control={form.control}
             name="product_category_id"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Categoría de Producto</FormLabel>
+                <FormLabel>{t("dashboard.addTour.categorization.productCategory")}</FormLabel>
                 <FormControl>
                   <SingleCombobox
                     options={categoryOptions}
@@ -202,10 +201,10 @@ export function CategorizationStep({
                     onChange={handleCategoryChange}
                     placeholder={
                       selectedProductTypeId
-                        ? "Selecciona una categoría"
-                        : "Primero selecciona un tipo de producto"
+                        ? t("dashboard.addTour.categorization.productCategoryPlaceholder")
+                        : t("dashboard.addTour.categorization.selectCategoryFirst")
                     }
-                    emptyMessage="No se encontraron categorías para este tipo de producto"
+                    emptyMessage={t("dashboard.addTour.categorization.productCategoryEmpty")}
                     className="w-full"
                     disabled={!selectedProductTypeId}
                   />
@@ -215,20 +214,19 @@ export function CategorizationStep({
             )}
           />
 
-          {/* Comodidades (Amenities) */}
           <FormField
             control={form.control}
             name="amenities"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Comodidades</FormLabel>
+                <FormLabel>{t("dashboard.addTour.categorization.amenities")}</FormLabel>
                 <FormControl>
                   <MultiCombobox
                     options={amenityOptions}
                     value={field.value}
                     onChange={field.onChange}
-                    placeholder="Selecciona las comodidades"
-                    emptyMessage="No se encontraron comodidades"
+                    placeholder={t("dashboard.addTour.categorization.amenitiesPlaceholder")}
+                    emptyMessage={t("dashboard.addTour.categorization.amenitiesEmpty")}
                     className="w-full"
                   />
                 </FormControl>

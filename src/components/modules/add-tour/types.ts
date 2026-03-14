@@ -1,88 +1,125 @@
 import { z } from "zod";
 
-// Esquema de validación para información básica
-export const basicInfoSchema = z.object({
-  name: z
-    .string()
-    .min(5, { message: "El nombre debe tener al menos 5 caracteres" }),
-  description: z
-    .string()
-    .min(20, { message: "La descripción debe tener al menos 20 caracteres" }),
-  departure_point: z
-    .string()
-    .min(3, { message: "El punto de partida es requerido" }),
-  address: z.string().min(3, { message: "La dirección es requerida" }),
-  country: z.string().min(2, { message: "El país es requerido" }),
-  region: z.string().optional(),
-  max_people: z.coerce
-    .number()
-    .int()
-    .positive({ message: "El número máximo de personas debe ser mayor a 0" }),
-  duration: z.coerce
-    .number()
-    .int()
-    .positive({ message: "La duración debe ser mayor a 0" }),
-});
+export type TFunction = (key: string) => string;
 
-// Esquema de validación para ubicación
-export const locationSchema = z.object({
-  lat: z.number().min(-90).max(90),
-  lng: z.number().min(-180).max(180),
-  address: z.string().min(3, { message: "La dirección es requerida" }),
-});
-
-// Esquema de validación para detalles
-export const detailsSchema = z.object({
-  highlight: z
-    .string()
-    .min(10, {
-      message: "Los aspectos destacados deben tener al menos 10 caracteres",
+export function getBasicInfoSchema(t: TFunction) {
+  return z.object({
+    name: z
+      .string()
+      .min(5, { message: t("dashboard.addTour.basicInfo.validation.nameMin") }),
+    description: z
+      .string()
+      .min(20, {
+        message: t("dashboard.addTour.basicInfo.validation.descriptionMin"),
+      }),
+    departure_point: z
+      .string()
+      .min(3, {
+        message: t("dashboard.addTour.basicInfo.validation.departure_pointMin"),
+      }),
+    address: z
+      .string()
+      .min(3, { message: t("dashboard.addTour.basicInfo.validation.addressMin") }),
+    country: z
+      .string()
+      .min(2, { message: t("dashboard.addTour.basicInfo.validation.countryMin") }),
+    region: z.string().optional(),
+    max_people: z.coerce.number().int().positive({
+      message: t("dashboard.addTour.basicInfo.validation.max_peoplePositive"),
     }),
-  included: z
-    .string()
-    .min(10, { message: "Lo incluido debe tener al menos 10 caracteres" }),
-  itinerary: z
-    .array(z.string())
-    .min(1, { message: "Debe incluir al menos un punto en el itinerario" }),
-  available_dates: z
-    .array(z.date())
-    .min(1, { message: "Debe seleccionar al menos una fecha disponible" }),
-  difficulty: z.enum(["easy", "medium", "hard", "extreme"], {
-    message: "Debe seleccionar un nivel de dificultad",
-  }),
-  expenses: z.array(z.string()).optional(),
-  packing_list: z.array(z.string()).optional(),
-});
+    duration: z.coerce.number().int().positive({
+      message: t("dashboard.addTour.basicInfo.validation.durationPositive"),
+    }),
+  });
+}
 
-// Esquema de validación para categorización (sin amenities)
-export const categorizationSchema = z.object({
-  product_type_id: z
-    .string()
-    .min(1, { message: "Debe seleccionar un tipo de producto" }),
-  product_category_id: z
-    .string()
-    .min(1, { message: "Debe seleccionar una categoría" }),
-  target_product_audience_id: z
-    .string()
-    .min(1, { message: "Debe seleccionar una audiencia objetivo" }),
-  amenities: z
-    .array(z.string())
-    .min(1, { message: "Debe seleccionar al menos una comodidad" }),
-});
+export function getLocationSchema(t: TFunction) {
+  return z.object({
+    lat: z.number().min(-90).max(90),
+    lng: z.number().min(-180).max(180),
+    address: z
+      .string()
+      .min(3, { message: t("dashboard.addTour.location.validation.addressMin") }),
+  });
+}
 
-// Esquema de validación para multimedia
-export const multimediaSchema = z.object({
-  price: z.coerce
-    .number()
-    .positive({ message: "El precio debe ser mayor a 0" }),
-});
+export function getDetailsSchema(t: TFunction) {
+  return z.object({
+    highlight: z
+      .string()
+      .min(10, {
+        message: t("dashboard.addTour.details.validation.highlightMin"),
+      }),
+    included: z
+      .string()
+      .min(10, {
+        message: t("dashboard.addTour.details.validation.includedMin"),
+      }),
+    itinerary: z
+      .array(z.string())
+      .min(1, {
+        message: t("dashboard.addTour.details.validation.itineraryMin"),
+      }),
+    available_dates: z
+      .array(z.date())
+      .min(1, {
+        message: t("dashboard.addTour.details.validation.available_datesMin"),
+      }),
+    difficulty: z.enum(["easy", "medium", "hard", "extreme"], {
+      message: t("dashboard.addTour.details.validation.difficultyRequired"),
+    }),
+    expenses: z.array(z.string()).optional(),
+    packing_list: z.array(z.string()).optional(),
+  });
+}
 
-// Tipos para los formularios
-export type BasicInfoFormValues = z.infer<typeof basicInfoSchema>;
-export type LocationFormValues = z.infer<typeof locationSchema>;
-export type DetailsFormValues = z.infer<typeof detailsSchema>;
-export type CategorizationFormValues = z.infer<typeof categorizationSchema>;
-export type MultimediaFormValues = z.infer<typeof multimediaSchema>;
+export function getCategorizationSchema(t: TFunction) {
+  return z.object({
+    product_type_id: z
+      .string()
+      .min(1, {
+        message: t("dashboard.addTour.categorization.validation.productTypeRequired"),
+      }),
+    product_category_id: z
+      .string()
+      .min(1, {
+        message: t(
+          "dashboard.addTour.categorization.validation.productCategoryRequired"
+        ),
+      }),
+    target_product_audience_id: z
+      .string()
+      .min(1, {
+        message: t(
+          "dashboard.addTour.categorization.validation.targetAudienceRequired"
+        ),
+      }),
+    amenities: z
+      .array(z.string())
+      .min(1, {
+        message: t("dashboard.addTour.categorization.validation.amenitiesMin"),
+      }),
+  });
+}
+
+export function getMultimediaSchema(t: TFunction) {
+  return z.object({
+    price: z.coerce.number().positive({
+      message: t("dashboard.addTour.multimedia.validation.pricePositive"),
+    }),
+  });
+}
+
+// Tipos para los formularios (inferidos desde las fábricas)
+export type BasicInfoFormValues = z.infer<ReturnType<typeof getBasicInfoSchema>>;
+export type LocationFormValues = z.infer<ReturnType<typeof getLocationSchema>>;
+export type DetailsFormValues = z.infer<ReturnType<typeof getDetailsSchema>>;
+export type CategorizationFormValues = z.infer<
+  ReturnType<typeof getCategorizationSchema>
+>;
+export type MultimediaFormValues = z.infer<
+  ReturnType<typeof getMultimediaSchema>
+>;
 
 // Tipo para la ubicación seleccionada en el mapa
 export interface Location {

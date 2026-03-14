@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -47,9 +47,10 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-import { type DetailsFormValues, detailsSchema } from "./types";
+import { type DetailsFormValues, getDetailsSchema } from "./types";
 import { scrollToFirstError } from "./utils";
 import { TourDifficultyBadge } from "@/components/difficulty-badge";
+import { useLanguage } from "@/lib/i18n-context";
 
 interface DateWithTime {
   date: Date;
@@ -71,11 +72,15 @@ function SortableItineraryItem({
   index,
   item,
   onRemove,
+  moveAriaLabel,
+  deleteSrOnly,
 }: {
   id: number;
   index: number;
   item: string;
   onRemove: () => void;
+  moveAriaLabel: string;
+  deleteSrOnly: string;
 }) {
   const {
     attributes,
@@ -108,7 +113,7 @@ function SortableItineraryItem({
           {...attributes}
           {...listeners}
           className="touch-none p-1 rounded cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground hover:bg-muted/50"
-          aria-label="Mover punto de itinerario"
+          aria-label={moveAriaLabel}
         >
           <GripVertical className="h-4 w-4 shrink-0" />
         </button>
@@ -124,7 +129,7 @@ function SortableItineraryItem({
         onClick={onRemove}
         className="h-8 w-8 p-0 shrink-0"
       >
-        <span className="sr-only">Eliminar</span>
+        <span className="sr-only">{deleteSrOnly}</span>
         <X className="h-4 w-4" />
       </Button>
     </div>
@@ -132,6 +137,9 @@ function SortableItineraryItem({
 }
 
 export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
+  const { t } = useLanguage();
+  const detailsSchema = useMemo(() => getDetailsSchema(t), [t]);
+
   const [itineraryItems, setItineraryItems] = useState<string[]>(
     defaultValues?.itinerary || []
   );
@@ -309,11 +317,11 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
             name="highlight"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Aspectos destacados</FormLabel>
+                <FormLabel>{t("dashboard.addTour.details.highlight")}</FormLabel>
                 <FormControl>
                   <Textarea
                     {...field}
-                    placeholder="Ej. Ascenso al volcán, vistas espectaculares y aguas termales."
+                    placeholder={t("dashboard.addTour.details.highlightPlaceholder")}
                     className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white min-h-[80px]"
                   />
                 </FormControl>
@@ -327,11 +335,11 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
             name="included"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>¿Qué incluye?</FormLabel>
+                <FormLabel>{t("dashboard.addTour.details.included")}</FormLabel>
                 <FormControl>
                   <Textarea
                     {...field}
-                    placeholder="Ej. Guía especializado, transporte, entradas y almuerzo tipo picnic."
+                    placeholder={t("dashboard.addTour.details.includedPlaceholder")}
                     className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white min-h-[80px]"
                   />
                 </FormControl>
@@ -345,14 +353,14 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
             name="difficulty"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nivel de dificultad</FormLabel>
+                <FormLabel>{t("dashboard.addTour.details.difficulty")}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   value={field.value}
                 >
                   <FormControl>
                     <SelectTrigger className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white">
-                      <SelectValue placeholder="Seleccione el nivel de dificultad">
+                      <SelectValue placeholder={t("dashboard.addTour.details.difficultyPlaceholder")}>
                         {field.value ? (
                           <TourDifficultyBadge
                             difficulty={field.value}
@@ -399,13 +407,13 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
             name="itinerary"
             render={() => (
               <FormItem>
-                <FormLabel>Itinerario</FormLabel>
+                <FormLabel>{t("dashboard.addTour.details.itinerary")}</FormLabel>
                 <div className="space-y-2">
                   <div className="flex space-x-2">
                     <Input
                       value={newItineraryItem}
                       onChange={(e) => setNewItineraryItem(e.target.value)}
-                      placeholder="Agregar punto de itinerario"
+                      placeholder={t("dashboard.addTour.details.itineraryItemPlaceholder")}
                       className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
@@ -456,6 +464,8 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
                             index={index}
                             item={item}
                             onRemove={() => removeItineraryItem(index)}
+                            moveAriaLabel={t("dashboard.addTour.details.moveItineraryItem")}
+                            deleteSrOnly={t("dashboard.addTour.details.delete")}
                           />
                         ))}
                       </div>
@@ -476,13 +486,13 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
             name="expenses"
             render={() => (
               <FormItem>
-                <FormLabel>Gastos no incluidos (opcional)</FormLabel>
+                <FormLabel>{t("dashboard.addTour.details.expenses")}</FormLabel>
                 <div className="space-y-2">
                   <div className="flex space-x-2">
                     <Input
                       value={newExpenseItem}
                       onChange={(e) => setNewExpenseItem(e.target.value)}
-                      placeholder="Ej. Bebidas adicionales, souvenirs"
+                      placeholder={t("dashboard.addTour.details.expensesPlaceholder")}
                       className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
@@ -514,7 +524,7 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
                           onClick={() => removeExpenseItem(index)}
                           className="h-8 w-8 p-0"
                         >
-                          <span className="sr-only">Eliminar</span>
+                          <span className="sr-only">{t("dashboard.addTour.details.delete")}</span>
                           <X className="h-4 w-4" />
                         </Button>
                       </div>
@@ -530,13 +540,13 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
             name="packing_list"
             render={() => (
               <FormItem>
-                <FormLabel>Lista de empaque (opcional)</FormLabel>
+                <FormLabel>{t("dashboard.addTour.details.packing_list")}</FormLabel>
                 <div className="space-y-2">
                   <div className="flex space-x-2">
                     <Input
                       value={newPackingItem}
                       onChange={(e) => setNewPackingItem(e.target.value)}
-                      placeholder="Ej. Ropa cómoda, protector solar, agua"
+                      placeholder={t("dashboard.addTour.details.packing_listPlaceholder")}
                       className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
@@ -568,7 +578,7 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
                           onClick={() => removePackingItem(index)}
                           className="h-8 w-8 p-0"
                         >
-                          <span className="sr-only">Eliminar</span>
+                          <span className="sr-only">{t("dashboard.addTour.details.delete")}</span>
                           <X className="h-4 w-4" />
                         </Button>
                       </div>
@@ -584,7 +594,7 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
             name="available_dates"
             render={() => (
               <FormItem>
-                <FormLabel>Fechas y horarios disponibles</FormLabel>
+                <FormLabel>{t("dashboard.addTour.details.available_dates")}</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
@@ -598,12 +608,12 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
                         <CalendarIcon className="mr-2 h-4 w-4" />
                         {datesWithTimes.length > 0 ? (
                           <span>
-                            {datesWithTimes.length} fecha
-                            {datesWithTimes.length > 1 ? "s" : ""} seleccionada
-                            {datesWithTimes.length > 1 ? "s" : ""}
+                            {datesWithTimes.length === 1
+                              ? t("dashboard.addTour.details.datesSelected").replace("{{count}}", "1")
+                              : t("dashboard.addTour.details.datesSelected_other").replace("{{count}}", String(datesWithTimes.length))}
                           </span>
                         ) : (
-                          <span>Seleccionar fechas</span>
+                          <span>{t("dashboard.addTour.details.selectDates")}</span>
                         )}
                       </Button>
                     </FormControl>
@@ -622,7 +632,7 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
                 {datesWithTimes.length > 0 && (
                   <div className="mt-3 space-y-2">
                     <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Horarios para cada fecha:
+                      {t("dashboard.addTour.details.schedulePerDate")}
                     </div>
                     {datesWithTimes.map((dateTime, i) => (
                       <div
@@ -661,7 +671,7 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
                           onClick={() => removeDateWithTime(i)}
                           className="h-8 w-8 p-0"
                         >
-                          <span className="sr-only">Eliminar</span>
+                          <span className="sr-only">{t("dashboard.addTour.details.delete")}</span>
                           <X className="h-4 w-4" />
                         </Button>
                       </div>

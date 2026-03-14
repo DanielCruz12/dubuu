@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import imageCompression from "browser-image-compression";
@@ -24,12 +24,13 @@ import { toast } from "sonner";
 
 import {
   type MultimediaFormValues,
-  multimediaSchema,
+  getMultimediaSchema,
   type TourFiles,
 } from "./types";
 import { scrollToFirstError, validateFiles } from "./utils";
 import Image from "next/image";
 import { getHostEarningsFromFinalPrice } from "@/lib/price";
+import { useLanguage } from "@/lib/i18n-context";
 // getCommissionRates comentado: solo se usaba para mostrar % en el desglose
 
 // Límites de subida (el usuario no puede subir por encima de esto)
@@ -74,7 +75,9 @@ export function MultimediaStep({
   onSubmit,
   defaultValues,
 }: MultimediaStepProps) {
-  // Estados para archivos
+  const { t } = useLanguage();
+  const multimediaSchema = useMemo(() => getMultimediaSchema(t), [t]);
+
   const [bannerFile, setBannerFile] = useState<File | null>(null);
   const [bannerPreview, setBannerPreview] = useState<string | null>(null);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -99,7 +102,12 @@ export function MultimediaStep({
     if (!e.target.files?.[0]) return;
     const file = e.target.files[0];
     if (file.size > MAX_BANNER_IMAGE_MB * 1024 * 1024) {
-      toast.error(`El banner no puede superar ${MAX_BANNER_IMAGE_MB}MB`);
+      toast.error(
+        t("dashboard.addTour.multimedia.toast.bannerSize").replace(
+          "{{max}}",
+          String(MAX_BANNER_IMAGE_MB),
+        ),
+      );
       return;
     }
     setIsCompressingBanner(true);
@@ -111,7 +119,7 @@ export function MultimediaStep({
       reader.readAsDataURL(compressed);
     } catch (err) {
       console.error(err);
-      toast.error("Error al procesar la imagen del banner");
+      toast.error(t("dashboard.addTour.multimedia.toast.processBannerError"));
     } finally {
       setIsCompressingBanner(false);
     }
@@ -124,14 +132,19 @@ export function MultimediaStep({
     if (!e.target.files?.length) return;
     const selectedFiles = Array.from(e.target.files);
     if (imageFiles.length + selectedFiles.length > 10) {
-      toast.error("Máximo 10 imágenes permitidas");
+      toast.error(t("dashboard.addTour.multimedia.toast.maxImages"));
       return;
     }
     const oversized = selectedFiles.filter(
       (f) => f.size > MAX_GALLERY_IMAGE_MB * 1024 * 1024,
     );
     if (oversized.length > 0) {
-      toast.error(`Cada imagen puede tener como máximo ${MAX_GALLERY_IMAGE_MB}MB`);
+      toast.error(
+        t("dashboard.addTour.multimedia.toast.imageSize").replace(
+          "{{max}}",
+          String(MAX_GALLERY_IMAGE_MB),
+        ),
+      );
       return;
     }
     setIsCompressingImages(true);
@@ -151,7 +164,7 @@ export function MultimediaStep({
       });
     } catch (err) {
       console.error(err);
-      toast.error("Error al comprimir algunas imágenes");
+      toast.error(t("dashboard.addTour.multimedia.toast.compressError"));
     } finally {
       setIsCompressingImages(false);
     }
@@ -164,14 +177,19 @@ export function MultimediaStep({
     if (!e.target.files?.length) return;
     const selectedFiles = Array.from(e.target.files);
     if (videoFiles.length + selectedFiles.length > 5) {
-      toast.error("Máximo 5 videos permitidos");
+      toast.error(t("dashboard.addTour.multimedia.toast.maxVideos"));
       return;
     }
     const oversized = selectedFiles.filter(
       (f) => f.size > MAX_VIDEO_MB * 1024 * 1024,
     );
     if (oversized.length > 0) {
-      toast.error(`Cada video puede tener como máximo ${MAX_VIDEO_MB}MB`);
+      toast.error(
+        t("dashboard.addTour.multimedia.toast.videoSize").replace(
+          "{{max}}",
+          String(MAX_VIDEO_MB),
+        ),
+      );
       return;
     }
     setIsCheckingVideos(true);
@@ -181,7 +199,10 @@ export function MultimediaStep({
         const duration = await getVideoDurationSeconds(file);
         if (duration > VIDEO_MAX_DURATION_SECONDS) {
           toast.error(
-            `"${file.name}" supera los ${VIDEO_MAX_DURATION_SECONDS} segundos (tipo stories). Duración: ${Math.ceil(duration)}s`,
+            t("dashboard.addTour.multimedia.toast.videoDuration")
+              .replace("{{name}}", file.name)
+              .replace("{{seconds}}", String(VIDEO_MAX_DURATION_SECONDS))
+              .replace("{{duration}}", String(Math.ceil(duration))),
           );
           continue;
         }
@@ -189,7 +210,7 @@ export function MultimediaStep({
       }
       if (valid.length > 0) setVideoFiles((prev) => [...prev, ...valid]);
     } catch {
-      toast.error("No se pudo verificar la duración de algún video");
+      toast.error(t("dashboard.addTour.multimedia.toast.verifyDurationError"));
     } finally {
       setIsCheckingVideos(false);
     }
@@ -202,19 +223,24 @@ export function MultimediaStep({
     const pdfs = selectedFiles.filter((f) => f.type === "application/pdf");
     const invalid = selectedFiles.filter((f) => f.type !== "application/pdf");
     if (invalid.length > 0) {
-      toast.error("Solo se permiten archivos PDF");
+      toast.error(t("dashboard.addTour.multimedia.toast.pdfOnly"));
       e.target.value = "";
       return;
     }
     if (fileAttachments.length + pdfs.length > 5) {
-      toast.error("Máximo 5 archivos permitidos");
+      toast.error(t("dashboard.addTour.multimedia.toast.maxFiles"));
       return;
     }
     const oversized = pdfs.filter(
       (f) => f.size > MAX_PDF_MB * 1024 * 1024,
     );
     if (oversized.length > 0) {
-      toast.error(`Cada PDF puede tener como máximo ${MAX_PDF_MB}MB`);
+      toast.error(
+        t("dashboard.addTour.multimedia.toast.pdfSize").replace(
+          "{{max}}",
+          String(MAX_PDF_MB),
+        ),
+      );
       return;
     }
     setFileAttachments((prev) => [...prev, ...pdfs]);
@@ -239,8 +265,8 @@ export function MultimediaStep({
 
   const handleSubmit = form.handleSubmit(
     (data) => {
-      // Validar archivos
       const fileErrors = validateFiles(
+        t,
         bannerFile,
         imageFiles,
         videoFiles,
@@ -271,9 +297,8 @@ export function MultimediaStep({
     <Form {...form}>
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 gap-4">
-          {/* Banner */}
           <div className="space-y-2">
-            <Label htmlFor="banner">Imagen de banner (obligatorio)</Label>
+            <Label htmlFor="banner">{t("dashboard.addTour.multimedia.bannerLabel")}</Label>
             <div
               className={`relative border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-md p-4 text-center transition-colors ${
                 isCompressingBanner
@@ -289,17 +314,17 @@ export function MultimediaStep({
                 <>
                   <Loader2 className="h-6 w-6 mx-auto mb-2 text-gray-500 animate-spin" />
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Comprimiendo imagen...
+                    {t("dashboard.addTour.multimedia.compressingImage")}
                   </p>
                 </>
               ) : (
                 <>
                   <Upload className="h-6 w-6 mx-auto mb-2 text-gray-400" />
                   <p className="text-sm text-gray-500">
-                    Haz clic para subir una imagen de banner
+                    {t("dashboard.addTour.multimedia.bannerClick")}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
-                    Máx. {MAX_BANNER_IMAGE_MB}MB
+                    {t("dashboard.addTour.multimedia.bannerMax").replace("{{max}}", String(MAX_BANNER_IMAGE_MB))}
                   </p>
                 </>
               )}
@@ -334,20 +359,19 @@ export function MultimediaStep({
                   className="absolute top-2 right-2 h-6 w-6 p-0"
                 >
                   <X className="h-3 w-3" />
-                  <span className="sr-only">Eliminar</span>
+                  <span className="sr-only">{t("dashboard.addTour.multimedia.delete")}</span>
                 </Button>
               </div>
             )}
           </div>
 
-          {/* Imágenes */}
           <div className="space-y-2">
             <div className="flex justify-between items-center">
               <Label htmlFor="images">
-                Imágenes del tour (obligatorio, mín. 5, máx. 10)
+                {t("dashboard.addTour.multimedia.imagesLabel")}
               </Label>
               <span className="text-xs text-gray-500">
-                {imageFiles.length}/10
+                {t("dashboard.addTour.multimedia.imagesCount").replace("{{count}}", String(imageFiles.length))}
               </span>
             </div>
 
@@ -367,17 +391,17 @@ export function MultimediaStep({
                 <>
                   <Loader2 className="h-6 w-6 mx-auto mb-2 text-gray-500 animate-spin" />
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Comprimiendo imágenes...
+                    {t("dashboard.addTour.multimedia.compressingImages")}
                   </p>
                 </>
               ) : (
                 <>
                   <Upload className="h-6 w-6 mx-auto mb-2 text-gray-400" />
                   <p className="text-sm text-gray-500">
-                    Haz clic para subir imágenes
+                    {t("dashboard.addTour.multimedia.imagesClick")}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
-                    Máx. {MAX_GALLERY_IMAGE_MB}MB por imagen
+                    {t("dashboard.addTour.multimedia.imagesMaxPer").replace("{{max}}", String(MAX_GALLERY_IMAGE_MB))}
                   </p>
                 </>
               )}
@@ -412,7 +436,7 @@ export function MultimediaStep({
                       className="absolute top-1 right-1 h-6 w-6 p-0 opacity-70 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
                     >
                       <X className="h-3 w-3" />
-                      <span className="sr-only">Eliminar</span>
+                      <span className="sr-only">{t("dashboard.addTour.multimedia.delete")}</span>
                     </Button>
                   </div>
                 ))}
@@ -420,9 +444,8 @@ export function MultimediaStep({
             )}
           </div>
 
-          {/* Videos */}
           <div className="space-y-2">
-            <Label htmlFor="videos">Videos (opcional, máx. 5)</Label>
+            <Label htmlFor="videos">{t("dashboard.addTour.multimedia.videosLabel")}</Label>
             <div
               className={`relative border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-md p-4 text-center transition-colors ${
                 isCheckingVideos
@@ -438,17 +461,19 @@ export function MultimediaStep({
                 <>
                   <Loader2 className="h-6 w-6 mx-auto mb-2 text-gray-500 animate-spin" />
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Comprobando duración...
+                    {t("dashboard.addTour.multimedia.checkingDuration")}
                   </p>
                 </>
               ) : (
                 <>
                   <Video className="h-6 w-6 mx-auto mb-2 text-gray-400" />
                   <p className="text-sm text-gray-500">
-                    Haz clic para subir videos
+                    {t("dashboard.addTour.multimedia.videosClick")}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
-                    Máx. {MAX_VIDEO_MB}MB. Duración máx. {VIDEO_MAX_DURATION_SECONDS} s
+                    {t("dashboard.addTour.multimedia.videosMax")
+                      .replace("{{max}}", String(MAX_VIDEO_MB))
+                      .replace("{{seconds}}", String(VIDEO_MAX_DURATION_SECONDS))}
                   </p>
                 </>
               )}
@@ -483,7 +508,7 @@ export function MultimediaStep({
                       className="h-6 w-6 p-0"
                     >
                       <X className="h-3 w-3" />
-                      <span className="sr-only">Eliminar</span>
+                      <span className="sr-only">{t("dashboard.addTour.multimedia.delete")}</span>
                     </Button>
                   </div>
                 ))}
@@ -491,10 +516,9 @@ export function MultimediaStep({
             )}
           </div>
 
-          {/* Archivos */}
           <div className="space-y-2">
             <Label htmlFor="files">
-              Archivos adicionales (opcional, máx. 5)
+              {t("dashboard.addTour.multimedia.filesLabel")}
             </Label>
             <div
               className="border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-md p-4 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
@@ -502,10 +526,10 @@ export function MultimediaStep({
             >
               <FileText className="h-6 w-6 mx-auto mb-2 text-gray-400" />
               <p className="text-sm text-gray-500">
-                Haz clic para subir archivos
+                {t("dashboard.addTour.multimedia.filesClick")}
               </p>
               <p className="text-xs text-gray-400 mt-1">
-                Solo PDF. Máx. {MAX_PDF_MB}MB por archivo
+                {t("dashboard.addTour.multimedia.filesPdfMax").replace("{{max}}", String(MAX_PDF_MB))}
               </p>
               <input
                 id="files-upload"
@@ -537,7 +561,7 @@ export function MultimediaStep({
                       className="h-6 w-6 p-0"
                     >
                       <X className="h-3 w-3" />
-                      <span className="sr-only">Eliminar</span>
+                      <span className="sr-only">{t("dashboard.addTour.multimedia.delete")}</span>
                     </Button>
                   </div>
                 ))}
@@ -547,19 +571,18 @@ export function MultimediaStep({
 
           <Separator className="my-4" />
 
-          {/* Precio */}
           <FormField
             control={form.control}
             name="price"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Precio por persona ($)</FormLabel>
+                <FormLabel>{t("dashboard.addTour.multimedia.priceLabel")}</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     type="number"
                     step="0.01"
-                    placeholder="Ej. 20.99"
+                    placeholder={t("dashboard.addTour.multimedia.pricePlaceholder")}
                     className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white "
                   />
                 </FormControl>
@@ -573,7 +596,7 @@ export function MultimediaStep({
             <div className="bg-gray-50 dark:bg-gray-900 rounded-lg py-2 px-4 mb-4">
               <h3 className="text-lg font-medium mb-3 flex items-center">
                 <DollarSign className="h-5 w-5 mr-2" />
-                Desglose de precios
+                {t("dashboard.addTour.multimedia.priceBreakdown")}
               </h3>
               <div className="space-y-2">
                 {(() => {
@@ -581,13 +604,12 @@ export function MultimediaStep({
                     form.watch("price").toString(),
                   );
                   const breakdown = getHostEarningsFromFinalPrice(price);
-                  // const commissionRates = getCommissionRates(); // solo se usaba para mostrar %; comentado
 
                   return (
                     <>
                       <div className="flex justify-between items-center text-sm pb-8">
                         <span className="text-gray-600 dark:text-gray-400">
-                          Precio final (usuario paga):
+                          {t("dashboard.addTour.multimedia.finalPrice")}
                         </span>
                         <span className="font-bold text-2xl">
                           ${price.toFixed(2)}
@@ -596,9 +618,7 @@ export function MultimediaStep({
                       <Separator className="my-2" />
                       <div className="flex justify-between items-center text-sm">
                         <span className="text-gray-600 dark:text-gray-400 flex items-center">
-                          {/* <Percent className="h-3 w-3 mr-1" /> */}
-                          Comisión por pago
-                          {/* Porcentaje comentado: ({commissionRates.paymentProcessingPercentage}) */}
+                          {t("dashboard.addTour.multimedia.paymentCommission")}
                         </span>
                         <span className="font-medium text-red-600">
                           -${breakdown.paymentProcessing.toFixed(2)}
@@ -606,9 +626,7 @@ export function MultimediaStep({
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600 dark:text-gray-400  flex items-center">
-                          {/*   <Percent className="h-3 w-3 mr-1" /> */}
-                          Comisión de plataforma
-                          {/* Porcentaje comentado: ({commissionRates.platformPercentage}) */}
+                          {t("dashboard.addTour.multimedia.platformCommission")}
                         </span>
                         <span className="font-medium text-red-600">
                           -${breakdown.platformFee.toFixed(2)}
@@ -617,7 +635,7 @@ export function MultimediaStep({
                       <Separator className="my-2" />
                       <div className="flex justify-between items-center">
                         <span className="font-medium text-green-700 dark:text-green-400">
-                          Tú recibes:
+                          {t("dashboard.addTour.multimedia.youReceive")}
                         </span>
                         <span className="text-2xl font-bold text-green-700 dark:text-green-400">
                           ${breakdown.hostReceives.toFixed(2)}

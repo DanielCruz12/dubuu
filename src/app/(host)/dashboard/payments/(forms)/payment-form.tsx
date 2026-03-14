@@ -268,7 +268,7 @@ export function PaymentForm() {
               ? t("dashboard.payments.steps.method.description")
               : t("dashboard.payments.steps.details.description").replace(
                   "{{methodName}}",
-                  getPaymentMethodName(paymentMethod)
+                  t(getPaymentMethodName(paymentMethod))
                 )}
           </CardDescription>
         </CardHeader>
@@ -292,7 +292,7 @@ export function PaymentForm() {
                 <div className="flex items-center space-x-2 p-2 rounded-md">
                   {getPaymentMethodIcon(paymentMethod)}
                   <span className="text-sm">
-                    {getPaymentMethodName(paymentMethod)}
+                    {t(getPaymentMethodName(paymentMethod))}
                   </span>
                 </div>
 

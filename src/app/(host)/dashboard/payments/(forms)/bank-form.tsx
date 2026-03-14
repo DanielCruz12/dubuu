@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -24,22 +24,24 @@ import {
 } from "@/components/ui/select";
 import { VerificationDialog } from "../(components)/verification-dialog";
 import type { BankFormValues } from "@/types/payment-types";
+import { useLanguage } from "@/lib/i18n-context";
 
-// Esquema de validación para transferencia bancaria
-const bankSchema = z.object({
-  bankName: z.string().min(2, { message: "El nombre del banco es requerido" }),
-  accountType: z.string().min(1, { message: "Seleccione un tipo de cuenta" }),
-  accountNumber: z
-    .string()
-    .min(5, { message: "El número de cuenta debe tener al menos 5 caracteres" })
-    .regex(/^\d+$/, {
-      message: "El número de cuenta debe contener solo números",
-    }),
-  holderName: z
-    .string()
-    .min(3, { message: "El nombre del titular es requerido" }),
-  email: z.string().email({ message: "Ingrese un correo electrónico válido" }),
-});
+function getBankSchema(t: (key: string) => string) {
+  return z.object({
+    bankName: z.string().min(2, { message: t("dashboard.payments.bankForm.validation.bankNameRequired") }),
+    accountType: z.string().min(1, { message: t("dashboard.payments.bankForm.validation.accountTypeRequired") }),
+    accountNumber: z
+      .string()
+      .min(5, { message: t("dashboard.payments.bankForm.validation.accountNumberMin") })
+      .regex(/^\d+$/, {
+        message: t("dashboard.payments.bankForm.validation.accountNumberNumeric"),
+      }),
+    holderName: z
+      .string()
+      .min(3, { message: t("dashboard.payments.bankForm.validation.holderNameRequired") }),
+    email: z.string().email({ message: t("dashboard.payments.bankForm.validation.emailInvalid") }),
+  });
+}
 
 interface BankFormProps {
   defaultValues: BankFormValues;
@@ -56,6 +58,8 @@ export function BankForm({
   isLoading,
   isUpdating,
 }: BankFormProps) {
+  const { t } = useLanguage();
+  const bankSchema = useMemo(() => getBankSchema(t), [t]);
   const [showVerificationDialog, setShowVerificationDialog] = useState(false);
   const [formData, setFormData] = useState<BankFormValues | null>(null);
 
@@ -93,11 +97,11 @@ export function BankForm({
               name="bankName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nombre del banco</FormLabel>
+                  <FormLabel>{t("dashboard.payments.bankForm.bankName")}</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="Ingrese el nombre del banco"
+                      placeholder={t("dashboard.payments.bankForm.bankNamePlaceholder")}
                       className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
                     />
                   </FormControl>
@@ -111,20 +115,20 @@ export function BankForm({
               name="accountType"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tipo de cuenta</FormLabel>
+                  <FormLabel>{t("dashboard.payments.bankForm.accountType")}</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white">
-                        <SelectValue placeholder="Seleccione el tipo de cuenta" />
+                        <SelectValue placeholder={t("dashboard.payments.bankForm.accountTypePlaceholder")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="ahorro">Cuenta de Ahorro</SelectItem>
+                      <SelectItem value="ahorro">{t("dashboard.payments.bankForm.accountTypeAhorro")}</SelectItem>
                       <SelectItem value="corriente">
-                        Cuenta Corriente
+                        {t("dashboard.payments.bankForm.accountTypeCorriente")}
                       </SelectItem>
                     </SelectContent>
                   </Select>
@@ -138,11 +142,11 @@ export function BankForm({
               name="accountNumber"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Número de cuenta</FormLabel>
+                  <FormLabel>{t("dashboard.payments.bankForm.accountNumber")}</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="Ingrese el número de cuenta"
+                      placeholder={t("dashboard.payments.bankForm.accountNumberPlaceholder")}
                       className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
                     />
                   </FormControl>
@@ -156,11 +160,11 @@ export function BankForm({
               name="holderName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nombre completo (titular)</FormLabel>
+                  <FormLabel>{t("dashboard.payments.bankForm.holderName")}</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="Ingrese el nombre del titular"
+                      placeholder={t("dashboard.payments.bankForm.holderNamePlaceholder")}
                       className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
                     />
                   </FormControl>
@@ -174,12 +178,12 @@ export function BankForm({
               name="email"
               render={({ field }) => (
                 <FormItem className="md:col-span-2">
-                  <FormLabel>Correo electrónico</FormLabel>
+                  <FormLabel>{t("dashboard.payments.bankForm.email")}</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       type="email"
-                      placeholder="ejemplo@correo.com"
+                      placeholder={t("dashboard.payments.bankForm.emailPlaceholder")}
                       className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
                     />
                   </FormControl>
@@ -197,7 +201,7 @@ export function BankForm({
               className="border-gray-200 dark:border-gray-800 hover:bg-transparent hover:text-black dark:hover:text-white mr-2"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Atrás
+              {t("dashboard.payments.bankForm.back")}
             </Button>
             <Button
               type="submit"
@@ -226,12 +230,12 @@ export function BankForm({
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  Procesando...
+                  {t("dashboard.payments.bankForm.processing")}
                 </span>
               ) : isUpdating ? (
-                "Actualizar información"
+                t("dashboard.payments.bankForm.updating")
               ) : (
-                "Enviar información"
+                t("dashboard.payments.bankForm.submit")
               )}
             </Button>
           </div>

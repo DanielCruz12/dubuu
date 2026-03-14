@@ -225,16 +225,15 @@ export function TourForm() {
 
       clearAddTourDraft();
 
-      toast.success("¡Tour creado con éxito!", {
-        description: "El tour ha sido registrado correctamente en el sistema.",
+      toast.success(t("dashboard.addTour.toast.success"), {
+        description: t("dashboard.addTour.toast.successDescription"),
       });
       router.push("/dashboard/products");
     } catch (error) {
       console.error("Error al crear el tour:", error);
 
-      toast.error("Error al crear el tour", {
-        description:
-          "Hubo un problema al guardar el tour. Por favor, inténtalo de nuevo.",
+      toast.error(t("dashboard.addTour.toast.error"), {
+        description: t("dashboard.addTour.toast.errorDescription"),
       });
     }
   };

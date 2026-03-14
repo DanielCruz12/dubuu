@@ -77,13 +77,13 @@ export function getPaymentMethodIcon(method: PaymentMethod | null) {
   }
 }
 
-export function getPaymentMethodName(method: PaymentMethod | null) {
+/** Returns i18n key for the payment method name. Use with t(key) in components. */
+export function getPaymentMethodName(method: PaymentMethod | null): string {
   switch (method) {
     case "bank":
-      return "Transferencia bancaria";
+      return "dashboard.payments.methods.bank";
     case "blink":
-      return "Bitcoin / Lightning";
-
+      return "dashboard.payments.methods.blink";
     default:
       return "";
   }
