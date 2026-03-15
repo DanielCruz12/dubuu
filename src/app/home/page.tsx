@@ -19,7 +19,7 @@ export default function Home() {
 
   const { data: initialProductsData, isLoading: isLoadingInitial } =
     useGetProductsQuery(
-      { limit: 4, is_approved: true, is_active: true },
+      { limit: 20, is_approved: true, is_active: true },
       {
         refetchOnMountOrArgChange: false,
         refetchOnFocus: false,
