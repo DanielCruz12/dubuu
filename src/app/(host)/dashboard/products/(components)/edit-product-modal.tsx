@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/select";
 import { format } from "date-fns";
 import type { ITourProduct, ITourProductDates } from "@/types/product";
+import { useLanguage } from "@/lib/i18n-context";
 
 // Esquema de validación con Zod
 const tourFormSchema = z.object({
@@ -78,6 +79,7 @@ export function EditProductModal({
   const [localSelectedDateId, setLocalSelectedDateId] = useState(
     selectedDateId || tour.selectedDateId || ""
   );
+  const { t } = useLanguage();
 
   // Encontrar la fecha seleccionada
   const getSelectedDate = (): ITourProductDates | null => {
@@ -187,9 +189,14 @@ export function EditProductModal({
       <DialogContent className="sm:max-w-[425px] max-w-[95%] md:max-w-[85%] lg:max-w-[75%] xl:max-w-[55%] p-0 overflow-hidden rounded-xl border-none shadow-xl">
         <div className="bg-gradient-to-r dark:from-black dark:to-primary/5 border-none px-4 md:px-0">
           <DialogHeader>
-            <DialogTitle className="text-center pt-6">Editar Tour</DialogTitle>
+            <DialogTitle className="text-center pt-6">
+              {t("dashboard.products.editModal.title")}
+            </DialogTitle>
             <DialogDescription className="pt-1 pb-2 text-center">
-              Actualiza los detalles del tour &quot;{tour.name}&quot;
+              {t("dashboard.products.editModal.description").replace(
+                "{{name}}",
+                tour.name,
+              )}
             </DialogDescription>
           </DialogHeader>
 
@@ -208,7 +215,9 @@ export function EditProductModal({
                       name="selected_date_id"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Fecha del Tour</FormLabel>
+                          <FormLabel>
+                            {t("dashboard.products.editModal.dateLabel")}
+                          </FormLabel>
                           <Select
                             value={localSelectedDateId}
                             onValueChange={(value) => {
@@ -218,7 +227,11 @@ export function EditProductModal({
                           >
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Seleccionar fecha" />
+                                <SelectValue
+                                  placeholder={t(
+                                    "dashboard.products.editModal.datePlaceholder",
+                                  )}
+                                />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -233,7 +246,7 @@ export function EditProductModal({
                             </SelectContent>
                           </Select>
                           <FormDescription>
-                            Selecciona la fecha para editar sus detalles
+                            {t("dashboard.products.editModal.dateHelp")}
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -245,10 +258,16 @@ export function EditProductModal({
                     name="departure_point"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Punto de Salida</FormLabel>
+                        <FormLabel>
+                          {t(
+                            "dashboard.products.editModal.departurePointLabel",
+                          )}
+                        </FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Ej. Hotel Barceló, San Salvador"
+                            placeholder={t(
+                              "dashboard.products.editModal.departurePointPlaceholder",
+                            )}
                             {...field}
                           />
                         </FormControl>
@@ -265,12 +284,16 @@ export function EditProductModal({
                     name="price"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Precio</FormLabel>
+                        <FormLabel>
+                          {t("dashboard.products.editModal.priceLabel")}
+                        </FormLabel>
                         <FormControl>
                           <Input
                             type="number"
                             step="0.01"
-                            placeholder="0.00"
+                            placeholder={t(
+                              "dashboard.products.editModal.pricePlaceholder",
+                            )}
                             {...field}
                             onChange={(e) =>
                               field.onChange(Number.parseFloat(e.target.value))
@@ -278,7 +301,9 @@ export function EditProductModal({
                             value={field.value}
                           />
                         </FormControl>
-                        <FormDescription>Precio por persona</FormDescription>
+                        <FormDescription>
+                          {t("dashboard.products.editModal.priceHelp")}
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -289,7 +314,9 @@ export function EditProductModal({
                     name="max_people"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Máximo de Personas</FormLabel>
+                        <FormLabel>
+                          {t("dashboard.products.editModal.maxPeopleLabel")}
+                        </FormLabel>
                         <FormControl>
                           <Input
                             type="number"
@@ -303,7 +330,9 @@ export function EditProductModal({
                           />
                         </FormControl>
                         <FormDescription>
-                          {selectedDate ? `Para la fecha seleccionada` : ""}
+                          {selectedDate
+                            ? t("dashboard.products.editModal.maxPeopleHelp")
+                            : ""}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -323,9 +352,11 @@ export function EditProductModal({
                         />
                       </FormControl>
                       <div className="space-y-1 leading-none">
-                        <FormLabel>Activo</FormLabel>
+                        <FormLabel>
+                          {t("dashboard.products.editModal.isActiveLabel")}
+                        </FormLabel>
                         <FormDescription>
-                          Este tour estará visible y disponible para reservas
+                          {t("dashboard.products.editModal.isActiveHelp")}
                         </FormDescription>
                       </div>
                     </FormItem>
@@ -339,10 +370,12 @@ export function EditProductModal({
                     onClick={() => onOpenChange(false)}
                     disabled={isPending}
                   >
-                    Cancelar
+                    {t("dashboard.products.editModal.cancel")}
                   </Button>
                   <Button type="submit" disabled={isPending}>
-                    {isPending ? "Guardando..." : "Guardar Cambios"}
+                    {isPending
+                      ? t("dashboard.products.editModal.saving")
+                      : t("dashboard.products.editModal.save")}
                   </Button>
                 </DialogFooter>
               </form>

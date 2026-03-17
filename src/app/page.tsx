@@ -136,7 +136,7 @@ export default function Home() {
             >
               <div className="aspect-[3/3] relative overflow-hidden rounded-2xl">
                 <Image
-                  src="/tour1.jpg"
+                  src="/tour1.webp"
                   alt={t("home.landing.about.imageAlt")}
                   fill
                   className="object-cover"

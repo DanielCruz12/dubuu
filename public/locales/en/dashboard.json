@@ -168,6 +168,26 @@
       "deleting": "Deleting...",
       "deleteSuccess": "Product deleted successfully",
       "deleteError": "Error deleting product"
+    },
+    "editModal": {
+      "title": "Edit",
+      "description": "Update the details of \"{{name}}\"",
+      "dateLabel": "Date",
+      "datePlaceholder": "Select date",
+      "dateHelp": "Select the date to edit its details",
+      "departurePointLabel": "Departure point",
+      "departurePointPlaceholder": "E.g. Barceló Hotel, San Salvador",
+      "priceLabel": "Price",
+      "pricePlaceholder": "0.00",
+      "priceHelp": "Price per person",
+      "maxPeopleLabel": "Maximum people",
+      "maxPeoplePlaceholder": "10",
+      "maxPeopleHelp": "For the selected date",
+      "isActiveLabel": "Active",
+      "isActiveHelp": "This tour will be visible and available for bookings",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "save": "Save changes"
     }
   },
   "bookings": {
