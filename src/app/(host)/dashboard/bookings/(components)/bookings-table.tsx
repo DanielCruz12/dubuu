@@ -245,14 +245,15 @@ export function BookingsDataTable() {
             </div>
 
             <div className="flex gap-2 ml-auto">
-              <Button
-                onClick={handleExport}
-                title={t("dashboard.bookings.filters.export")}
-                disabled={!bookingsData || bookingsData.length === 0}
-              >
-                <DownloadIcon className="h-4 w-4 mr-2" />
-                <span>{t("dashboard.bookings.filters.export")}</span>
-              </Button>
+              {bookingsData && bookingsData.length > 0 && (
+                <Button
+                  onClick={handleExport}
+                  title={t("dashboard.bookings.filters.export")}
+                >
+                  <DownloadIcon className="h-4 w-4 mr-2" />
+                  <span>{t("dashboard.bookings.filters.export")}</span>
+                </Button>
+              )}
             </div>
           </div>
 

@@ -115,7 +115,7 @@ export function ProductsDataTable() {
 
     setAvailableTours(tourProducts);
 
-    // Seleccionar automáticamente el primer tour y su primera fecha
+    // Seleccionar automáticamente el primer tour y su primera fecha, o limpiar si no hay productos
     if (tourProducts.length > 0) {
       const firstTour = tourProducts[0];
       setSelectedTourId(firstTour.id);
@@ -124,12 +124,18 @@ export function ProductsDataTable() {
       if (firstTourDates.length > 0) {
         setSelectedDateId(firstTourDates[0].id);
       }
+    } else {
+      setSelectedTourId("");
+      setSelectedDateId("");
     }
   }, [data]);
 
   // Actualizar los tours filtrados cuando cambian los criterios de filtrado
   useEffect(() => {
-    if (!availableTours.length) return;
+    if (!availableTours.length) {
+      setFilteredTours([]);
+      return;
+    }
 
     let filtered = availableTours;
 
@@ -315,14 +321,16 @@ export function ProductsDataTable() {
             </div>
 
             <div className="flex items-center gap-2 ml-auto">
-              <Button
-                onClick={handleExport}
-                variant="outline"
-                className="flex items-center gap-2"
-              >
-                <DownloadIcon className="h-4 w-4" />
-                <span>{t("dashboard.products.filters.export")}</span>
-              </Button>
+              {filteredTours.length > 0 && (
+                <Button
+                  onClick={handleExport}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  <DownloadIcon className="h-4 w-4" />
+                  <span>{t("dashboard.products.filters.export")}</span>
+                </Button>
+              )}
 
               <Button asChild className="flex items-center gap-2">
                 <Link href="/dashboard/products/add">
