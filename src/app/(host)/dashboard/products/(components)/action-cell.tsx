@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { MoreHorizontal, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,6 +37,8 @@ export function ActionCell({ tour, selectedDateId, onDeleted }: ActionCellProps)
   const { t } = useLanguage();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
   const [updateProduct] = useUpdateProductMutation();
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
   // Usar el selectedDateId del tour si no se proporciona explícitamente
@@ -73,9 +75,9 @@ export function ActionCell({ tour, selectedDateId, onDeleted }: ActionCellProps)
 
   return (
     <>
-      <DropdownMenu>
+      <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
         <DropdownMenuTrigger asChild>
-          <Button variant="secondary" className="h-8 w-8 p-0">
+          <Button ref={triggerRef} variant="secondary" className="h-8 w-8 p-0">
             <span className="sr-only">Abrir menú</span>
             <MoreHorizontal className="h-4 w-4" />
           </Button>
@@ -90,12 +92,22 @@ export function ActionCell({ tour, selectedDateId, onDeleted }: ActionCellProps)
           >
             {t("dashboard.products.actions.copyId")}
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setShowEditModal(true)}>
+          <DropdownMenuItem
+            onSelect={(e) => {
+              e.preventDefault();
+              setMenuOpen(false);
+              queueMicrotask(() => setShowEditModal(true));
+            }}
+          >
             {t("dashboard.products.actions.edit")}
           </DropdownMenuItem>
           <DropdownMenuItem
             className="text-destructive focus:text-destructive"
-            onClick={() => setShowDeleteDialog(true)}
+            onSelect={(e) => {
+              e.preventDefault();
+              setMenuOpen(false);
+              queueMicrotask(() => setShowDeleteDialog(true));
+            }}
           >
             <Trash2 className="mr-2 h-4 w-4" />
             {t("dashboard.products.actions.deleteProduct")}
@@ -103,7 +115,13 @@ export function ActionCell({ tour, selectedDateId, onDeleted }: ActionCellProps)
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+      <AlertDialog
+        open={showDeleteDialog}
+        onOpenChange={(open) => {
+          setShowDeleteDialog(open);
+          if (!open) queueMicrotask(() => triggerRef.current?.focus());
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{t("dashboard.products.actions.deleteConfirmTitle")}</AlertDialogTitle>
