@@ -26,8 +26,18 @@ export default function ImageCollage({
   const [open, setOpen] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
 
-  // Create a new array with the banner as the first image, followed by the rest
-  const allImages = [banner, ...(images || [])]
+  // Create a new array with the banner as the first image, followed by the rest (deduped)
+  const allImages = (() => {
+    const candidates = [banner, ...(images || [])].filter(
+      (src): src is string => typeof src === "string" && src.trim().length > 0,
+    )
+    const seen = new Set<string>()
+    return candidates.filter((src) => {
+      if (seen.has(src)) return false
+      seen.add(src)
+      return true
+    })
+  })()
 
   // Format all images for the lightbox
   const formattedImages = allImages.map((src, index) => ({
@@ -177,7 +187,7 @@ export default function ImageCollage({
                 }}
               >
                 <button className="bg-white text-black px-4 py-2 rounded-lg font-medium hover:bg-opacity-90">
-                  {t("home.imageCollage.showAllPhotos")} ({images.length})
+                  {t("home.imageCollage.showAllPhotos")} ({allImages.length})
                 </button>
               </div>
             )}

@@ -28,6 +28,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
     description,
     price,
     country,
+    banner,
     images,
     average_rating,
     total_reviews,
@@ -160,8 +161,19 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
     router.push(`/home/${slug}/${id}`);
   };
 
-  // Safely handle images array
-  const productImages = images && images.length > 0 ? images : ["/tour.jpg"];
+  // Safely handle images: prefer banner first, then the rest (deduped)
+  const productImages = (() => {
+    const candidates = [banner, ...(images ?? [])].filter(
+      (src): src is string => typeof src === "string" && src.trim().length > 0,
+    );
+    const seen = new Set<string>();
+    const unique = candidates.filter((src) => {
+      if (seen.has(src)) return false;
+      seen.add(src);
+      return true;
+    });
+    return unique.length > 0 ? unique : ["/tour.jpg"];
+  })();
 
   // Formatear el rating para que tenga un decimal
   const formattedRating = Number(average_rating).toFixed(2);
