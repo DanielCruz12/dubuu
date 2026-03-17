@@ -49,14 +49,14 @@ export function ProductsDataTable() {
   const [openTourSelect, setOpenTourSelect] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const { t, language } = useLanguage();
-  const columns = useMemo(
-    () => getToursColumns(t, language),
-    [t, language]
-  );
-
-  const { data, isLoading } = useGetProductsByUserIdQuery(user?.id as string, {
+  const { data, isLoading, refetch } = useGetProductsByUserIdQuery(user?.id as string, {
     skip: !user?.id,
   });
+
+  const columns = useMemo(
+    () => getToursColumns(t, language, refetch),
+    [t, language, refetch]
+  );
 
   // Obtener fechas disponibles para el tour seleccionado
   const availableDates = useMemo(() => {

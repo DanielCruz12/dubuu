@@ -182,14 +182,23 @@ export function DataTable<TData, TValue>({
           />
         </div>
       )}
-      <div className="rounded-md border">
+      <div className="rounded-md border overflow-hidden">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
+                  const meta = (header.column.columnDef as { meta?: { stickyRight?: boolean } }).meta;
+                  const isStickyRight = meta?.stickyRight;
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead
+                      key={header.id}
+                      className={
+                        isStickyRight
+                          ? "sticky right-0 z-10 bg-muted/95 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)]"
+                          : undefined
+                      }
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -209,14 +218,25 @@ export function DataTable<TData, TValue>({
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+                  {row.getVisibleCells().map((cell) => {
+                    const meta = (cell.column.columnDef as { meta?: { stickyRight?: boolean } }).meta;
+                    const isStickyRight = meta?.stickyRight;
+                    return (
+                      <TableCell
+                        key={cell.id}
+                        className={
+                          isStickyRight
+                            ? "sticky right-0 z-10 bg-background shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)]"
+                            : undefined
+                        }
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               ))
             ) : (
@@ -266,23 +286,14 @@ export function DataTable<TData, TValue>({
           <div className="text-sm text-muted-foreground">
             {t("dashboard.dataTable.showingResults")
               .replace(
-                "{{from}}",
+                "{{shown}}",
                 String(
-                  table.getFilteredRowModel().rows.length > 0
-                    ? table.getState().pagination.pageIndex *
-                        table.getState().pagination.pageSize +
-                      1
-                    : 0
-                )
-              )
-              .replace(
-                "{{to}}",
-                String(
-                  Math.min(
-                    (table.getState().pagination.pageIndex + 1) *
-                      table.getState().pagination.pageSize,
-                    table.getFilteredRowModel().rows.length
-                  )
+                  (() => {
+                    const total = table.getFilteredRowModel().rows.length;
+                    if (total === 0) return 0;
+                    const { pageIndex, pageSize } = table.getState().pagination;
+                    return Math.min(pageSize, total - pageIndex * pageSize);
+                  })()
                 )
               )
               .replace(

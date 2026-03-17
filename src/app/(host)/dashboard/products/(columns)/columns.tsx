@@ -11,7 +11,8 @@ import "moment/locale/es";
 
 export function getToursColumns(
   t: (key: string) => string,
-  language: string
+  language: string,
+  refetch?: () => void
 ): ColumnDef<ITourProduct & { selectedDateId?: string }>[] {
   const locale = language === "en" ? "en" : "es";
   return [
@@ -230,11 +231,13 @@ export function getToursColumns(
   {
     id: "actions",
     header: t("dashboard.products.table.actions"),
+    meta: { stickyRight: true },
     cell: ({ row }) => {
       return (
         <ActionCell
           tour={row.original}
           selectedDateId={row.original.selectedDateId}
+          onDeleted={refetch}
         />
       );
     },

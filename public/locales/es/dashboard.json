@@ -81,7 +81,7 @@
     "noResults": "No se encontraron resultados.",
     "show": "Mostrar",
     "perPage": "por página",
-    "showingResults": "Mostrando {{from}} a {{to}} de {{total}} resultados",
+    "showingResults": "Mostrando {{shown}} de {{total}} resultados",
     "searchPlaceholder": "Buscar..."
   },
   "activeReservations": "Reservas Activas",
@@ -154,6 +154,20 @@
       "hidden": "Oculto",
       "approved": "Aprobado",
       "pending": "Pendiente"
+    },
+    "actions": {
+      "menuLabel": "Acciones",
+      "copyId": "Copiar ID",
+      "copyIdSuccess": "ID copiado al portapapeles",
+      "edit": "Editar",
+      "deleteProduct": "Eliminar producto",
+      "deleteConfirmTitle": "¿Eliminar producto?",
+      "deleteConfirmDescription": "Esta acción no se puede deshacer. Se eliminará el producto \"{{name}}\" y toda su información asociada.",
+      "cancel": "Cancelar",
+      "delete": "Eliminar",
+      "deleting": "Eliminando...",
+      "deleteSuccess": "Producto eliminado correctamente",
+      "deleteError": "Error al eliminar el producto"
     }
   },
   "bookings": {
