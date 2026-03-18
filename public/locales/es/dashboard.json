@@ -319,8 +319,8 @@
         "description": "Ingresa la información básica del tour"
       },
       "location": {
-        "title": "Ubicación",
-        "description": "Selecciona la ubicación exacta en el mapa"
+        "title": "Punto de encuentro",
+        "description": "Dónde esperan los clientes. Busca o haz clic en el mapa."
       },
       "details": {
         "title": "Detalles del tour",
@@ -364,6 +364,22 @@
       "address": "Dirección",
       "lat": "Latitud",
       "lng": "Longitud",
+      "title": "Punto de encuentro",
+      "description": "Dónde esperan los clientes. Busca o haz clic en el mapa.",
+      "searchPlaceholder": "Buscar dirección (ej. Multiplaza, San Salvador)",
+      "myLocation": "Mi ubicación",
+      "loadingMap": "Cargando mapa...",
+      "addressNotFound": "Dirección no encontrada",
+      "meetingPointLabel": "Punto de encuentro",
+      "meetingPointTitle": "Punto de encuentro del tour",
+      "meetingPointHint": "Aquí esperarán los clientes que reserven este tour.",
+      "mapBlockedByKey": "Mapa bloqueado por restricciones de la API key.",
+      "mapBlockedHint": "En Google Cloud Console, en tu API key (Restricciones de sitios web), agrega",
+      "mapTypeLabel": "Estilo de mapa",
+      "mapTypeRoadmap": "Mapa",
+      "mapTypeSatellite": "Satélite",
+      "mapTypeHybrid": "Híbrido",
+      "mapTypeTerrain": "Terreno",
       "validation": {
         "addressMin": "La dirección es requerida"
       }

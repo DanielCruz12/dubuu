@@ -319,8 +319,8 @@
         "description": "Enter the basic information of the tour"
       },
       "location": {
-        "title": "Location",
-        "description": "Select the exact location on the map"
+        "title": "Meeting point",
+        "description": "Where clients wait. Search or click on the map."
       },
       "details": {
         "title": "Tour details",
@@ -364,6 +364,22 @@
       "address": "Address",
       "lat": "Latitude",
       "lng": "Longitude",
+      "title": "Meeting point",
+      "description": "Where clients wait. Search or click on the map.",
+      "searchPlaceholder": "Search address (e.g. Multiplaza, San Salvador)",
+      "myLocation": "My location",
+      "loadingMap": "Loading map...",
+      "addressNotFound": "Address not found",
+      "meetingPointLabel": "Meeting point",
+      "meetingPointTitle": "Tour meeting point",
+      "meetingPointHint": "Clients who book this tour will wait here.",
+      "mapBlockedByKey": "Map blocked by API key restrictions.",
+      "mapBlockedHint": "In Google Cloud Console, in your API key (Website restrictions), add",
+      "mapTypeLabel": "Map style",
+      "mapTypeRoadmap": "Map",
+      "mapTypeSatellite": "Satellite",
+      "mapTypeHybrid": "Hybrid",
+      "mapTypeTerrain": "Terrain",
       "validation": {
         "addressMin": "Address is required"
       }

@@ -112,7 +112,11 @@ export function TourForm() {
     // Datos básicos
     data.append("name", formData.basicInfo.name);
     data.append("description", formData.basicInfo.description);
-    data.append("departure_point", formData.basicInfo.departure_point);
+    // Punto de partida: dirección del mapa (coherente con lat/long); fallback al texto del paso 1
+    data.append(
+      "departure_point",
+      formData.location.address || formData.basicInfo.departure_point
+    );
     data.append("address", formData.basicInfo.address);
     data.append("country", formData.basicInfo.country);
     data.append("max_people", formData.basicInfo.max_people.toString());

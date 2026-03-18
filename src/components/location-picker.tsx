@@ -1,17 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Search } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import dynamic from "next/dynamic";
+import { useLanguage } from "@/lib/i18n-context";
+import { GoogleMapPicker } from "@/components/google-map-picker";
 
-// Importamos el mapa dinámicamente para evitar problemas de SSR
 const LeafletMapComponent = dynamic(() => import("@/components/leaflet-map"), {
   ssr: false,
   loading: () => (
@@ -39,49 +33,41 @@ export default function LocationPicker({
   onLocationSelect,
   initialLocation,
 }: LocationPickerProps) {
+  const { t } = useLanguage();
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(
     initialLocation || null
   );
+  const googleApiKey = typeof process !== "undefined" ? process.env.NEXT_PUBLIC_GOOGLE_API_KEY : undefined;
+  const useGoogleMaps = Boolean(googleApiKey);
 
-  // Actualizar el estado local cuando cambia la ubicación inicial
   useEffect(() => {
     if (initialLocation) {
       setSelectedLocation(initialLocation);
     }
   }, [initialLocation]);
 
-  const handleLocationSelect = async (lat: number, lng: number) => {
+  const handleLocationSelect = (location: Location) => {
+    setSelectedLocation(location);
+    onLocationSelect(location);
+  };
+
+  const handleLeafletSelect = async (lat: number, lng: number) => {
     try {
-      // Realizar geocodificación inversa usando Nominatim (OpenStreetMap)
       const response = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`,
         { headers: { "Accept-Language": "es" } }
       );
       const data = await response.json();
-
-      const newLocation = {
+      const newLocation: Location = {
         lat,
         lng,
-        address:
-          data && data.display_name
-            ? data.display_name
-            : "Dirección no encontrada",
+        address: data?.display_name ? data.display_name : t("dashboard.addTour.location.addressNotFound"),
       };
-
       setSelectedLocation(newLocation);
-
-      // Guardar automáticamente la ubicación cuando se selecciona
       onLocationSelect(newLocation);
-    } catch (error) {
-      console.error("Error al obtener la dirección:", error);
-      const newLocation = {
-        lat,
-        lng,
-        address: "Error al obtener la dirección",
-      };
+    } catch {
+      const newLocation: Location = { lat, lng, address: t("dashboard.addTour.location.addressNotFound") };
       setSelectedLocation(newLocation);
-
-      // Guardar automáticamente incluso si hay error
       onLocationSelect(newLocation);
     }
   };
@@ -89,21 +75,19 @@ export default function LocationPicker({
   return (
     <div className="w-full">
       <Card className="h-full">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Search className="h-5 w-5" />
-            Selecciona una ubicación
-          </CardTitle>
-          <CardDescription>
-            Busca una dirección específica o haz clic en el mapa para
-            seleccionar una ubicación
-          </CardDescription>
-        </CardHeader>
         <CardContent className="p-0 h-[500px]">
-          <LeafletMapComponent
-            onLocationSelect={handleLocationSelect}
-            selectedLocation={selectedLocation}
-          />
+          {useGoogleMaps ? (
+            <GoogleMapPicker
+              apiKey={googleApiKey!}
+              onLocationSelect={handleLocationSelect}
+              selectedLocation={selectedLocation}
+            />
+          ) : (
+            <LeafletMapComponent
+              onLocationSelect={handleLeafletSelect}
+              selectedLocation={selectedLocation}
+            />
+          )}
         </CardContent>
       </Card>
     </div>
