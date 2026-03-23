@@ -69,11 +69,19 @@ function getVideoDurationSeconds(file: File): Promise<number> {
 interface MultimediaStepProps {
   onSubmit: (data: MultimediaFormValues, files: TourFiles) => void;
   defaultValues?: Partial<MultimediaFormValues>;
+  /** Edición: permite guardar sin volver a subir banner/galería si ya existen en el producto. */
+  isEditMode?: boolean;
+  existingMedia?: {
+    bannerUrl?: string;
+    imageUrls?: string[];
+  };
 }
 
 export function MultimediaStep({
   onSubmit,
   defaultValues,
+  isEditMode = false,
+  existingMedia,
 }: MultimediaStepProps) {
   const { t } = useLanguage();
   const multimediaSchema = useMemo(() => getMultimediaSchema(t), [t]);
@@ -271,6 +279,12 @@ export function MultimediaStep({
         imageFiles,
         videoFiles,
         fileAttachments,
+        isEditMode
+          ? {
+              existingBannerUrl: existingMedia?.bannerUrl,
+              existingImageCount: existingMedia?.imageUrls?.length ?? 0,
+            }
+          : undefined,
       );
 
       if (fileErrors.length > 0) {

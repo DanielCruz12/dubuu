@@ -57,11 +57,12 @@ export function getToursColumns(
       );
     },
     cell: ({ row }) => {
-      const price = Number.parseFloat(row.getValue("price"));
+      const raw = row.getValue("price");
+      const price = typeof raw === "number" ? raw : Number.parseFloat(String(raw ?? 0));
       const formatted = new Intl.NumberFormat("es-SV", {
         style: "currency",
         currency: "USD",
-      }).format(price);
+      }).format(Number.isFinite(price) ? price : 0);
       return <div>{formatted}</div>;
     },
   },
@@ -197,10 +198,29 @@ export function getToursColumns(
     },
   },
   {
-    accessorKey: "is_active",
+    id: "date_availability",
     header: t("dashboard.products.table.availability"),
     cell: ({ row }) => {
-      const isActive = row.getValue("is_active") as boolean;
+      const tour = row.original;
+      const selectedDateId = tour.selectedDateId;
+      const tourDates = tour.tour?.tour_dates ?? [];
+      const selectedDate =
+        selectedDateId && tourDates.length > 0
+          ? tourDates.find((d) => d.id === selectedDateId)
+          : undefined;
+      const ds = selectedDate?.status;
+      if (ds) {
+        const variant =
+          ds === "active" ? "default" : ds === "cancelled" ? "destructive" : "secondary";
+        return (
+          <div className="flex items-center gap-2">
+            <Badge variant={variant}>
+              {t(`dashboard.products.table.dateStatus.${ds}`)}
+            </Badge>
+          </div>
+        );
+      }
+      const isActive = row.getValue("is_active") as boolean | undefined;
       return (
         <div className="flex items-center gap-2">
           <Badge variant={isActive ? "default" : "destructive"}>

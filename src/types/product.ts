@@ -32,11 +32,15 @@ export interface IProductAudience {
   updated_at?: string;
 }
 
+/** Estado por fila en `tour_dates` (API). */
+export type TourDateStatus = "active" | "cancelled" | "completed";
+
 export interface IProductBase<T extends string = string> {
   id: string;
   name: string;
   user_id: string;
   description: string;
+  /** En tours puede ser el precio mínimo entre fechas (calculado en listados). */
   price: number;
   address: string;
   country: string;
@@ -52,7 +56,7 @@ export interface IProductBase<T extends string = string> {
   target_audience?: { id: string; name: string };
   amenities?: { id: string; name: string }[];
   user?: { id: string; username: string; email?: string } | { id: string; username: string; email?: string }[];
-  product_type: { name: T };
+  product_type: { id?: string; name: T };
   created_at: string;
   updated_at: string;
 }
@@ -62,7 +66,29 @@ export interface ITourProductDates {
   date: string;
   max_people: number;
   people_booked: number;
+  /** Precio por persona para esta fecha (obligatorio en API actual). */
+  price?: number;
+  status?: TourDateStatus;
 }
+
+/** Body JSON para PATCH de fechas de tour (además de campos generales del producto). */
+export interface PatchTourDateFields {
+  selectedDateId?: string;
+  update_all_tour_dates?: boolean;
+  price?: number;
+  max_people?: number;
+  status?: TourDateStatus;
+}
+
+export type PatchTourProductBody = PatchTourDateFields & {
+  user_id: string;
+  name?: string;
+  description?: string;
+  address?: string;
+  departure_point?: string;
+  country?: string;
+  locale?: string;
+};
 
 export interface ITourProduct extends IProductBase<"tours"> {
   tour: {
@@ -96,3 +122,8 @@ export interface Destination {
 }
 
 export type IProduct = ITourProduct | IRentalProduct;
+
+export interface UpdateProductResponse {
+  product: IProduct;
+  tourDates?: ITourProductDates[];
+}

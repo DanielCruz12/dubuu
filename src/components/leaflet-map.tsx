@@ -191,6 +191,8 @@ export default function LeafletMapComponent({
     return () => {
       // No destruimos el mapa en cleanup para evitar problemas de re-inicialización
     };
+    // createLocationPopup se define debajo y depende de selectedPlace; el efecto ya reacciona a selectedLocation/capa.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- evita re-init del mapa al añadir createLocationPopup
   }, [selectedLocation, onLocationSelect, selectedLayer]);
 
   // Crear popup con información del lugar y fotos placeholder

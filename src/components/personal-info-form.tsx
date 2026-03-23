@@ -72,10 +72,7 @@ export default function PersonalInfoForm() {
   const [isUpdatingPhoto, setIsUpdatingPhoto] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const personalInfoSchema = useMemo(
-    () => getPersonalInfoSchema(t),
-    [t, language]
-  );
+  const personalInfoSchema = useMemo(() => getPersonalInfoSchema(t), [t]);
 
   const form = useForm<PersonalInfoValues>({
     resolver: zodResolver(personalInfoSchema),

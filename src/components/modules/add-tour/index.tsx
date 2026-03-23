@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, ArrowLeft, ShieldCheck, Loader2 } from "lucide-react";
 
@@ -37,21 +36,119 @@ import {
   type AddTourDraftStored,
 } from "./utils";
 
-// Importar la mutación de crear producto
-import { useCreateProductMutation } from "@/redux/slices/product/product-slice";
+import {
+  useCreateProductMutation,
+  useGetProductQuery,
+  useUpdateProductMutation,
+} from "@/redux/slices/product/product-slice";
 import { SignInButton, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/lib/i18n-context";
+import { isProductType } from "@/utils";
+import type { ITourProduct, TourDateStatus } from "@/types/product";
 
-export function TourForm() {
+export type TourDateMetaRow = {
+  id: string;
+  date: string;
+  price: number;
+  max_people: number;
+  status: TourDateStatus;
+};
+
+function mapTourProductToForm(p: ITourProduct): {
+  basicInfo: BasicInfoFormValues;
+  location: LocationFormValues;
+  details: DetailsFormValues;
+  categorization: CategorizationFormValues;
+  multimedia: MultimediaFormValues;
+  tourDatesMeta: TourDateMetaRow[];
+} {
+  const tourDates = p.tour?.tour_dates ?? [];
+  const dates = tourDates.map((td) => new Date(td.date));
+  const maxPeople = tourDates.length
+    ? Math.max(...tourDates.map((d) => d.max_people))
+    : 10;
+  const priceNums = tourDates
+    .map((d) => (typeof d.price === "number" ? d.price : Number.NaN))
+    .filter((n) => Number.isFinite(n));
+  const fallbackPrice =
+    priceNums.length > 0
+      ? Math.min(...priceNums)
+      : typeof p.price === "number"
+        ? p.price
+        : Number.parseFloat(String(p.price || 0));
+
+  return {
+    basicInfo: {
+      name: p.name,
+      description: p.description,
+      departure_point: p.tour?.departure_point ?? "",
+      address: p.address,
+      country: p.country,
+      region: undefined,
+      max_people: maxPeople,
+      duration: p.tour?.duration ?? 1,
+    },
+    location: {
+      lat: p.tour?.lat ?? 0,
+      lng: p.tour?.long ?? 0,
+      address: p.address,
+    },
+    details: {
+      highlight: p.tour?.highlight ?? "",
+      included: p.tour?.included ?? "",
+      itinerary: Array.isArray(p.tour?.itinerary) ? p.tour.itinerary : [],
+      available_dates: dates,
+      difficulty: (p.tour?.difficulty as DetailsFormValues["difficulty"]) ?? "medium",
+      expenses: p.tour?.expenses ?? [],
+      packing_list: p.tour?.packing_list ?? [],
+    },
+    categorization: {
+      product_type_id: p.product_type?.id ?? "",
+      product_category_id: p.product_category?.id ?? "",
+      target_product_audience_id: p.target_audience?.id ?? "",
+      amenities: (p.amenities ?? []).map((a) => a.id),
+    },
+    multimedia: {
+      price: Number.isFinite(fallbackPrice) ? fallbackPrice : 1,
+    },
+    tourDatesMeta: tourDates.map((td) => ({
+      id: td.id,
+      date: td.date,
+      price: typeof td.price === "number" ? td.price : fallbackPrice,
+      max_people: td.max_people,
+      status: (td.status ?? "active") as TourDateStatus,
+    })),
+  };
+}
+
+interface TourFormProps {
+  editProductId?: string;
+}
+
+export function TourForm({ editProductId }: TourFormProps) {
   const [step, setStep] = useState(1);
   const totalSteps = 5;
   const { user, isSignedIn } = useUser();
   const userId = user?.id || "";
   const router = useRouter();
 
-  // Hook de mutación para crear producto
   const [createProduct, { isLoading: isCreating }] = useCreateProductMutation();
+  const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
+
+  const {
+    data: existingProduct,
+    isLoading: isLoadingEditProduct,
+    isError: isEditProductError,
+  } = useGetProductQuery(editProductId as string, {
+    skip: !editProductId,
+  });
+
+  const [tourDatesMeta, setTourDatesMeta] = useState<TourDateMetaRow[] | null>(
+    null,
+  );
+  const [editHydrated, setEditHydrated] = useState(false);
+  const [editLoadError, setEditLoadError] = useState(false);
 
   // Estados para almacenar los datos del formulario
   const [basicInfo, setBasicInfo] = useState<BasicInfoFormValues | null>(null);
@@ -62,16 +159,42 @@ export function TourForm() {
   const [multimedia, setMultimedia] = useState<MultimediaFormValues | null>(
     null
   );
-  const [files, setFiles] = useState<TourFiles>({
-    bannerFile: null,
-    imageFiles: [],
-    videoFiles: [],
-    fileAttachments: [],
-  });
   const { t } = useLanguage();
 
-  // Restaurar borrador al montar (solo cliente)
   useEffect(() => {
+    setEditHydrated(false);
+    setEditLoadError(false);
+  }, [editProductId]);
+
+  useEffect(() => {
+    if (!editProductId || !existingProduct || editHydrated) return;
+    if (!isProductType(existingProduct, "tours")) {
+      toast.error(t("dashboard.addProduct.loadError"));
+      setEditLoadError(true);
+      setEditHydrated(true);
+      return;
+    }
+    const mapped = mapTourProductToForm(existingProduct);
+    setBasicInfo(mapped.basicInfo);
+    setLocation(mapped.location);
+    setDetails(mapped.details);
+    setCategorization(mapped.categorization);
+    setMultimedia(mapped.multimedia);
+    setTourDatesMeta(mapped.tourDatesMeta);
+    setStep(1);
+    setEditHydrated(true);
+  }, [editProductId, existingProduct, editHydrated, t]);
+
+  useEffect(() => {
+    if (!editProductId || !isEditProductError) return;
+    toast.error(t("dashboard.addProduct.loadError"));
+    setEditLoadError(true);
+    setEditHydrated(true);
+  }, [editProductId, isEditProductError, t]);
+
+  // Restaurar borrador al montar (solo cliente; no en modo edición)
+  useEffect(() => {
+    if (editProductId) return;
     const draft = getAddTourDraftForForm();
     if (!draft) return;
     setStep(draft.step);
@@ -80,10 +203,11 @@ export function TourForm() {
     setDetails(draft.details);
     setCategorization(draft.categorization);
     setMultimedia(draft.multimedia);
-  }, []);
+  }, [editProductId]);
 
   // Persistir borrador cuando hay progreso (los archivos no se guardan)
   useEffect(() => {
+    if (editProductId) return;
     const hasProgress = step > 1 || basicInfo != null;
     if (!hasProgress) return;
 
@@ -103,10 +227,13 @@ export function TourForm() {
       multimedia,
     };
     setAddTourDraft(stored);
-  }, [step, basicInfo, location, details, categorization, multimedia]);
+  }, [step, basicInfo, location, details, categorization, multimedia, editProductId]);
 
   // Función para crear FormData
-  const createFormData = (formData: TourData): FormData => {
+  const createFormData = (
+    formData: TourData,
+    opts?: { tourDatesMeta?: TourDateMetaRow[] | null },
+  ): FormData => {
     const data = new FormData();
 
     // Datos básicos
@@ -131,13 +258,33 @@ export function TourForm() {
     data.append("included", formData.details.included);
     data.append("difficulty", formData.details.difficulty);
 
-    // Arrays como JSON strings
-    data.append(
-      "available_dates",
-      JSON.stringify(
-        formData.details.available_dates.map((date) => date.toISOString())
-      )
-    );
+    // Arrays como JSON strings (creación: ISO strings; edición: filas con id/precio/cupo/estado)
+    if (opts?.tourDatesMeta && opts.tourDatesMeta.length > 0) {
+      const sortedDetails = [...formData.details.available_dates].sort(
+        (a, b) => a.getTime() - b.getTime(),
+      );
+      const sortedMeta = [...opts.tourDatesMeta].sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+      );
+      const rows = sortedMeta.map((meta, i) => {
+        const d = sortedDetails[i];
+        return {
+          id: meta.id,
+          date: (d ?? new Date(meta.date)).toISOString(),
+          price: meta.price,
+          max_people: meta.max_people,
+          status: meta.status,
+        };
+      });
+      data.append("available_dates", JSON.stringify(rows));
+    } else {
+      data.append(
+        "available_dates",
+        JSON.stringify(
+          formData.details.available_dates.map((date) => date.toISOString()),
+        ),
+      );
+    }
     data.append("itinerary", JSON.stringify(formData.details.itinerary));
     data.append("expenses", JSON.stringify(formData.details.expenses || []));
     data.append(
@@ -168,15 +315,15 @@ export function TourForm() {
       data.append("banner", formData.files.bannerFile);
     }
 
-    formData.files.imageFiles.forEach((file, index) => {
+    formData.files.imageFiles.forEach((file) => {
       data.append(`images`, file);
     });
 
-    formData.files.videoFiles.forEach((file, index) => {
+    formData.files.videoFiles.forEach((file) => {
       data.append(`videos`, file);
     });
 
-    formData.files.fileAttachments.forEach((file, index) => {
+    formData.files.fileAttachments.forEach((file) => {
       data.append(`files`, file);
     });
 
@@ -196,6 +343,31 @@ export function TourForm() {
 
   const handleDetailsSubmit = (data: DetailsFormValues) => {
     setDetails(data);
+    if (tourDatesMeta && tourDatesMeta.length > 0) {
+      const sortedDetails = [...data.available_dates].sort(
+        (a, b) => a.getTime() - b.getTime(),
+      );
+      const sortedMeta = [...tourDatesMeta].sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+      );
+      const next: TourDateMetaRow[] = sortedDetails.map((d, i) => {
+        const m = sortedMeta[i];
+        if (m) {
+          return {
+            ...m,
+            date: d.toISOString(),
+          };
+        }
+        return {
+          id: "",
+          date: d.toISOString(),
+          price: multimedia?.price ?? 0,
+          max_people: basicInfo?.max_people ?? 10,
+          status: "active",
+        };
+      });
+      setTourDatesMeta(next);
+    }
     setStep(4);
   };
 
@@ -209,7 +381,6 @@ export function TourForm() {
     uploadedFiles: TourFiles
   ) => {
     setMultimedia(data);
-    setFiles(uploadedFiles);
 
     // Combinar todos los datos del formulario
     const formData: TourData = {
@@ -222,23 +393,39 @@ export function TourForm() {
     };
 
     try {
-      // Crear FormData para enviar al API
-      const apiFormData = createFormData(formData);
-
-      await createProduct(apiFormData).unwrap();
-
-      clearAddTourDraft();
-
-      toast.success(t("dashboard.addTour.toast.success"), {
-        description: t("dashboard.addTour.toast.successDescription"),
+      const apiFormData = createFormData(formData, {
+        tourDatesMeta: tourDatesMeta ?? undefined,
       });
+
+      if (editProductId) {
+        await updateProduct({
+          id: editProductId,
+          data: apiFormData,
+        }).unwrap();
+        toast.success(t("dashboard.addTour.toast.updateSuccess"), {
+          description: t("dashboard.addTour.toast.updateSuccessDescription"),
+        });
+      } else {
+        await createProduct(apiFormData).unwrap();
+        clearAddTourDraft();
+        toast.success(t("dashboard.addTour.toast.success"), {
+          description: t("dashboard.addTour.toast.successDescription"),
+        });
+      }
       router.push("/dashboard/products");
     } catch (error) {
-      console.error("Error al crear el tour:", error);
+      console.error("Error al guardar el tour:", error);
 
-      toast.error(t("dashboard.addTour.toast.error"), {
-        description: t("dashboard.addTour.toast.errorDescription"),
-      });
+      toast.error(
+        editProductId
+          ? t("dashboard.addTour.toast.updateError")
+          : t("dashboard.addTour.toast.error"),
+        {
+          description: editProductId
+            ? t("dashboard.addTour.toast.updateErrorDescription")
+            : t("dashboard.addTour.toast.errorDescription"),
+        },
+      );
     }
   };
 
@@ -257,6 +444,47 @@ export function TourForm() {
       );
     }
   };
+
+  const existingTour = useMemo(() => {
+    if (!editProductId || !existingProduct || !isProductType(existingProduct, "tours")) {
+      return null;
+    }
+    return existingProduct;
+  }, [editProductId, existingProduct]);
+
+  const isSaving = isCreating || isUpdating;
+
+  if (editProductId && editLoadError) {
+    return (
+      <div className="text-center text-destructive py-16 text-sm">
+        {t("dashboard.addProduct.loadError")}
+      </div>
+    );
+  }
+
+  if (editProductId && !editHydrated) {
+    if (isLoadingEditProduct) {
+      return (
+        <div className="flex flex-col items-center justify-center gap-3 py-20 text-muted-foreground">
+          <Loader2 className="h-8 w-8 animate-spin" />
+          <p className="text-sm">{t("dashboard.addProduct.loadingEdit")}</p>
+        </div>
+      );
+    }
+    if (isEditProductError || !existingProduct) {
+      return (
+        <div className="text-center text-destructive py-16 text-sm">
+          {t("dashboard.addProduct.loadError")}
+        </div>
+      );
+    }
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 py-20 text-muted-foreground">
+        <Loader2 className="h-8 w-8 animate-spin" />
+        <p className="text-sm">{t("dashboard.addProduct.loadingEdit")}</p>
+      </div>
+    );
+  }
 
   if (!isSignedIn) {
     return (
@@ -353,6 +581,7 @@ export function TourForm() {
                 transition={{ duration: 0.2 }}
               >
                 <BasicInfoStep
+                  key={editProductId ? `b-${editHydrated}` : "b-new"}
                   onSubmit={handleBasicInfoSubmit}
                   defaultValues={basicInfo || undefined}
                 />
@@ -368,6 +597,7 @@ export function TourForm() {
                 transition={{ duration: 0.2 }}
               >
                 <LocationStep
+                  key={editProductId ? `l-${editHydrated}` : "l-new"}
                   onSubmit={handleLocationSubmit}
                   defaultValues={location || undefined}
                 />
@@ -383,6 +613,7 @@ export function TourForm() {
                 transition={{ duration: 0.2 }}
               >
                 <DetailsStep
+                  key={editProductId ? `d-${editHydrated}` : "d-new"}
                   onSubmit={handleDetailsSubmit}
                   defaultValues={details || undefined}
                 />
@@ -398,6 +629,7 @@ export function TourForm() {
                 transition={{ duration: 0.2 }}
               >
                 <CategorizationStep
+                  key={editProductId ? `c-${editHydrated}` : "c-new"}
                   onSubmit={handleCategorizationSubmit}
                   defaultValues={categorization || undefined}
                 />
@@ -413,8 +645,18 @@ export function TourForm() {
                 transition={{ duration: 0.2 }}
               >
                 <MultimediaStep
+                  key={editProductId ? `m-${editHydrated}` : "m-new"}
                   onSubmit={handleMultimediaSubmit}
                   defaultValues={multimedia || undefined}
+                  isEditMode={Boolean(editProductId && editHydrated)}
+                  existingMedia={
+                    existingTour
+                      ? {
+                          bannerUrl: existingTour.banner,
+                          imageUrls: existingTour.images,
+                        }
+                      : undefined
+                  }
                 />
               </motion.div>
             )}
@@ -429,7 +671,7 @@ export function TourForm() {
                 variant="outline"
                 onClick={handleBack}
                 className="border-gray-200 dark:border-gray-800 hover:bg-transparent hover:text-black dark:hover:text-white"
-                disabled={isCreating}
+                disabled={isSaving}
               >
                 <ArrowLeft className="mr-1 sm:mr-2 h-4 w-4" />
                 <span className="sm:inline">
@@ -444,7 +686,7 @@ export function TourForm() {
               <Button
                 className="bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
                 onClick={handleContinue}
-                disabled={isCreating}
+                disabled={isSaving}
               >
                 <span className="flex items-center">
                   <span className="sm:inline">
@@ -457,13 +699,17 @@ export function TourForm() {
               <Button
                 className="bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
                 onClick={handleContinue}
-                disabled={isCreating}
+                disabled={isSaving}
               >
-                {isCreating ? (
+                {isSaving ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {t("dashboard.addTour.buttons.creating")}
+                    {editProductId
+                      ? t("dashboard.addTour.buttons.saving")
+                      : t("dashboard.addTour.buttons.creating")}
                   </>
+                ) : editProductId ? (
+                  t("dashboard.addTour.buttons.save")
                 ) : (
                   t("dashboard.addTour.buttons.create")
                 )}

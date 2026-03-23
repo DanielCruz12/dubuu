@@ -124,25 +124,36 @@ const MAX_IMAGE_MB = 5;
 const MAX_VIDEO_MB = 50;
 const MAX_PDF_MB = 10;
 
+export type ValidateFilesOptions = {
+  /** Si ya hay banner en el producto (edición), no exige subir uno nuevo. */
+  existingBannerUrl?: string;
+  /** Imágenes ya guardadas en el producto (edición). */
+  existingImageCount?: number;
+};
+
 /** Validates tour files and returns translated error messages. */
 export function validateFiles(
   t: TFunction,
   bannerFile: File | null,
   imageFiles: File[],
   videoFiles: File[],
-  fileAttachments: File[]
+  fileAttachments: File[],
+  options?: ValidateFilesOptions
 ): string[] {
   const errors: string[] = [];
 
-  if (!bannerFile) {
+  const hasBanner = Boolean(bannerFile || options?.existingBannerUrl);
+  if (!hasBanner) {
     errors.push(t("dashboard.addTour.multimedia.validation.bannerRequired"));
   }
 
-  if (imageFiles.length < 5) {
+  const existingImageCount = options?.existingImageCount ?? 0;
+  const totalImages = imageFiles.length + existingImageCount;
+  if (totalImages < 5) {
     errors.push(t("dashboard.addTour.multimedia.validation.imagesMin"));
   }
 
-  if (imageFiles.length > 10) {
+  if (totalImages > 10) {
     errors.push(t("dashboard.addTour.multimedia.validation.imagesMax"));
   }
 

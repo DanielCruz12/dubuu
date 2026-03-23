@@ -65,7 +65,11 @@
     "payments": "Pagos"
   },
   "addProduct": {
-    "title": "Agregar producto"
+    "title": "Agregar producto",
+    "editTitle": "Editar producto",
+    "editDescription": "Se cargaron los datos del tour. Actualiza lo que necesites y guarda al final del asistente.",
+    "loadError": "No se pudo cargar el producto para editar.",
+    "loadingEdit": "Cargando datos del tour…"
   },
   "saved": {
     "heading": "Guardados",
@@ -153,7 +157,12 @@
       "visible": "Visible",
       "hidden": "Oculto",
       "approved": "Aprobado",
-      "pending": "Pendiente"
+      "pending": "Pendiente",
+      "dateStatus": {
+        "active": "Activa",
+        "cancelled": "Cancelada",
+        "completed": "Completada"
+      }
     },
     "actions": {
       "menuLabel": "Acciones",
@@ -172,19 +181,47 @@
     "editModal": {
       "title": "Editar",
       "description": "Actualiza los detalles de \"{{name}}\"",
-      "dateLabel": "Fecha",
+      "quickEditHint": "Ajustes rápidos por fecha (precio, cupos y estado). Para textos largos, imágenes e itinerario usa «Editar más».",
+      "datesTableLabel": "Fechas del tour",
+      "colDate": "Fecha",
+      "colPrice": "Precio",
+      "colMax": "Cupo",
+      "colBooked": "Reservados",
+      "colStatus": "Estado",
+      "dateLabel": "Fecha a editar",
       "datePlaceholder": "Seleccionar fecha",
-      "dateHelp": "Selecciona la fecha para editar sus detalles",
+      "dateHelp": "Elige la fecha cuyo precio, cupo y estado quieres cambiar",
       "departurePointLabel": "Punto de salida",
       "departurePointPlaceholder": "Ej. Hotel Barceló, San Salvador",
+      "scopeLabel": "Ámbito del cambio",
+      "scopeSingle": "Aplicar solo a esta fecha",
+      "scopeAll": "Aplicar a todas las fechas",
+      "scopeHelp": "Misma regla que el API: no combines «solo esta fecha» con «todas» en una sola petición.",
       "priceLabel": "Precio",
       "pricePlaceholder": "0.00",
-      "priceHelp": "Precio por persona",
+      "priceHelp": "Precio por persona (fecha o todas según el ámbito)",
       "maxPeopleLabel": "Máximo de personas",
       "maxPeoplePlaceholder": "10",
-      "maxPeopleHelp": "Para la fecha seleccionada",
-      "isActiveLabel": "Activo",
-      "isActiveHelp": "Este tour estará visible y disponible para reservas",
+      "maxPeopleHelp": "No puede ser menor que las plazas ya reservadas",
+      "dateStatusLabel": "Estado de la fecha",
+      "statusActive": "Activa",
+      "statusCancelled": "Cancelada",
+      "statusCompleted": "Completada",
+      "editMore": "Editar más",
+      "editMoreHint": "Edición completa: multimedia, textos largos, categorías e itinerario en el flujo tipo «crear producto».",
+      "saveSuccess": "Tour actualizado correctamente",
+      "errorGeneric": "No se pudo guardar los cambios. Revisa los datos e inténtalo de nuevo.",
+      "error403": "No tienes permiso para editar este producto.",
+      "errorNoUser": "Inicia sesión para guardar cambios.",
+      "validation": {
+        "departureMin": "El punto de salida debe tener al menos 3 caracteres",
+        "departureMax": "El punto de salida no puede exceder 100 caracteres",
+        "priceMin": "El precio debe ser mayor a 0",
+        "priceMax": "El precio no puede exceder 10.000",
+        "maxPeopleMin": "Debe haber al menos 1 persona",
+        "maxPeopleMax": "No puede exceder 1000 personas",
+        "maxPeopleBelowBooked": "El cupo no puede ser menor que las plazas ya reservadas"
+      },
       "cancel": "Cancelar",
       "saving": "Guardando...",
       "save": "Guardar cambios"
@@ -488,7 +525,9 @@
       "back": "Atrás",
       "continue": "Continuar",
       "creating": "Creando tour...",
-      "create": "Crear tour"
+      "create": "Crear tour",
+      "save": "Guardar cambios",
+      "saving": "Guardando..."
     },
     "auth": {
       "title": "Necesitas iniciar sesión para crear el producto",
@@ -502,7 +541,11 @@
       "success": "¡Tour creado con éxito!",
       "successDescription": "El tour ha sido registrado correctamente en el sistema.",
       "error": "Error al crear el tour",
-      "errorDescription": "Hubo un problema al guardar el tour. Por favor, inténtalo de nuevo."
+      "errorDescription": "Hubo un problema al guardar el tour. Por favor, inténtalo de nuevo.",
+      "updateSuccess": "Tour actualizado",
+      "updateSuccessDescription": "Los cambios se guardaron correctamente.",
+      "updateError": "Error al actualizar el tour",
+      "updateErrorDescription": "No se pudieron guardar los cambios. Revisa los datos e inténtalo de nuevo."
     }
   }
 }

@@ -191,7 +191,13 @@ export function ProductsDataTable() {
         AvailableSpots: selectedDate
           ? selectedDate.max_people - selectedDate.people_booked
           : "",
-        Status: tour.is_active ? "Active" : "Inactive",
+        Status: (() => {
+          const sel = tour.tour?.tour_dates?.find(
+            (d) => d.id === tour.selectedDateId
+          );
+          if (sel?.status) return sel.status;
+          return tour.is_active ? "Active" : "Inactive";
+        })(),
       };
     });
 

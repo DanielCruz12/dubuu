@@ -1,5 +1,5 @@
 "use client";
-import type { IProduct } from "@/types/product";
+import type { IProduct, PatchTourProductBody, UpdateProductResponse } from "@/types/product";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { urlWithLocale } from "@/redux/url-with-locale";
 
@@ -181,13 +181,10 @@ export const productsApiSlice = createApi({
       }),
 
       updateProduct: builder.mutation<
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        { product: IProduct; tourDate?: any },
+        UpdateProductResponse,
         {
           id: string;
-          data: Partial<
-            IProduct & { selectedDateId?: string; max_people?: number }
-          >;
+          data: PatchTourProductBody | FormData | Record<string, unknown>;
         }
       >({
         query: ({ id, data }) => ({
@@ -195,10 +192,11 @@ export const productsApiSlice = createApi({
           method: "PATCH",
           body: data,
         }),
-        invalidatesTags: [
+        invalidatesTags: (_result, _error, { id }) => [
           { type: "Reviews", id: "LIST" } as const,
           { type: "Products", id: "LIST" } as const,
           { type: "Products", id: "USER_PRODUCTS" } as const,
+          { type: "Products", id } as const,
         ],
       }),
 

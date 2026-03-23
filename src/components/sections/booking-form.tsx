@@ -83,7 +83,11 @@ export default function BookingForm({
 
   const availableDates = isTour
     ? (product.tour?.tour_dates ?? [])
-        .filter((dateObj) => moment(dateObj.date).isAfter(moment()))
+        .filter(
+          (dateObj) =>
+            moment(dateObj.date).isAfter(moment()) &&
+            (dateObj.status === undefined || dateObj.status === "active"),
+        )
         .map((dateObj) => ({
           value: dateObj.id,
           label: moment(dateObj.date).format("dddd, D [de] MMMM - h:mm A"),

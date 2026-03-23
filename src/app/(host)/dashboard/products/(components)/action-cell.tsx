@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { MoreHorizontal, Trash2 } from "lucide-react";
+import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -20,11 +21,34 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { EditProductModal } from "./edit-product-modal";
+import { EditProductModal, type EditTourModalPatch } from "./edit-product-modal";
 import type { ITourProduct } from "@/types/product";
 import { toast } from "sonner";
 import { useUpdateProductMutation, useDeleteProductMutation } from "@/redux/slices/product/product-slice";
 import { useLanguage } from "@/lib/i18n-context";
+import { useUser } from "@clerk/nextjs";
+
+function isFetchBaseQueryError(e: unknown): e is FetchBaseQueryError {
+  return typeof e === "object" && e !== null && "status" in e;
+}
+
+function patchErrorMessage(error: unknown, t: (key: string) => string): string {
+  if (isFetchBaseQueryError(error)) {
+    if (error.status === 403) {
+      return t("dashboard.products.editModal.error403");
+    }
+    const raw = error.data;
+    if (typeof raw === "string") return raw;
+    if (raw && typeof raw === "object") {
+      const d = raw as { message?: string | string[]; error?: string };
+      if (d.message) {
+        return Array.isArray(d.message) ? d.message.join(", ") : d.message;
+      }
+      if (d.error) return d.error;
+    }
+  }
+  return t("dashboard.products.editModal.errorGeneric");
+}
 
 interface ActionCellProps {
   tour: ITourProduct & { selectedDateId?: string };
@@ -35,6 +59,7 @@ interface ActionCellProps {
 
 export function ActionCell({ tour, selectedDateId, onDeleted }: ActionCellProps) {
   const { t } = useLanguage();
+  const { user } = useUser();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -44,20 +69,24 @@ export function ActionCell({ tour, selectedDateId, onDeleted }: ActionCellProps)
   // Usar el selectedDateId del tour si no se proporciona explícitamente
   const dateId = selectedDateId || tour.selectedDateId;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleSaveTour = async (updateData: any) => {
+  const handleSaveTour = async (patch: EditTourModalPatch) => {
+    const userId = user?.id;
+    if (!userId) {
+      toast.error(t("dashboard.products.editModal.errorNoUser"));
+      return;
+    }
     try {
       await updateProduct({
         id: tour.id,
-        data: updateData,
+        data: { ...patch, user_id: userId },
       }).unwrap();
 
-      toast.success("Tour actualizado correctamente");
+      toast.success(t("dashboard.products.editModal.saveSuccess"));
 
       setShowEditModal(false);
     } catch (error) {
       console.error("Error al actualizar:", error);
-      toast.error("Error al actualizar el tour");
+      toast.error(patchErrorMessage(error, t));
     }
   };
 

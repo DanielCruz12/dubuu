@@ -144,10 +144,17 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
     defaultValues?.itinerary || []
   );
   const [newItineraryItem, setNewItineraryItem] = useState("");
-  const [datesWithTimes, setDatesWithTimes] = useState<DateWithTime[]>(
-    defaultValues?.available_dates?.map((date) => ({ date, time: "09:00" })) ||
-      []
-  );
+  const [datesWithTimes, setDatesWithTimes] = useState<DateWithTime[]>(() => {
+    const dates = defaultValues?.available_dates;
+    if (!dates?.length) return [];
+    return dates.map((date) => {
+      const timeString = `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
+      return {
+        date: new Date(date.getFullYear(), date.getMonth(), date.getDate()),
+        time: timeString,
+      };
+    });
+  });
   const [expenseItems, setExpenseItems] = useState<string[]>(
     defaultValues?.expenses || []
   );
