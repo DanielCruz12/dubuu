@@ -57,8 +57,18 @@ export function getToursColumns(
       );
     },
     cell: ({ row }) => {
+      const tour = row.original;
+      const selectedDate = tour.tour?.tour_dates?.find(
+        (date) => date.id === tour.selectedDateId
+      );
+      const datePrice =
+        typeof selectedDate?.price === "number"
+          ? selectedDate.price
+          : Number.parseFloat(String(selectedDate?.price ?? ""));
       const raw = row.getValue("price");
-      const price = typeof raw === "number" ? raw : Number.parseFloat(String(raw ?? 0));
+      const basePrice =
+        typeof raw === "number" ? raw : Number.parseFloat(String(raw ?? 0));
+      const price = Number.isFinite(datePrice) ? datePrice : basePrice;
       const formatted = new Intl.NumberFormat("es-SV", {
         style: "currency",
         currency: "USD",

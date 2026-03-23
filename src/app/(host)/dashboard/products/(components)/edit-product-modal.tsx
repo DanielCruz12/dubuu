@@ -31,16 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
 import type {
@@ -249,9 +240,6 @@ export function EditProductModal({
                 tour.name,
               )}
             </DialogDescription>
-            <p className="text-xs text-muted-foreground text-center px-2 pb-2">
-              {t("dashboard.products.editModal.quickEditHint")}
-            </p>
           </DialogHeader>
 
           <div className="gap-3 py-3 mx-auto max-w-3xl pb-6">
@@ -260,68 +248,6 @@ export function EditProductModal({
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-6"
               >
-                {tourDates.length > 0 && (
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium">
-                      {t("dashboard.products.editModal.datesTableLabel")}
-                    </Label>
-                    <ScrollArea className="h-[min(220px,40vh)] rounded-md border">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>
-                              {t("dashboard.products.editModal.colDate")}
-                            </TableHead>
-                            <TableHead className="text-right">
-                              {t("dashboard.products.editModal.colPrice")}
-                            </TableHead>
-                            <TableHead className="text-right">
-                              {t("dashboard.products.editModal.colMax")}
-                            </TableHead>
-                            <TableHead className="text-right">
-                              {t("dashboard.products.editModal.colBooked")}
-                            </TableHead>
-                            <TableHead>
-                              {t("dashboard.products.editModal.colStatus")}
-                            </TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {tourDates.map((row) => (
-                            <TableRow
-                              key={row.id}
-                              className={
-                                row.id === localSelectedDateId
-                                  ? "bg-muted/50"
-                                  : undefined
-                              }
-                            >
-                              <TableCell className="font-medium whitespace-nowrap">
-                                {format(
-                                  new Date(row.date),
-                                  "dd/MM/yyyy HH:mm",
-                                )}
-                              </TableCell>
-                              <TableCell className="text-right">
-                                {datePrice(row, fallbackPrice).toFixed(2)}
-                              </TableCell>
-                              <TableCell className="text-right">
-                                {row.max_people}
-                              </TableCell>
-                              <TableCell className="text-right">
-                                {row.people_booked}
-                              </TableCell>
-                              <TableCell className="capitalize text-sm">
-                                {row.status ?? "active"}
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </ScrollArea>
-                  </div>
-                )}
-
                 <div className="grid md:grid-cols-2 gap-4">
                   {tourDates.length > 0 && (
                     <FormField
@@ -359,9 +285,6 @@ export function EditProductModal({
                               ))}
                             </SelectContent>
                           </Select>
-                          <FormDescription>
-                            {t("dashboard.products.editModal.dateHelp")}
-                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -400,9 +323,6 @@ export function EditProductModal({
                       name="scope"
                       render={({ field }) => (
                         <FormItem className="space-y-3">
-                          <FormLabel>
-                            {t("dashboard.products.editModal.scopeLabel")}
-                          </FormLabel>
                           <FormControl>
                             <RadioGroup
                               onValueChange={field.onChange}
@@ -423,9 +343,6 @@ export function EditProductModal({
                               </div>
                             </RadioGroup>
                           </FormControl>
-                          <FormDescription>
-                            {t("dashboard.products.editModal.scopeHelp")}
-                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
