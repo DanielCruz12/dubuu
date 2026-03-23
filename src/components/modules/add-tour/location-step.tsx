@@ -17,16 +17,30 @@ interface LocationStepProps {
   defaultValues?: Partial<LocationFormValues>;
 }
 
+function toFiniteNumber(value: unknown, fallback = 0): number {
+  const parsed =
+    typeof value === "number"
+      ? value
+      : Number.parseFloat(String(value ?? ""));
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
 export function LocationStep({ onSubmit, defaultValues }: LocationStepProps) {
   const { t } = useLanguage();
   const locationSchema = useMemo(() => getLocationSchema(t), [t]);
+  const initialLat = toFiniteNumber(defaultValues?.lat, 0);
+  const initialLng = toFiniteNumber(defaultValues?.lng, 0);
+  const hasValidInitialLocation =
+    Number.isFinite(initialLat) &&
+    Number.isFinite(initialLng) &&
+    Boolean(defaultValues?.address);
 
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(
-    defaultValues?.lat && defaultValues?.lng && defaultValues?.address
+    hasValidInitialLocation
       ? {
-          lat: defaultValues.lat,
-          lng: defaultValues.lng,
-          address: defaultValues.address,
+          lat: initialLat,
+          lng: initialLng,
+          address: defaultValues?.address ?? "",
         }
       : null,
   );
@@ -34,8 +48,8 @@ export function LocationStep({ onSubmit, defaultValues }: LocationStepProps) {
   const form = useForm<LocationFormValues>({
     resolver: zodResolver(locationSchema),
     defaultValues: {
-      lat: defaultValues?.lat || 0,
-      lng: defaultValues?.lng || 0,
+      lat: initialLat,
+      lng: initialLng,
       address: defaultValues?.address || "",
     },
   });

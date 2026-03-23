@@ -36,6 +36,37 @@ interface GoogleMapPickerProps {
   apiKey: string;
 }
 
+function createCustomMarkerContent(): HTMLDivElement {
+  const isDark = document.documentElement.classList.contains("dark");
+
+  const wrapper = document.createElement("div");
+  wrapper.style.width = "42px";
+  wrapper.style.height = "42px";
+  wrapper.style.display = "flex";
+  wrapper.style.alignItems = "center";
+  wrapper.style.justifyContent = "center";
+  wrapper.style.borderRadius = "9999px";
+  wrapper.style.background = isDark
+    ? "rgba(15, 15, 15, 0.92)"
+    : "rgba(255, 255, 255, 0.95)";
+  wrapper.style.border = isDark
+    ? "1px solid rgba(255, 255, 255, 0.22)"
+    : "1px solid rgba(0, 0, 0, 0.14)";
+  wrapper.style.boxShadow = isDark
+    ? "0 8px 20px rgba(0, 0, 0, 0.45)"
+    : "0 8px 20px rgba(0, 0, 0, 0.22)";
+
+  const img = document.createElement("img");
+  img.src = "/icon.png";
+  img.alt = "Dubuu marker";
+  img.style.width = "26px";
+  img.style.height = "26px";
+  img.style.objectFit = "contain";
+
+  wrapper.appendChild(img);
+  return wrapper;
+}
+
 export function GoogleMapPicker({
   onLocationSelect,
   selectedLocation,
@@ -44,7 +75,7 @@ export function GoogleMapPicker({
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const autocompleteContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
-  const markerRef = useRef<google.maps.Marker | null>(null);
+  const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
   const placeAutocompleteRef = useRef<google.maps.places.PlaceAutocompleteElement | null>(null);
   const { t } = useLanguage();
   const [isLoading, setIsLoading] = useState(true);
@@ -71,6 +102,9 @@ export function GoogleMapPicker({
         if (!mapContainerRef.current) return;
 
         await google.maps.importLibrary("places");
+        const { AdvancedMarkerElement } = (await google.maps.importLibrary(
+          "marker",
+        )) as google.maps.MarkerLibrary;
 
         const map = new google.maps.Map(mapContainerRef.current, {
           center: selectedLocation
@@ -88,15 +122,16 @@ export function GoogleMapPicker({
 
         const addMarker = (lat: number, lng: number) => {
           if (markerRef.current) {
-            (markerRef.current as google.maps.Marker).setMap(null);
+            markerRef.current.map = null;
             markerRef.current = null;
           }
-          const marker = new google.maps.Marker({
+          const marker = new AdvancedMarkerElement({
             map,
             position: { lat, lng },
             title: t("dashboard.addTour.location.meetingPointTitle"),
+            content: createCustomMarkerContent(),
           });
-          (markerRef as React.MutableRefObject<google.maps.Marker | null>).current = marker;
+          markerRef.current = marker;
         };
 
         const geocoder = new google.maps.Geocoder();
@@ -216,7 +251,7 @@ export function GoogleMapPicker({
         placeAutocompleteRef.current = null;
       }
       if (markerRef.current) {
-        (markerRef.current as google.maps.Marker).setMap(null);
+        markerRef.current.map = null;
       }
       mapRef.current = null;
       markerRef.current = null;
@@ -236,13 +271,14 @@ export function GoogleMapPicker({
     mapRef.current.setZoom(16);
 
     if (markerRef.current) {
-      markerRef.current.setMap(null);
+      markerRef.current.map = null;
       markerRef.current = null;
     }
-    markerRef.current = new g.Marker({
+    markerRef.current = new g.marker.AdvancedMarkerElement({
       map: mapRef.current,
       position: { lat, lng },
       title: t("dashboard.addTour.location.meetingPointTitle"),
+      content: createCustomMarkerContent(),
     });
   }, [selectedLocation, t]);
 

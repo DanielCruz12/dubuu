@@ -55,6 +55,14 @@ export type TourDateMetaRow = {
   status: TourDateStatus;
 };
 
+function toFiniteNumber(value: unknown, fallback = 0): number {
+  const parsed =
+    typeof value === "number"
+      ? value
+      : Number.parseFloat(String(value ?? ""));
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
 function mapTourProductToForm(p: ITourProduct): {
   basicInfo: BasicInfoFormValues;
   location: LocationFormValues;
@@ -77,6 +85,12 @@ function mapTourProductToForm(p: ITourProduct): {
       : typeof p.price === "number"
         ? p.price
         : Number.parseFloat(String(p.price || 0));
+  const lat = toFiniteNumber(p.tour?.lat, 0);
+  const lng = toFiniteNumber(
+    (p.tour as ITourProduct["tour"] & { lng?: unknown; long?: unknown })?.long ??
+      (p.tour as ITourProduct["tour"] & { lng?: unknown; long?: unknown })?.lng,
+    0,
+  );
 
   return {
     basicInfo: {
@@ -90,8 +104,8 @@ function mapTourProductToForm(p: ITourProduct): {
       duration: p.tour?.duration ?? 1,
     },
     location: {
-      lat: p.tour?.lat ?? 0,
-      lng: p.tour?.long ?? 0,
+      lat,
+      lng,
       address: p.address,
     },
     details: {
