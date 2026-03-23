@@ -17,7 +17,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -133,18 +132,6 @@ export function EditProductModal({
     () => buildTourEditSchema(tourDates, t),
     [tourDates, t],
   );
-
-  const getSelectedDate = (): ITourProductDates | null => {
-    if (tourDates.length === 0) return null;
-    if (localSelectedDateId) {
-      return (
-        tourDates.find((date) => date.id === localSelectedDateId) || tourDates[0]
-      );
-    }
-    return tourDates[0];
-  };
-
-  const selectedDate = getSelectedDate();
 
   const form = useForm<TourFormValues>({
     resolver: zodResolver(tourFormSchema),
@@ -290,197 +277,172 @@ export function EditProductModal({
                       )}
                     />
                   )}
-                  <FormField
-                    control={form.control}
-                    name="departure_point"
-                    render={({ field }) => (
-                      <FormItem
-                        className={tourDates.length === 0 ? "md:col-span-2" : ""}
-                      >
-                        <FormLabel>
-                          {t(
-                            "dashboard.products.editModal.departurePointLabel",
-                          )}
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder={t(
-                              "dashboard.products.editModal.departurePointPlaceholder",
-                            )}
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  {tourDates.length > 0 && (
+                    <FormField
+                      control={form.control}
+                      name="status"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <span>{t("dashboard.products.editModal.dateStatusLabel")}</span>
+                            <span
+                              className="inline-flex h-4 w-4 items-center justify-center rounded-full border text-[10px] leading-none text-muted-foreground cursor-help"
+                              title={t("dashboard.products.editModal.dateStatusHelp")}
+                              aria-label={t("dashboard.products.editModal.dateStatusHelp")}
+                            >
+                              ?
+                            </span>
+                          </FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="active">
+                                {t("dashboard.products.editModal.statusActive")}
+                              </SelectItem>
+                              <SelectItem value="cancelled">
+                                {t("dashboard.products.editModal.statusCancelled")}
+                              </SelectItem>
+                              <SelectItem value="completed">
+                                {t("dashboard.products.editModal.statusCompleted")}
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
                 </div>
 
                 {tourDates.length > 0 && (
-                  <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
-                      name="scope"
+                      name="price"
                       render={({ field }) => (
-                        <FormItem className="space-y-3">
+                        <FormItem>
+                          <FormLabel>
+                            {t("dashboard.products.editModal.priceLabel")}
+                          </FormLabel>
                           <FormControl>
-                            <RadioGroup
-                              onValueChange={field.onChange}
+                            <Input
+                              type="number"
+                              step="0.01"
+                              placeholder={t(
+                                "dashboard.products.editModal.pricePlaceholder",
+                              )}
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  Number.parseFloat(e.target.value),
+                                )
+                              }
                               value={field.value}
-                              className="flex flex-col gap-2"
-                            >
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="single" id="scope-single" />
-                                <Label htmlFor="scope-single" className="font-normal cursor-pointer">
-                                  {t("dashboard.products.editModal.scopeSingle")}
-                                </Label>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="all" id="scope-all" />
-                                <Label htmlFor="scope-all" className="font-normal cursor-pointer">
-                                  {t("dashboard.products.editModal.scopeAll")}
-                                </Label>
-                              </div>
-                            </RadioGroup>
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
 
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="price"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              {t("dashboard.products.editModal.priceLabel")}
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                step="0.01"
-                                placeholder={t(
-                                  "dashboard.products.editModal.pricePlaceholder",
-                                )}
-                                {...field}
-                                onChange={(e) =>
-                                  field.onChange(
-                                    Number.parseFloat(e.target.value),
-                                  )
-                                }
-                                value={field.value}
-                              />
-                            </FormControl>
-                            <FormDescription>
-                              {t("dashboard.products.editModal.priceHelp")}
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="max_people"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              {t("dashboard.products.editModal.maxPeopleLabel")}
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                placeholder="10"
-                                {...field}
-                                onChange={(e) =>
-                                  field.onChange(
-                                    Number.parseInt(e.target.value, 10),
-                                  )
-                                }
-                              />
-                            </FormControl>
-                            <FormDescription>
-                              {selectedDate
-                                ? t("dashboard.products.editModal.maxPeopleHelp")
-                                : ""}
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="status"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              {t("dashboard.products.editModal.dateStatusLabel")}
-                            </FormLabel>
-                            <Select
-                              onValueChange={field.onChange}
-                              value={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="active">
-                                  {t("dashboard.products.editModal.statusActive")}
-                                </SelectItem>
-                                <SelectItem value="cancelled">
-                                  {t("dashboard.products.editModal.statusCancelled")}
-                                </SelectItem>
-                                <SelectItem value="completed">
-                                  {t("dashboard.products.editModal.statusCompleted")}
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </>
+                    <FormField
+                      control={form.control}
+                      name="max_people"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            {t("dashboard.products.editModal.maxPeopleLabel")}
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="10"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  Number.parseInt(e.target.value, 10),
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 )}
 
-                <div className="rounded-md border border-dashed p-3 space-y-2">
-                  <p className="text-xs text-muted-foreground">
-                    {t("dashboard.products.editModal.editMoreHint")}
-                  </p>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="sm"
-                    asChild
-                  >
-                    <Link
-                      href={`/dashboard/products/add?edit=${encodeURIComponent(tour.id)}&locale=${encodeURIComponent(language)}`}
-                      onClick={() => onOpenChange(false)}
-                    >
-                      {t("dashboard.products.editModal.editMore")}
-                    </Link>
-                  </Button>
-                </div>
+                {tourDates.length > 0 && (
+                  <FormField
+                    control={form.control}
+                    name="scope"
+                    render={({ field }) => (
+                      <FormItem className="space-y-3">
+                        <FormControl>
+                          <RadioGroup
+                            onValueChange={field.onChange}
+                            value={field.value}
+                            className="flex flex-col gap-2"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="single" id="scope-single" />
+                              <Label htmlFor="scope-single" className="font-normal cursor-pointer">
+                                {t("dashboard.products.editModal.scopeSingle")}
+                              </Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="all" id="scope-all" />
+                              <Label htmlFor="scope-all" className="font-normal cursor-pointer">
+                                {t("dashboard.products.editModal.scopeAll")}
+                              </Label>
+                            </div>
+                          </RadioGroup>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
 
-                <DialogFooter className="gap-3 sm:justify-end flex-col sm:flex-row">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => onOpenChange(false)}
-                    disabled={isPending}
-                  >
-                    {t("dashboard.products.editModal.cancel")}
-                  </Button>
-                  <Button type="submit" disabled={isPending}>
-                    {isPending
-                      ? t("dashboard.products.editModal.saving")
-                      : t("dashboard.products.editModal.save")}
-                  </Button>
+                <DialogFooter className="sm:justify-between">
+                  <div className="w-full flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      asChild
+                    >
+                      <Link
+                        href={`/dashboard/products/add?edit=${encodeURIComponent(tour.id)}&locale=${encodeURIComponent(language)}`}
+                        onClick={() => onOpenChange(false)}
+                      >
+                        {t("dashboard.products.editModal.editMore")}
+                      </Link>
+                    </Button>
+
+                    <div className="flex gap-3 sm:justify-end">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => onOpenChange(false)}
+                        disabled={isPending}
+                      >
+                        {t("dashboard.products.editModal.cancel")}
+                      </Button>
+                      <Button type="submit" disabled={isPending}>
+                        {isPending
+                          ? t("dashboard.products.editModal.saving")
+                          : t("dashboard.products.editModal.save")}
+                      </Button>
+                    </div>
+                  </div>
                 </DialogFooter>
               </form>
             </Form>
@@ -517,6 +479,6 @@ function getDefaultValues(
     max_people: sel?.max_people ?? 1,
     status: (sel?.status ?? "active") as TourDateStatus,
     selected_date_id: id,
-    scope: "single" as const,
+    scope: "all" as const,
   };
 }
