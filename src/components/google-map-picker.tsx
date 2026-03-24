@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MutableRefObject } from "react";
 import { Loader } from "@googlemaps/js-api-loader";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +18,10 @@ type MapTypeId = "roadmap" | "satellite" | "hybrid" | "terrain";
 const DEFAULT_CENTER = { lat: 13.8447, lng: -89.6306 }; // El Salvador
 const GEOCODE_CACHE_MAX = 50;
 const MAP_CLICK_DEBOUNCE_MS = 400;
+
+/** Advanced markers requieren un Map ID en Google Cloud. Sin esto, usamos Marker clásico + icono canvas. */
+const GOOGLE_MAP_ID = process.env.NEXT_PUBLIC_GOOGLE_MAP_ID;
+const USE_ADVANCED_MARKERS = Boolean(GOOGLE_MAP_ID);
 
 function geocodeCacheKey(lat: number, lng: number): string {
   const r = 10000;
@@ -67,6 +71,70 @@ function createCustomMarkerContent(): HTMLDivElement {
   return wrapper;
 }
 
+/** Icono con círculo de fondo para Marker clásico (no requiere Map ID). */
+function createCircleMarkerIcon(
+  maps: typeof google.maps,
+): Promise<google.maps.Icon> {
+  return new Promise((resolve) => {
+    const size = 42;
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext("2d");
+    const isDark = document.documentElement.classList.contains("dark");
+
+    const fallbackIcon = (): google.maps.Icon => ({
+      url: "/icon.png",
+      scaledSize: new maps.Size(42, 42),
+      anchor: new maps.Point(21, 42),
+    });
+
+    if (!ctx) {
+      resolve(fallbackIcon());
+      return;
+    }
+
+    ctx.beginPath();
+    ctx.arc(size / 2, size / 2, 19, 0, 2 * Math.PI);
+    ctx.fillStyle = isDark ? "rgba(15, 15, 15, 0.92)" : "rgba(255, 255, 255, 0.95)";
+    ctx.fill();
+    ctx.strokeStyle = isDark ? "rgba(255, 255, 255, 0.22)" : "rgba(0, 0, 0, 0.14)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      const iw = 26;
+      ctx.drawImage(img, (size - iw) / 2, (size - iw) / 2, iw, iw);
+      resolve({
+        url: canvas.toDataURL("image/png"),
+        scaledSize: new maps.Size(size, size),
+        anchor: new maps.Point(size / 2, size / 2),
+      });
+    };
+    img.onerror = () => {
+      resolve(fallbackIcon());
+    };
+    img.src = "/icon.png";
+  });
+}
+
+function clearMarker(
+  markerRef: MutableRefObject<
+    google.maps.Marker | google.maps.marker.AdvancedMarkerElement | null
+  >,
+) {
+  const m = markerRef.current;
+  if (!m) return;
+  if ("setMap" in m && typeof m.setMap === "function") {
+    m.setMap(null);
+  } else {
+    (m as google.maps.marker.AdvancedMarkerElement).map = null;
+  }
+  markerRef.current = null;
+}
+
 export function GoogleMapPicker({
   onLocationSelect,
   selectedLocation,
@@ -75,7 +143,10 @@ export function GoogleMapPicker({
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const autocompleteContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
-  const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
+  const markerRef = useRef<
+    google.maps.Marker | google.maps.marker.AdvancedMarkerElement | null
+  >(null);
+  const classicMarkerIconPromiseRef = useRef<Promise<google.maps.Icon> | null>(null);
   const placeAutocompleteRef = useRef<google.maps.places.PlaceAutocompleteElement | null>(null);
   const { t } = useLanguage();
   const [isLoading, setIsLoading] = useState(true);
@@ -102,11 +173,17 @@ export function GoogleMapPicker({
         if (!mapContainerRef.current) return;
 
         await google.maps.importLibrary("places");
-        const { AdvancedMarkerElement } = (await google.maps.importLibrary(
-          "marker",
-        )) as google.maps.MarkerLibrary;
 
-        const map = new google.maps.Map(mapContainerRef.current, {
+        let AdvancedMarkerElement: typeof google.maps.marker.AdvancedMarkerElement | null =
+          null;
+        if (USE_ADVANCED_MARKERS) {
+          const markerLib = (await google.maps.importLibrary(
+            "marker",
+          )) as google.maps.MarkerLibrary;
+          AdvancedMarkerElement = markerLib.AdvancedMarkerElement;
+        }
+
+        const mapOptions: google.maps.MapOptions = {
           center: selectedLocation
             ? { lat: selectedLocation.lat, lng: selectedLocation.lng }
             : DEFAULT_CENTER,
@@ -115,23 +192,46 @@ export function GoogleMapPicker({
           mapTypeControl: false,
           fullscreenControl: true,
           streetViewControl: false,
-        });
+        };
+        if (USE_ADVANCED_MARKERS && GOOGLE_MAP_ID) {
+          mapOptions.mapId = GOOGLE_MAP_ID;
+        }
+
+        const map = new google.maps.Map(mapContainerRef.current, mapOptions);
 
         mapRef.current = map;
         map.setMapTypeId(mapType);
 
-        const addMarker = (lat: number, lng: number) => {
-          if (markerRef.current) {
-            markerRef.current.map = null;
-            markerRef.current = null;
+        const getClassicIcon = () => {
+          if (!classicMarkerIconPromiseRef.current) {
+            classicMarkerIconPromiseRef.current = createCircleMarkerIcon(google.maps);
           }
-          const marker = new AdvancedMarkerElement({
-            map,
-            position: { lat, lng },
-            title: t("dashboard.addTour.location.meetingPointTitle"),
-            content: createCustomMarkerContent(),
+          return classicMarkerIconPromiseRef.current;
+        };
+
+        const addMarker = (lat: number, lng: number) => {
+          clearMarker(markerRef);
+
+          if (USE_ADVANCED_MARKERS && AdvancedMarkerElement) {
+            const marker = new AdvancedMarkerElement({
+              map,
+              position: { lat, lng },
+              title: t("dashboard.addTour.location.meetingPointTitle"),
+              content: createCustomMarkerContent(),
+            });
+            markerRef.current = marker;
+            return;
+          }
+
+          void getClassicIcon().then((icon) => {
+            const marker = new google.maps.Marker({
+              map,
+              position: { lat, lng },
+              title: t("dashboard.addTour.location.meetingPointTitle"),
+              icon,
+            });
+            markerRef.current = marker;
           });
-          markerRef.current = marker;
         };
 
         const geocoder = new google.maps.Geocoder();
@@ -250,11 +350,8 @@ export function GoogleMapPicker({
         }
         placeAutocompleteRef.current = null;
       }
-      if (markerRef.current) {
-        markerRef.current.map = null;
-      }
+      clearMarker(markerRef);
       mapRef.current = null;
-      markerRef.current = null;
     };
     // selectedLocation solo para centro/zoom inicial; omitido en deps para no recrear mapa al seleccionar
     // eslint-disable-next-line react-hooks/exhaustive-deps -- initial mount only for map center
@@ -270,16 +367,33 @@ export function GoogleMapPicker({
     mapRef.current.setCenter({ lat, lng });
     mapRef.current.setZoom(16);
 
-    if (markerRef.current) {
-      markerRef.current.map = null;
-      markerRef.current = null;
+    clearMarker(markerRef);
+
+    if (USE_ADVANCED_MARKERS && GOOGLE_MAP_ID) {
+      void g.importLibrary("marker").then((markerLib) => {
+        const { AdvancedMarkerElement } = markerLib as google.maps.MarkerLibrary;
+        if (!mapRef.current) return;
+        markerRef.current = new AdvancedMarkerElement({
+          map: mapRef.current,
+          position: { lat, lng },
+          title: t("dashboard.addTour.location.meetingPointTitle"),
+          content: createCustomMarkerContent(),
+        });
+      });
+    } else {
+      if (!classicMarkerIconPromiseRef.current) {
+        classicMarkerIconPromiseRef.current = createCircleMarkerIcon(g);
+      }
+      void classicMarkerIconPromiseRef.current.then((icon) => {
+        if (!mapRef.current) return;
+        markerRef.current = new g.Marker({
+          map: mapRef.current,
+          position: { lat, lng },
+          title: t("dashboard.addTour.location.meetingPointTitle"),
+          icon,
+        });
+      });
     }
-    markerRef.current = new g.marker.AdvancedMarkerElement({
-      map: mapRef.current,
-      position: { lat, lng },
-      title: t("dashboard.addTour.location.meetingPointTitle"),
-      content: createCustomMarkerContent(),
-    });
   }, [selectedLocation, t]);
 
   const getCurrentLocation = () => {
