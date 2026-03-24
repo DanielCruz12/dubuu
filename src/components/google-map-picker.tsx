@@ -41,30 +41,25 @@ interface GoogleMapPickerProps {
 }
 
 function createCustomMarkerContent(): HTMLDivElement {
-  const isDark = document.documentElement.classList.contains("dark");
+  const size = 56;
+  const iconPx = 38;
 
   const wrapper = document.createElement("div");
-  wrapper.style.width = "42px";
-  wrapper.style.height = "42px";
+  wrapper.style.width = `${size}px`;
+  wrapper.style.height = `${size}px`;
   wrapper.style.display = "flex";
   wrapper.style.alignItems = "center";
   wrapper.style.justifyContent = "center";
   wrapper.style.borderRadius = "9999px";
-  wrapper.style.background = isDark
-    ? "rgba(15, 15, 15, 0.92)"
-    : "rgba(255, 255, 255, 0.95)";
-  wrapper.style.border = isDark
-    ? "1px solid rgba(255, 255, 255, 0.22)"
-    : "1px solid rgba(0, 0, 0, 0.14)";
-  wrapper.style.boxShadow = isDark
-    ? "0 8px 20px rgba(0, 0, 0, 0.45)"
-    : "0 8px 20px rgba(0, 0, 0, 0.22)";
+  wrapper.style.background = "#ffffff";
+  wrapper.style.border = "1px solid #e4e4e7";
+  wrapper.style.boxShadow = "0 4px 14px rgba(0, 0, 0, 0.12)";
 
   const img = document.createElement("img");
   img.src = "/icon.png";
   img.alt = "Dubuu marker";
-  img.style.width = "26px";
-  img.style.height = "26px";
+  img.style.width = `${iconPx}px`;
+  img.style.height = `${iconPx}px`;
   img.style.objectFit = "contain";
 
   wrapper.appendChild(img);
@@ -76,17 +71,17 @@ function createCircleMarkerIcon(
   maps: typeof google.maps,
 ): Promise<google.maps.Icon> {
   return new Promise((resolve) => {
-    const size = 42;
+    const size = 56;
+    const iconDraw = 38;
     const canvas = document.createElement("canvas");
     canvas.width = size;
     canvas.height = size;
     const ctx = canvas.getContext("2d");
-    const isDark = document.documentElement.classList.contains("dark");
 
     const fallbackIcon = (): google.maps.Icon => ({
       url: "/icon.png",
-      scaledSize: new maps.Size(42, 42),
-      anchor: new maps.Point(21, 42),
+      scaledSize: new maps.Size(size, size),
+      anchor: new maps.Point(size / 2, size / 2),
     });
 
     if (!ctx) {
@@ -94,18 +89,19 @@ function createCircleMarkerIcon(
       return;
     }
 
+    const r = size / 2 - 1;
     ctx.beginPath();
-    ctx.arc(size / 2, size / 2, 19, 0, 2 * Math.PI);
-    ctx.fillStyle = isDark ? "rgba(15, 15, 15, 0.92)" : "rgba(255, 255, 255, 0.95)";
+    ctx.arc(size / 2, size / 2, r, 0, 2 * Math.PI);
+    ctx.fillStyle = "#ffffff";
     ctx.fill();
-    ctx.strokeStyle = isDark ? "rgba(255, 255, 255, 0.22)" : "rgba(0, 0, 0, 0.14)";
+    ctx.strokeStyle = "#e4e4e7";
     ctx.lineWidth = 1;
     ctx.stroke();
 
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.onload = () => {
-      const iw = 26;
+      const iw = iconDraw;
       ctx.drawImage(img, (size - iw) / 2, (size - iw) / 2, iw, iw);
       resolve({
         url: canvas.toDataURL("image/png"),
@@ -133,6 +129,21 @@ function clearMarker(
     (m as google.maps.marker.AdvancedMarkerElement).map = null;
   }
   markerRef.current = null;
+}
+
+/**
+ * El Place Autocomplete de Google usa tema oscuro si la app está en dark mode,
+ * y el input queda casi negro. Forzamos esquema claro + grises tipo input (shadcn).
+ */
+function stylePlaceAutocompleteElement(el: HTMLElement) {
+  el.style.width = "100%";
+  el.style.display = "block";
+  el.style.setProperty("color-scheme", "light");
+  // Places UI Kit / Material tokens (https://developers.google.com/maps/documentation/javascript/places-ui-kit/custom-styling)
+  el.style.setProperty("--gmp-mat-color-surface", "#f4f4f5");
+  el.style.setProperty("--gmp-mat-color-on-surface", "#18181b");
+  el.style.setProperty("--gmp-mat-color-on-surface-variant", "#71717a");
+  el.style.setProperty("--gmp-mat-color-outline", "#d4d4d8");
 }
 
 export function GoogleMapPicker({
@@ -287,6 +298,7 @@ export function GoogleMapPicker({
           placeAutocomplete.id = "place-autocomplete-input";
           containerRef.innerHTML = "";
           containerRef.appendChild(placeAutocomplete);
+          stylePlaceAutocompleteElement(placeAutocomplete);
           placeAutocompleteRef.current = placeAutocomplete;
 
           const handlePlaceSelect = async (ev: Event) => {
@@ -456,7 +468,10 @@ export function GoogleMapPicker({
     <div className="relative h-full w-full">
       {/* Search bar arriba, botón Mi ubicación abajo */}
       <div className="absolute left-2 right-2 top-2 z-[1000] flex flex-col gap-2">
-        <div ref={autocompleteContainerRef} className="min-h-10 w-full [&_input]:rounded-md [&_input]:border [&_input]:bg-background/95 [&_input]:px-3 [&_input]:py-2 [&_input]:text-sm [&_input]:shadow-md [&_input]:backdrop-blur" />
+        <div
+          ref={autocompleteContainerRef}
+          className="min-h-10 w-full [&_gmp-place-autocomplete]:block [&_gmp-place-autocomplete]:w-full"
+        />
         <div className="flex w-[155px] flex-col gap-2 self-end">
           <Button
             type="button"
