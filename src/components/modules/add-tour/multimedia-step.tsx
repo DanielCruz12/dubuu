@@ -117,6 +117,8 @@ export function MultimediaStep({
     },
   });
 
+  const formRef = useRef<HTMLFormElement>(null);
+
   const totalGalleryCount = keptExistingImageUrls.length + imageFiles.length;
 
   useEffect(() => {
