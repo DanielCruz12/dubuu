@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { MoreHorizontal, Trash2 } from "lucide-react";
+import { Copy, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { Button } from "@/components/ui/button";
 import {
@@ -119,6 +119,7 @@ export function ActionCell({ tour, selectedDateId, onDeleted }: ActionCellProps)
               toast.success(t("dashboard.products.actions.copyIdSuccess"));
             }}
           >
+            <Copy className="mr-2 h-4 w-4 shrink-0" />
             {t("dashboard.products.actions.copyId")}
           </DropdownMenuItem>
           <DropdownMenuItem
@@ -128,6 +129,7 @@ export function ActionCell({ tour, selectedDateId, onDeleted }: ActionCellProps)
               queueMicrotask(() => setShowEditModal(true));
             }}
           >
+            <Pencil className="mr-2 h-4 w-4 shrink-0" />
             {t("dashboard.products.actions.edit")}
           </DropdownMenuItem>
           <DropdownMenuItem
@@ -138,7 +140,7 @@ export function ActionCell({ tour, selectedDateId, onDeleted }: ActionCellProps)
               queueMicrotask(() => setShowDeleteDialog(true));
             }}
           >
-            <Trash2 className="mr-2 h-4 w-4" />
+            <Trash2 className="mr-2 h-4 w-4 shrink-0" />
             {t("dashboard.products.actions.deleteProduct")}
           </DropdownMenuItem>
         </DropdownMenuContent>

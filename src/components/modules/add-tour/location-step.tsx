@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -8,7 +8,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 
 import { type LocationFormValues, getLocationSchema, type Location } from "./types";
-import { scrollToFirstError } from "./utils";
+import { focusFirstStepField, scrollToFirstError } from "./utils";
 import LocationPicker from "@/components/location-picker";
 import { useLanguage } from "@/lib/i18n-context";
 
@@ -27,6 +27,7 @@ function toFiniteNumber(value: unknown, fallback = 0): number {
 
 export function LocationStep({ onSubmit, defaultValues }: LocationStepProps) {
   const { t } = useLanguage();
+  const formRef = useRef<HTMLFormElement>(null);
   const locationSchema = useMemo(() => getLocationSchema(t), [t]);
   const initialLat = toFiniteNumber(defaultValues?.lat, 0);
   const initialLng = toFiniteNumber(defaultValues?.lng, 0);
@@ -71,9 +72,13 @@ export function LocationStep({ onSubmit, defaultValues }: LocationStepProps) {
     },
   );
 
+  useEffect(() => {
+    focusFirstStepField(formRef.current, { delayMs: 100 });
+  }, [defaultValues?.address, defaultValues?.lat, defaultValues?.lng]);
+
   return (
     <Form {...form}>
-      <form className="space-y-4" onSubmit={handleSubmit}>
+      <form ref={formRef} className="space-y-4" onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 gap-4">
           <FormField
             control={form.control}

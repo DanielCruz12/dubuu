@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import imageCompression from "browser-image-compression";
@@ -27,7 +27,7 @@ import {
   getMultimediaSchema,
   type TourFiles,
 } from "./types";
-import { scrollToFirstError, validateFiles } from "./utils";
+import { focusFirstStepField, scrollToFirstError, validateFiles } from "./utils";
 import Image from "next/image";
 import { getHostEarningsFromFinalPrice } from "@/lib/price";
 import { useLanguage } from "@/lib/i18n-context";
@@ -129,6 +129,10 @@ export function MultimediaStep({
     if (urls.length === 0) return;
     setKeptExistingImageUrls((prev) => (prev.length === 0 ? urls : prev));
   }, [existingMedia?.imageUrls]);
+
+  useEffect(() => {
+    focusFirstStepField(formRef.current, { delayMs: 100 });
+  }, [defaultValues?.price, isEditMode]);
 
   // Manejar la carga de archivos (banner e imágenes se comprimen a WebP, máx. 1MB)
   const handleBannerUpload = async (
@@ -359,7 +363,7 @@ export function MultimediaStep({
 
   return (
     <Form {...form}>
-      <form className="space-y-6" onSubmit={handleSubmit}>
+      <form ref={formRef} className="space-y-6" onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 gap-4">
           <div className="space-y-2">
             <Label htmlFor="banner">{t("dashboard.addTour.multimedia.bannerLabel")}</Label>

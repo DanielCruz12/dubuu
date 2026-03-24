@@ -169,7 +169,7 @@
       "copyId": "Copy ID",
       "copyIdSuccess": "ID copied to clipboard",
       "edit": "Edit",
-      "deleteProduct": "Delete product",
+      "deleteProduct": "Delete",
       "deleteConfirmTitle": "Delete product?",
       "deleteConfirmDescription": "This action cannot be undone. The product \"{{name}}\" and all its associated information will be deleted.",
       "cancel": "Cancel",

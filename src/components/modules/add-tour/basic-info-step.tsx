@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 
 import { type BasicInfoFormValues, getBasicInfoSchema } from "./types";
-import { scrollToFirstError } from "./utils";
+import { focusFirstStepField, scrollToFirstError } from "./utils";
 import { countries } from "@/utils/data";
 import { useLanguage } from "@/lib/i18n-context";
 
@@ -34,6 +34,7 @@ interface BasicInfoStepProps {
 
 export function BasicInfoStep({ onSubmit, defaultValues }: BasicInfoStepProps) {
   const { t } = useLanguage();
+  const formRef = useRef<HTMLFormElement>(null);
   const basicInfoSchema = useMemo(() => getBasicInfoSchema(t), [t]);
 
   const form = useForm<BasicInfoFormValues>({
@@ -49,6 +50,10 @@ export function BasicInfoStep({ onSubmit, defaultValues }: BasicInfoStepProps) {
     },
   });
 
+  useEffect(() => {
+    focusFirstStepField(formRef.current, { delayMs: 100 });
+  }, [defaultValues?.name, defaultValues?.description]);
+
   const handleSubmit = form.handleSubmit(
     (data) => {
       onSubmit(data);
@@ -60,7 +65,7 @@ export function BasicInfoStep({ onSubmit, defaultValues }: BasicInfoStepProps) {
 
   return (
     <Form {...form}>
-      <form className="space-y-4" onSubmit={handleSubmit}>
+      <form ref={formRef} className="space-y-4" onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}

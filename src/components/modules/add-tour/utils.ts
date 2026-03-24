@@ -103,6 +103,68 @@ export const calculatePrices = (basePrice: number) => {
   };
 };
 
+function isVisibleForFocus(el: HTMLElement): boolean {
+  if (el.hasAttribute("disabled")) return false;
+  if (el.closest(".hidden")) return false;
+  const style = window.getComputedStyle(el);
+  if (style.display === "none" || style.visibility === "hidden") return false;
+  const rect = el.getBoundingClientRect();
+  if (rect.width === 0 && rect.height === 0) return false;
+  return true;
+}
+
+/**
+ * Scrolls to and focuses the first visible field in a step form (text/number inputs,
+ * textarea, select, combobox trigger). Skips hidden file inputs. Retries Google Maps
+ * PlaceAutocomplete when it mounts asynchronously.
+ */
+export function focusFirstStepField(
+  root: HTMLElement | null | undefined,
+  options?: { delayMs?: number }
+): void {
+  if (typeof window === "undefined" || !root) return;
+  const delayMs = options?.delayMs ?? 100;
+
+  const run = (): boolean => {
+    const selector = [
+      'input:not([type="hidden"]):not([type="file"])',
+      "textarea",
+      "select",
+      'button[role="combobox"]',
+    ].join(", ");
+    const nodes = Array.from(root.querySelectorAll<HTMLElement>(selector));
+    for (const el of nodes) {
+      if (!isVisibleForFocus(el)) continue;
+      el.scrollIntoView({ block: "center", behavior: "smooth" });
+      try {
+        el.focus({ preventScroll: true });
+      } catch {
+        el.focus();
+      }
+      return true;
+    }
+    const place = root.querySelector<HTMLElement>("#place-autocomplete-input");
+    if (place) {
+      place.scrollIntoView({ block: "center", behavior: "smooth" });
+      try {
+        place.focus({ preventScroll: true });
+      } catch {
+        place.focus();
+      }
+      return true;
+    }
+    return false;
+  };
+
+  window.setTimeout(() => {
+    if (run()) return;
+    window.setTimeout(() => {
+      if (run()) return;
+      root.scrollIntoView({ block: "center", behavior: "smooth" });
+    }, 400);
+  }, delayMs);
+}
+
 // Función para hacer scroll al primer error
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const scrollToFirstError = (errors: Record<string, any>) => {

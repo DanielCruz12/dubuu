@@ -169,7 +169,7 @@
       "copyId": "Copiar ID",
       "copyIdSuccess": "ID copiado al portapapeles",
       "edit": "Editar",
-      "deleteProduct": "Eliminar producto",
+      "deleteProduct": "Eliminar",
       "deleteConfirmTitle": "¿Eliminar producto?",
       "deleteConfirmDescription": "Esta acción no se puede deshacer. Se eliminará el producto \"{{name}}\" y toda su información asociada.",
       "cancel": "Cancelar",

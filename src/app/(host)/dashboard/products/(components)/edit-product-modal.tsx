@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -113,6 +113,7 @@ export function EditProductModal({
   selectedDateId,
 }: EditProductModalProps) {
   const [isPending, setIsPending] = useState(false);
+  const dialogContentRef = useRef<HTMLDivElement | null>(null);
   const [localSelectedDateId, setLocalSelectedDateId] = useState(
     selectedDateId || tour.selectedDateId || "",
   );
@@ -173,6 +174,28 @@ export function EditProductModal({
     form,
   ]);
 
+  useEffect(() => {
+    if (!open) return;
+    const timer = window.setTimeout(() => {
+      const root = dialogContentRef.current;
+      if (!root) return;
+      const firstTextInput = root.querySelector<HTMLElement>(
+        'input:not([type="hidden"])',
+      );
+      if (firstTextInput) {
+        firstTextInput.scrollIntoView({ block: "center", behavior: "smooth" });
+        firstTextInput.focus({ preventScroll: true });
+        return;
+      }
+      const firstCombo = root.querySelector<HTMLElement>(
+        'button[role="combobox"]',
+      );
+      firstCombo?.scrollIntoView({ block: "center", behavior: "smooth" });
+      firstCombo?.focus({ preventScroll: true });
+    }, 150);
+    return () => window.clearTimeout(timer);
+  }, [open, tour.id, tourDates.length]);
+
   const handleDateChange = (dateId: string) => {
     setLocalSelectedDateId(dateId);
     const d = tourDates.find((x) => x.id === dateId);
@@ -215,7 +238,10 @@ export function EditProductModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] max-w-[95%] md:max-w-[90%] lg:max-w-[720px] xl:max-w-[640px] p-0 overflow-hidden rounded-xl border-none shadow-xl max-h-[90vh] flex flex-col">
+      <DialogContent
+        ref={dialogContentRef}
+        className="sm:max-w-[425px] max-w-[95%] md:max-w-[90%] lg:max-w-[720px] xl:max-w-[640px] p-0 overflow-hidden rounded-xl border-none shadow-xl max-h-[90vh] flex flex-col"
+      >
         <div className="bg-gradient-to-r dark:from-black dark:to-primary/5 border-none px-4 md:px-6 overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-center pt-6">

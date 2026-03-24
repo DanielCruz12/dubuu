@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/combobox";
 
 import { type CategorizationFormValues, getCategorizationSchema } from "./types";
-import { scrollToFirstError } from "./utils";
+import { focusFirstStepField, scrollToFirstError } from "./utils";
 import { useLanguage } from "@/lib/i18n-context";
 
 // Importar los hooks de RTK Query con las nuevas rutas
@@ -39,6 +39,7 @@ export function CategorizationStep({
   defaultValues,
 }: CategorizationStepProps) {
   const { t } = useLanguage();
+  const formRef = useRef<HTMLFormElement>(null);
   const categorizationSchema = useMemo(() => getCategorizationSchema(t), [t]);
 
   const [selectedProductTypeId, setSelectedProductTypeId] = useState<string>(
@@ -129,6 +130,25 @@ export function CategorizationStep({
     },
   );
 
+  useEffect(() => {
+    if (
+      isLoadingTypes ||
+      isLoadingCategories ||
+      isLoadingAmenities ||
+      isLoadingAudiences
+    ) {
+      return;
+    }
+    focusFirstStepField(formRef.current, { delayMs: 100 });
+  }, [
+    isLoadingTypes,
+    isLoadingCategories,
+    isLoadingAmenities,
+    isLoadingAudiences,
+    defaultValues?.product_type_id,
+    defaultValues?.target_product_audience_id,
+  ]);
+
   if (
     isLoadingTypes ||
     isLoadingCategories ||
@@ -145,7 +165,7 @@ export function CategorizationStep({
 
   return (
     <Form {...form}>
-      <form className="space-y-6" onSubmit={handleSubmit}>
+      <form ref={formRef} className="space-y-6" onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 gap-4">
           <FormField
             control={form.control}

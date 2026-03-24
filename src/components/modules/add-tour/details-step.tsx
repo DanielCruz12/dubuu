@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -48,7 +48,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 
 import { type DetailsFormValues, getDetailsSchema } from "./types";
-import { scrollToFirstError } from "./utils";
+import { focusFirstStepField, scrollToFirstError } from "./utils";
 import { TourDifficultyBadge } from "@/components/difficulty-badge";
 import { useLanguage } from "@/lib/i18n-context";
 
@@ -138,6 +138,7 @@ function SortableItineraryItem({
 
 export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
   const { t } = useLanguage();
+  const formRef = useRef<HTMLFormElement>(null);
   const detailsSchema = useMemo(() => getDetailsSchema(t), [t]);
 
   const [itineraryItems, setItineraryItems] = useState<string[]>(
@@ -315,9 +316,13 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
     }
   );
 
+  useEffect(() => {
+    focusFirstStepField(formRef.current, { delayMs: 100 });
+  }, [defaultValues?.highlight, defaultValues?.included]);
+
   return (
     <Form {...form}>
-      <form className="space-y-4" onSubmit={handleSubmit}>
+      <form ref={formRef} className="space-y-4" onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 gap-4">
           <FormField
             control={form.control}
