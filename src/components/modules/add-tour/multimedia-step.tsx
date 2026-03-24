@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import imageCompression from "browser-image-compression";
@@ -49,6 +49,10 @@ const IMAGE_COMPRESSION_OPTIONS = {
 
 const VIDEO_MAX_DURATION_SECONDS = 30;
 
+function isRemoteImageSrc(src: string): boolean {
+  return /^https?:\/\//i.test(src);
+}
+
 function getVideoDurationSeconds(file: File): Promise<number> {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
@@ -74,6 +78,8 @@ interface MultimediaStepProps {
   existingMedia?: {
     bannerUrl?: string;
     imageUrls?: string[];
+    videoUrls?: string[];
+    fileUrls?: string[];
   };
 }
 
@@ -87,7 +93,15 @@ export function MultimediaStep({
   const multimediaSchema = useMemo(() => getMultimediaSchema(t), [t]);
 
   const [bannerFile, setBannerFile] = useState<File | null>(null);
-  const [bannerPreview, setBannerPreview] = useState<string | null>(null);
+  const [bannerPreview, setBannerPreview] = useState<string | null>(() =>
+    existingMedia?.bannerUrl?.trim() ? existingMedia.bannerUrl : null,
+  );
+  /** En edición: el usuario quitó el banner guardado sin subir otro. */
+  const [removedExistingBanner, setRemovedExistingBanner] = useState(false);
+  /** URLs de galería ya guardadas; el usuario puede quitar antes de guardar. */
+  const [keptExistingImageUrls, setKeptExistingImageUrls] = useState<string[]>(
+    () => (existingMedia?.imageUrls ?? []).filter(Boolean),
+  );
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [videoFiles, setVideoFiles] = useState<File[]>([]);
@@ -102,6 +116,19 @@ export function MultimediaStep({
       price: defaultValues?.price || undefined,
     },
   });
+
+  const totalGalleryCount = keptExistingImageUrls.length + imageFiles.length;
+
+  useEffect(() => {
+    if (!existingMedia?.bannerUrl?.trim() || bannerFile || removedExistingBanner) return;
+    setBannerPreview(existingMedia.bannerUrl);
+  }, [existingMedia?.bannerUrl, bannerFile, removedExistingBanner]);
+
+  useEffect(() => {
+    const urls = (existingMedia?.imageUrls ?? []).filter(Boolean);
+    if (urls.length === 0) return;
+    setKeptExistingImageUrls((prev) => (prev.length === 0 ? urls : prev));
+  }, [existingMedia?.imageUrls]);
 
   // Manejar la carga de archivos (banner e imágenes se comprimen a WebP, máx. 1MB)
   const handleBannerUpload = async (
@@ -122,6 +149,7 @@ export function MultimediaStep({
     try {
       const compressed = await imageCompression(file, IMAGE_COMPRESSION_OPTIONS);
       setBannerFile(compressed);
+      setRemovedExistingBanner(false);
       const reader = new FileReader();
       reader.onload = () => setBannerPreview(reader.result as string);
       reader.readAsDataURL(compressed);
@@ -139,7 +167,7 @@ export function MultimediaStep({
   ) => {
     if (!e.target.files?.length) return;
     const selectedFiles = Array.from(e.target.files);
-    if (imageFiles.length + selectedFiles.length > 10) {
+    if (totalGalleryCount + selectedFiles.length > 10) {
       toast.error(t("dashboard.addTour.multimedia.toast.maxImages"));
       return;
     }
@@ -255,6 +283,25 @@ export function MultimediaStep({
     e.target.value = "";
   };
 
+  const handleRemoveBanner = () => {
+    if (bannerFile) {
+      setBannerFile(null);
+      if (existingMedia?.bannerUrl?.trim()) {
+        setBannerPreview(existingMedia.bannerUrl);
+        setRemovedExistingBanner(false);
+      } else {
+        setBannerPreview(null);
+      }
+    } else {
+      setRemovedExistingBanner(true);
+      setBannerPreview(null);
+    }
+  };
+
+  const removeExistingImageAt = (index: number) => {
+    setKeptExistingImageUrls((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const removeImage = (index: number) => {
     const newFiles = imageFiles.filter((_, i) => i !== index);
     setImageFiles(newFiles);
@@ -281,8 +328,11 @@ export function MultimediaStep({
         fileAttachments,
         isEditMode
           ? {
-              existingBannerUrl: existingMedia?.bannerUrl,
-              existingImageCount: existingMedia?.imageUrls?.length ?? 0,
+              existingBannerUrl:
+                existingMedia?.bannerUrl?.trim() && !removedExistingBanner
+                  ? existingMedia.bannerUrl
+                  : undefined,
+              existingImageCount: keptExistingImageUrls.length,
             }
           : undefined,
       );
@@ -360,16 +410,14 @@ export function MultimediaStep({
                     className="w-full h-full object-cover"
                     width={1000}
                     height={1000}
+                    unoptimized={isRemoteImageSrc(bannerPreview)}
                   />
                 </div>
                 <Button
                   type="button"
                   variant="destructive"
                   size="icon"
-                  onClick={() => {
-                    setBannerFile(null);
-                    setBannerPreview(null);
-                  }}
+                  onClick={handleRemoveBanner}
                   className="absolute top-2 right-2 h-6 w-6 p-0"
                 >
                   <X className="h-3 w-3" />
@@ -385,7 +433,7 @@ export function MultimediaStep({
                 {t("dashboard.addTour.multimedia.imagesLabel")}
               </Label>
               <span className="text-xs text-gray-500">
-                {t("dashboard.addTour.multimedia.imagesCount").replace("{{count}}", String(imageFiles.length))}
+                {t("dashboard.addTour.multimedia.imagesCount").replace("{{count}}", String(totalGalleryCount))}
               </span>
             </div>
 
@@ -397,7 +445,7 @@ export function MultimediaStep({
               }`}
               onClick={() =>
                 !isCompressingImages &&
-                imageFiles.length < 10 &&
+                totalGalleryCount < 10 &&
                 document.getElementById("images-upload")?.click()
               }
             >
@@ -426,17 +474,41 @@ export function MultimediaStep({
                 multiple
                 className="hidden"
                 onChange={handleImagesUpload}
-                disabled={imageFiles.length >= 10 || isCompressingImages}
+                disabled={totalGalleryCount >= 10 || isCompressingImages}
               />
             </div>
-            {imagePreviews.length > 0 && (
+            {(keptExistingImageUrls.length > 0 || imagePreviews.length > 0) && (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 mt-2">
+                {keptExistingImageUrls.map((url, index) => (
+                  <div key={`existing-${url}-${index}`} className="relative group">
+                    <div className="aspect-video rounded-md overflow-hidden">
+                      <Image
+                        src={url || "/tour1.jpg"}
+                        alt={`Tour image ${index + 1}`}
+                        className="w-full h-full object-cover"
+                        width={1000}
+                        height={1000}
+                        unoptimized={isRemoteImageSrc(url)}
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      onClick={() => removeExistingImageAt(index)}
+                      className="absolute top-1 right-1 h-6 w-6 p-0 opacity-70 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="h-3 w-3" />
+                      <span className="sr-only">{t("dashboard.addTour.multimedia.delete")}</span>
+                    </Button>
+                  </div>
+                ))}
                 {imagePreviews.map((preview, index) => (
-                  <div key={index} className="relative group">
+                  <div key={`new-${index}`} className="relative group">
                     <div className="aspect-video rounded-md overflow-hidden">
                       <Image
                         src={preview || "/tour1.jpg"}
-                        alt={`Tour image ${index + 1}`}
+                        alt={`Tour image ${keptExistingImageUrls.length + index + 1}`}
                         className="w-full h-full object-cover"
                         width={1000}
                         height={1000}
@@ -501,6 +573,21 @@ export function MultimediaStep({
                 disabled={isCheckingVideos}
               />
             </div>
+            {isEditMode &&
+              existingMedia?.videoUrls &&
+              existingMedia.videoUrls.filter(Boolean).length > 0 && (
+                <div className="space-y-2">
+                  {existingMedia.videoUrls.filter(Boolean).map((url, index) => (
+                    <video
+                      key={`existing-video-${url}-${index}`}
+                      src={url}
+                      controls
+                      className="w-full max-h-48 rounded-md border border-gray-200 dark:border-gray-800 bg-black/5"
+                      preload="metadata"
+                    />
+                  ))}
+                </div>
+              )}
             {videoFiles.length > 0 && (
               <div className="space-y-2">
                 {videoFiles.map((file, index) => (
@@ -554,6 +641,24 @@ export function MultimediaStep({
                 onChange={handleFilesUpload}
               />
             </div>
+            {isEditMode &&
+              existingMedia?.fileUrls &&
+              existingMedia.fileUrls.filter(Boolean).length > 0 && (
+                <div className="space-y-2">
+                  {existingMedia.fileUrls.filter(Boolean).map((url, index) => (
+                    <a
+                      key={`existing-file-${url}-${index}`}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 p-2 border rounded-md border-gray-200 dark:border-gray-800 text-sm text-primary hover:underline truncate"
+                    >
+                      <FileText className="h-4 w-4 shrink-0" />
+                      <span className="truncate">{url.split("/").pop() || url}</span>
+                    </a>
+                  ))}
+                </div>
+              )}
             {fileAttachments.length > 0 && (
               <div className="space-y-2">
                 {fileAttachments.map((file, index) => (

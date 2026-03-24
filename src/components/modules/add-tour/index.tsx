@@ -667,7 +667,9 @@ export function TourForm({ editProductId }: TourFormProps) {
                     existingTour
                       ? {
                           bannerUrl: existingTour.banner,
-                          imageUrls: existingTour.images,
+                          imageUrls: existingTour.images ?? [],
+                          videoUrls: existingTour.videos ?? [],
+                          fileUrls: existingTour.files ?? [],
                         }
                       : undefined
                   }
