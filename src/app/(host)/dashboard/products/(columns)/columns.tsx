@@ -8,6 +8,14 @@ import { ActionCell } from "../(components)/action-cell";
 import type { ITourProduct } from "@/types/product";
 import moment from "moment";
 import "moment/locale/es";
+import { cn } from "@/lib/utils";
+
+/** Max width shared by all product table cells (single line + ellipsis). */
+const TABLE_CELL_MAX = "max-w-[120px] sm:max-w-[160px] min-w-0";
+const TABLE_CELL_TRUNCATE = cn(
+  "font-medium truncate",
+  TABLE_CELL_MAX
+);
 
 export function getToursColumns(
   t: (key: string) => string,
@@ -34,10 +42,7 @@ export function getToursColumns(
     cell: ({ row }) => {
       const name = row.getValue("name") as string;
       return (
-        <div
-          className="font-medium max-w-[120px] sm:max-w-[160px] truncate"
-          title={name}
-        >
+        <div className={TABLE_CELL_TRUNCATE} title={name}>
           {name}
         </div>
       );
@@ -73,7 +78,11 @@ export function getToursColumns(
         style: "currency",
         currency: "USD",
       }).format(Number.isFinite(price) ? price : 0);
-      return <div>{formatted}</div>;
+      return (
+        <div className={TABLE_CELL_TRUNCATE} title={formatted}>
+          {formatted}
+        </div>
+      );
     },
   },
   {
@@ -84,8 +93,13 @@ export function getToursColumns(
       const selectedDateId = tour.selectedDateId;
 
       const tourDates = tour.tour?.tour_dates ?? [];
+      const na = t("dashboard.products.table.notAvailable");
       if (!selectedDateId || tourDates.length === 0) {
-        return <div>{t("dashboard.products.table.notAvailable")}</div>;
+        return (
+          <div className={TABLE_CELL_TRUNCATE} title={na}>
+            {na}
+          </div>
+        );
       }
 
       const selectedDate = tourDates.find(
@@ -93,12 +107,19 @@ export function getToursColumns(
       );
 
       if (!selectedDate) {
-        return <div>{t("dashboard.products.table.notAvailable")}</div>;
+        return (
+          <div className={TABLE_CELL_TRUNCATE} title={na}>
+            {na}
+          </div>
+        );
       }
 
+      const dateStr = moment(selectedDate.date)
+        .locale(locale)
+        .format("dddd, D [de] MMMM - h:mm A");
       return (
-        <div>
-          {moment(selectedDate.date).locale(locale).format("dddd, D [de] MMMM - h:mm A")}
+        <div className={TABLE_CELL_TRUNCATE} title={dateStr}>
+          {dateStr}
         </div>
       );
     },
@@ -108,10 +129,12 @@ export function getToursColumns(
     header: t("dashboard.products.table.departurePoint"),
     cell: ({ row }) => {
       const tour = row.original;
+      const text =
+        tour.tour?.departure_point ||
+        t("dashboard.products.table.notSpecified");
       return (
-        <div>
-          {tour.tour?.departure_point ||
-            t("dashboard.products.table.notSpecified")}
+        <div className={TABLE_CELL_TRUNCATE} title={text}>
+          {text}
         </div>
       );
     },
@@ -135,7 +158,11 @@ export function getToursColumns(
 
       const tourDatesMax = tour.tour?.tour_dates ?? [];
       if (!selectedDateId || tourDatesMax.length === 0) {
-        return <div className="text-center">0</div>;
+        return (
+          <div className={cn("text-center", TABLE_CELL_TRUNCATE)} title="0">
+            0
+          </div>
+        );
       }
 
       const selectedDate = tourDatesMax.find(
@@ -143,10 +170,19 @@ export function getToursColumns(
       );
 
       if (!selectedDate) {
-        return <div className="text-center">0</div>;
+        return (
+          <div className={cn("text-center", TABLE_CELL_TRUNCATE)} title="0">
+            0
+          </div>
+        );
       }
 
-      return <div className="text-center">{selectedDate.max_people}</div>;
+      const n = String(selectedDate.max_people);
+      return (
+        <div className={cn("text-center", TABLE_CELL_TRUNCATE)} title={n}>
+          {selectedDate.max_people}
+        </div>
+      );
     },
   },
   {
@@ -158,7 +194,11 @@ export function getToursColumns(
 
       const tourDatesBooked = tour.tour?.tour_dates ?? [];
       if (!selectedDateId || tourDatesBooked.length === 0) {
-        return <div className="text-center">0</div>;
+        return (
+          <div className={cn("text-center", TABLE_CELL_TRUNCATE)} title="0">
+            0
+          </div>
+        );
       }
 
       const selectedDate = tourDatesBooked.find(
@@ -166,10 +206,19 @@ export function getToursColumns(
       );
 
       if (!selectedDate) {
-        return <div className="text-center">0</div>;
+        return (
+          <div className={cn("text-center", TABLE_CELL_TRUNCATE)} title="0">
+            0
+          </div>
+        );
       }
 
-      return <div className="text-center">{selectedDate.people_booked}</div>;
+      const n = String(selectedDate.people_booked);
+      return (
+        <div className={cn("text-center", TABLE_CELL_TRUNCATE)} title={n}>
+          {selectedDate.people_booked}
+        </div>
+      );
     },
   },
   {
@@ -191,7 +240,11 @@ export function getToursColumns(
 
       const tourDatesSpots = tour.tour?.tour_dates ?? [];
       if (!selectedDateId || tourDatesSpots.length === 0) {
-        return <div className="text-center">0</div>;
+        return (
+          <div className={cn("text-center", TABLE_CELL_TRUNCATE)} title="0">
+            0
+          </div>
+        );
       }
 
       const selectedDate = tourDatesSpots.find(
@@ -199,12 +252,21 @@ export function getToursColumns(
       );
 
       if (!selectedDate) {
-        return <div className="text-center">0</div>;
+        return (
+          <div className={cn("text-center", TABLE_CELL_TRUNCATE)} title="0">
+            0
+          </div>
+        );
       }
 
       const availableSpots =
         selectedDate.max_people - selectedDate.people_booked;
-      return <div className="text-center">{availableSpots}</div>;
+      const spotsStr = String(availableSpots);
+      return (
+        <div className={cn("text-center", TABLE_CELL_TRUNCATE)} title={spotsStr}>
+          {availableSpots}
+        </div>
+      );
     },
   },
   {
@@ -222,21 +284,27 @@ export function getToursColumns(
       if (ds) {
         const variant =
           ds === "active" ? "default" : ds === "cancelled" ? "destructive" : "secondary";
+        const label = t(`dashboard.products.table.dateStatus.${ds}`);
         return (
-          <div className="flex items-center gap-2">
-            <Badge variant={variant}>
-              {t(`dashboard.products.table.dateStatus.${ds}`)}
+          <div className={TABLE_CELL_MAX}>
+            <Badge variant={variant} className="max-w-full truncate" title={label}>
+              {label}
             </Badge>
           </div>
         );
       }
       const isActive = row.getValue("is_active") as boolean | undefined;
+      const visLabel = isActive
+        ? t("dashboard.products.table.visible")
+        : t("dashboard.products.table.hidden");
       return (
-        <div className="flex items-center gap-2">
-          <Badge variant={isActive ? "default" : "destructive"}>
-            {isActive
-              ? t("dashboard.products.table.visible")
-              : t("dashboard.products.table.hidden")}
+        <div className={TABLE_CELL_MAX}>
+          <Badge
+            variant={isActive ? "default" : "destructive"}
+            className="max-w-full truncate"
+            title={visLabel}
+          >
+            {visLabel}
           </Badge>
         </div>
       );
@@ -247,12 +315,17 @@ export function getToursColumns(
     header: t("dashboard.products.table.status"),
     cell: ({ row }) => {
       const isActive = row.getValue("is_approved") as boolean;
+      const statusLabel = isActive
+        ? t("dashboard.products.table.approved")
+        : t("dashboard.products.table.pending");
       return (
-        <div className="flex items-center gap-2">
-          <Badge variant={isActive ? "default" : "destructive"}>
-            {isActive
-              ? t("dashboard.products.table.approved")
-              : t("dashboard.products.table.pending")}
+        <div className={TABLE_CELL_MAX}>
+          <Badge
+            variant={isActive ? "default" : "destructive"}
+            className="max-w-full truncate"
+            title={statusLabel}
+          >
+            {statusLabel}
           </Badge>
         </div>
       );

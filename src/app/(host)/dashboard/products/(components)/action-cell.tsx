@@ -76,9 +76,16 @@ export function ActionCell({ tour, selectedDateId, onDeleted }: ActionCellProps)
       return;
     }
     try {
+      const { selectedDateId, ...rest } = patch;
       await updateProduct({
         id: tour.id,
-        data: { ...patch, user_id: userId },
+        data: {
+          ...rest,
+          user_id: userId,
+          ...(selectedDateId
+            ? { selectedDateId, selected_date_id: selectedDateId }
+            : {}),
+        },
       }).unwrap();
 
       toast.success(t("dashboard.products.editModal.saveSuccess"));

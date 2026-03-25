@@ -286,7 +286,8 @@ export function TourForm({ editProductId }: TourFormProps) {
           id: meta.id,
           date: (d ?? new Date(meta.date)).toISOString(),
           price: meta.price,
-          max_people: meta.max_people,
+          // Un solo cupo en paso 1: todas las fechas deben reflejar basicInfo (no valores viejos de tourDatesMeta).
+          max_people: formData.basicInfo.max_people,
           status: meta.status,
         };
       });
@@ -347,6 +348,11 @@ export function TourForm({ editProductId }: TourFormProps) {
   // Manejadores para cada paso del formulario
   const handleBasicInfoSubmit = (data: BasicInfoFormValues) => {
     setBasicInfo(data);
+    if (tourDatesMeta && tourDatesMeta.length > 0) {
+      setTourDatesMeta(
+        tourDatesMeta.map((row) => ({ ...row, max_people: data.max_people })),
+      );
+    }
     setStep(2);
   };
 
