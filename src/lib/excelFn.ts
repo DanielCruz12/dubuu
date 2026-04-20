@@ -1,15 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as XLSX from "xlsx"
+import * as XLSX from "xlsx";
 
-export function exportToExcel(data: any[], fileName: string) {
+const EXCEL_SHEET_NAME_MAX = 31;
+
+export type ExportToExcelOptions = {
+  /** Tab name inside the workbook (Excel max 31 characters). */
+  sheetName?: string;
+};
+
+export function exportToExcel(
+  data: any[],
+  fileName: string,
+  options?: ExportToExcelOptions,
+) {
+  const sheetLabel = (options?.sheetName ?? "Datos").slice(
+    0,
+    EXCEL_SHEET_NAME_MAX,
+  );
+
   // Create a new workbook
-  const workbook = XLSX.utils.book_new()
+  const workbook = XLSX.utils.book_new();
 
   // Convert data to worksheet
-  const worksheet = XLSX.utils.json_to_sheet(data)
+  const worksheet = XLSX.utils.json_to_sheet(data);
 
   // Add worksheet to workbook
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Datos")
+  XLSX.utils.book_append_sheet(workbook, worksheet, sheetLabel);
 
   // Generate Excel file as a binary string
   const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" })

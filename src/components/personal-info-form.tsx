@@ -2,11 +2,13 @@
 
 import type React from "react";
 
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n-context";
 import {
@@ -43,11 +45,21 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
+import { useClerkToken } from "@/components/providers/auth-provider";
+import HostProfileEditForm, {
+  type HostProfileEditFormHandle,
+} from "@/components/host-profile-edit-form";
+import { PhoneInputComponent } from "@/components/phone-input";
+import {
+  useGetUserQuery,
+  useUpdateUserMutation,
+} from "@/redux/slices/user/user-slice";
 
 type PersonalInfoValues = {
   firstName: string;
   lastName: string;
-  username: string;
+  phone: string;
 };
 
 function getPersonalInfoSchema(t: (key: string) => string) {
@@ -58,19 +70,33 @@ function getPersonalInfoSchema(t: (key: string) => string) {
     lastName: z.string().min(2, {
       message: t("dashboard.profile.validation.lastNameMin"),
     }),
-    username: z.string().min(3, {
-      message: t("dashboard.profile.validation.usernameMin"),
-    }),
+    phone: z.string().refine(
+      (v) => !v.trim() || isValidPhoneNumber(v.trim()),
+      { message: t("dashboard.profile.validation.phoneInvalid") },
+    ),
   });
+}
+
+function toStoredPhoneNumber(raw: string): string {
+  const trimmed = raw.trim();
+  if (!trimmed) return "";
+  const parsed = parsePhoneNumberFromString(trimmed);
+  return parsed?.number ?? trimmed;
 }
 
 export default function PersonalInfoForm() {
   const { user, isLoaded } = useUser();
+  const { hasRole } = useClerkToken();
   const { t, language } = useLanguage();
   const [isUpdating, setIsUpdating] = useState(false);
   const [isChangingEmail, setIsChangingEmail] = useState(false);
   const [isUpdatingPhoto, setIsUpdatingPhoto] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const hostProfileRef = useRef<HostProfileEditFormHandle>(null);
+  const { data: dbUser } = useGetUserQuery(user?.id ?? "", {
+    skip: !isLoaded || !user?.id,
+  });
+  const [updateUser] = useUpdateUserMutation();
 
   const personalInfoSchema = useMemo(() => getPersonalInfoSchema(t), [t]);
 
@@ -79,20 +105,74 @@ export default function PersonalInfoForm() {
     defaultValues: {
       firstName: user?.firstName || "",
       lastName: user?.lastName || "",
-      username: user?.username || "",
+      phone: dbUser?.phone_number ?? "",
     },
   });
 
-  async function onSubmit(data: PersonalInfoValues) {
+  useEffect(() => {
+    if (isLoaded && user) {
+      form.reset({
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        phone: dbUser?.phone_number ?? "",
+      });
+    }
+  }, [
+    isLoaded,
+    user?.id,
+    user?.firstName,
+    user?.lastName,
+    dbUser?.phone_number,
+    form,
+  ]);
+
+  async function savePersonalAndHost() {
     if (!user) return;
+    const okPersonal = await form.trigger();
+    if (!okPersonal) return;
 
     setIsUpdating(true);
     try {
       await user.update({
-        firstName: data.firstName,
-        lastName: data.lastName,
-        username: data.username,
+        firstName: form.getValues("firstName"),
+        lastName: form.getValues("lastName"),
       });
+
+      const phoneRaw = form.getValues("phone");
+      if (phoneRaw.trim() && !isValidPhoneNumber(phoneRaw.trim())) {
+        toast.error(t("dashboard.profile.validation.phoneInvalid"));
+        return;
+      }
+
+      try {
+        await updateUser({
+          id: user.id,
+          data: {
+            email: user.primaryEmailAddress?.emailAddress ?? "",
+            username: user.username ?? "",
+            first_name: form.getValues("firstName"),
+            last_name: form.getValues("lastName"),
+            phone_number: toStoredPhoneNumber(phoneRaw),
+          },
+        }).unwrap();
+      } catch (e) {
+        console.error(e);
+        toast.error(t("dashboard.profile.toast.profileError"), {
+          description: t("dashboard.profile.toast.profileErrorDescription"),
+        });
+        return;
+      }
+
+      if (hasRole("host") && hostProfileRef.current) {
+        const hostOk = await hostProfileRef.current.submit();
+        if (!hostOk) {
+          toast.error("Revisa el perfil de operador", {
+            description:
+              "Corrige los campos marcados en la sección inferior e inténtalo de nuevo.",
+          });
+          return;
+        }
+      }
 
       toast.success(t("dashboard.profile.toast.profileUpdated"), {
         description: t("dashboard.profile.toast.profileUpdatedDescription"),
@@ -345,19 +425,16 @@ export default function PersonalInfoForm() {
             </CardHeader>
             <CardContent>
               <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-6"
-                >
-                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:items-start">
                     <FormField
                       control={form.control}
                       name="firstName"
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="space-y-2">
                           <FormLabel>{t("dashboard.profile.firstName")}</FormLabel>
                           <FormControl>
-                            <Input placeholder="John" {...field} />
+                            <Input placeholder="John" className="h-9" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -367,10 +444,10 @@ export default function PersonalInfoForm() {
                       control={form.control}
                       name="lastName"
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="space-y-2">
                           <FormLabel>{t("dashboard.profile.lastName")}</FormLabel>
                           <FormControl>
-                            <Input placeholder="Doe" {...field} />
+                            <Input placeholder="Doe" className="h-9" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -380,31 +457,52 @@ export default function PersonalInfoForm() {
 
                   <FormField
                     control={form.control}
-                    name="username"
+                    name="phone"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t("dashboard.profile.username")}</FormLabel>
+                      <FormItem className="space-y-2">
+                        <FormLabel>{t("dashboard.profile.phone")}</FormLabel>
                         <FormControl>
-                          <Input placeholder="johndoe" {...field} />
+                          <PhoneInputComponent
+                            value={field.value ?? ""}
+                            onChange={(v) => field.onChange(v ?? "")}
+                            onBlur={field.onBlur}
+                            showValidityHint={false}
+                          />
                         </FormControl>
                         <FormDescription>
-                          {t("dashboard.profile.usernameDescription")}
+                          {t("dashboard.profile.phoneDescription")}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
 
-                  <div className="flex justify-end">
-                    <Button type="submit" disabled={isUpdating}>
-                      {isUpdating && (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      )}
-                      {t("dashboard.profile.saveChanges")}
-                    </Button>
-                  </div>
-                </form>
+                </div>
               </Form>
+
+              {hasRole("host") ? (
+                <>
+                  <Separator className="my-8" />
+                  <HostProfileEditForm
+                    ref={hostProfileRef}
+                    embedded
+                    hideSubmitButton
+                  />
+                </>
+              ) : null}
+
+              <div className="mt-6 flex justify-end">
+                <Button
+                  type="button"
+                  disabled={isUpdating}
+                  onClick={() => void savePersonalAndHost()}
+                >
+                  {isUpdating && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  {t("dashboard.profile.saveChanges")}
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

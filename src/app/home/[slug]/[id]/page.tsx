@@ -10,8 +10,8 @@ import { socket } from "@/lib/socket";
 import { useGetProductQuery } from "@/redux/slices/product/product-slice";
 import { useGetBookingsByUserIdQuery } from "@/redux/slices/booking/booking-slice";
 import ReviewSection from "@/components/sections/reviews/reviews-section";
-/* import CompanyInfo from "@/components/sections/company-info";
- */import BookingForm from "@/components/sections/booking-form";
+import CompanyInfo from "@/components/sections/company-info";
+import BookingForm from "@/components/sections/booking-form";
 import Rating from "@/components/rating";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
@@ -177,9 +177,7 @@ export default function ProductBooking() {
               {symbol}
               {convert(product.price)}
             </Badge>
-            <span className="text-sm font-normal">
-              Por persona
-            </span>
+            <span className="text-sm font-normal">Por persona</span>
           </div>
         </div>
 
@@ -232,7 +230,7 @@ export default function ProductBooking() {
                 reviews={reviews}
                 isLoading={isLoadingReviews}
               />
-             {/*  <CompanyInfo product={product} /> */}
+              <CompanyInfo product={product} />
             </div>
           </div>
         )}
@@ -377,7 +375,7 @@ export default function ProductBooking() {
             reviews={reviews}
             isLoading={isLoadingReviews}
           />
-          {/* <CompanyInfo product={product} /> */}
+          <CompanyInfo product={product} />
         </div>
       )}
     </div>

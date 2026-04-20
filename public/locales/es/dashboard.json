@@ -3,19 +3,19 @@
   "description": "Bienvenido a tu panel de control",
   "profile": {
     "heading": "Perfil",
-    "description": "Gestiona tu información personal",
+    "description": "Gestiona tu información",
     "memberSince": "Miembro desde {{date}}",
     "verifiedAccount": "Cuenta verificada",
     "updatePhoto": "Actualizar foto",
     "delete": "Eliminar",
-    "tabPersonalInfo": "Información personal",
+    "tabPersonalInfo": "Información",
     "tabEmails": "Correos electrónicos",
-    "personalInfoTitle": "Información personal",
-    "personalInfoDescription": "Actualiza tu información personal y de contacto",
+    "personalInfoTitle": "Información",
+    "personalInfoDescription": "Actualiza tu información y de contacto",
     "firstName": "Nombre",
     "lastName": "Apellido",
-    "username": "Nombre de usuario",
-    "usernameDescription": "Este es su nombre público.",
+    "phone": "Teléfono",
+    "phoneDescription": "Se guarda en tu cuenta de Dubuu; te contactaremos por este número si hace falta (reservas, cambios, etc.).",
     "saveChanges": "Guardar cambios",
     "emailManagementTitle": "Gestión de correos electrónicos",
     "emailManagementDescription": "Administra tus direcciones de correo electrónico",
@@ -27,7 +27,7 @@
     "notAvailable": "No disponible",
     "toast": {
       "profileUpdated": "¡Perfil actualizado!",
-      "profileUpdatedDescription": "Tu información personal ha sido actualizada",
+      "profileUpdatedDescription": "Tu información ha sido actualizada",
       "profileError": "Error al actualizar información",
       "profileErrorDescription": "Hubo un error actualizando tu información.",
       "emailUpdated": "¡Email actualizado!",
@@ -52,7 +52,8 @@
     "validation": {
       "firstNameMin": "El nombre debe tener al menos 2 caracteres.",
       "lastNameMin": "El apellido debe tener al menos 2 caracteres.",
-      "usernameMin": "El nombre de usuario debe tener al menos 3 caracteres."
+      "usernameMin": "El nombre de usuario debe tener al menos 3 caracteres.",
+      "phoneInvalid": "Introduce un número de teléfono válido con prefijo internacional."
     }
   },
   "nav": {
@@ -141,7 +142,12 @@
       "export": "Exportar",
       "newTour": "Crear"
     },
+    "exportWorksheet": "Datos",
     "table": {
+      "id": "ID",
+      "description": "Descripción",
+      "country": "País",
+      "address": "Dirección",
       "name": "Nombre",
       "price": "Precio",
       "date": "Fecha",

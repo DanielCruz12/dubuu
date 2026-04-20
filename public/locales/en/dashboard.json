@@ -14,8 +14,8 @@
     "personalInfoDescription": "Update your personal and contact information",
     "firstName": "First name",
     "lastName": "Last name",
-    "username": "Username",
-    "usernameDescription": "This is your public name.",
+    "phone": "Phone",
+    "phoneDescription": "Stored on your Dubuu account; we may use it for bookings, changes, or urgent updates.",
     "saveChanges": "Save changes",
     "emailManagementTitle": "Email management",
     "emailManagementDescription": "Manage your email addresses",
@@ -52,7 +52,8 @@
     "validation": {
       "firstNameMin": "First name must be at least 2 characters.",
       "lastNameMin": "Last name must be at least 2 characters.",
-      "usernameMin": "Username must be at least 3 characters."
+      "usernameMin": "Username must be at least 3 characters.",
+      "phoneInvalid": "Enter a valid phone number with international prefix."
     }
   },
   "nav": {
@@ -141,7 +142,12 @@
       "export": "Export",
       "newTour": "Create"
     },
+    "exportWorksheet": "Data",
     "table": {
+      "id": "ID",
+      "description": "Description",
+      "country": "Country",
+      "address": "Address",
       "name": "Name",
       "price": "Price",
       "date": "Date",

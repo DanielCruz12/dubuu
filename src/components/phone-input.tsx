@@ -14,10 +14,23 @@ interface PhoneInputProps {
   defaultCountry?: any
   className?: string
   disabled?: boolean
+  /** Si false, no muestra el texto “Número válido” bajo el campo (p. ej. en perfil). */
+  showValidityHint?: boolean
 }
 
 export const PhoneInputComponent = forwardRef<HTMLInputElement, PhoneInputProps>(
-  ({ value, onChange, onBlur, defaultCountry = "SV" as any, className = "", disabled = false }, ref) => {
+  (
+    {
+      value,
+      onChange,
+      onBlur,
+      defaultCountry = "SV" as any,
+      className = "",
+      disabled = false,
+      showValidityHint = true,
+    },
+    ref,
+  ) => {
     
     return (
       <div className="relative">
@@ -40,7 +53,9 @@ export const PhoneInputComponent = forwardRef<HTMLInputElement, PhoneInputProps>
             )}
           </div>
         )}
-        {value && isValidPhoneNumber(value) && <p className="text-xs text-green-600 mt-1">Número válido</p>}
+        {showValidityHint && value && isValidPhoneNumber(value) && (
+          <p className="text-xs text-green-600 mt-1">Número válido</p>
+        )}
       </div>
     )
   },
@@ -54,7 +69,7 @@ const CustomPhoneInputComponent = forwardRef<HTMLInputElement, any>(({ className
     <input
       ref={ref}
       {...props}
-      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
     />
   )
 })

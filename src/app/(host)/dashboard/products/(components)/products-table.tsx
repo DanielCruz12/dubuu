@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { DownloadIcon, PlusCircle, SearchIcon } from "lucide-react";
+import { FileSpreadsheet, PlusCircle, SearchIcon } from "lucide-react";
 import { getToursColumns } from "../(columns)/columns";
 import {
   Select,
@@ -37,6 +37,82 @@ import { cn } from "@/lib/utils";
 import { DataTableSkeleton } from "@/components/skeletons/datatable-skeleton";
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n-context";
+import moment from "moment";
+import "moment/locale/es";
+
+function buildTourProductExcelRow(
+  tour: ITourProduct & { selectedDateId?: string },
+  t: (key: string) => string,
+  language: string,
+): Record<string, string | number> {
+  const locale = language === "en" ? "en" : "es";
+  const numberLocale = language === "en" ? "en-US" : "es-SV";
+  const tourDates = tour.tour?.tour_dates ?? [];
+  const selectedDate = tourDates.find((d) => d.id === tour.selectedDateId);
+
+  const datePrice =
+    typeof selectedDate?.price === "number"
+      ? selectedDate.price
+      : Number.parseFloat(String(selectedDate?.price ?? ""));
+  const basePrice =
+    typeof tour.price === "number"
+      ? tour.price
+      : Number.parseFloat(String(tour.price ?? 0));
+  const priceNum = Number.isFinite(datePrice) ? datePrice : basePrice;
+  const formattedPrice = new Intl.NumberFormat(numberLocale, {
+    style: "currency",
+    currency: "USD",
+  }).format(Number.isFinite(priceNum) ? priceNum : 0);
+
+  const dateFormat =
+    language === "en"
+      ? "dddd, MMMM D, YYYY - h:mm A"
+      : "dddd, D [de] MMMM - h:mm A";
+  const dateStr =
+    selectedDate?.date != null
+      ? moment(selectedDate.date).locale(locale).format(dateFormat)
+      : "";
+
+  const ds = selectedDate?.status;
+  let availabilityLabel: string;
+  if (ds) {
+    availabilityLabel = t(`dashboard.products.table.dateStatus.${ds}`);
+  } else {
+    availabilityLabel = tour.is_active
+      ? t("dashboard.products.table.visible")
+      : t("dashboard.products.table.hidden");
+  }
+
+  const approvalLabel = tour.is_approved
+    ? t("dashboard.products.table.approved")
+    : t("dashboard.products.table.pending");
+
+  const availableSpots =
+    selectedDate != null
+      ? selectedDate.max_people - selectedDate.people_booked
+      : "";
+
+  const columnsInTableOrder: [string, string | number][] = [
+    [t("dashboard.products.table.name"), tour.name],
+    [t("dashboard.products.table.price"), formattedPrice],
+    [t("dashboard.products.table.date"), dateStr],
+    [t("dashboard.products.table.availability"), availabilityLabel],
+    [t("dashboard.products.table.status"), approvalLabel],
+    [t("dashboard.products.table.availableSpots"), availableSpots],
+    [t("dashboard.products.table.bookings"), selectedDate?.people_booked ?? ""],
+    [
+      t("dashboard.products.table.departurePoint"),
+      tour.tour?.departure_point ?? "",
+    ],
+    [t("dashboard.products.table.maxPeople"), selectedDate?.max_people ?? ""],
+    [t("dashboard.products.table.id"), tour.id],
+    [t("dashboard.products.table.description"), tour.description ?? ""],
+    [t("dashboard.products.table.country"), tour.country ?? ""],
+    [t("dashboard.products.table.address"), tour.address ?? ""],
+  ];
+
+  return Object.fromEntries(columnsInTableOrder);
+}
 
 export function ProductsDataTable() {
   const { user } = useUser();
@@ -165,43 +241,14 @@ export function ProductsDataTable() {
     setFilteredTours(toursWithSelectedDate);
   }, [selectedTourId, selectedDateId, availableTours]);
 
-  // Exportar a Excel
   const handleExport = () => {
-    const dataToExport = filteredTours.map((tour) => {
-      const tourDates = tour.tour?.tour_dates ?? [];
-      // Encontrar la fecha seleccionada
-      const selectedDate = tourDates.find(
-        (date) => date.id === tour.selectedDateId
-      );
+    const dataToExport = filteredTours.map((tour) =>
+      buildTourProductExcelRow(tour, t, language),
+    );
 
-      return {
-        ID: tour.id,
-        [t("dashboard.products.table.name")]: tour.name,
-        Description: tour.description,
-        [t("dashboard.products.table.price")]: tour.price,
-        Country: tour.country,
-        Address: tour.address,
-        [t("dashboard.products.table.departurePoint")]:
-          tour.tour?.departure_point ?? "",
-        [t("dashboard.products.table.date")]: selectedDate
-          ? format(new Date(selectedDate.date), "dd/MM/yyyy HH:mm")
-          : "",
-        MaxPeople: selectedDate?.max_people || "",
-        PeopleBooked: selectedDate?.people_booked || "",
-        AvailableSpots: selectedDate
-          ? selectedDate.max_people - selectedDate.people_booked
-          : "",
-        Status: (() => {
-          const sel = tour.tour?.tour_dates?.find(
-            (d) => d.id === tour.selectedDateId
-          );
-          if (sel?.status) return sel.status;
-          return tour.is_active ? "Active" : "Inactive";
-        })(),
-      };
+    exportToExcel(dataToExport, t("dashboard.products.title"), {
+      sheetName: t("dashboard.products.exportWorksheet"),
     });
-
-    exportToExcel(dataToExport, t("dashboard.products.title"));
   };
 
   if (isLoading || !user) {
@@ -211,12 +258,12 @@ export function ProductsDataTable() {
           t("dashboard.products.table.name"),
           t("dashboard.products.table.price"),
           t("dashboard.products.table.date"),
-          t("dashboard.products.table.departurePoint"),
-          t("dashboard.products.table.maxPeople"),
-          t("dashboard.products.table.bookings"),
-          t("dashboard.products.table.availableSpots"),
           t("dashboard.products.table.availability"),
           t("dashboard.products.table.status"),
+          t("dashboard.products.table.availableSpots"),
+          t("dashboard.products.table.bookings"),
+          t("dashboard.products.table.departurePoint"),
+          t("dashboard.products.table.maxPeople"),
           t("dashboard.products.table.actions"),
         ]}
       />
@@ -333,7 +380,7 @@ export function ProductsDataTable() {
                   variant="outline"
                   className="flex items-center gap-2"
                 >
-                  <DownloadIcon className="h-4 w-4" />
+                  <FileSpreadsheet className="h-4 w-4" />
                   <span>{t("dashboard.products.filters.export")}</span>
                 </Button>
               )}
