@@ -54,6 +54,47 @@
       "lastNameMin": "Last name must be at least 2 characters.",
       "usernameMin": "Username must be at least 3 characters.",
       "phoneInvalid": "Enter a valid phone number with international prefix."
+    },
+    "hostProfile": {
+      "title": "Operator profile",
+      "subtitleEmbedded": "What you show on your tours’ public page: how you present yourself, your experience, and what languages you serve travelers in.",
+      "subtitleCard": "What you show on your tours’ public page: presentation, experience, and service languages.",
+      "checkingPermissions": "Checking permissions…",
+      "loading": "Loading…",
+      "hostOnlyHint": "Only visible to accounts with the host role.",
+      "retry": "Retry",
+      "photoLabel": "Photo (URL)",
+      "photoPlaceholder": "https://...",
+      "introLabel": "Introduction",
+      "introPlaceholder": "Short intro",
+      "styleLabel": "Style",
+      "stylePlaceholder": "e.g. Small groups",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Approach and values",
+      "yearsLabel": "Years of experience",
+      "specialtyLabel": "Specialty",
+      "specialtyPlaceholder": "Category",
+      "experienceTypeLabel": "Experience type",
+      "experienceTypePlaceholder": "Product type",
+      "languagesLabel": "Languages",
+      "languagesPlaceholder": "Select languages",
+      "save": "Save operator profile",
+      "saving": "Saving…",
+      "undo": "Undo",
+      "toast": {
+        "loginRequired": "You must sign in to save",
+        "updated": "Operator profile updated",
+        "saveError": "Error saving"
+      },
+      "errors": {
+        "validUrl": "Must be a valid URL",
+        "min0": "Minimum 0",
+        "max80": "Maximum 80",
+        "pickCategory": "Choose a category",
+        "pickType": "Choose a type",
+        "pickAtLeastOneLanguage": "Choose at least one language",
+        "loadFailed": "Could not load profile"
+      }
     }
   },
   "nav": {

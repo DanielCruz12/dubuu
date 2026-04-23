@@ -7,6 +7,7 @@ import { fetchHostPublicProfile } from "@/lib/host-profile-api";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useLanguage } from "@/lib/i18n-context";
 
 function detailIcon(key: HostProfileDetailKey) {
   switch (key) {
@@ -26,7 +27,7 @@ function displayName(profile: HostPublicProfile) {
   if (full) return full;
   const u = profile.username?.trim();
   if (u) return u.charAt(0).toUpperCase() + u.slice(1);
-  return "Anfitrión";
+  return "—";
 }
 
 function initials(profile: HostPublicProfile) {
@@ -98,6 +99,7 @@ export default function HostTourOrganizer({
   fallbackUsername,
   fallbackImageUrl,
 }: HostTourOrganizerProps) {
+  const { t, language } = useLanguage();
   const [profile, setProfile] = useState<HostPublicProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -108,14 +110,18 @@ export default function HostTourOrganizer({
       setLoading(true);
       setError(null);
       try {
-        const data = await fetchHostPublicProfile(hostUserId);
+        const data = await fetchHostPublicProfile(hostUserId, language);
         if (!cancelled) {
           setProfile(data);
         }
       } catch (e) {
         if (!cancelled) {
           setProfile(null);
-          setError(e instanceof Error ? e.message : "Error al cargar el perfil");
+          setError(
+            e instanceof Error
+              ? e.message
+              : t("home.organizer.loadErrorTitle"),
+          );
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -124,16 +130,26 @@ export default function HostTourOrganizer({
     return () => {
       cancelled = true;
     };
-  }, [hostUserId]);
+  }, [hostUserId, t, language]);
 
   const statsLine = useMemo(() => {
     if (!profile) return null;
     const parts: string[] = [];
-    const tourWord = profile.totalTours === 1 ? "tour" : "tours";
-    parts.push(`${profile.totalTours} ${tourWord}`);
-    parts.push(`${profile.anosExperiencia} años de experiencia`);
+
+    const toursKey =
+      profile.totalTours === 1
+        ? "home.organizer.stats.tours_one"
+        : "home.organizer.stats.tours_other";
+    parts.push(t(toursKey).replace("{count}", String(profile.totalTours)));
+
+    const yearsKey =
+      profile.anosExperiencia === 1
+        ? "home.organizer.stats.years_one"
+        : "home.organizer.stats.years_other";
+    parts.push(t(yearsKey).replace("{count}", String(profile.anosExperiencia)));
+
     return parts.join(" · ");
-  }, [profile]);
+  }, [profile, t]);
 
   if (loading) {
     return <OrganizerSkeleton />;
@@ -144,14 +160,17 @@ export default function HostTourOrganizer({
     return (
       <div className="mt-12 space-y-4">
         <h2 className="text-xl md:text-2xl font-semibold">
-          Quién organiza este tour
+          {t("home.organizer.title")}
         </h2>
         <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-sm">
-          <p className="font-medium text-destructive">No se pudo cargar el perfil</p>
+          <p className="font-medium text-destructive">
+            {t("home.organizer.loadErrorTitle")}
+          </p>
           <p className="text-muted-foreground mt-1">{error}</p>
           {fb ? (
             <p className="mt-3 text-muted-foreground">
-              Usuario: <span className="font-medium text-foreground">{fb}</span>
+              {t("home.organizer.loadErrorFallbackUser")}{" "}
+              <span className="font-medium text-foreground">{fb}</span>
             </p>
           ) : null}
         </div>
@@ -166,7 +185,7 @@ export default function HostTourOrganizer({
   return (
     <div className="mt-12 space-y-6">
       <h2 className="text-xl md:text-2xl font-semibold">
-        Quién organiza este tour
+        {t("home.organizer.title")}
       </h2>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -183,7 +202,7 @@ export default function HostTourOrganizer({
               </Avatar>
               <span
                 className="absolute bottom-1 right-1 h-3 w-3 rounded-full border-2 border-card bg-green-500"
-                title="En línea"
+                title={t("home.organizer.online")}
                 aria-hidden
               />
             </div>
@@ -191,7 +210,7 @@ export default function HostTourOrganizer({
               <h3 className="text-xl font-bold truncate">{name}</h3>
               <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                 <span className="inline-flex items-center rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                  Operador turístico
+                  {t("home.organizer.roleBadge")}
                 </span>
               </div>
               <p className="flex flex-wrap gap-x-4 gap-y-1 mt-3 text-sm text-muted-foreground">
@@ -201,16 +220,19 @@ export default function HostTourOrganizer({
           </div>
 
           {profile.intro ? (
-            <p className="text-sm text-muted-foreground">{profile.intro}</p>
+            <p className="text-sm text-muted-foreground line-clamp-2">
+              {profile.intro}
+            </p>
           ) : null}
 
           <ul className="space-y-3">
             {(profile.detalles ?? []).map((item) => {
               const Icon = detailIcon(item.key);
+              const keyLabel = t(`home.organizer.details.${item.key}`);
               const label =
-                item.label.endsWith(":") || item.label.endsWith("：")
-                  ? item.label
-                  : `${item.label}:`;
+                keyLabel.endsWith(":") || keyLabel.endsWith("：")
+                  ? keyLabel
+                  : `${keyLabel}:`;
               return (
                 <li key={item.key} className="flex gap-3 text-sm">
                   <Icon className="h-4 w-4 shrink-0 text-muted-foreground mt-0.5" />
@@ -228,13 +250,17 @@ export default function HostTourOrganizer({
 
         <div className="space-y-6">
           <div>
-            <h4 className="font-semibold mb-2">Información del operador</h4>
-            <p className="text-sm text-muted-foreground">
-              {profile.descripcion || "—"}
+            <h4 className="font-semibold mb-2">
+              {t("home.organizer.operatorInfoTitle")}
+            </h4>
+            <p className="text-sm text-muted-foreground line-clamp-4">
+              {profile.descripcion || t("home.organizer.emptyValue")}
             </p>
           </div>
           <div>
-            <h4 className="font-semibold mb-2">Tipos de experiencia</h4>
+            <h4 className="font-semibold mb-2">
+              {t("home.organizer.experienceTypesTitle")}
+            </h4>
             <div className="flex flex-wrap gap-2">
               {profile.tiposExperiencia?.length ? (
                 profile.tiposExperiencia.map((tipo) => (
@@ -247,12 +273,16 @@ export default function HostTourOrganizer({
                   </Badge>
                 ))
               ) : (
-                <span className="text-sm text-muted-foreground">—</span>
+                <span className="text-sm text-muted-foreground">
+                  {t("home.organizer.emptyValue")}
+                </span>
               )}
             </div>
           </div>
           <div>
-            <h4 className="font-semibold mb-2">Idiomas</h4>
+            <h4 className="font-semibold mb-2">
+              {t("home.organizer.languagesTitle")}
+            </h4>
             <div className="flex flex-wrap gap-2">
               {profile.idiomas?.length ? (
                 profile.idiomas.map((idioma) => (
@@ -265,7 +295,9 @@ export default function HostTourOrganizer({
                   </Badge>
                 ))
               ) : (
-                <span className="text-sm text-muted-foreground">—</span>
+                <span className="text-sm text-muted-foreground">
+                  {t("home.organizer.emptyValue")}
+                </span>
               )}
             </div>
           </div>

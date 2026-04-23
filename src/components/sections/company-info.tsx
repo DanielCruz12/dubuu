@@ -2,6 +2,7 @@
 
 import type { IProduct } from "@/types/product";
 import HostTourOrganizer from "@/components/sections/host-tour-organizer";
+import { useLanguage } from "@/lib/i18n-context";
 
 function getProductUser(product: IProduct) {
   const u = product?.user;
@@ -31,6 +32,7 @@ interface CompanyInfoProps {
 }
 
 export default function CompanyInfo({ product }: CompanyInfoProps) {
+  const { t } = useLanguage();
   const user = product ? getProductUser(product) : null;
 
   if (!product) return null;
@@ -39,10 +41,10 @@ export default function CompanyInfo({ product }: CompanyInfoProps) {
     return (
       <div className="mt-12">
         <h2 className="text-xl md:text-2xl font-semibold mb-6">
-          Quién organiza este tour
+          {t("home.organizer.title")}
         </h2>
         <p className="text-sm text-muted-foreground">
-          No hay información del anfitrión para este producto.
+          {t("home.organizer.noHostInfo")}
         </p>
       </div>
     );

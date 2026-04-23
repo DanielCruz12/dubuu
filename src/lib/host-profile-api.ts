@@ -186,6 +186,14 @@ export function hostPublicProfileUrl(userId: string): string {
   );
 }
 
+function withLocale(url: string, locale?: string): string {
+  const l = (locale ?? "").trim();
+  if (!l) return url;
+  const u = new URL(url, typeof window !== "undefined" ? window.location.origin : "http://localhost");
+  u.searchParams.set("locale", l);
+  return u.toString();
+}
+
 export function hostAuthenticatedProfileUrl(): string {
   return apiV1AbsoluteUrl("/hosts/profile");
 }
@@ -204,9 +212,10 @@ export async function readApiErrorMessage(res: Response): Promise<string> {
 
 export async function fetchHostPublicProfile(
   userId: string,
+  locale: string,
   init?: RequestInit,
 ): Promise<HostPublicProfile> {
-  const res = await fetch(hostPublicProfileUrl(userId), {
+  const res = await fetch(withLocale(hostPublicProfileUrl(userId), locale), {
     ...init,
     method: "GET",
     headers: {

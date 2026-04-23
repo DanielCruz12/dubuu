@@ -58,23 +58,39 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useLanguage } from "@/lib/i18n-context";
 
-const hostProfileFormSchema = z.object({
-  image_url: z.string().url("Debe ser una URL válida").optional().or(z.literal("")),
-  intro: z.string().max(220),
-  descripcion: z.string().max(520),
-  anosExperiencia: z.coerce
-    .number()
-    .int()
-    .min(0, "Mínimo 0")
-    .max(80, "Máximo 80"),
-  especialidad: z.string().min(1, "Elige una categoría").max(200),
-  tipoExperiencias: z.string().min(1, "Elige un tipo").max(200),
-  estilo: z.string().max(500),
-  idiomas: z.array(z.string()).min(1, "Elige al menos un idioma").max(12),
-});
+function getHostProfileFormSchema(t: (key: string) => string) {
+  return z.object({
+    image_url: z
+      .string()
+      .url(t("dashboard.profile.hostProfile.errors.validUrl"))
+      .optional()
+      .or(z.literal("")),
+    intro: z.string().max(220),
+    descripcion: z.string().max(520),
+    anosExperiencia: z.coerce
+      .number()
+      .int()
+      .min(0, t("dashboard.profile.hostProfile.errors.min0"))
+      .max(80, t("dashboard.profile.hostProfile.errors.max80")),
+    especialidad: z
+      .string()
+      .min(1, t("dashboard.profile.hostProfile.errors.pickCategory"))
+      .max(200),
+    tipoExperiencias: z
+      .string()
+      .min(1, t("dashboard.profile.hostProfile.errors.pickType"))
+      .max(200),
+    estilo: z.string().max(500),
+    idiomas: z
+      .array(z.string())
+      .min(1, t("dashboard.profile.hostProfile.errors.pickAtLeastOneLanguage"))
+      .max(12),
+  });
+}
 
-type HostProfileFormValues = z.infer<typeof hostProfileFormSchema>;
+type HostProfileFormValues = z.infer<ReturnType<typeof getHostProfileFormSchema>>;
 
 function detailValue(
   profile: HostPublicProfile,
@@ -120,6 +136,7 @@ const HostProfileEditForm = forwardRef<
   { embedded = false, hideSubmitButton = false },
   ref,
 ) {
+  const { t, language } = useLanguage();
   const { hasRole, isLoadingRole } = useClerkToken();
   const { userId, getToken, isLoaded: authLoaded } = useAuth();
   const { user, isLoaded: userLoaded } = useUser();
@@ -142,6 +159,7 @@ const HostProfileEditForm = forwardRef<
     [productTypes],
   );
 
+  const hostProfileFormSchema = useMemo(() => getHostProfileFormSchema(t), [t]);
   const form = useForm<HostProfileFormValues>({
     resolver: zodResolver(hostProfileFormSchema),
     defaultValues: {
@@ -159,7 +177,7 @@ const HostProfileEditForm = forwardRef<
     async (values: HostProfileFormValues) => {
       const token = await getToken();
       if (!token) {
-        toast.error("Debes iniciar sesión para guardar");
+        toast.error(t("dashboard.profile.hostProfile.toast.loginRequired"));
         throw new Error("No token");
       }
       const clerkImageUrl =
@@ -167,6 +185,7 @@ const HostProfileEditForm = forwardRef<
       const tipoName = values.tipoExperiencias.trim();
       const tiposExperiencia = tipoName ? [tipoName] : [];
       const body = {
+        locale: language,
         // Si el usuario ya tiene foto en Clerk, úsala como default en host_profiles
         image_url: values.image_url?.trim() || clerkImageUrl || undefined,
         intro: values.intro.trim() || undefined,
@@ -189,27 +208,32 @@ const HostProfileEditForm = forwardRef<
         tiposExperiencia,
         idiomas: values.idiomas,
       };
-      const updated = await patchHostProfile(token, body);
-      setLoadedProfile(updated);
-      form.reset(profileToFormValues(updated));
+      await patchHostProfile(token, body);
+      if (userId) {
+        const refreshed = await fetchHostPublicProfile(userId, language);
+        setLoadedProfile(refreshed);
+        form.reset(profileToFormValues(refreshed));
+      }
     },
-    [getToken, form, user, userLoaded],
+    [getToken, form, user, userLoaded, t, language, userId],
   );
 
   const loadProfile = useCallback(async () => {
     if (!userId) return;
     setLoadError(null);
     try {
-      const p = await fetchHostPublicProfile(userId);
+      const p = await fetchHostPublicProfile(userId, language);
       setLoadedProfile(p);
       form.reset(profileToFormValues(p));
     } catch (e) {
       setLoadedProfile(null);
       setLoadError(
-        e instanceof Error ? e.message : "No se pudo cargar el perfil",
+        e instanceof Error
+          ? e.message
+          : t("dashboard.profile.hostProfile.errors.loadFailed"),
       );
     }
-  }, [userId, form]);
+  }, [userId, form, t, language]);
 
   useImperativeHandle(
     ref,
@@ -293,9 +317,13 @@ const HostProfileEditForm = forwardRef<
   async function onSubmitHostOnly(values: HostProfileFormValues) {
     try {
       await persistHostProfile(values);
-      toast.success("Perfil de operador actualizado");
+      toast.success(t("dashboard.profile.hostProfile.toast.updated"));
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Error al guardar");
+      toast.error(
+        e instanceof Error
+          ? e.message
+          : t("dashboard.profile.hostProfile.toast.saveError"),
+      );
     }
   }
 
@@ -303,15 +331,15 @@ const HostProfileEditForm = forwardRef<
     const inner = (
       <div className="flex items-center gap-2 text-muted-foreground text-sm py-2">
         <Loader2 className="h-4 w-4 animate-spin" />
-        Comprobando permisos…
+        {t("dashboard.profile.hostProfile.checkingPermissions")}
       </div>
     );
     if (embedded) return inner;
     return (
       <Card className="mt-8">
         <CardHeader>
-          <CardTitle>Perfil de operador</CardTitle>
-          <CardDescription>Cargando…</CardDescription>
+          <CardTitle>{t("dashboard.profile.hostProfile.title")}</CardTitle>
+          <CardDescription>{t("dashboard.profile.hostProfile.loading")}</CardDescription>
         </CardHeader>
         <CardContent>{inner}</CardContent>
       </Card>
@@ -340,7 +368,7 @@ const HostProfileEditForm = forwardRef<
       return (
         <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4">
           <h3 className="text-lg md:text-xl font-semibold tracking-tight">
-            Perfil de operador
+            {t("dashboard.profile.hostProfile.title")}
           </h3>
           {inner}
         </div>
@@ -349,9 +377,9 @@ const HostProfileEditForm = forwardRef<
     return (
       <Card className="mt-8 border-destructive/40">
         <CardHeader>
-          <CardTitle>Perfil de operador</CardTitle>
+          <CardTitle>{t("dashboard.profile.hostProfile.title")}</CardTitle>
           <CardDescription>
-            Solo visible para cuentas con rol de anfitrión.
+            {t("dashboard.profile.hostProfile.hostOnlyHint")}
           </CardDescription>
         </CardHeader>
         <CardContent>{inner}</CardContent>
@@ -361,34 +389,19 @@ const HostProfileEditForm = forwardRef<
 
   const fieldsInner = (
     <>
-      <FormField
-        control={form.control}
-        name="image_url"
-        render={({ field }) => (
-          <FormItem className="space-y-2">
-            <FormLabel className="text-xs">Foto (URL)</FormLabel>
-            <FormControl>
-              <Input
-                placeholder="https://..."
-                className="text-sm"
-                {...field}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
       <div className="grid gap-3 sm:grid-cols-2 sm:items-start">
         <FormField
           control={form.control}
           name="intro"
           render={({ field }) => (
             <FormItem className="space-y-2">
-              <FormLabel className="text-xs">Introducción</FormLabel>
+              <FormLabel className="text-xs">
+                {t("dashboard.profile.hostProfile.introLabel")}
+              </FormLabel>
               <FormControl>
                 <Input
                   maxLength={220}
-                  placeholder="Breve presentación"
+                  placeholder={t("dashboard.profile.hostProfile.introPlaceholder")}
                   className="resize-none text-sm leading-snug"
                   {...field}
                 />
@@ -402,11 +415,13 @@ const HostProfileEditForm = forwardRef<
           name="estilo"
           render={({ field }) => (
             <FormItem className="space-y-2">
-              <FormLabel className="text-xs">Estilo</FormLabel>
+              <FormLabel className="text-xs">
+                {t("dashboard.profile.hostProfile.styleLabel")}
+              </FormLabel>
               <FormControl>
                 <Input
                   maxLength={220}
-                  placeholder="Ej. Grupos pequeños"
+                  placeholder={t("dashboard.profile.hostProfile.stylePlaceholder")}
                   className="text-sm"
                   {...field}
                 />
@@ -422,12 +437,14 @@ const HostProfileEditForm = forwardRef<
         name="descripcion"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-xs">Descripción</FormLabel>
+            <FormLabel className="text-xs">
+              {t("dashboard.profile.hostProfile.descriptionLabel")}
+            </FormLabel>
             <FormControl>
               <Textarea
                 rows={2}
                 maxLength={520}
-                placeholder="Enfoque y valores"
+                placeholder={t("dashboard.profile.hostProfile.descriptionPlaceholder")}
                 className="resize-none min-h-[5.5rem] text-sm leading-snug"
                 {...field}
               />
@@ -443,7 +460,9 @@ const HostProfileEditForm = forwardRef<
           name="anosExperiencia"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs">Años de experiencia</FormLabel>
+              <FormLabel className="text-xs">
+                {t("dashboard.profile.hostProfile.yearsLabel")}
+              </FormLabel>
               <FormControl>
                 <Input
                   type="number"
@@ -478,7 +497,9 @@ const HostProfileEditForm = forwardRef<
           name="especialidad"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs">Especialidad</FormLabel>
+              <FormLabel className="text-xs">
+                {t("dashboard.profile.hostProfile.specialtyLabel")}
+              </FormLabel>
               <Select
                 disabled={loadingCategories || !categories.length}
                 value={field.value}
@@ -486,7 +507,9 @@ const HostProfileEditForm = forwardRef<
               >
                 <FormControl>
                   <SelectTrigger className="text-sm h-9">
-                    <SelectValue placeholder="Categoría" />
+                    <SelectValue
+                      placeholder={t("dashboard.profile.hostProfile.specialtyPlaceholder")}
+                    />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -511,7 +534,9 @@ const HostProfileEditForm = forwardRef<
           name="tipoExperiencias"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs">Tipo de experiencias</FormLabel>
+              <FormLabel className="text-xs">
+                {t("dashboard.profile.hostProfile.experienceTypeLabel")}
+              </FormLabel>
               <Select
                 disabled={loadingTypes || !productTypes.length}
                 value={field.value}
@@ -519,7 +544,11 @@ const HostProfileEditForm = forwardRef<
               >
                 <FormControl>
                   <SelectTrigger className="text-sm h-9">
-                    <SelectValue placeholder="Tipo de producto" />
+                    <SelectValue
+                      placeholder={t(
+                        "dashboard.profile.hostProfile.experienceTypePlaceholder",
+                      )}
+                    />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -544,7 +573,9 @@ const HostProfileEditForm = forwardRef<
         name="idiomas"
         render={({ field }) => (
           <FormItem>
-            <FormLabel className="text-xs">Idiomas</FormLabel>
+            <FormLabel className="text-xs">
+              {t("dashboard.profile.hostProfile.languagesLabel")}
+            </FormLabel>
             <Popover>
               <PopoverTrigger asChild>
                 <FormControl>
@@ -556,7 +587,7 @@ const HostProfileEditForm = forwardRef<
                     <span className="truncate text-left">
                       {field.value.length
                         ? field.value.join(", ")
-                        : "Selecciona idiomas"}
+                        : t("dashboard.profile.hostProfile.languagesPlaceholder")}
                     </span>
                     <ChevronDown className="h-4 w-4 shrink-0 opacity-60" />
                   </Button>
@@ -615,10 +646,10 @@ const HostProfileEditForm = forwardRef<
             {form.formState.isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Guardando…
+                {t("dashboard.profile.hostProfile.saving")}
               </>
             ) : (
-              "Guardar perfil de operador"
+              t("dashboard.profile.hostProfile.save")
             )}
           </Button>
           <Button
@@ -630,7 +661,7 @@ const HostProfileEditForm = forwardRef<
               loadedProfile && form.reset(profileToFormValues(loadedProfile))
             }
           >
-            Deshacer
+            {t("dashboard.profile.hostProfile.undo")}
           </Button>
         </div>
       ) : null}
@@ -657,11 +688,10 @@ const HostProfileEditForm = forwardRef<
       <div className="space-y-3">
         <div className="space-y-1.5">
           <h3 className="text-lg md:text-xl font-semibold leading-none tracking-tight">
-            Perfil de operador
+            {t("dashboard.profile.hostProfile.title")}
           </h3>
           <p className="text-sm text-muted-foreground">
-            Lo que muestras en la página pública de tus tours: cómo te
-            presentas, tu experiencia y en qué idiomas atiendes a los viajeros.
+            {t("dashboard.profile.hostProfile.subtitleEmbedded")}
           </p>
         </div>
         {formBody}
@@ -672,10 +702,11 @@ const HostProfileEditForm = forwardRef<
   return (
     <Card className="mt-8">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg">Perfil de operador</CardTitle>
+        <CardTitle className="text-lg">
+          {t("dashboard.profile.hostProfile.title")}
+        </CardTitle>
         <CardDescription>
-          Lo que muestras en la página pública de tus tours: presentación,
-          experiencia e idiomas de atención.
+          {t("dashboard.profile.hostProfile.subtitleCard")}
         </CardDescription>
       </CardHeader>
       <CardContent>{formBody}</CardContent>

@@ -54,6 +54,47 @@
       "lastNameMin": "El apellido debe tener al menos 2 caracteres.",
       "usernameMin": "El nombre de usuario debe tener al menos 3 caracteres.",
       "phoneInvalid": "Introduce un número de teléfono válido con prefijo internacional."
+    },
+    "hostProfile": {
+      "title": "Perfil de operador",
+      "subtitleEmbedded": "Lo que muestras en la página pública de tus tours: cómo te presentas, tu experiencia y en qué idiomas atiendes a los viajeros.",
+      "subtitleCard": "Lo que muestras en la página pública de tus tours: presentación, experiencia e idiomas de atención.",
+      "checkingPermissions": "Comprobando permisos…",
+      "loading": "Cargando…",
+      "hostOnlyHint": "Solo visible para cuentas con rol de anfitrión.",
+      "retry": "Reintentar",
+      "photoLabel": "Foto (URL)",
+      "photoPlaceholder": "https://...",
+      "introLabel": "Introducción",
+      "introPlaceholder": "Breve presentación",
+      "styleLabel": "Estilo",
+      "stylePlaceholder": "Ej. Grupos pequeños",
+      "descriptionLabel": "Descripción",
+      "descriptionPlaceholder": "Enfoque y valores",
+      "yearsLabel": "Años de experiencia",
+      "specialtyLabel": "Especialidad",
+      "specialtyPlaceholder": "Categoría",
+      "experienceTypeLabel": "Tipo de experiencias",
+      "experienceTypePlaceholder": "Tipo de producto",
+      "languagesLabel": "Idiomas",
+      "languagesPlaceholder": "Selecciona idiomas",
+      "save": "Guardar perfil de operador",
+      "saving": "Guardando…",
+      "undo": "Deshacer",
+      "toast": {
+        "loginRequired": "Debes iniciar sesión para guardar",
+        "updated": "Perfil de operador actualizado",
+        "saveError": "Error al guardar"
+      },
+      "errors": {
+        "validUrl": "Debe ser una URL válida",
+        "min0": "Mínimo 0",
+        "max80": "Máximo 80",
+        "pickCategory": "Elige una categoría",
+        "pickType": "Elige un tipo",
+        "pickAtLeastOneLanguage": "Elige al menos un idioma",
+        "loadFailed": "No se pudo cargar el perfil"
+      }
     }
   },
   "nav": {

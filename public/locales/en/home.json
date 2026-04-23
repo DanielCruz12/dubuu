@@ -164,6 +164,29 @@
     "srInfo": "Review information",
     "reviewAvailableFrom": "You can leave your review from {date} onwards (your reservation date)."
   },
+  "organizer": {
+    "title": "Who organizes this tour",
+    "noHostInfo": "There is no host information for this product.",
+    "loadErrorTitle": "Could not load profile",
+    "loadErrorFallbackUser": "User:",
+    "online": "Online",
+    "roleBadge": "Tour operator",
+    "operatorInfoTitle": "Operator information",
+    "experienceTypesTitle": "Experience types",
+    "languagesTitle": "Languages",
+    "emptyValue": "—",
+    "details": {
+      "specialty": "Specialty",
+      "experience_types": "Experience type",
+      "style": "Style"
+    },
+    "stats": {
+      "tours_one": "{count} tour",
+      "tours_other": "{count} tours",
+      "years_one": "{count} year of experience",
+      "years_other": "{count} years of experience"
+    }
+  },
   "imageCollage": {
     "image": "Image",
     "bannerAlt": "Banner image",

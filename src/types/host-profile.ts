@@ -33,6 +33,8 @@ export interface HostProfileApiErrorBody {
 
 /** Cuerpo PATCH (campos opcionales, nombres en español). */
 export interface HostProfilePatchBody {
+  /** Idioma de la UI (se usa para guardar la traducción actual). */
+  locale: "es" | "en" | (string & {});
   /** URL pública de la imagen de perfil (snake_case como backend). */
   image_url?: string;
   intro?: string;

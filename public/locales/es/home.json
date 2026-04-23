@@ -164,6 +164,29 @@
     "srInfo": "Información sobre reseñas",
     "reviewAvailableFrom": "Podrás dejar tu reseña a partir del {date} (fecha de tu reserva)."
   },
+  "organizer": {
+    "title": "Quién organiza este tour",
+    "noHostInfo": "No hay información del anfitrión para este producto.",
+    "loadErrorTitle": "No se pudo cargar el perfil",
+    "loadErrorFallbackUser": "Usuario:",
+    "online": "En línea",
+    "roleBadge": "Operador turístico",
+    "operatorInfoTitle": "Información del operador",
+    "experienceTypesTitle": "Tipos de experiencia",
+    "languagesTitle": "Idiomas",
+    "emptyValue": "—",
+    "details": {
+      "specialty": "Especialidad",
+      "experience_types": "Tipo de experiencias",
+      "style": "Estilo"
+    },
+    "stats": {
+      "tours_one": "{count} tour",
+      "tours_other": "{count} tours",
+      "years_one": "{count} año de experiencia",
+      "years_other": "{count} años de experiencia"
+    }
+  },
   "imageCollage": {
     "image": "Imagen",
     "bannerAlt": "Imagen del banner",
