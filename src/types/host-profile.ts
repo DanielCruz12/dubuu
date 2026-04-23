@@ -33,7 +33,22 @@ export interface HostProfileApiErrorBody {
 
 /** Cuerpo PATCH (campos opcionales, nombres en español). */
 export interface HostProfilePatchBody {
+  /** URL pública de la imagen de perfil (snake_case como backend). */
+  image_url?: string;
   intro?: string;
+  /**
+   * Nuevo shape backend (snake_case).
+   * Mantenemos los campos "viejos" abajo por compatibilidad.
+   */
+  description?: string;
+  years_experience?: number;
+  specialty?: string;
+  experience_summary?: string;
+  hosting_style?: string;
+  experience_tags?: string[];
+  languages?: string[];
+
+  /** Compatibilidad (legacy) */
   descripcion?: string;
   anosExperiencia?: number;
   especialidad?: string;

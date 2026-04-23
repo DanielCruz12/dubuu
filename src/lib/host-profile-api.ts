@@ -112,12 +112,38 @@ export function normalizeHostPublicProfile(raw: unknown): HostPublicProfile {
     calificacion: nullableStr(pick("calificacion", "rating", "average_rating")),
     totalEvaluaciones: num(pick("totalEvaluaciones", "total_evaluaciones"), 0),
     totalTours: num(pick("totalTours", "total_tours"), 0),
-    anosExperiencia: num(pick("anosExperiencia", "anos_experiencia"), 0),
+    anosExperiencia: num(
+      pick("anosExperiencia", "anos_experiencia", "years_experience"),
+      0,
+    ),
     intro: str(pick("intro"), ""),
     descripcion: str(pick("descripcion", "description"), ""),
-    detalles: normalizeDetalles(pick("detalles", "details")),
+    detalles: (() => {
+      const d = normalizeDetalles(pick("detalles", "details"));
+      if (d.length) return d;
+
+      // Nuevo formato backend: campos planos (snake_case).
+      const specialty = str(pick("specialty"), "").trim();
+      const expSummary = str(pick("experience_summary"), "").trim();
+      const hostingStyle = str(pick("hosting_style"), "").trim();
+      const out: HostProfileDetail[] = [];
+      if (specialty) {
+        out.push({ key: "specialty", label: "Especialidad", value: specialty });
+      }
+      if (expSummary) {
+        out.push({
+          key: "experience_types",
+          label: "Tipo de experiencias",
+          value: expSummary,
+        });
+      }
+      if (hostingStyle) {
+        out.push({ key: "style", label: "Estilo", value: hostingStyle });
+      }
+      return out;
+    })(),
     tiposExperiencia: normalizeStringArray(
-      pick("tiposExperiencia", "tipos_experiencia"),
+      pick("tiposExperiencia", "tipos_experiencia", "experience_tags"),
     ),
     idiomas: normalizeStringArray(pick("idiomas", "languages")),
   };

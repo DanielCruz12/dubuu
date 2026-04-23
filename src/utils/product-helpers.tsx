@@ -1,16 +1,6 @@
 import type { IProduct, ITourProduct } from "@/types/product";
 import type { IRentalProduct } from "@/types/rental";
-
-export function isProductType<T extends string>(
-  product: IProduct,
-  type: T
-): product is T extends "tours"
-  ? ITourProduct
-  : T extends "rental"
-    ? IRentalProduct
-    : never {
-  return product.product_type.name.toLowerCase() === type.toLowerCase();
-}
+import { isProductType } from "@/utils";
 
 export function isTourProduct(product: IProduct): product is ITourProduct {
   return isProductType(product, "tours");
@@ -18,6 +8,20 @@ export function isTourProduct(product: IProduct): product is ITourProduct {
 
 export function isRentalProduct(product: IProduct): product is IRentalProduct {
   return isProductType(product, "rental");
+}
+
+export function getProductDisplayPrice(product: IProduct): number {
+  const direct = Number(product.price);
+  if (Number.isFinite(direct) && direct > 0) return direct;
+
+  if (isTourProduct(product)) {
+    const prices = (product.tour?.tour_dates ?? [])
+      .map((d) => Number(d?.price))
+      .filter((n) => Number.isFinite(n) && n > 0);
+    if (prices.length > 0) return Math.min(...prices);
+  }
+
+  return 0;
 }
 
 export function getProductLocationData(product: IProduct): {

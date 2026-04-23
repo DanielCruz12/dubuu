@@ -37,6 +37,7 @@ import UpTop from "@/components/up-top";
 import { ShareModal } from "@/components/share-modal";
 import { formatUsd, USD_SYMBOL } from "@/utils/currency";
 import { useLanguage } from "@/lib/i18n-context";
+import { getProductDisplayPrice } from "@/utils/product-helpers";
 
 export default function ProductBooking() {
   const { t } = useLanguage();
@@ -133,6 +134,7 @@ export default function ProductBooking() {
     (b) => b.product_id === product.id,
   );
   const isTour = isProductType(product, "tours");
+  const displayPrice = getProductDisplayPrice(product);
 
   return (
     <div className="mx-auto md:px-0">
@@ -175,7 +177,7 @@ export default function ProductBooking() {
               className="md:p-2 text-xl md:text-[2rem]"
             >
               {symbol}
-              {convert(product.price)}
+              {convert(displayPrice)}
             </Badge>
             <span className="text-sm font-normal">Por persona</span>
           </div>

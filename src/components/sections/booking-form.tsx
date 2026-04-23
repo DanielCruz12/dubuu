@@ -33,6 +33,7 @@ import { getHostEarningsFromFinalPrice } from "@/lib/price";
 import "moment/locale/es";
 import { formatUsd, USD_SYMBOL } from "@/utils/currency";
 import { useLanguage } from "@/lib/i18n-context";
+import { getProductDisplayPrice } from "@/utils/product-helpers";
 
 function getBookingFormSchema(t: (key: string) => string) {
   return z.object({
@@ -48,11 +49,13 @@ type FormData = z.infer<ReturnType<typeof getBookingFormSchema>>;
 
 export default function BookingForm({
   product,
+  displayPrice,
   setShowPaymentStep,
   setBookingData,
   showPaymentStep,
 }: {
   product: IProduct;
+  displayPrice?: number;
   setShowPaymentStep: () => void;
   setBookingData: (data: {
     datetime: string;
@@ -68,6 +71,20 @@ export default function BookingForm({
   const { user } = useUser();
   const convert = formatUsd;
   const symbol = USD_SYMBOL;
+
+  const [selectedDatePrice, setSelectedDatePrice] = useState<number | null>(
+    null,
+  );
+
+  const fallbackPrice =
+    typeof displayPrice === "number" && Number.isFinite(displayPrice)
+      ? displayPrice
+      : getProductDisplayPrice(product);
+
+  const unitPrice =
+    typeof selectedDatePrice === "number" && Number.isFinite(selectedDatePrice)
+      ? selectedDatePrice
+      : fallbackPrice;
 
   const datetimeRef = useRef<HTMLDivElement>(null);
 
@@ -94,6 +111,7 @@ export default function BookingForm({
           maxPeople: dateObj.max_people,
           peopleBooked: dateObj.people_booked,
           availableSpots: dateObj.max_people - dateObj.people_booked,
+          price: typeof dateObj.price === "number" ? dateObj.price : null,
         }))
     : [];
 
@@ -123,7 +141,7 @@ export default function BookingForm({
       datetime: watchData.datetime,
       tickets: watchData.tickets,
       addons: watchData.addons,
-      total: product.price * watchData.tickets.adult,
+      total: unitPrice * watchData.tickets.adult,
       user_id: user.id,
       product_id: product.id,
     });
@@ -185,6 +203,9 @@ export default function BookingForm({
                       peopleBooked: selectedDate.peopleBooked,
                       availableSpots: selectedDate.availableSpots,
                     });
+                    setSelectedDatePrice(selectedDate.price);
+                  } else {
+                    setSelectedDatePrice(null);
                   }
                 }}
                 value={field.value}
@@ -232,7 +253,7 @@ export default function BookingForm({
             <span>{t("home.bookingForm.adults")}</span>
             <div className="flex items-center gap-2">
               {symbol}
-              {convert(product.price)}
+              {convert(unitPrice)}
               <Controller
                 control={control}
                 name="tickets.adult"
@@ -280,7 +301,7 @@ export default function BookingForm({
 
         <div className="pt-4 border-t dark:border-muted space-y-3">
           {(() => {
-            const price = convert(product.price);
+            const price = convert(unitPrice);
             const adultTickets = watchData.tickets.adult;
             const breakdown = getHostEarningsFromFinalPrice(
               price,

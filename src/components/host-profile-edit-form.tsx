@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { useAuth } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -59,6 +60,7 @@ import {
 } from "@/components/ui/popover";
 
 const hostProfileFormSchema = z.object({
+  image_url: z.string().url("Debe ser una URL válida").optional().or(z.literal("")),
   intro: z.string().max(220),
   descripcion: z.string().max(520),
   anosExperiencia: z.coerce
@@ -89,6 +91,7 @@ function profileToFormValues(
   if (!idiomas.length) idiomas = ["Español"];
 
   return {
+    image_url: profile.imageUrl ?? "",
     intro: profile.intro ?? "",
     descripcion: profile.descripcion ?? "",
     anosExperiencia: profile.anosExperiencia ?? 0,
@@ -119,6 +122,7 @@ const HostProfileEditForm = forwardRef<
 ) {
   const { hasRole, isLoadingRole } = useClerkToken();
   const { userId, getToken, isLoaded: authLoaded } = useAuth();
+  const { user, isLoaded: userLoaded } = useUser();
   const [loadError, setLoadError] = useState<string | null>(null);
   const [loadedProfile, setLoadedProfile] = useState<HostPublicProfile | null>(
     null,
@@ -158,10 +162,25 @@ const HostProfileEditForm = forwardRef<
         toast.error("Debes iniciar sesión para guardar");
         throw new Error("No token");
       }
+      const clerkImageUrl =
+        userLoaded && user?.imageUrl?.trim() ? user.imageUrl.trim() : undefined;
       const tipoName = values.tipoExperiencias.trim();
       const tiposExperiencia = tipoName ? [tipoName] : [];
       const body = {
+        // Si el usuario ya tiene foto en Clerk, úsala como default en host_profiles
+        image_url: values.image_url?.trim() || clerkImageUrl || undefined,
         intro: values.intro.trim() || undefined,
+
+        // Nuevo shape backend (snake_case)
+        description: values.descripcion.trim() || undefined,
+        years_experience: values.anosExperiencia,
+        specialty: values.especialidad.trim() || undefined,
+        experience_summary: tipoName || undefined,
+        hosting_style: values.estilo.trim() || undefined,
+        experience_tags: tiposExperiencia,
+        languages: values.idiomas,
+
+        // Legacy (por si algún endpoint viejo lo sigue esperando)
         descripcion: values.descripcion.trim() || undefined,
         anosExperiencia: values.anosExperiencia,
         especialidad: values.especialidad.trim() || undefined,
@@ -174,7 +193,7 @@ const HostProfileEditForm = forwardRef<
       setLoadedProfile(updated);
       form.reset(profileToFormValues(updated));
     },
-    [getToken, form],
+    [getToken, form, user, userLoaded],
   );
 
   const loadProfile = useCallback(async () => {
@@ -342,6 +361,23 @@ const HostProfileEditForm = forwardRef<
 
   const fieldsInner = (
     <>
+      <FormField
+        control={form.control}
+        name="image_url"
+        render={({ field }) => (
+          <FormItem className="space-y-2">
+            <FormLabel className="text-xs">Foto (URL)</FormLabel>
+            <FormControl>
+              <Input
+                placeholder="https://..."
+                className="text-sm"
+                {...field}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
       <div className="grid gap-3 sm:grid-cols-2 sm:items-start">
         <FormField
           control={form.control}
