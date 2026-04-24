@@ -70,7 +70,7 @@
     "datetimePlaceholder": "Select date and time",
     "ticketsLabel": "Tickets",
     "adults": "Adults",
-    "perPerson": "por persona",
+    "perPerson": "per person",
     "pricePerPerson": "Price",
     "subtotal": "Subtotal",
     "total": "Total",
@@ -89,7 +89,7 @@
       "minOneTicket": "Minimum 1 ticket"
     },
     "noDates": "No dates available",
-    "available": "disp.",
+    "available": "avail.",
     "soldOut": "Sold out",
     "toast": {
       "loginRequired": "You must sign in to continue with the booking",
@@ -119,6 +119,8 @@
     "tickets": "Tickets",
     "adult": "adult",
     "adults": "adults",
+    "buyAnotherTicket": "Buy another ticket",
+    "viewMyTickets": "View my tickets",
     "rebook": "Book again",
     "downloadReceipt": "Download receipt",
     "receiptNotes": "Thank you for trusting our services. This receipt serves as proof of payment."

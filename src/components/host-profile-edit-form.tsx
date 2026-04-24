@@ -17,9 +17,9 @@ import { ChevronDown, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import type { HostPublicProfile } from "@/types/host-profile";
 import {
-  fetchHostPublicProfile,
-  patchHostProfile,
-} from "@/lib/host-profile-api";
+  useLazyGetHostPublicProfileQuery,
+  usePatchHostProfileMutation,
+} from "@/redux/slices/host/host-profile-slice";
 import { useClerkToken } from "@/components/providers/auth-provider";
 import { useGetProductCategoriesQuery } from "@/redux/slices/product/product-category";
 import { useGetProductTypesQuery } from "@/redux/slices/product/product-types";
@@ -144,6 +144,8 @@ const HostProfileEditForm = forwardRef<
   const [loadedProfile, setLoadedProfile] = useState<HostPublicProfile | null>(
     null,
   );
+  const [triggerFetchProfile] = useLazyGetHostPublicProfileQuery();
+  const [patchProfile] = usePatchHostProfileMutation();
 
   const { data: categories = [], isLoading: loadingCategories } =
     useGetProductCategoriesQuery();
@@ -208,21 +210,31 @@ const HostProfileEditForm = forwardRef<
         tiposExperiencia,
         idiomas: values.idiomas,
       };
-      await patchHostProfile(token, body);
+      await patchProfile({ token, body }).unwrap();
       if (userId) {
-        const refreshed = await fetchHostPublicProfile(userId, language);
+        const refreshed = await triggerFetchProfile({ userId }).unwrap();
         setLoadedProfile(refreshed);
         form.reset(profileToFormValues(refreshed));
       }
     },
-    [getToken, form, user, userLoaded, t, language, userId],
+    [
+      getToken,
+      form,
+      user,
+      userLoaded,
+      t,
+      language,
+      userId,
+      patchProfile,
+      triggerFetchProfile,
+    ],
   );
 
   const loadProfile = useCallback(async () => {
     if (!userId) return;
     setLoadError(null);
     try {
-      const p = await fetchHostPublicProfile(userId, language);
+      const p = await triggerFetchProfile({ userId }).unwrap();
       setLoadedProfile(p);
       form.reset(profileToFormValues(p));
     } catch (e) {
@@ -233,7 +245,7 @@ const HostProfileEditForm = forwardRef<
           : t("dashboard.profile.hostProfile.errors.loadFailed"),
       );
     }
-  }, [userId, form, t, language]);
+  }, [userId, form, t, triggerFetchProfile]);
 
   useImperativeHandle(
     ref,

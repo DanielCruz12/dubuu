@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Link2, MapPin, User } from "lucide-react";
 import type { HostProfileDetailKey, HostPublicProfile } from "@/types/host-profile";
-import { fetchHostPublicProfile } from "@/lib/host-profile-api";
+import { useGetHostPublicProfileQuery } from "@/redux/slices/host/host-profile-slice";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -99,38 +99,15 @@ export default function HostTourOrganizer({
   fallbackUsername,
   fallbackImageUrl,
 }: HostTourOrganizerProps) {
-  const { t, language } = useLanguage();
-  const [profile, setProfile] = useState<HostPublicProfile | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const data = await fetchHostPublicProfile(hostUserId, language);
-        if (!cancelled) {
-          setProfile(data);
-        }
-      } catch (e) {
-        if (!cancelled) {
-          setProfile(null);
-          setError(
-            e instanceof Error
-              ? e.message
-              : t("home.organizer.loadErrorTitle"),
-          );
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [hostUserId, t, language]);
+  const { t } = useLanguage();
+  const {
+    data: profile,
+    isLoading: loading,
+    error,
+  } = useGetHostPublicProfileQuery(
+    { userId: hostUserId },
+    { skip: !hostUserId },
+  );
 
   const statsLine = useMemo(() => {
     if (!profile) return null;
@@ -157,6 +134,12 @@ export default function HostTourOrganizer({
 
   if (error || !profile) {
     const fb = fallbackUsername?.trim();
+    const message =
+      error && typeof error === "object" && "data" in error
+        ? String((error as { data?: unknown }).data ?? "")
+        : error && typeof error === "object" && "error" in error
+          ? String((error as { error?: unknown }).error ?? "")
+          : "";
     return (
       <div className="mt-12 space-y-4">
         <h2 className="text-xl md:text-2xl font-semibold">
@@ -166,7 +149,9 @@ export default function HostTourOrganizer({
           <p className="font-medium text-destructive">
             {t("home.organizer.loadErrorTitle")}
           </p>
-          <p className="text-muted-foreground mt-1">{error}</p>
+          <p className="text-muted-foreground mt-1">
+            {message || t("home.organizer.loadErrorTitle")}
+          </p>
           {fb ? (
             <p className="mt-3 text-muted-foreground">
               {t("home.organizer.loadErrorFallbackUser")}{" "}

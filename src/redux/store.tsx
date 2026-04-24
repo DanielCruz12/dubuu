@@ -38,6 +38,7 @@ import { productCategoriesApiSlice } from "@/redux/slices/product/product-catego
 import { productAmenitiesApiSlice } from "@/redux/slices/product/product-amenity";
 import { productAudiencesApiSlice } from "@/redux/slices/product/product-audience";
 import searchReducer from "@/redux/slices/product/search/search-slice";
+import { hostProfileApiSlice } from "@/redux/slices/host/host-profile-slice";
 
 import authReducer from "./slices/auth/auth-slice";
 import { panelApiSlice } from "./slices/panel/panel-slice";
@@ -101,6 +102,7 @@ const rootReducer = combineReducers({
   [productAmenitiesApiSlice.reducerPath]: productAmenitiesApiSlice.reducer,
   [productAudiencesApiSlice.reducerPath]: productAudiencesApiSlice.reducer,
   [panelApiSlice.reducerPath]: panelApiSlice.reducer,
+  [hostProfileApiSlice.reducerPath]: hostProfileApiSlice.reducer,
   auth: authReducer,
   search: searchReducer,
 });
@@ -130,6 +132,7 @@ export const makeStore = () =>
         productAmenitiesApiSlice.middleware,
         productAudiencesApiSlice.middleware,
         panelApiSlice.middleware,
+        hostProfileApiSlice.middleware,
       ),
   });
 
@@ -157,6 +160,7 @@ export function invalidateApiCacheOnLocaleChange() {
       usersApiSlice,
       paymentApiSlice,
       paymentAccountApiSlice,
+      hostProfileApiSlice,
     ].forEach((slice) => {
       dispatch(slice.util.resetApiState());
     });

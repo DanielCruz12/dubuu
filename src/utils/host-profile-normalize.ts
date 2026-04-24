@@ -1,8 +1,6 @@
 import type {
-  HostProfileApiErrorBody,
   HostProfileDetail,
   HostProfileDetailKey,
-  HostProfilePatchBody,
   HostPublicProfile,
 } from "@/types/host-profile";
 
@@ -62,10 +60,7 @@ function normalizeDetalles(v: unknown): HostProfileDetail[] {
   return out;
 }
 
-function pickRecord(
-  rec: Record<string, unknown>,
-  ...keys: string[]
-): unknown {
+function pickRecord(rec: Record<string, unknown>, ...keys: string[]): unknown {
   for (const k of keys) {
     if (!(k in rec)) continue;
     const v = rec[k];
@@ -149,107 +144,3 @@ export function normalizeHostPublicProfile(raw: unknown): HostPublicProfile {
   };
 }
 
-function trimTrailingSlash(s: string) {
-  return s.replace(/\/$/, "");
-}
-
-/**
- * URL absoluta `/api/v1/...` para usar en `fetch` desde el navegador o el servidor.
- * - Cliente: `NEXT_PUBLIC_API_URL` si existe; si no, rewrite `/backend/api/v1/...`.
- * - Servidor: misma env o `BACKEND_URL` / localhost por defecto.
- */
-export function apiV1AbsoluteUrl(pathWithinV1: string): string {
-  const part = pathWithinV1.startsWith("/")
-    ? pathWithinV1
-    : `/${pathWithinV1}`;
-
-  const publicBase = process.env.NEXT_PUBLIC_API_URL
-    ? trimTrailingSlash(process.env.NEXT_PUBLIC_API_URL)
-    : "";
-
-  if (typeof window !== "undefined") {
-    if (publicBase) return `${publicBase}/api/v1${part}`;
-    return `/backend/api/v1${part}`;
-  }
-
-  const serverBase =
-    publicBase ||
-    trimTrailingSlash(
-      process.env.BACKEND_URL?.trim() || "http://localhost:3002",
-    );
-  return `${serverBase}/api/v1${part}`;
-}
-
-export function hostPublicProfileUrl(userId: string): string {
-  return apiV1AbsoluteUrl(
-    `/hosts/${encodeURIComponent(userId)}/profile`,
-  );
-}
-
-function withLocale(url: string, locale?: string): string {
-  const l = (locale ?? "").trim();
-  if (!l) return url;
-  const u = new URL(url, typeof window !== "undefined" ? window.location.origin : "http://localhost");
-  u.searchParams.set("locale", l);
-  return u.toString();
-}
-
-export function hostAuthenticatedProfileUrl(): string {
-  return apiV1AbsoluteUrl("/hosts/profile");
-}
-
-export async function readApiErrorMessage(res: Response): Promise<string> {
-  try {
-    const body = (await res.json()) as Partial<HostProfileApiErrorBody>;
-    if (body?.message && typeof body.message === "string") {
-      return body.message;
-    }
-  } catch {
-    /* ignore */
-  }
-  return `Error HTTP ${res.status}`;
-}
-
-export async function fetchHostPublicProfile(
-  userId: string,
-  locale: string,
-  init?: RequestInit,
-): Promise<HostPublicProfile> {
-  const res = await fetch(withLocale(hostPublicProfileUrl(userId), locale), {
-    ...init,
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      ...init?.headers,
-    },
-    cache: init?.cache ?? "no-store",
-  });
-  if (!res.ok) {
-    throw new Error(await readApiErrorMessage(res));
-  }
-  const json: unknown = await res.json();
-  return normalizeHostPublicProfile(json);
-}
-
-export async function patchHostProfile(
-  token: string,
-  body: HostProfilePatchBody,
-  init?: RequestInit,
-): Promise<HostPublicProfile> {
-  const res = await fetch(hostAuthenticatedProfileUrl(), {
-    ...init,
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-      ...init?.headers,
-    },
-    body: JSON.stringify(body),
-    cache: "no-store",
-  });
-  if (!res.ok) {
-    throw new Error(await readApiErrorMessage(res));
-  }
-  const json: unknown = await res.json();
-  return normalizeHostPublicProfile(json);
-}

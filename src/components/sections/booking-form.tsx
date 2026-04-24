@@ -21,13 +21,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { FileText } from "lucide-react";
+import { CalendarCheck, FileText } from "lucide-react";
 import type { IProduct } from "@/types/product";
 import { Separator } from "../ui/separator";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { isProductType } from "@/utils";
-import { useState, useRef } from "react";
+import { useState, useRef, type ReactNode } from "react";
 import { getHostEarningsFromFinalPrice } from "@/lib/price";
 
 import "moment/locale/es";
@@ -53,6 +53,7 @@ export default function BookingForm({
   setShowPaymentStep,
   setBookingData,
   showPaymentStep,
+  extraActionBelowBookNow,
 }: {
   product: IProduct;
   displayPrice?: number;
@@ -66,11 +67,15 @@ export default function BookingForm({
     product_id: string;
   }) => void;
   showPaymentStep: boolean;
+  extraActionBelowBookNow?: ReactNode;
 }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { user } = useUser();
   const convert = formatUsd;
   const symbol = USD_SYMBOL;
+
+  const dateLabelFormat =
+    language === "es" ? "dddd, D [de] MMMM - h:mm A" : "dddd, MMM D - h:mm A";
 
   const [selectedDatePrice, setSelectedDatePrice] = useState<number | null>(
     null,
@@ -107,7 +112,7 @@ export default function BookingForm({
         )
         .map((dateObj) => ({
           value: dateObj.id,
-          label: moment(dateObj.date).format("dddd, D [de] MMMM - h:mm A"),
+          label: moment(dateObj.date).locale(language).format(dateLabelFormat),
           maxPeople: dateObj.max_people,
           peopleBooked: dateObj.people_booked,
           availableSpots: dateObj.max_people - dateObj.people_booked,
@@ -340,14 +345,18 @@ export default function BookingForm({
           })()}
 
           {!showPaymentStep && (
-            <Button
-              type="button"
-              variant={"default"}
-              className="w-full"
-              onClick={handleReserveClick}
-            >
-              {t("home.bookingForm.bookNow")}
-            </Button>
+            <>
+              <Button
+                type="button"
+                variant={"default"}
+                className="w-full"
+                onClick={handleReserveClick}
+              >
+                <CalendarCheck className="h-4 w-4 mr-2" />
+                {t("home.bookingForm.bookNow")}
+              </Button>
+              {extraActionBelowBookNow}
+            </>
           )}
         </div>
 

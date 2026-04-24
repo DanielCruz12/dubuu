@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { MapPin } from "lucide-react";
+import { MapPin, Ticket } from "lucide-react";
 import { toast } from "sonner";
 import ImageCollage from "@/components/sections/image-collage";
 import { useParams } from "next/navigation";
@@ -98,12 +98,21 @@ export default function ProductBooking() {
 
   const paymentRef = useRef<HTMLDivElement | null>(null);
   const [showPaymentStep, setShowPaymentStep] = useState(false);
+  const [showBookingFormAgain, setShowBookingFormAgain] = useState(false);
+  const [bookingFormKey, setBookingFormKey] = useState(0);
+  const bookingBoxRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (showPaymentStep && paymentRef.current) {
       paymentRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [showPaymentStep]);
+
+  useEffect(() => {
+    if (showBookingFormAgain && bookingBoxRef.current) {
+      bookingBoxRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [showBookingFormAgain]);
 
   const product = data as IProduct;
 
@@ -179,7 +188,7 @@ export default function ProductBooking() {
               {symbol}
               {convert(displayPrice)}
             </Badge>
-            <span className="text-sm font-normal">Por persona</span>
+            <span className="text-sm font-normal">{t("home.bookingForm.perPerson")}</span>
           </div>
         </div>
 
@@ -245,6 +254,7 @@ export default function ProductBooking() {
             }}
           >
             <div
+              ref={bookingBoxRef}
               className={clsx(
                 "rounded-lg mb-10",
                 existingBooking?.status === "completed"
@@ -256,7 +266,8 @@ export default function ProductBooking() {
                 <div>
                   <div className="hidden md:block">
                     {existingBooking &&
-                    existingBooking.status === "completed" ? (
+                    existingBooking.status === "completed" &&
+                    !showBookingFormAgain ? (
                       <BookingStatus
                         id={existingBooking.id}
                         status="completed"
@@ -276,15 +287,34 @@ export default function ProductBooking() {
                         }
                         onRebook={() => {
                           setShowPaymentStep(false);
+                          setBookingData(null);
+                          setShowBookingFormAgain(true);
+                          setBookingFormKey((k) => k + 1);
                         }}
                       />
                     ) : (
-                      <BookingForm
-                        setBookingData={setBookingData}
-                        showPaymentStep={showPaymentStep}
-                        setShowPaymentStep={() => setShowPaymentStep(true)}
-                        product={product}
-                      />
+                      <div className="space-y-2">
+                        <BookingForm
+                          key={`booking-form-${bookingFormKey}`}
+                          setBookingData={setBookingData}
+                          showPaymentStep={showPaymentStep}
+                          setShowPaymentStep={() => setShowPaymentStep(true)}
+                          product={product}
+                          extraActionBelowBookNow={
+                            existingBooking?.status === "completed" && showBookingFormAgain ? (
+                              <Button
+                                type="button"
+                                variant="secondary"
+                                className="w-full"
+                                onClick={() => setShowBookingFormAgain(false)}
+                              >
+                                <Ticket className="h-4 w-4 mr-2" />
+                                {t("home.bookingStatus.viewMyTickets")}
+                              </Button>
+                            ) : null
+                          }
+                        />
+                      </div>
                     )}
                   </div>
                   <div className="block md:hidden">
@@ -300,7 +330,8 @@ export default function ProductBooking() {
                         </AccordionTrigger>
                         <AccordionContent>
                           {existingBooking &&
-                          existingBooking.status === "completed" ? (
+                          existingBooking.status === "completed" &&
+                          !showBookingFormAgain ? (
                             <BookingStatus
                               id={existingBooking.id}
                               status="completed"
@@ -322,17 +353,36 @@ export default function ProductBooking() {
                               }
                               onRebook={() => {
                                 setShowPaymentStep(false);
+                                setBookingData(null);
+                                setShowBookingFormAgain(true);
+                                setBookingFormKey((k) => k + 1);
                               }}
                             />
                           ) : (
-                            <BookingForm
-                              setBookingData={setBookingData}
-                              showPaymentStep={showPaymentStep}
-                              setShowPaymentStep={() =>
-                                setShowPaymentStep(true)
-                              }
-                              product={product}
-                            />
+                            <div className="space-y-2">
+                              <BookingForm
+                                key={`booking-form-${bookingFormKey}`}
+                                setBookingData={setBookingData}
+                                showPaymentStep={showPaymentStep}
+                                setShowPaymentStep={() =>
+                                  setShowPaymentStep(true)
+                                }
+                                product={product}
+                                extraActionBelowBookNow={
+                                  existingBooking?.status === "completed" && showBookingFormAgain ? (
+                                    <Button
+                                      type="button"
+                                      variant="secondary"
+                                      className="w-full"
+                                      onClick={() => setShowBookingFormAgain(false)}
+                                    >
+                                      <Ticket className="h-4 w-4 mr-2" />
+                                      {t("home.bookingStatus.viewMyTickets")}
+                                    </Button>
+                                  ) : null
+                                }
+                              />
+                            </div>
                           )}
                         </AccordionContent>
                       </AccordionItem>

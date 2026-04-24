@@ -54,20 +54,22 @@ export function BookingStatus({
   onViewDetails,
   className,
 }: BookingStatusProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const customerName =
     user?.firstName && user?.lastName
       ? `${user.firstName} ${user.lastName}`.trim()
       : user?.fullName ?? "";
   const receiptData: ReceiptProps = {
     receiptNumber: productId,
-    date: new Date().toLocaleDateString("es-ES", {
+    date: new Date().toLocaleDateString(language === "es" ? "es-ES" : "en-US", {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
     }),
     reservationDate: tourDate
-      ? moment(tourDate).locale("es").format("dddd, D [de] MMMM - h:mm A")
+      ? moment(tourDate)
+          .locale(language)
+          .format(language === "es" ? "dddd, D [de] MMMM - h:mm A" : "dddd, MMM D - h:mm A")
       : undefined,
     customerName,
     items: [
@@ -138,8 +140,8 @@ export function BookingStatus({
                 <span className="text-gray-500">{t("home.bookingStatus.bookingDate")}</span>
                 <span className="font-normal">
                   {tourDate
-                    ? moment(tourDate).locale("es").format("LLL")
-                    : moment(created_at).locale("es").format("LLL")}
+                    ? moment(tourDate).locale(language).format("LLL")
+                    : moment(created_at).locale(language).format("LLL")}
                 </span>
               </div>
               <div className="flex justify-between">
@@ -167,24 +169,20 @@ export function BookingStatus({
           </div>
         </div>
       </CardContent>
-      <CardFooter className="flex gap-2 pt-0">
-        {status === "canceled" && onRebook && (
-          <Button
-            variant="outline"
-            className="w-full hide-for-pdf"
-            onClick={onRebook}
-          >
-            <RefreshCcw className="h-4 w-4 mr-2" />
-            {t("home.bookingStatus.rebook")}
-          </Button>
-        )}
+      <CardFooter className="flex flex-col gap-2 pt-0">
         {onViewDetails && (
           <PDFButton
             receiptData={receiptData}
-            buttonVariant="outline"
+            buttonVariant="default"
             buttonText={t("home.bookingStatus.downloadReceipt")}
             fileName={`Recibo-${productName?.slice(0, 10)}-${productId.slice(0, 8)}`}
           />
+        )}
+        {onRebook && (
+          <Button variant="outline" className="w-full hide-for-pdf" onClick={onRebook}>
+            <RefreshCcw className="h-4 w-4 mr-2" />
+            {t("home.bookingStatus.buyAnotherTicket")}
+          </Button>
         )}
       </CardFooter>
     </Card>

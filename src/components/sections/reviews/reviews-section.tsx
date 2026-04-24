@@ -34,7 +34,7 @@ export default function ReviewSection({
   reviews,
   isLoading,
 }: ReviewSectionProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [openDialogReview, setOpenDialogReview] = useState(false);
   const { user, isLoaded: isUserLoaded } = useUser();
 
@@ -60,7 +60,9 @@ export default function ReviewSection({
       reviews.some((review) => existingBooking.user_id === review.user_id),
     hasTourDatePassed,
     tourDateFormatted: tourDate
-      ? moment(tourDate).locale("es").format("dddd, D [de] MMMM - h:mm A")
+      ? moment(tourDate)
+          .locale(language)
+          .format(language === "es" ? "dddd, D [de] MMMM - h:mm A" : "dddd, MMM D - h:mm A")
       : "",
   };
 
@@ -112,17 +114,7 @@ export default function ReviewSection({
 
     // Si el usuario tiene una reserva pero no está completada
     if (!state.isBookingCompleted) {
-      return (
-        <div className="mt-6 p-4 border rounded-lg">
-          <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4 text-muted-foreground" />
-            <h3 className="font-medium">{t("home.reviews.pendingTitle")}</h3>
-          </div>
-          <p className="mt-1 text-sm text-muted-foreground pl-6">
-            {t("home.reviews.pendingDescription")}
-          </p>
-        </div>
-      );
+      return null;
     }
 
     // Reserva completada pero aún no ha pasado la fecha del tour: no puede reseñar hasta ese día
