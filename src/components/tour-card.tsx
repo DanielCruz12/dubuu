@@ -20,13 +20,13 @@ import { toast } from "sonner";
 import { generateSlug } from "@/lib/utils";
 import { formatUsd, USD_SYMBOL } from "@/utils/currency";
 import { useLanguage } from "@/lib/i18n-context";
+import { getProductDisplayPrice } from "@/utils/product-helpers";
 
 export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
   const {
     id,
     name,
     description,
-    price,
     country,
     banner,
     images,
@@ -47,6 +47,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
   const convert = formatUsd;
   const symbol = USD_SYMBOL;
   const { t } = useLanguage();
+  const displayPrice = getProductDisplayPrice(props);
 
   // Get favorites from API
   const { data: favorites } = useGetUserFavoritesQuery(
@@ -271,7 +272,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
             <div className="flex items-center justify-between gap-2 text-sm">
               <span className="font-semibold">
                 {symbol}
-                {convert(price)}{" "}
+                {convert(displayPrice)}{" "}
                 <span className="text-muted-foreground font-normal">{t("home.tourCard.perPerson")}</span>
               </span>
               <div className="flex items-center gap-1">
@@ -420,7 +421,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
         <CardFooter className="flex items-center justify-between py-3">
           <div className="font-semibold">
             {symbol}
-            {convert(price)}{" "}
+            {convert(displayPrice)}{" "}
             <span className="text-sm text-muted-foreground font-normal">
               {t("home.tourCard.perPerson")}
             </span>
