@@ -18,8 +18,10 @@ import { BookingDetails } from "./(components)/booking-details";
 import { DashboardTitle } from "@/components/dashboard-title";
 import { useGetBookingsByUserIdQuery } from "@/redux/slices/booking/booking-slice";
 import { useUser } from "@clerk/nextjs";
+import { useLanguage } from "@/lib/i18n-context";
 
 export default function BookingsPage() {
+  const { t } = useLanguage();
   const [selectedBooking, setSelectedBooking] = useState<IBookingUser | null>(
     null
   );
@@ -53,6 +55,8 @@ export default function BookingsPage() {
     return statusMap[status] || status;
   };
 
+  const statusOptions = ["confirmado", "pendiente", "completado", "cancelado"];
+
   const filteredBookings = bookings.filter((booking: IBookingUser) => {
     // Apply search filter
     const matchesSearch =
@@ -83,12 +87,15 @@ export default function BookingsPage() {
 
   return (
     <div className="px-3 md:px-0">
-      <DashboardTitle heading="Reservas" description="Gestiona tus reservas" />
+      <DashboardTitle
+        heading={t("dashboard.bookingsPage.heading")}
+        description={t("dashboard.bookingsPage.description")}
+      />
       <div className="flex flex-col sm:flex-row gap-3 mb-6 px-1 pt-7 items-start">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Buscar reservas..."
+            placeholder={t("dashboard.bookingsPage.searchPlaceholder")}
             className="pl-10 bg-background border-muted"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -98,22 +105,20 @@ export default function BookingsPage() {
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="gap-2">
               <Filter className="h-4 w-4" />
-              Filtrar
+              {t("dashboard.bookingsPage.filter")}
             </Button>
           </DropdownMenuTrigger>
 
           <DropdownMenuContent>
-            {["confirmado", "pendiente", "completado", "cancelado"].map(
-              (status) => (
-                <DropdownMenuCheckboxItem
-                  key={status}
-                  checked={statusFilter.includes(status)}
-                  onCheckedChange={() => handleStatusFilterChange(status)}
-                >
-                  {status.charAt(0).toUpperCase() + status.slice(1)}
-                </DropdownMenuCheckboxItem>
-              )
-            )}
+            {statusOptions.map((status) => (
+              <DropdownMenuCheckboxItem
+                key={status}
+                checked={statusFilter.includes(status)}
+                onCheckedChange={() => handleStatusFilterChange(status)}
+              >
+                {t(`dashboard.bookingsPage.status.${status}`)}
+              </DropdownMenuCheckboxItem>
+            ))}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -124,13 +129,13 @@ export default function BookingsPage() {
             value="upcoming"
             className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 px-1"
           >
-            Próximas
+            {t("dashboard.bookingsPage.tabUpcoming")}
           </TabsTrigger>
           <TabsTrigger
             value="past"
             className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 px-1"
           >
-            Anteriores
+            {t("dashboard.bookingsPage.tabPast")}
           </TabsTrigger>
         </TabsList>
 
@@ -138,7 +143,9 @@ export default function BookingsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {isLoading ? (
               <div className="col-span-full text-center py-16">
-                <p className="text-muted-foreground">Cargando reservas...</p>
+                <p className="text-muted-foreground">
+                  {t("dashboard.bookingsPage.loading")}
+                </p>
               </div>
             ) : upcomingBookings.length > 0 ? (
               upcomingBookings.map((booking: IBookingUser) => (
@@ -151,7 +158,7 @@ export default function BookingsPage() {
             ) : (
               <div className="col-span-full text-center py-16">
                 <p className="text-muted-foreground">
-                  No tienes reservas próximas
+                  {t("dashboard.bookingsPage.emptyUpcoming")}
                 </p>
               </div>
             )}
@@ -162,7 +169,9 @@ export default function BookingsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {isLoading ? (
               <div className="col-span-full text-center py-16">
-                <p className="text-muted-foreground">Cargando reservas...</p>
+                <p className="text-muted-foreground">
+                  {t("dashboard.bookingsPage.loading")}
+                </p>
               </div>
             ) : pastBookings.length > 0 ? (
               pastBookings.map((booking: IBookingUser) => (
@@ -175,7 +184,7 @@ export default function BookingsPage() {
             ) : (
               <div className="col-span-full text-center py-16">
                 <p className="text-muted-foreground">
-                  No tienes reservas anteriores
+                  {t("dashboard.bookingsPage.emptyPast")}
                 </p>
               </div>
             )}

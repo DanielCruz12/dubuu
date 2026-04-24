@@ -2,11 +2,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, MapPin, Users, Clock, Download, Info } from "lucide-react";
+import { Calendar, MapPin, Users, Clock, Info } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -19,6 +18,8 @@ import moment from "moment";
 import "moment/locale/es";
 import { statusColors, statusTextTranslations } from "@/utils/data";
 import { useLanguage } from "@/lib/i18n-context";
+import PDFButton from "@/components/pdf/pdf-button";
+import type { ReceiptProps } from "@/types/pdf";
 
 interface BookingDetailsProps {
   booking: IBookingUser;
@@ -34,6 +35,51 @@ export function BookingDetails({
   const { language, t } = useLanguage();
   const statusText = statusTextTranslations[language];
   const bookingIdShort = booking.id.split("-").pop() ?? "";
+  const ticketsCount = Number(booking.tickets) || 1;
+  const totalNumber =
+    typeof booking.total === "number" ? booking.total : Number(booking.total);
+  const total =
+    Number.isFinite(totalNumber) && totalNumber > 0 ? totalNumber : 0;
+  const unitPrice = ticketsCount > 0 ? total / ticketsCount : total;
+
+  const receiptData: ReceiptProps = {
+    receiptNumber: booking.product_id,
+    date: new Date().toLocaleDateString(language === "es" ? "es-ES" : "en-US", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }),
+    reservationDate: booking.tourDate
+      ? moment(booking.tourDate)
+          .locale(language === "es" ? "es" : "en")
+          .format(
+            language === "es"
+              ? "dddd, D [de] MMMM - h:mm A"
+              : "dddd, MMMM D - h:mm A",
+          )
+      : undefined,
+    customerName: "—",
+    items: [
+      {
+        id: String(ticketsCount),
+        description: booking.product_name,
+        quantity: ticketsCount,
+        price: unitPrice,
+      },
+    ],
+    subtotal: unitPrice * ticketsCount,
+    total,
+    notes: "",
+    companyName: "Dubuu",
+    companyLogo: "/logo.svg",
+    companyAddress: "El Salvador, La Libertad",
+    companyPhone: "+503 64562432",
+    companyEmail: "support@dubuu.com",
+    companyWebsite: "https://www.dubuu.com",
+    qrValue: "",
+    paymentMethod: "",
+    paymentStatus: "Completado",
+  };
 
   // Map API status to UI status
   const mapStatus = (status: string) => {
@@ -198,10 +244,14 @@ export function BookingDetails({
                   Cancelar reserva
                 </Button>
               )} */}
-              <Button variant="secondary" size="sm" className="gap-1.5">
-                <Download className="h-3.5 w-3.5" />
-                {t("dashboard.bookingDetails.downloadVoucher")}
-              </Button>
+              <div className="w-full sm:w-auto">
+                <PDFButton
+                  receiptData={receiptData}
+                  buttonVariant="default"
+                  buttonText={t("dashboard.bookingDetails.downloadTicket")}
+                  fileName={`Ticket-${booking.product_name?.slice(0, 18) || "Dubuu"}-${booking.product_id.slice(0, 8)}.pdf`}
+                />
+              </div>
             </div>
           </div>
         </div>

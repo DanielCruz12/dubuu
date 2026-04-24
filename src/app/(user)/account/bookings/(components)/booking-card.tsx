@@ -8,7 +8,7 @@ import type { IBookingUser } from "@/types/booking";
 import moment from "moment";
 import "moment/locale/es";
 import Image from "next/image";
-import { statusTextTranslations } from "@/utils/data";
+import { statusColors, statusTextTranslations } from "@/utils/data";
 import { useLanguage } from "@/lib/i18n-context";
 
 interface BookingCardProps {
@@ -19,6 +19,8 @@ interface BookingCardProps {
 export function BookingCard({ booking, onClick }: BookingCardProps) {
   const { language } = useLanguage();
   const statusText = statusTextTranslations[language];
+  const dateLabelFormat =
+    language === "es" ? "dddd, D [de] MMMM - h:mm A" : "dddd, MMMM D - h:mm A";
 
   // Map API status to UI status
   const mapStatus = (status: string) => {
@@ -49,7 +51,7 @@ export function BookingCard({ booking, onClick }: BookingCardProps) {
           />
         </div>
         <Badge
-          className="absolute bottom-3 left-3 font-normal py-1.5 px-2.5 bg-white/95 backdrop-blur-sm text-gray-900 border border-gray-200 shadow-md"
+          className={`absolute bottom-3 left-3 font-normal py-1.5 px-2.5 backdrop-blur-sm shadow-md ${statusColors[uiStatus as keyof typeof statusColors]}`}
           variant="outline"
         >
           {statusText[uiStatus as keyof typeof statusText]}
@@ -65,7 +67,9 @@ export function BookingCard({ booking, onClick }: BookingCardProps) {
             <Calendar className="h-3.5 w-3.5 mr-2 flex-shrink-0" />
             <span className="truncate">
               {" "}
-              {moment(booking.tourDate).format("dddd, D [de] MMMM - h:mm A")}
+              {moment(booking.tourDate)
+                .locale(language === "es" ? "es" : "en")
+                .format(dateLabelFormat)}
             </span>
           </div>
           <div className="flex items-center text-sm text-muted-foreground">

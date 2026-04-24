@@ -166,7 +166,24 @@
     "duration": "Duración",
     "oneDay": "1 día",
     "tripInfo": "Información del viaje",
-    "downloadVoucher": "Descargar voucher"
+    "downloadTicket": "Descargar ticket"
+  },
+  "bookingsPage": {
+    "heading": "Reservas",
+    "description": "Gestiona tus reservas",
+    "searchPlaceholder": "Buscar reservas...",
+    "filter": "Filtrar",
+    "tabUpcoming": "Próximas",
+    "tabPast": "Anteriores",
+    "loading": "Cargando reservas...",
+    "emptyUpcoming": "No tienes reservas próximas",
+    "emptyPast": "No tienes reservas anteriores",
+    "status": {
+      "confirmado": "Confirmado",
+      "pendiente": "Pendiente",
+      "completado": "Completado",
+      "cancelado": "Cancelado"
+    }
   },
   "products": {
     "title": "Productos",

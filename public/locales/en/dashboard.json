@@ -166,7 +166,24 @@
     "duration": "Duration",
     "oneDay": "1 day",
     "tripInfo": "Trip information",
-    "downloadVoucher": "Download voucher"
+    "downloadTicket": "Download ticket"
+  },
+  "bookingsPage": {
+    "heading": "Bookings",
+    "description": "Manage your bookings",
+    "searchPlaceholder": "Search bookings...",
+    "filter": "Filter",
+    "tabUpcoming": "Upcoming",
+    "tabPast": "Past",
+    "loading": "Loading bookings...",
+    "emptyUpcoming": "You have no upcoming bookings",
+    "emptyPast": "You have no past bookings",
+    "status": {
+      "confirmado": "Confirmed",
+      "pendiente": "Pending",
+      "completado": "Completed",
+      "cancelado": "Cancelled"
+    }
   },
   "products": {
     "title": "Products",
