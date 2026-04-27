@@ -1,6 +1,6 @@
 "use client";
 
-function getLocale(): string {
+export function getLocale(): string {
   if (typeof window === "undefined") return "es";
   return (localStorage.getItem("language") as string) || "es";
 }

@@ -20,7 +20,6 @@ import ProductsSkeleton from "@/components/skeletons/product-skeleton";
 import { Badge } from "@/components/ui/badge";
 import type { IProduct } from "@/types/product";
 import ProductDetails from "@/components/sections/product-details";
-import TrustSection from "@/components/sections/trust-section";
 import CheckoutForm from "@/components/sections/checkout/checkout-form";
 import LocationMap from "@/components/location";
 import {
@@ -145,8 +144,20 @@ export default function ProductBooking() {
   const isTour = isProductType(product, "tours");
   const displayPrice = getProductDisplayPrice(product);
 
+  const mobileBookingBottomPad =
+    !!user &&
+    !showPaymentStep &&
+    (!existingBooking ||
+      existingBooking.status !== "completed" ||
+      showBookingFormAgain);
+
   return (
-    <div className="mx-auto md:px-0">
+    <div
+      className={clsx(
+        "mx-auto md:px-0",
+        mobileBookingBottomPad && "max-md:pb-28",
+      )}
+    >
       <UpTop />
       <section className="w-full mb-8">
         <div className="mb-4">
@@ -213,7 +224,7 @@ export default function ProductBooking() {
         </ScrollArea>
       </section>
 
-      <section className="flex flex-col lg:flex-row gap-8 mb-12">
+      <section className="flex flex-col lg:flex-row gap-4 md:gap-8 mb-5 md:mb-12">
         {showPaymentStep ? (
           <div ref={paymentRef} className="w-full lg:w-2/3">
             <CheckoutForm
@@ -256,7 +267,7 @@ export default function ProductBooking() {
             <div
               ref={bookingBoxRef}
               className={clsx(
-                "rounded-lg mb-10",
+                "rounded-lg mb-0 md:mb-6",
                 existingBooking?.status === "completed"
                   ? "p-0 "
                   : "p-3 md:p-5 sm:p-6 border",
@@ -404,7 +415,6 @@ export default function ProductBooking() {
                 </div>
               )}
             </div>
-            <TrustSection />
           </div>
         </div>
       </section>
@@ -420,14 +430,13 @@ export default function ProductBooking() {
       </div>
       {!showPaymentStep && (
         <div className="md:hidden block">
-          {/* Pass reviews data to ReviewSection in mobile view */}
+          <CompanyInfo product={product} />
           <ReviewSection
             existingBooking={existingBooking}
             productId={product.id}
             reviews={reviews}
             isLoading={isLoadingReviews}
           />
-          <CompanyInfo product={product} />
         </div>
       )}
     </div>

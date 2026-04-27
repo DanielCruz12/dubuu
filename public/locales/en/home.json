@@ -59,11 +59,6 @@
     "extreme": "Extreme",
     "sr": "Difficulty level"
   },
-  "trustSection": {
-    "title": "Book with confidence",
-    "privacyTitle": "Privacy protection",
-    "privacyDescription": "We use SSL encryption to protect your data"
-  },
   "bookingForm": {
     "title": "Book -",
     "datetimeLabel": "Date and time",

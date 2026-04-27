@@ -177,23 +177,6 @@ export default async function RootLayout({
           />
 
           <Script
-            id="crisp-chat"
-            strategy="afterInteractive"
-            dangerouslySetInnerHTML={{
-              __html: `
-                window.$crisp=[];
-                window.CRISP_WEBSITE_ID="50f4a4a9-d234-4f9e-a317-d396a602193c";
-                (function(){
-                  d=document;
-                  s=d.createElement("script");
-                  s.src="https://client.crisp.chat/l.js";
-                  s.async=1;
-                  d.getElementsByTagName("head")[0].appendChild(s);
-                })();
-              `,
-            }}
-          />
-          <Script
             id="google-tag-manager"
             async
             src="https://www.googletagmanager.com/gtag/js?id=G-QXFD8S7VK0"
@@ -212,7 +195,7 @@ export default async function RootLayout({
           <Analytics />
           <GlobalProviders>
             {children}
-            <Toaster richColors />
+            <Toaster richColors style={{ zIndex: 12000 }} />
           </GlobalProviders>
         </body>
     </html>

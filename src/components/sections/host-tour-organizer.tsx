@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Link2, MapPin, User } from "lucide-react";
+import { Languages, Link2, MapPin, User } from "lucide-react";
 import type { HostProfileDetailKey, HostPublicProfile } from "@/types/host-profile";
 import { useGetHostPublicProfileQuery } from "@/redux/slices/host/host-profile-slice";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -44,39 +44,44 @@ function initials(profile: HostPublicProfile) {
 
 function OrganizerSkeleton() {
   return (
-    <div className="mt-12 space-y-6">
-      <Skeleton className="h-8 w-64" />
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 rounded-xl border bg-card p-6 space-y-4">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Skeleton className="h-24 w-24 shrink-0 rounded-full" />
-            <div className="flex-1 space-y-2">
-              <Skeleton className="h-7 w-32" />
-              <Skeleton className="h-5 w-28" />
-              <div className="flex flex-wrap gap-4 pt-2">
-                <Skeleton className="h-4 w-24" />
-                <Skeleton className="h-4 w-28" />
-                <Skeleton className="h-4 w-32" />
-              </div>
+    <div className="mt-4 space-y-4">
+      <Skeleton className="h-7 w-56 max-w-full sm:w-64" />
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-6">
+        <div className="lg:col-span-2 rounded-xl border bg-card p-5 sm:p-6 space-y-4">
+          <div className="flex flex-row items-start gap-3 sm:gap-4">
+            <Skeleton className="h-[5.25rem] w-[5.25rem] shrink-0 rounded-full sm:h-24 sm:w-24" />
+            <div className="flex min-w-0 flex-1 flex-col space-y-2">
+              <Skeleton className="h-6 w-40" />
+              <Skeleton className="h-4 w-24 rounded-full" />
+              <Skeleton className="h-3.5 w-48" />
             </div>
           </div>
           <Skeleton className="h-12 w-full" />
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="flex gap-3">
-                <Skeleton className="h-4 w-4 shrink-0" />
-                <Skeleton className="h-4 flex-1" />
-              </div>
-            ))}
+          <div className="border-t border-border/60 pt-3">
+            <ul className="space-y-2.5">
+              {[1, 2, 3].map((i) => (
+                <li key={i} className="flex min-w-0 items-center gap-2.5">
+                  <Skeleton className="h-4 w-4 shrink-0 rounded-sm" />
+                  <Skeleton className="h-4 min-w-0 flex-1 max-w-full" />
+                </li>
+              ))}
+              <li className="flex min-w-0 items-center gap-2.5 lg:hidden">
+                <Skeleton className="h-4 w-4 shrink-0 rounded-sm" />
+                <Skeleton className="h-4 min-w-0 flex-1 max-w-full" />
+              </li>
+            </ul>
           </div>
         </div>
-        <div className="space-y-4">
-          <Skeleton className="h-24 w-full rounded-lg" />
+        <div className="flex flex-col gap-5 rounded-xl border bg-card p-4 shadow-sm lg:gap-6 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none">
           <div className="space-y-2">
-            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-4 w-40" />
+            <Skeleton className="h-16 w-full rounded-md" />
+          </div>
+          <div className="hidden space-y-2 lg:block">
+            <Skeleton className="h-4 w-24" />
             <div className="flex flex-wrap gap-2">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <Skeleton key={i} className="h-6 w-20 rounded-md" />
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} className="h-6 w-16 rounded-md" />
               ))}
             </div>
           </div>
@@ -141,8 +146,8 @@ export default function HostTourOrganizer({
           ? String((error as { error?: unknown }).error ?? "")
           : "";
     return (
-      <div className="mt-12 space-y-4">
-        <h2 className="text-xl md:text-2xl font-semibold">
+      <div className="mt-4 space-y-4">
+        <h2 className="text-base md:text-xl font-semibold py-3">
           {t("home.organizer.title")}
         </h2>
         <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-sm">
@@ -166,106 +171,127 @@ export default function HostTourOrganizer({
   const name = displayName(profile);
   const avatarSrc =
     profile.imageUrl?.trim() || fallbackImageUrl?.trim() || null;
+  const languagesTitleRaw = t("home.organizer.languagesTitle");
+  const languagesLabel =
+    languagesTitleRaw.endsWith(":") || languagesTitleRaw.endsWith("：")
+      ? languagesTitleRaw
+      : `${languagesTitleRaw}:`;
+  const idiomasJoined =
+    profile.idiomas?.length ? profile.idiomas.join(", ") : "";
 
   return (
-    <div className="mt-12 space-y-6">
-      <h2 className="text-xl md:text-2xl font-semibold">
+    <div className="mt-4 space-y-4">
+      <h2 className="text-left text-base md:text-xl font-semibold py-3">
         {t("home.organizer.title")}
       </h2>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 rounded-xl border bg-card p-6 space-y-6">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full">
-              <Avatar className="h-24 w-24 border-0">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-6">
+        <div className="lg:col-span-2 rounded-xl border bg-card p-5 sm:p-6 space-y-4">
+          <div className="flex w-full flex-row items-start gap-3 sm:gap-4">
+            <div className="relative h-[5.25rem] w-[5.25rem] sm:h-24 sm:w-24 shrink-0 overflow-hidden rounded-full ring-2 ring-border/60 shadow-sm">
+              <Avatar className="h-full w-full border-0">
                 {avatarSrc ? (
                   <AvatarImage src={avatarSrc} alt={name} />
                 ) : null}
-                <AvatarFallback className="bg-muted text-muted-foreground text-2xl">
+                <AvatarFallback className="bg-muted text-muted-foreground text-xl sm:text-2xl">
                   {initials(profile)}
                 </AvatarFallback>
               </Avatar>
               <span
-                className="absolute bottom-1 right-1 h-3 w-3 rounded-full border-2 border-card bg-green-500"
+                className="absolute bottom-0.5 right-0.5 h-2.5 w-2.5 sm:bottom-1 sm:right-1 sm:h-3 sm:w-3 rounded-full border-2 border-card bg-emerald-500"
                 title={t("home.organizer.online")}
                 aria-hidden
               />
             </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="text-xl font-bold truncate">{name}</h3>
-              <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                <span className="inline-flex items-center rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+            <div className="min-w-0 flex-1 space-y-2 text-left">
+              <div>
+                <h3 className="text-lg sm:text-xl font-bold leading-tight text-foreground">
+                  {name}
+                </h3>
+                <span className="mt-1.5 inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
                   {t("home.organizer.roleBadge")}
                 </span>
               </div>
-              <p className="flex flex-wrap gap-x-4 gap-y-1 mt-3 text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground leading-snug">
                 {statsLine}
               </p>
             </div>
           </div>
 
           {profile.intro ? (
-            <p className="text-sm text-muted-foreground line-clamp-2">
+            <p className="text-left text-sm text-muted-foreground line-clamp-2">
               {profile.intro}
             </p>
           ) : null}
 
-          <ul className="space-y-3">
-            {(profile.detalles ?? []).map((item) => {
-              const Icon = detailIcon(item.key);
-              const keyLabel = t(`home.organizer.details.${item.key}`);
-              const label =
-                keyLabel.endsWith(":") || keyLabel.endsWith("：")
-                  ? keyLabel
-                  : `${keyLabel}:`;
-              return (
-                <li key={item.key} className="flex gap-3 text-sm">
-                  <Icon className="h-4 w-4 shrink-0 text-muted-foreground mt-0.5" />
-                  <span className="text-muted-foreground">
-                    <span className="font-normal">{label} </span>
-                    <span className="font-semibold text-foreground">
-                      {item.value}
-                    </span>
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
+          {(profile.detalles?.length ?? 0) > 0 ||
+          (profile.idiomas && profile.idiomas.length > 0) ? (
+            <div className="border-t border-border/60 pt-3 sm:pt-4">
+              <ul className="space-y-2.5 sm:space-y-3">
+                {(profile.detalles ?? []).map((item) => {
+                  const Icon = detailIcon(item.key);
+                  const keyLabel = t(`home.organizer.details.${item.key}`);
+                  const label =
+                    keyLabel.endsWith(":") || keyLabel.endsWith("：")
+                      ? keyLabel
+                      : `${keyLabel}:`;
+                  return (
+                    <li
+                      key={item.key}
+                      className="flex min-w-0 items-center gap-2.5 text-sm"
+                    >
+                      <Icon
+                        className="h-4 w-4 shrink-0 text-muted-foreground"
+                        aria-hidden
+                      />
+                      <div className="min-w-0 flex-1 leading-snug line-clamp-1">
+                        <span className="text-muted-foreground font-normal">
+                          {label}
+                        </span>
+                        <span className="text-foreground font-medium">
+                          {" "}
+                          {item.value}
+                        </span>
+                      </div>
+                    </li>
+                  );
+                })}
+                {profile.idiomas && profile.idiomas.length > 0 ? (
+                  <li className="flex min-w-0 items-center gap-2.5 text-sm lg:hidden">
+                    <Languages
+                      className="h-4 w-4 shrink-0 text-muted-foreground"
+                      aria-hidden
+                    />
+                    <div
+                      className="min-w-0 flex-1 leading-snug line-clamp-1"
+                      title={idiomasJoined}
+                    >
+                      <span className="text-muted-foreground font-normal">
+                        {languagesLabel}
+                      </span>
+                      <span className="text-foreground font-medium">
+                        {" "}
+                        {idiomasJoined}
+                      </span>
+                    </div>
+                  </li>
+                ) : null}
+              </ul>
+            </div>
+          ) : null}
         </div>
 
-        <div className="space-y-6">
-          <div>
-            <h4 className="font-semibold mb-2">
+        <div className="flex flex-col gap-5 rounded-xl border bg-card p-4 shadow-sm lg:gap-6 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none">
+          <div className="min-w-0">
+            <h4 className="text-sm font-semibold tracking-tight text-foreground lg:text-base mb-2">
               {t("home.organizer.operatorInfoTitle")}
             </h4>
-            <p className="text-sm text-muted-foreground line-clamp-4">
+            <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
               {profile.descripcion || t("home.organizer.emptyValue")}
             </p>
           </div>
-          <div>
-            <h4 className="font-semibold mb-2">
-              {t("home.organizer.experienceTypesTitle")}
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {profile.tiposExperiencia?.length ? (
-                profile.tiposExperiencia.map((tipo) => (
-                  <Badge
-                    key={tipo}
-                    variant="secondary"
-                    className="text-xs font-normal py-1 px-2 rounded-md"
-                  >
-                    {tipo}
-                  </Badge>
-                ))
-              ) : (
-                <span className="text-sm text-muted-foreground">
-                  {t("home.organizer.emptyValue")}
-                </span>
-              )}
-            </div>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-2">
+          <div className="hidden min-w-0 border-t border-border/80 pt-5 lg:block lg:border-t-0 lg:pt-0">
+            <h4 className="text-sm font-semibold tracking-tight text-foreground lg:text-base mb-2">
               {t("home.organizer.languagesTitle")}
             </h4>
             <div className="flex flex-wrap gap-2">
@@ -274,7 +300,7 @@ export default function HostTourOrganizer({
                   <Badge
                     key={idioma}
                     variant="secondary"
-                    className="text-xs font-normal py-1 px-2 rounded-md"
+                    className="text-xs font-normal rounded-md py-1 px-2"
                   >
                     {idioma}
                   </Badge>

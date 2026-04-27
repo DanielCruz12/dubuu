@@ -39,7 +39,9 @@ export default function ReviewSection({
   const { user, isLoaded: isUserLoaded } = useUser();
 
   if (isLoading) {
-    return <div className="animate-pulse">{t("home.reviews.loading")}</div>;
+    return (
+      <div className="mt-6 animate-pulse">{t("home.reviews.loading")}</div>
+    );
   }
 
   // Solo se puede dejar reseña a partir del día de la fecha del tour
@@ -67,7 +69,7 @@ export default function ReviewSection({
   };
 
   return (
-    <div className="mt-12 space-y-8">
+    <div className="mt-6 space-y-4">
       {reviews.length < 0 && (
         <h2 className="text-xl md:text-2xl font-semibold">{t("home.reviews.title")}</h2>
       )}

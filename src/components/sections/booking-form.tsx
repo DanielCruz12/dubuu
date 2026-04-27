@@ -27,7 +27,8 @@ import { Separator } from "../ui/separator";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { isProductType } from "@/utils";
-import { useState, useRef, type ReactNode } from "react";
+import { useState, useRef, useEffect, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { getHostEarningsFromFinalPrice } from "@/lib/price";
 
 import "moment/locale/es";
@@ -100,6 +101,11 @@ export default function BookingForm({
   } | null>(null);
 
   const [cancellationModalOpen, setCancellationModalOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const isTour = isProductType(product, "tours");
 
@@ -135,6 +141,12 @@ export default function BookingForm({
   });
 
   const watchData = watch();
+  const adultTickets = watchData.tickets.adult;
+  const baseForBreakdown = convert(unitPrice);
+  const bookingBreakdown = getHostEarningsFromFinalPrice(
+    baseForBreakdown,
+    adultTickets,
+  );
 
   const onSubmit = async () => {
     if (!user) {
@@ -146,7 +158,7 @@ export default function BookingForm({
       datetime: watchData.datetime,
       tickets: watchData.tickets,
       addons: watchData.addons,
-      total: unitPrice * watchData.tickets.adult,
+      total: bookingBreakdown.userPays,
       user_id: user.id,
       product_id: product.id,
     });
@@ -184,6 +196,7 @@ export default function BookingForm({
   };
 
   return (
+    <>
     <div className="sticky top-4 rounded-lg px-2 max-w-md mx-auto">
       <h2 className="text-base font-semibold mb-4 hidden md:block">
         {t("home.bookingForm.title")} {product.name}
@@ -305,51 +318,45 @@ export default function BookingForm({
         </div>
 
         <div className="pt-4 border-t dark:border-muted space-y-3">
-          {(() => {
-            const price = convert(unitPrice);
-            const adultTickets = watchData.tickets.adult;
-            const breakdown = getHostEarningsFromFinalPrice(
-              price,
-              adultTickets
-            );
+          <>
+            <div className="flex justify-between text-sm">
+              <span>
+                {t("home.bookingForm.pricePerPerson")}{" "}
+                {t("home.bookingForm.perPerson")}
+              </span>
+              <span>
+                {symbol}
+                {baseForBreakdown}
+              </span>
+            </div>
 
-            return (
-              <>
-                <div className="flex justify-between text-sm">
-                  <span>{t("home.bookingForm.pricePerPerson")} {t("home.bookingForm.perPerson")}</span>
-                  <span>
-                    {symbol}
-                    {price}
-                  </span>
-                </div>
-
-                <div className="flex justify-between text-sm">
-                  <span>{t("home.bookingForm.subtotal")}</span>
-                  <span>
-                    {symbol}
-                    {breakdown.userPays.toFixed(2)}
-                  </span>
-                </div>
-                <Separator className="my-3" />
-                <div className="flex rounded py-3 px-2 justify-between font-semibold items-center">
-                  <span className="text-lg md:text-2xl">{t("home.bookingForm.total")}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg md:text-2xl">
-                      {symbol}
-                      {breakdown.userPays.toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-              </>
-            );
-          })()}
+            <div className="flex justify-between text-sm">
+              <span>{t("home.bookingForm.subtotal")}</span>
+              <span>
+                {symbol}
+                {bookingBreakdown.userPays.toFixed(2)}
+              </span>
+            </div>
+            <Separator className="my-3" />
+            <div className="flex rounded py-3 px-2 justify-between font-semibold items-center">
+              <span className="text-lg md:text-2xl">
+                {t("home.bookingForm.total")}
+              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-lg md:text-2xl">
+                  {symbol}
+                  {bookingBreakdown.userPays.toFixed(2)}
+                </span>
+              </div>
+            </div>
+          </>
 
           {!showPaymentStep && (
             <>
               <Button
                 type="button"
                 variant={"default"}
-                className="w-full"
+                className="hidden w-full md:inline-flex"
                 onClick={handleReserveClick}
               >
                 <CalendarCheck className="h-4 w-4 mr-2" />
@@ -389,5 +396,47 @@ export default function BookingForm({
         </Dialog>
       </form>
     </div>
+
+      {mounted &&
+      typeof document !== "undefined" &&
+      !showPaymentStep &&
+      createPortal(
+        <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[9999] md:hidden print:hidden">
+          <div className="pointer-events-auto px-3 pb-[max(0.65rem,env(safe-area-inset-bottom,0px))] pt-2">
+            <div className="isolate mx-auto flex max-w-lg items-stretch gap-3 overflow-hidden rounded-2xl border border-white/20 bg-gradient-to-tr from-black/30 to-gray-800/30 p-3 text-white shadow-lg backdrop-blur-md ring-1 ring-white/10">
+              <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-white/70">
+                  {t("home.bookingForm.total")}
+                </span>
+                <span className="text-xl font-bold tabular-nums leading-none tracking-tight text-white">
+                  {symbol}
+                  {bookingBreakdown.userPays.toFixed(2)}
+                </span>
+                <span className="truncate text-[11px] text-white/65">
+                  {adultTickets} {t("home.bookingForm.adults").toLowerCase()}
+                  {" · "}
+                  {symbol}
+                  {baseForBreakdown} {t("home.bookingForm.perPerson")}
+                </span>
+              </div>
+              <Button
+                type="button"
+                variant="default"
+                onClick={handleReserveClick}
+                className="h-auto min-h-[3.25rem] min-w-0 shrink-0 rounded-xl !bg-white !text-gray-900 shadow-md transition-transform hover:!bg-white/90 active:scale-[0.98] sm:px-5 [&_svg]:!text-gray-900"
+              >
+                <span className="flex min-w-0 items-center gap-2 px-1 sm:px-0">
+                  <CalendarCheck className="h-4 w-4 shrink-0" aria-hidden />
+                  <span className="text-left leading-tight whitespace-nowrap">
+                    {t("home.bookingForm.bookNow")}
+                  </span>
+                </span>
+              </Button>
+            </div>
+          </div>
+        </div>,
+        document.body,
+      )}
+    </>
   );
 }

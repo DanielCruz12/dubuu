@@ -31,7 +31,7 @@ const UpTop = () => {
       type="button"
       onClick={topFunction}
       tabIndex={-1}
-      className="fixed bottom-5 left-1/2 -translate-x-1/2 flex items-center justify-center w-12 h-12 rounded-full backdrop-blur-md bg-gradient-to-tr from-black/30 to-gray-800/30 text-white shadow-lg hover:scale-110 transition-all duration-300 z-50"
+      className="fixed bottom-[8.25rem] left-1/2 z-[990] flex h-12 w-12 -translate-x-1/2 items-center justify-center rounded-full bg-gradient-to-tr from-black/30 to-gray-800/30 text-white shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-110 md:bottom-6"
       title="Go to top"
     >
       <ArrowUp size={20} />

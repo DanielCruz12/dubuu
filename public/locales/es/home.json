@@ -59,11 +59,6 @@
     "extreme": "Extremo",
     "sr": "Nivel de dificultad"
   },
-  "trustSection": {
-    "title": "Reserva con confianza",
-    "privacyTitle": "Protección de la privacidad",
-    "privacyDescription": "Usamos encriptación SSL para proteger sus datos"
-  },
   "bookingForm": {
     "title": "Reservar -",
     "datetimeLabel": "Fecha y hora",

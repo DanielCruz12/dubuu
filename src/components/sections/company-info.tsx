@@ -39,8 +39,8 @@ export default function CompanyInfo({ product }: CompanyInfoProps) {
 
   if (!user) {
     return (
-      <div className="mt-12">
-        <h2 className="text-xl md:text-2xl font-semibold mb-6">
+      <div className="mt-4">
+        <h2 className="text-base md:text-xl font-semibold py-3 mb-4">
           {t("home.organizer.title")}
         </h2>
         <p className="text-sm text-muted-foreground">
