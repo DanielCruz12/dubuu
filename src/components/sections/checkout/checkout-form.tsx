@@ -40,6 +40,7 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
+import { CreditCard, X } from "lucide-react";
 
 export default function CheckoutForm({
   setShowPaymentStep,
@@ -290,34 +291,44 @@ export default function CheckoutForm({
 
   return (
     <FormProvider {...methods}>
-      <h1 className="text-3xl font-bold mb-2">{t("home.checkout.title")}</h1>
-      <p className="text-slate-500 mb-8">{t("home.checkout.description")}</p>
-      <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-8">
+      <h1 className="text-xl md:text-2xl font-semibold mb-1">
+        {t("home.checkout.title")}
+      </h1>
+      <p className="text-sm text-muted-foreground mb-6">
+        {t("home.checkout.description")}
+      </p>
+      <form onSubmit={methods.handleSubmit(onSubmit)} className="">
         <PaymentMethodForm />
         <ContactForm />
         {paymentMethod !== "blink" && <ShippingForm />}
 
-        <div className="flex flex-col gap-3 pt-2">
-          <Button
-            size="lg"
-            disabled={isLoading}
-            type="submit"
-            className="w-full text-base py-2"
-          >
-            {isLoading
-              ? t("home.checkout.payment.processing")
-              : t("home.checkout.payment.proceedToPay")}
-          </Button>
-          <Button
-            onClick={() => setShowPaymentStep(false)}
-            type="button"
-            variant="ghost"
-            className="w-full text-sm text-muted-foreground hover:text-primary transition hover:underline"
-          >
-            {t("home.checkout.payment.cancel")}
-          </Button>
-          <p className="text-xs sm:text-sm text-center text-muted-foreground mt-1 px-2 sm:px-6">
-            <strong>{t("home.checkout.payment.termsAgreeButton")}</strong>
+        <div className="pt-2">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <Button
+              size="lg"
+              disabled={isLoading}
+              type="submit"
+              className="w-full text-base py-2"
+            >
+              <CreditCard className="h-4 w-4 mr-2" />
+              {isLoading
+                ? t("home.checkout.payment.processing")
+                : t("home.checkout.payment.proceedToPay")}
+            </Button>
+            <Button
+              onClick={() => setShowPaymentStep(false)}
+              type="button"
+              variant="outline"
+              className="w-full text-sm border-destructive/50 bg-destructive/40 text-white/90 hover:text-white hover:bg-destructive/50 hover:border-destructive/70"
+            >
+              <X className="h-4 w-4 mr-2" />
+              {t("home.checkout.payment.cancel")}
+            </Button>
+          </div>
+          <p className="text-xs text-center text-muted-foreground mt-4 leading-relaxed px-2 sm:px-6">
+            <span className="font-medium">
+              {t("home.checkout.payment.termsAgreeButton")}
+            </span>{" "}
             {t("home.checkout.payment.termsAgreeAfter")}
             <Link
               href="/terms"

@@ -11,13 +11,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { CheckoutFormValues } from "@/schemas/checkout-schema";
 import CreditCardForm from "../payment-methods/credit-card-form";
@@ -38,16 +34,8 @@ export default function PaymentMethodForm() {
   }, [paymentMethod]);
 
   return (
-    <Card className="overflow-hidden border pb-4">
-      <CardHeader className=" pb-8">
-        <CardTitle className="text-xl">
-          {t("home.checkout.payment.title")}
-        </CardTitle>
-        <CardDescription>
-          {t("home.checkout.payment.description")}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="pt-6">
+    <Card className="overflow-hidden border-0 bg-transparent shadow-none pb-2">
+      <CardContent className="pt-4 px-0">
         <FormField
           control={control}
           name="paymentMethod"
@@ -92,7 +80,7 @@ export default function PaymentMethodForm() {
                             height={112}
                           />
                         </div>
-                        <span className="text-center pt-2 font-medium">
+                        <span className="sr-only">
                           {t("home.checkout.payment.bitcoinLightning")}
                         </span>
                       </FormLabel>
@@ -121,7 +109,7 @@ export default function PaymentMethodForm() {
                             alt="tarjetas"
                           />
                         </div>
-                        <span className="text-center pt-2 font-medium">
+                        <span className="sr-only">
                           {t("home.checkout.payment.creditCard")}
                         </span>
                       </FormLabel>
@@ -134,20 +122,11 @@ export default function PaymentMethodForm() {
           )}
         />
 
-        <Tabs value={paymentTab} className="mt-6">
-          <TabsContent value="credit">
+        {paymentTab === "credit" ? (
+          <div className="mt-3">
             <CreditCardForm />
-          </TabsContent>
-          <TabsContent value="blink">
-            <div className="rounded-lg border border-muted bg-muted/30 p-4 text-sm text-muted-foreground">
-              <p className="font-medium text-foreground mb-1">
-                {t("home.checkout.payment.bitcoinLightning")}
-              </p>
-              <p>{t("home.checkout.payment.blinkDescription")}</p>
-            </div>
-          </TabsContent>
-          <TabsContent value="googlepay">google form</TabsContent>
-        </Tabs>
+          </div>
+        ) : null}
       </CardContent>
     </Card>
   );

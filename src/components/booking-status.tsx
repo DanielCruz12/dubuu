@@ -2,6 +2,7 @@
 "use client";
 
 import { RefreshCcw } from "lucide-react";
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n-context";
@@ -35,6 +36,7 @@ type BookingStatusProps = {
   total: number;
   onRebook?: () => void;
   onViewDetails?: () => void;
+  extraFooterAction?: ReactNode;
   className?: string;
 };
 
@@ -52,6 +54,7 @@ export function BookingStatus({
   total,
   onRebook,
   onViewDetails,
+  extraFooterAction,
   className,
 }: BookingStatusProps) {
   const { t, language } = useLanguage();
@@ -178,6 +181,7 @@ export function BookingStatus({
             fileName={`Recibo-${productName?.slice(0, 10)}-${productId.slice(0, 8)}`}
           />
         )}
+        {extraFooterAction}
         {onRebook && (
           <Button variant="outline" className="w-full hide-for-pdf" onClick={onRebook}>
             <RefreshCcw className="h-4 w-4 mr-2" />

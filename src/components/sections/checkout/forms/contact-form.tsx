@@ -26,13 +26,13 @@ export default function ContactForm() {
 
   return (
     <Card className="overflow-hidden border pb-4">
-      <CardHeader className="pb-8">
+      <CardHeader className="pb-3">
         <CardTitle className="text-xl">{t("home.checkout.contact.title")}</CardTitle>
         <CardDescription>
           {t("home.checkout.contact.description")}
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4 pt-6">
+      <CardContent className="space-y-4 pt-3">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={control}

@@ -138,18 +138,30 @@ export default function ProductBooking() {
     );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const existingBooking: any = userBookings?.find(
+  const productBookings: any[] = (userBookings ?? []).filter(
     (b) => b.product_id === product.id,
   );
+  const hasAnyProductBooking = productBookings.length > 0;
+  const hasMultipleProductBookings = productBookings.length > 1;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const existingBooking: any =
+    productBookings.length > 0
+      ? productBookings.reduce((latest, current) => {
+          const latestDate = new Date(latest?.created_at ?? 0).getTime();
+          const currentDate = new Date(current?.created_at ?? 0).getTime();
+          return currentDate > latestDate ? current : latest;
+        })
+      : undefined;
   const isTour = isProductType(product, "tours");
   const displayPrice = getProductDisplayPrice(product);
+
+  // Show the latest booking status card (completed or in-process) unless user is rebooking
+  const showBookingStatusCard = !!existingBooking && !showBookingFormAgain;
 
   const mobileBookingBottomPad =
     !!user &&
     !showPaymentStep &&
-    (!existingBooking ||
-      existingBooking.status !== "completed" ||
-      showBookingFormAgain);
+    !showBookingStatusCard;
 
   return (
     <div
@@ -268,20 +280,16 @@ export default function ProductBooking() {
               ref={bookingBoxRef}
               className={clsx(
                 "rounded-lg mb-0 md:mb-6",
-                existingBooking?.status === "completed"
-                  ? "p-0 "
-                  : "p-3 md:p-5 sm:p-6 border",
+                showBookingStatusCard ? "p-0 " : "p-3 md:p-5 sm:p-6 border",
               )}
             >
               {user ? (
                 <div>
                   <div className="hidden md:block">
-                    {existingBooking &&
-                    existingBooking.status === "completed" &&
-                    !showBookingFormAgain ? (
+                    {showBookingStatusCard ? (
                       <BookingStatus
                         id={existingBooking.id}
-                        status="completed"
+                        status={existingBooking.status}
                         productName={product.name}
                         created_at={existingBooking.created_at}
                         tourDate={existingBooking.tourDate}
@@ -295,6 +303,19 @@ export default function ProductBooking() {
                         total={Number(existingBooking.total)}
                         onViewDetails={() =>
                           alert(t("home.landing.productDetail.viewDetails"))
+                        }
+                        extraFooterAction={
+                          hasMultipleProductBookings ? (
+                            <Button
+                              type="button"
+                              variant="secondary"
+                              className="w-full"
+                              onClick={() => router.push("/account/bookings")}
+                            >
+                              <Ticket className="h-4 w-4 mr-2" />
+                              {t("home.bookingStatus.viewMyTickets")}
+                            </Button>
+                          ) : null
                         }
                         onRebook={() => {
                           setShowPaymentStep(false);
@@ -312,12 +333,18 @@ export default function ProductBooking() {
                           setShowPaymentStep={() => setShowPaymentStep(true)}
                           product={product}
                           extraActionBelowBookNow={
-                            existingBooking?.status === "completed" && showBookingFormAgain ? (
+                            hasAnyProductBooking && showBookingFormAgain ? (
                               <Button
                                 type="button"
                                 variant="secondary"
                                 className="w-full"
-                                onClick={() => setShowBookingFormAgain(false)}
+                                onClick={() => {
+                                  if (hasMultipleProductBookings) {
+                                    router.push("/account/bookings");
+                                    return;
+                                  }
+                                  setShowBookingFormAgain(false);
+                                }}
                               >
                                 <Ticket className="h-4 w-4 mr-2" />
                                 {t("home.bookingStatus.viewMyTickets")}
@@ -329,7 +356,10 @@ export default function ProductBooking() {
                     )}
                   </div>
                   <div className="block md:hidden">
-                    <Accordion defaultValue={["overview"]} type="multiple">
+                    <Accordion
+                      value={showPaymentStep ? [] : ["overview"]}
+                      type="multiple"
+                    >
                       <AccordionItem value="overview">
                         <AccordionTrigger>
                           <div className="flex flex-row items-center gap-2 p-2">
@@ -340,12 +370,10 @@ export default function ProductBooking() {
                           </div>
                         </AccordionTrigger>
                         <AccordionContent>
-                          {existingBooking &&
-                          existingBooking.status === "completed" &&
-                          !showBookingFormAgain ? (
+                          {showBookingStatusCard ? (
                             <BookingStatus
                               id={existingBooking.id}
-                              status="completed"
+                              status={existingBooking.status}
                               productName={product.name}
                               created_at={existingBooking.created_at}
                               tourDate={existingBooking.tourDate}
@@ -361,6 +389,19 @@ export default function ProductBooking() {
                                 alert(
                                   t("home.landing.productDetail.viewDetails"),
                                 )
+                              }
+                              extraFooterAction={
+                                hasMultipleProductBookings ? (
+                                  <Button
+                                    type="button"
+                                    variant="secondary"
+                                    className="w-full"
+                                    onClick={() => router.push("/account/bookings")}
+                                  >
+                                    <Ticket className="h-4 w-4 mr-2" />
+                                    {t("home.bookingStatus.viewMyTickets")}
+                                  </Button>
+                                ) : null
                               }
                               onRebook={() => {
                                 setShowPaymentStep(false);
@@ -380,12 +421,18 @@ export default function ProductBooking() {
                                 }
                                 product={product}
                                 extraActionBelowBookNow={
-                                  existingBooking?.status === "completed" && showBookingFormAgain ? (
+                                  hasAnyProductBooking && showBookingFormAgain ? (
                                     <Button
                                       type="button"
                                       variant="secondary"
                                       className="w-full"
-                                      onClick={() => setShowBookingFormAgain(false)}
+                                      onClick={() => {
+                                        if (hasMultipleProductBookings) {
+                                          router.push("/account/bookings");
+                                          return;
+                                        }
+                                        setShowBookingFormAgain(false);
+                                      }}
                                     >
                                       <Ticket className="h-4 w-4 mr-2" />
                                       {t("home.bookingStatus.viewMyTickets")}
