@@ -18,13 +18,26 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 export default function ImageCollage({
   images,
   banner,
+  cacheKey,
 }: {
   images: string[]
   banner: string
+  /** Cambia cuando el contenido cambia (p.ej. product.updated_at) para bustear caché. */
+  cacheKey?: string
 }) {
   const { t } = useLanguage()
   const [open, setOpen] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
+
+  const withCacheKey = (src: string, key?: string) => {
+    const trimmed = (src ?? "").trim()
+    if (!trimmed) return trimmed
+    if (!key?.trim()) return trimmed
+    // Solo para URLs remotas: así evitamos ensuciar rutas locales.
+    if (!/^https?:\/\//i.test(trimmed)) return trimmed
+    const v = encodeURIComponent(key)
+    return trimmed.includes("?") ? `${trimmed}&v=${v}` : `${trimmed}?v=${v}`
+  }
 
   // Create a new array with the banner as the first image, followed by the rest (deduped)
   const allImages = (() => {
@@ -41,7 +54,7 @@ export default function ImageCollage({
 
   // Format all images for the lightbox
   const formattedImages = allImages.map((src, index) => ({
-    src,
+    src: withCacheKey(src, cacheKey),
     alt: `${t("home.imageCollage.image")} ${index + 1}`,
   }))
 
@@ -74,7 +87,7 @@ export default function ImageCollage({
               }`}
             >
               <Image
-                src={image || "/logo.svg"}
+                src={withCacheKey(image, cacheKey) || "/logo.svg"}
                 alt={`${t("home.imageCollage.image")} ${index + 1}`}
                 fill
                 className="object-cover"
@@ -129,7 +142,7 @@ export default function ImageCollage({
           }}
         >
           <Image
-            src={banner || "/logo.svg"}
+            src={withCacheKey(banner, cacheKey) || "/logo.svg"}
             alt={t("home.imageCollage.bannerAlt")}
             fill
             className="object-cover transition-transform duration-500 hover:scale-105"
@@ -149,7 +162,7 @@ export default function ImageCollage({
             }}
           >
             <Image
-              src={image || "/logo.svg"}
+              src={withCacheKey(image, cacheKey) || "/logo.svg"}
               alt={`${t("home.imageCollage.image")} ${index + 2}`}
               fill
               className="object-cover transition-transform duration-500 hover:scale-105"
@@ -169,7 +182,7 @@ export default function ImageCollage({
             }}
           >
             <Image
-              src={image || "/logo.svg"}
+              src={withCacheKey(image, cacheKey) || "/logo.svg"}
               alt={`${t("home.imageCollage.image")} ${index + 4}`}
               fill
               className="object-cover transition-transform duration-500 hover:scale-105"

@@ -4,6 +4,7 @@ import type React from "react";
 
 import { useState, useRef, useMemo, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -55,6 +56,7 @@ import {
   useGetUserQuery,
   useUpdateUserMutation,
 } from "@/redux/slices/user/user-slice";
+import { usePatchHostProfileMutation } from "@/redux/slices/host/host-profile-slice";
 
 type PersonalInfoValues = {
   firstName: string;
@@ -86,6 +88,7 @@ function toStoredPhoneNumber(raw: string): string {
 
 export default function PersonalInfoForm() {
   const { user, isLoaded } = useUser();
+  const { getToken } = useAuth();
   const { hasRole } = useClerkToken();
   const { t, language } = useLanguage();
   const [isUpdating, setIsUpdating] = useState(false);
@@ -97,6 +100,7 @@ export default function PersonalInfoForm() {
     skip: !isLoaded || !user?.id,
   });
   const [updateUser] = useUpdateUserMutation();
+  const [patchHostProfile] = usePatchHostProfileMutation();
 
   const personalInfoSchema = useMemo(() => getPersonalInfoSchema(t), [t]);
 
@@ -124,6 +128,7 @@ export default function PersonalInfoForm() {
     user?.lastName,
     dbUser?.phone_number,
     form,
+    user
   ]);
 
   async function savePersonalAndHost() {
@@ -239,6 +244,27 @@ export default function PersonalInfoForm() {
     setIsUpdatingPhoto(true);
     try {
       await user.setProfileImage({ file });
+      // Mantener host_profile.image_url en sync con Clerk (para que se vea en tours, organizer, etc.)
+      if (hasRole("host")) {
+        try {
+          const token = await getToken();
+          await patchHostProfile({
+            token: token ?? undefined,
+            body: {
+              locale: language,
+              user_id: user.id,
+              data: {
+                image_url: user.imageUrl?.trim() || undefined,
+              },
+              // compat (legacy)
+              image_url: user.imageUrl?.trim() || undefined,
+            },
+          }).unwrap();
+        } catch (e) {
+          // No bloqueamos el flujo del usuario si falla el sync con el backend
+          console.error(e);
+        }
+      }
       toast.success(t("dashboard.profile.toast.photoUpdated"), {
         description: t("dashboard.profile.toast.photoUpdatedDescription"),
       });
@@ -262,6 +288,25 @@ export default function PersonalInfoForm() {
     setIsUpdatingPhoto(true);
     try {
       await user.setProfileImage({ file: null });
+      if (hasRole("host")) {
+        try {
+          const token = await getToken();
+          await patchHostProfile({
+            token: token ?? undefined,
+            body: {
+              locale: language,
+              user_id: user.id,
+              data: {
+                image_url: undefined,
+              },
+              // compat (legacy)
+              image_url: undefined,
+            },
+          }).unwrap();
+        } catch (e) {
+          console.error(e);
+        }
+      }
       toast.success(t("dashboard.profile.toast.photoRemoved"), {
         description: t("dashboard.profile.toast.photoRemovedDescription"),
       });

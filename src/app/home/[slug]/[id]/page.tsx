@@ -38,6 +38,15 @@ import { formatUsd, USD_SYMBOL } from "@/utils/currency";
 import { useLanguage } from "@/lib/i18n-context";
 import { getProductDisplayPrice } from "@/utils/product-helpers";
 
+function withCacheKey(src: string, key?: string) {
+  const trimmed = (src ?? "").trim();
+  if (!trimmed) return trimmed;
+  if (!key?.trim()) return trimmed;
+  if (!/^https?:\/\//i.test(trimmed)) return trimmed;
+  const v = encodeURIComponent(key);
+  return trimmed.includes("?") ? `${trimmed}&v=${v}` : `${trimmed}?v=${v}`;
+}
+
 export default function ProductBooking() {
   const { t } = useLanguage();
   const router = useRouter();
@@ -191,7 +200,7 @@ export default function ProductBooking() {
                 title={product?.name}
                 url={typeof window !== "undefined" ? window.location.href : ""}
                 description={product?.description?.substring(0, 100) + "..."}
-                image={product?.banner}
+                image={withCacheKey(product?.banner ?? "", product?.updated_at)}
               />
               {/*   <Button
                 variant="ghost"
@@ -215,7 +224,11 @@ export default function ProductBooking() {
           </div>
         </div>
 
-        <ImageCollage banner={product.banner} images={product?.images} />
+        <ImageCollage
+          banner={product.banner}
+          images={product?.images}
+          cacheKey={product.updated_at}
+        />
         <div className="pt-2 flex items-center gap-1">
           <MapPin className="w-6 h-6 md:w-5 md:h-5" />
           <span className="text-sm md:text-base">{product?.address}</span>

@@ -67,8 +67,8 @@ function getHostProfileFormSchema(t: (key: string) => string) {
       .url(t("dashboard.profile.hostProfile.errors.validUrl"))
       .optional()
       .or(z.literal("")),
-    intro: z.string().max(220),
-    descripcion: z.string().max(520),
+    intro: z.string(),
+    descripcion: z.string(),
     anosExperiencia: z.coerce
       .number()
       .int()
@@ -186,13 +186,10 @@ const HostProfileEditForm = forwardRef<
         userLoaded && user?.imageUrl?.trim() ? user.imageUrl.trim() : undefined;
       const tipoName = values.tipoExperiencias.trim();
       const tiposExperiencia = tipoName ? [tipoName] : [];
-      const body = {
-        locale: language,
+      const data = {
         // Si el usuario ya tiene foto en Clerk, úsala como default en host_profiles
         image_url: values.image_url?.trim() || clerkImageUrl || undefined,
         intro: values.intro.trim() || undefined,
-
-        // Nuevo shape backend (snake_case)
         description: values.descripcion.trim() || undefined,
         years_experience: values.anosExperiencia,
         specialty: values.especialidad.trim() || undefined,
@@ -200,6 +197,11 @@ const HostProfileEditForm = forwardRef<
         hosting_style: values.estilo.trim() || undefined,
         experience_tags: tiposExperiencia,
         languages: values.idiomas,
+      };
+      const body = {
+        locale: language,
+        user_id: userId ?? undefined,
+        data,
 
         // Legacy (por si algún endpoint viejo lo sigue esperando)
         descripcion: values.descripcion.trim() || undefined,
@@ -412,7 +414,6 @@ const HostProfileEditForm = forwardRef<
               </FormLabel>
               <FormControl>
                 <Input
-                  maxLength={220}
                   placeholder={t("dashboard.profile.hostProfile.introPlaceholder")}
                   className="resize-none text-sm leading-snug"
                   {...field}
@@ -455,7 +456,6 @@ const HostProfileEditForm = forwardRef<
             <FormControl>
               <Textarea
                 rows={2}
-                maxLength={520}
                 placeholder={t("dashboard.profile.hostProfile.descriptionPlaceholder")}
                 className="resize-none min-h-[5.5rem] text-sm leading-snug"
                 {...field}

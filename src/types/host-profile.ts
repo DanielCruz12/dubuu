@@ -35,6 +35,22 @@ export interface HostProfileApiErrorBody {
 export interface HostProfilePatchBody {
   /** Idioma de la UI (se usa para guardar la traducción actual). */
   locale: "es" | "en" | (string & {});
+  /**
+   * Nuevo patrón backend: identificar el usuario en el body y
+   * agrupar los campos en un objeto `data`.
+   */
+  user_id?: string;
+  data?: Partial<{
+    image_url: string;
+    intro: string;
+    description: string;
+    years_experience: number;
+    specialty: string;
+    experience_summary: string;
+    hosting_style: string;
+    experience_tags: string[];
+    languages: string[];
+  }>;
   /** URL pública de la imagen de perfil (snake_case como backend). */
   image_url?: string;
   intro?: string;

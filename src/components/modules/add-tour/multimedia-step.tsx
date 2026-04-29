@@ -40,9 +40,17 @@ const MAX_VIDEO_MB = 50;
 const MAX_PDF_MB = 10;
 
 // Compresión: reducir lo máximo posible con un estándar razonable (WebP, máx. 350 KB)
-const IMAGE_COMPRESSION_OPTIONS = {
+const GALLERY_IMAGE_COMPRESSION_OPTIONS = {
   maxSizeMB: 0.35,
   maxWidthOrHeight: 1920,
+  useWebWorker: true,
+  fileType: "image/webp" as const,
+};
+
+// Banner: mantener mucho más detalle (no agresivo), para que quede nítido en la cabecera
+const BANNER_IMAGE_COMPRESSION_OPTIONS = {
+  maxSizeMB: 1.5,
+  maxWidthOrHeight: 3840,
   useWebWorker: true,
   fileType: "image/webp" as const,
 };
@@ -153,7 +161,7 @@ export function MultimediaStep({
     }
     setIsCompressingBanner(true);
     try {
-      const compressed = await imageCompression(file, IMAGE_COMPRESSION_OPTIONS);
+      const compressed = await imageCompression(file, BANNER_IMAGE_COMPRESSION_OPTIONS);
       setBannerFile(compressed);
       setRemovedExistingBanner(false);
       const reader = new FileReader();
@@ -193,7 +201,7 @@ export function MultimediaStep({
     try {
       const compressed = await Promise.all(
         selectedFiles.map((f) =>
-          imageCompression(f, IMAGE_COMPRESSION_OPTIONS),
+          imageCompression(f, GALLERY_IMAGE_COMPRESSION_OPTIONS),
         ),
       );
       const newFiles = [...imageFiles, ...compressed];

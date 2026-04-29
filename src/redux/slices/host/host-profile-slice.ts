@@ -28,6 +28,7 @@ export const hostProfileApiSlice = createApi({
       transformResponse: (raw: unknown) => normalizeHostPublicProfile(raw),
       providesTags: (_result, _error, { userId }) => [
         { type: "HostProfile", id: userId },
+        { type: "HostProfile", id: "LIST" },
       ],
     }),
 
@@ -42,7 +43,7 @@ export const hostProfileApiSlice = createApi({
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       }),
       transformResponse: (raw: unknown) => normalizeHostPublicProfile(raw),
-      invalidatesTags: [{ type: "HostProfile", id: "ME" }],
+      invalidatesTags: [{ type: "HostProfile", id: "LIST" }],
     }),
   }),
 });
