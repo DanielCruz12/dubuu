@@ -1,5 +1,5 @@
 {
-  "productType": {"tours": "Trips"},
+  "productType": {"tours": "Trips", "rental": "Rentals"},
   "rating": {"five": "5 stars", "fourPlus": "+4 stars", "threePlus": "+3 stars", "twoPlus": "+2 stars", "onePlus": "+1 stars", "none": "No rating"},
   "searchDialog": {
     "title": "Discover the treasures of the world",

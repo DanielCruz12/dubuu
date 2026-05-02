@@ -6,6 +6,29 @@ import type {
   MultimediaFormValues,
 } from "./types";
 
+/** Normaliza lo que venga de la API (es/en, con o sin acentos) a los valores del `<Select>`. */
+export function normalizeTourDifficultyForForm(
+  raw: unknown,
+): DetailsFormValues["difficulty"] {
+  const s = String(raw ?? "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+  const map: Record<string, DetailsFormValues["difficulty"]> = {
+    easy: "easy",
+    medium: "medium",
+    hard: "hard",
+    extreme: "extreme",
+    facil: "easy",
+    moderado: "medium",
+    dificil: "hard",
+    extremo: "extreme",
+    leve: "easy",
+  };
+  return map[s] ?? "medium";
+}
+
 const ADD_TOUR_DRAFT_KEY = "dubuu-add-tour-draft";
 
 /** Borrador serializable para localStorage (fechas como ISO string) */
@@ -53,6 +76,7 @@ export function getAddTourDraftForForm(): AddTourDraftRestored | null {
   const details = draft.details
     ? {
         ...draft.details,
+        difficulty: normalizeTourDifficultyForForm(draft.details.difficulty),
         available_dates: draft.details.available_dates.map(
           (d) => new Date(d)
         ) as DetailsFormValues["available_dates"],

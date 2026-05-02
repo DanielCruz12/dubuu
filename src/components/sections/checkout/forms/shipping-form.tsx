@@ -52,12 +52,12 @@ export default function ShippingForm() {
   }, [watch, setValue]);
 
   return (
-    <Card className="overflow-hidden pb-4">
-      <CardHeader className="pb-8">
+    <Card className="overflow-hidden border pb-4">
+      <CardHeader className="pb-3">
         <CardTitle className="text-xl">Dirección</CardTitle>
         <CardDescription>Ingresa tu dirección.</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4 pt-6">
+      <CardContent className="space-y-4 pt-3">
         <FormField
           control={control}
           name="address"

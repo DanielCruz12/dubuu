@@ -33,6 +33,7 @@ import {
   getAddTourDraftForForm,
   setAddTourDraft,
   clearAddTourDraft,
+  normalizeTourDifficultyForForm,
   type AddTourDraftStored,
 } from "./utils";
 
@@ -113,7 +114,7 @@ function mapTourProductToForm(p: ITourProduct): {
       included: p.tour?.included ?? "",
       itinerary: Array.isArray(p.tour?.itinerary) ? p.tour.itinerary : [],
       available_dates: dates,
-      difficulty: (p.tour?.difficulty as DetailsFormValues["difficulty"]) ?? "medium",
+      difficulty: normalizeTourDifficultyForForm(p.tour?.difficulty),
       expenses: p.tour?.expenses ?? [],
       packing_list: p.tour?.packing_list ?? [],
     },

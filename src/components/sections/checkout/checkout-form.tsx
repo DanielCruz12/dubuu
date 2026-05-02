@@ -289,6 +289,11 @@ export default function CheckoutForm({
 
   const paymentMethod = methods.watch("paymentMethod");
 
+  const [cancellationModalOpen, setCancellationModalOpen] = useState(false);
+
+  const legalLinkClass =
+    "font-medium underline underline-offset-4 text-blue-600 hover:text-blue-800 dark:text-foreground dark:hover:text-primary transition-colors";
+
   return (
     <FormProvider {...methods}>
       <h1 className="text-xl md:text-2xl font-semibold mb-1">
@@ -297,13 +302,16 @@ export default function CheckoutForm({
       <p className="text-sm text-muted-foreground mb-6">
         {t("home.checkout.description")}
       </p>
-      <form onSubmit={methods.handleSubmit(onSubmit)} className="">
+      <form
+        onSubmit={methods.handleSubmit(onSubmit)}
+        className="flex flex-col gap-6"
+      >
         <PaymentMethodForm />
         <ContactForm />
         {paymentMethod !== "blink" && <ShippingForm />}
 
-        <div className="pt-2">
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <div>
+          <div className="flex flex-col gap-3">
             <Button
               size="lg"
               disabled={isLoading}
@@ -318,28 +326,56 @@ export default function CheckoutForm({
             <Button
               onClick={() => setShowPaymentStep(false)}
               type="button"
-              variant="outline"
-              className="w-full text-sm border-destructive/50 bg-destructive/40 text-white/90 hover:text-white hover:bg-destructive/50 hover:border-destructive/70"
+              variant="destructive"
+              className="w-full text-base py-2 font-semibold"
             >
-              <X className="h-4 w-4 mr-2" />
+              <X className="h-4 w-4 mr-2 shrink-0" />
               {t("home.checkout.payment.cancel")}
             </Button>
           </div>
-          <p className="text-xs text-center text-muted-foreground mt-4 leading-relaxed px-2 sm:px-6">
-            <span className="font-medium">
-              {t("home.checkout.payment.termsAgreeButton")}
-            </span>{" "}
-            {t("home.checkout.payment.termsAgreeAfter")}
-            <Link
-              href="/terms"
-              className="underline underline-offset-4 hover:text-primary"
-            >
-              {t("home.checkout.payment.termsLink")}
-            </Link>
-            .
-          </p>
+          <div className="mt-4 space-y-2 px-2 text-center text-xs leading-relaxed text-muted-foreground sm:px-6">
+            <p>
+              <span className="font-medium text-foreground">
+                {t("home.checkout.payment.termsAgreeButton")}
+              </span>{" "}
+              {t("home.checkout.payment.termsAgreeAfter")}
+              <Link href="/terms" className={legalLinkClass}>
+                {t("home.checkout.payment.termsLink")}
+              </Link>
+              .
+            </p>
+            <p>
+              <button
+                type="button"
+                onClick={() => setCancellationModalOpen(true)}
+                className={legalLinkClass}
+              >
+                {t("home.bookingForm.cancellationPolicies")}
+              </button>
+            </p>
+          </div>
         </div>
       </form>
+
+      <Dialog open={cancellationModalOpen} onOpenChange={setCancellationModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t("home.bookingForm.cancellationModal.title")}</DialogTitle>
+            <DialogDescription className="sr-only">
+              {t("home.bookingForm.cancellationModal.intro")}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 text-sm text-muted-foreground">
+            <p>{t("home.bookingForm.cancellationModal.intro")}</p>
+            <ul className="list-inside list-disc space-y-2 pl-1">
+              <li>{t("home.bookingForm.cancellationModal.fullRefund")}</li>
+              <li>{t("home.bookingForm.cancellationModal.partialRefund")}</li>
+              <li>{t("home.bookingForm.cancellationModal.noRefund")}</li>
+            </ul>
+            <p>{t("home.bookingForm.cancellationModal.changes")}</p>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={blinkModalOpen} onOpenChange={setBlinkModalOpen}>
         <DialogContent className="sm:max-w-md max-w-[calc(100vw-2rem)] overflow-hidden">

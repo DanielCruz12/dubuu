@@ -15,15 +15,8 @@ import {
 } from "@/components/ui/select";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { CalendarCheck, FileText } from "lucide-react";
+import { CalendarCheck } from "lucide-react";
 import type { IProduct } from "@/types/product";
-import { Separator } from "../ui/separator";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { isProductType } from "@/utils";
@@ -100,7 +93,6 @@ export default function BookingForm({
     availableSpots: number;
   } | null>(null);
 
-  const [cancellationModalOpen, setCancellationModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -197,12 +189,12 @@ export default function BookingForm({
 
   return (
     <>
-    <div className="sticky top-4 rounded-lg px-2 max-w-md mx-auto">
-      <h2 className="text-base font-semibold mb-4 hidden md:block">
+    <div className="sticky top-4 rounded-lg px-1 max-w-md mx-auto">
+      <h2 className="text-base font-semibold mb-3 hidden md:block">
         {t("home.bookingForm.title")} {product.name}
       </h2>
 
-      <form className="space-y-6">
+      <form className="space-y-4">
         <div ref={datetimeRef}>
           <Label>{t("home.bookingForm.datetimeLabel")}</Label>
           <Controller
@@ -317,28 +309,9 @@ export default function BookingForm({
           )}
         </div>
 
-        <div className="pt-4 border-t dark:border-muted space-y-3">
+        <div className="pt-3 border-t dark:border-muted space-y-2">
           <>
-            <div className="flex justify-between text-sm">
-              <span>
-                {t("home.bookingForm.pricePerPerson")}{" "}
-                {t("home.bookingForm.perPerson")}
-              </span>
-              <span>
-                {symbol}
-                {baseForBreakdown}
-              </span>
-            </div>
-
-            <div className="flex justify-between text-sm">
-              <span>{t("home.bookingForm.subtotal")}</span>
-              <span>
-                {symbol}
-                {bookingBreakdown.userPays.toFixed(2)}
-              </span>
-            </div>
-            <Separator className="my-3" />
-            <div className="flex rounded py-3 px-2 justify-between font-semibold items-center">
+            <div className="flex rounded py-2 px-2 justify-between font-semibold items-center">
               <span className="text-lg md:text-2xl">
                 {t("home.bookingForm.total")}
               </span>
@@ -367,33 +340,6 @@ export default function BookingForm({
           )}
         </div>
 
-        <div className="text-center">
-          <button
-            type="button"
-            onClick={() => setCancellationModalOpen(true)}
-            className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-2 mx-auto transition-colors"
-          >
-            <FileText className="w-4 h-4" />
-            {t("home.bookingForm.cancellationPolicies")}
-          </button>
-        </div>
-
-        <Dialog open={cancellationModalOpen} onOpenChange={setCancellationModalOpen}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>{t("home.bookingForm.cancellationModal.title")}</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-3 text-sm text-muted-foreground">
-              <p>{t("home.bookingForm.cancellationModal.intro")}</p>
-              <ul className="list-disc list-inside space-y-2 pl-1">
-                <li>{t("home.bookingForm.cancellationModal.fullRefund")}</li>
-                <li>{t("home.bookingForm.cancellationModal.partialRefund")}</li>
-                <li>{t("home.bookingForm.cancellationModal.noRefund")}</li>
-              </ul>
-              <p>{t("home.bookingForm.cancellationModal.changes")}</p>
-            </div>
-          </DialogContent>
-        </Dialog>
       </form>
     </div>
 
@@ -414,9 +360,6 @@ export default function BookingForm({
                 </span>
                 <span className="truncate text-[11px] text-white/65">
                   {adultTickets} {t("home.bookingForm.adults").toLowerCase()}
-                  {" · "}
-                  {symbol}
-                  {baseForBreakdown} {t("home.bookingForm.perPerson")}
                 </span>
               </div>
               <Button

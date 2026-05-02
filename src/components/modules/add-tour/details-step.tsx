@@ -48,7 +48,11 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 
 import { type DetailsFormValues, getDetailsSchema } from "./types";
-import { focusFirstStepField, scrollToFirstError } from "./utils";
+import {
+  focusFirstStepField,
+  normalizeTourDifficultyForForm,
+  scrollToFirstError,
+} from "./utils";
 import { TourDifficultyBadge } from "@/components/difficulty-badge";
 import { useLanguage } from "@/lib/i18n-context";
 
@@ -127,10 +131,10 @@ function SortableItineraryItem({
         variant="ghost"
         size="sm"
         onClick={onRemove}
-        className="h-8 w-8 p-0 shrink-0"
+        className="h-8 w-8 p-0 shrink-0 text-destructive hover:bg-transparent hover:text-destructive active:text-destructive/90"
       >
         <span className="sr-only">{deleteSrOnly}</span>
-        <X className="h-4 w-4" />
+        <X className="h-4 w-4" aria-hidden />
       </Button>
     </div>
   );
@@ -172,7 +176,10 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
       included: defaultValues?.included || "",
       itinerary: defaultValues?.itinerary || [],
       available_dates: defaultValues?.available_dates || [],
-      difficulty: defaultValues?.difficulty || undefined,
+      difficulty:
+        defaultValues?.difficulty != null && `${defaultValues.difficulty}`.trim() !== ""
+          ? normalizeTourDifficultyForForm(defaultValues.difficulty)
+          : undefined,
       expenses: defaultValues?.expenses || [],
       packing_list: defaultValues?.packing_list || [],
     },
@@ -534,7 +541,7 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
                           variant="ghost"
                           size="sm"
                           onClick={() => removeExpenseItem(index)}
-                          className="h-8 w-8 p-0"
+                          className="h-8 w-8 p-0 text-destructive hover:bg-transparent hover:text-destructive"
                         >
                           <span className="sr-only">{t("dashboard.addTour.details.delete")}</span>
                           <X className="h-4 w-4" />
@@ -588,7 +595,7 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
                           variant="ghost"
                           size="sm"
                           onClick={() => removePackingItem(index)}
-                          className="h-8 w-8 p-0"
+                          className="h-8 w-8 p-0 text-destructive hover:bg-transparent hover:text-destructive"
                         >
                           <span className="sr-only">{t("dashboard.addTour.details.delete")}</span>
                           <X className="h-4 w-4" />
@@ -681,7 +688,7 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
                           variant="ghost"
                           size="sm"
                           onClick={() => removeDateWithTime(i)}
-                          className="h-8 w-8 p-0"
+                          className="h-8 w-8 p-0 text-destructive hover:bg-transparent hover:text-destructive"
                         >
                           <span className="sr-only">{t("dashboard.addTour.details.delete")}</span>
                           <X className="h-4 w-4" />

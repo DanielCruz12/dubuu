@@ -293,7 +293,7 @@ export default function ProductBooking() {
               ref={bookingBoxRef}
               className={clsx(
                 "rounded-lg mb-0 md:mb-6",
-                showBookingStatusCard ? "p-0 " : "p-3 md:p-5 sm:p-6 border",
+                showBookingStatusCard ? "p-0 " : "border px-3 py-2 sm:px-4 sm:py-2.5 md:px-4 md:py-3",
               )}
             >
               {user ? (

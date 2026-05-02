@@ -40,14 +40,14 @@ export const ratingOptionsTranslations = {
 
 export const productTypes = [
   { description: "Viajes", name: "tours", id: 1 },
-  /* { description: "Alquiler", name: "rental", id: 2 }, */
+  { description: "Alquiler", name: "rental", id: 2 },
 ];
 
 export const productTypesTranslations = {
   es: productTypes,
   en: [
     { description: "Trips", name: "tours", id: 1 },
-    /* { description: "Rental", name: "rental", id: 2 }, */
+    { description: "Rentals", name: "rental", id: 2 },
   ],
 };
 
