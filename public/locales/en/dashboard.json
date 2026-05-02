@@ -107,11 +107,136 @@
     "payments": "Payments"
   },
   "addProduct": {
-    "title": "Add product",
+    "title": "Add",
     "editTitle": "Edit product",
-    "editDescription": "Tour data was loaded. Update what you need and save at the end of the wizard.",
+    "editDescription": "Product data was loaded. Update what you need and save at the end of the wizard.",
     "loadError": "Could not load the product for editing.",
-    "loadingEdit": "Loading tour data…"
+    "loadingEdit": "Loading product…",
+    "loadingEditRental": "Loading vehicle listing…",
+    "unsupportedType": "This product type cannot be edited here yet.",
+    "redirecting": "Redirecting…"
+  },
+  "addProductType": {
+    "title": "What do you want to create?",
+    "description": "Pick a product type first; you will fill in the details in the guided steps next.",
+    "subtitle": "Choose the listing type to continue.",
+    "question": "Product type",
+    "placeholder": "Select a type…",
+    "continue": "Continue",
+    "loadingTypes": "Loading product types…",
+    "selectFirst": "Select a product type first.",
+    "unsupported": "That product type is not supported in this flow.",
+    "emptyTitle": "No product types available",
+    "emptyDescription": "Try again later or contact support if this persists.",
+    "invalidTypeParam": "Invalid product type. Go back to Products and use Add again.",
+    "missingType": "Pick the list type on Products, then press Add."
+  },
+  "addRental": {
+    "progress": "Step {{step}} of {{total}}",
+    "steps": {
+      "basic": {
+        "title": "Basic information",
+        "description": "Name, description, and location of the listing."
+      },
+      "vehicle": {
+        "title": "Vehicle details",
+        "description": "Brand, model, specs, and category."
+      },
+      "terms": {
+        "title": "Pickup & availability",
+        "description": "Pickup location, optional delivery, and rental window."
+      }
+    },
+    "basic": {
+      "name": "Listing title",
+      "namePlaceholder": "e.g. Toyota Camry 2020 – Comfortable and reliable",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe the vehicle and what renters should know.",
+      "address": "Address",
+      "addressPlaceholder": "Street, neighborhood",
+      "country": "Country",
+      "countryPlaceholder": "Select country",
+      "validation": {
+        "nameMin": "Title must be at least 5 characters.",
+        "descriptionMin": "Description must be at least 20 characters.",
+        "addressMin": "Address is required.",
+        "countryMin": "Country is required."
+      }
+    },
+    "vehicle": {
+      "brand": "Brand",
+      "brandPlaceholder": "e.g. Toyota",
+      "model": "Model",
+      "modelPlaceholder": "e.g. Camry",
+      "year": "Year",
+      "condition": "Condition",
+      "conditionNew": "New",
+      "conditionUsed": "Used",
+      "conditionExcellent": "Excellent",
+      "conditionGood": "Good",
+      "conditionFair": "Fair",
+      "mileage": "Mileage (km)",
+      "transmission": "Transmission",
+      "transmissionAutomatic": "Automatic",
+      "transmissionManual": "Manual",
+      "seats": "Seats",
+      "bodyType": "Body type",
+      "bodySedan": "Sedan",
+      "bodySuv": "SUV",
+      "bodyHatchback": "Hatchback",
+      "bodyCoupe": "Coupe",
+      "bodyConvertible": "Convertible",
+      "bodyTruck": "Truck",
+      "bodyVan": "Van",
+      "bodyMotorcycle": "Motorcycle",
+      "fuel": "Fuel",
+      "fuelGasoline": "Gasoline",
+      "fuelDiesel": "Diesel",
+      "fuelElectric": "Electric",
+      "fuelHybrid": "Hybrid",
+      "color": "Color",
+      "doors": "Doors",
+      "engine": "Engine",
+      "enginePlaceholder": "e.g. 2.5L 4-cylinder",
+      "validation": {
+        "brandMin": "Brand is required.",
+        "modelMin": "Model is required.",
+        "colorMin": "Color is required.",
+        "engineMin": "Engine is required."
+      }
+    },
+    "terms": {
+      "pickup": "Pickup location",
+      "pickupPlaceholder": "e.g. Mexico City International Airport",
+      "offersDelivery": "Offer delivery to the customer",
+      "maxDeliveryKm": "Max delivery distance (km)",
+      "baseDeliveryFee": "Base delivery fee (USD)",
+      "feePerKm": "Fee per km (USD)",
+      "availableFrom": "Available from",
+      "availableUntil": "Available until",
+      "isAvailable": "Marked as available",
+      "isLive": "Published / live",
+      "isActive": "Listing active",
+      "validation": {
+        "pickupMin": "Pickup location is required.",
+        "deliveryDistancePositive": "Enter a distance greater than zero when delivery is enabled.",
+        "deliveryFeesRequired": "Enter base fee and per-km fee when delivery is enabled.",
+        "dateRange": "End date must be on or after start date."
+      }
+    },
+    "multimedia": {
+      "pricePerDay": "Price per day (USD)"
+    },
+    "toast": {
+      "success": "Vehicle listing created",
+      "successDescription": "Your car rental was submitted successfully.",
+      "error": "Could not create listing",
+      "errorDescription": "Check the data and try again.",
+      "updateSuccess": "Listing updated",
+      "updateSuccessDescription": "Changes were saved.",
+      "updateError": "Could not update",
+      "updateErrorDescription": "Try again in a moment."
+    }
   },
   "saved": {
     "heading": "Saved",
@@ -189,6 +314,9 @@
     "title": "Products",
     "description": "List of all your products",
     "filters": {
+      "listKind": "List",
+      "kindTours": "Tours",
+      "kindRental": "Car rental",
       "product": "Product",
       "productDate": "Product date",
       "selectProduct": "Select product...",
@@ -197,10 +325,24 @@
       "noDates": "No dates available",
       "searchProduct": "Search product...",
       "noProductsFound": "No products found.",
+      "searchRental": "Search",
+      "searchRentalPlaceholder": "Search by listing name…",
       "export": "Export",
-      "newTour": "Create"
+      "newTour": "Create",
+      "newProduct": "Add",
+      "addButton": "Add",
+      "addDisabledNoProductType": "No matching product type was found in the API for this list."
     },
     "exportWorksheet": "Data",
+    "rentalExportTitle": "Car rentals",
+    "rentalTable": {
+      "name": "Name",
+      "vehicle": "Vehicle",
+      "pricePerDay": "Price / day",
+      "pickup": "Pickup",
+      "availability": "Availability",
+      "listing": "Listing"
+    },
     "table": {
       "id": "ID",
       "description": "Description",
@@ -589,8 +731,8 @@
     "buttons": {
       "back": "Back",
       "continue": "Continue",
-      "creating": "Creating tour...",
-      "create": "Create tour",
+      "creating": "Creating...",
+      "create": "Create",
       "save": "Save changes",
       "saving": "Saving..."
     },

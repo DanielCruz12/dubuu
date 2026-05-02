@@ -32,18 +32,21 @@ import { useGetProductAudiencesQuery } from "@/redux/slices/product/product-audi
 interface CategorizationStepProps {
   onSubmit: (data: CategorizationFormValues) => void;
   defaultValues?: Partial<CategorizationFormValues>;
+  /** When set, the product type field is hidden and this id is always submitted. */
+  fixedProductTypeId?: string;
 }
 
 export function CategorizationStep({
   onSubmit,
   defaultValues,
+  fixedProductTypeId,
 }: CategorizationStepProps) {
   const { t } = useLanguage();
   const formRef = useRef<HTMLFormElement>(null);
   const categorizationSchema = useMemo(() => getCategorizationSchema(t), [t]);
 
   const [selectedProductTypeId, setSelectedProductTypeId] = useState<string>(
-    defaultValues?.product_type_id || "",
+    fixedProductTypeId || defaultValues?.product_type_id || "",
   );
 
   const { data: productTypes = [], isLoading: isLoadingTypes } =
@@ -94,7 +97,7 @@ export function CategorizationStep({
   const form = useForm<CategorizationFormValues>({
     resolver: zodResolver(categorizationSchema),
     defaultValues: {
-      product_type_id: defaultValues?.product_type_id || "",
+      product_type_id: fixedProductTypeId || defaultValues?.product_type_id || "",
       product_category_id: defaultValues?.product_category_id || "",
       target_product_audience_id:
         defaultValues?.target_product_audience_id || "",
@@ -111,6 +114,13 @@ export function CategorizationStep({
     form.setValue("product_category_id", "");
     form.setValue("amenities", []);
   };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- solo al cambiar fixedProductTypeId; setValue es estable en RHF
+  useEffect(() => {
+    if (!fixedProductTypeId) return;
+    setSelectedProductTypeId(fixedProductTypeId);
+    form.setValue("product_type_id", fixedProductTypeId);
+  }, [fixedProductTypeId]);
 
   // Manejar cambio de categoría
   const handleCategoryChange = (value: string) => {
@@ -187,26 +197,28 @@ export function CategorizationStep({
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="product_type_id"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("dashboard.addTour.categorization.productType")}</FormLabel>
-                <FormControl>
-                  <SingleCombobox
-                    options={productTypeOptions}
-                    value={field.value}
-                    onChange={handleProductTypeChange}
-                    placeholder={t("dashboard.addTour.categorization.productTypePlaceholder")}
-                    emptyMessage={t("dashboard.addTour.categorization.productTypeEmpty")}
-                    className="w-full"
-                  />
-                </FormControl>
-                <FormMessage className="text-xs text-red-500" />
-              </FormItem>
-            )}
-          />
+          {!fixedProductTypeId ? (
+            <FormField
+              control={form.control}
+              name="product_type_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("dashboard.addTour.categorization.productType")}</FormLabel>
+                  <FormControl>
+                    <SingleCombobox
+                      options={productTypeOptions}
+                      value={field.value}
+                      onChange={handleProductTypeChange}
+                      placeholder={t("dashboard.addTour.categorization.productTypePlaceholder")}
+                      emptyMessage={t("dashboard.addTour.categorization.productTypeEmpty")}
+                      className="w-full"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs text-red-500" />
+                </FormItem>
+              )}
+            />
+          ) : null}
 
           <FormField
             control={form.control}

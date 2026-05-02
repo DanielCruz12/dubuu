@@ -10,29 +10,51 @@ import {
   Zap,
 } from "lucide-react";
 import type { PaymentMethod } from "@/types/payment-types";
+import {
+  PRODUCT_TYPE_ALIASES,
+  parseProductTypeParam,
+  resolveProductTypeKey,
+} from "@/constants/product-type";
+
+export {
+  DEFAULT_PRODUCT_TYPE_QUERY,
+  ProductTypeKey,
+  PRODUCT_TYPE_ALIASES,
+  formKindToProductTypeKey,
+  getProductTypeSearchAliases,
+  normalizeProductTypeName,
+  parseProductTypeParam,
+  productTypeKeyToFormKind,
+  productTypeNameToFormKind,
+  resolveProductTypeKey,
+} from "@/constants/product-type";
+export type { ProductFormKind } from "@/constants/product-type";
 
 // Type guard para tours
 export function isTourProduct(product: IProduct): product is ITourProduct {
   return isProductType(product, "tours");
 }
 
-// Genérico: helper para comparar tipos de producto
-// Soporta alias en distintos idiomas (ej. "tours" / "viajes")
+// Genérico: comparar tipo de producto (alias + resolución desde nombre API)
 export function isProductType<T extends string>(
   product: IProduct,
   type: T,
 ): product is Extract<IProduct, { product_type: { name: T } }> {
-  const rawName = product.product_type?.name?.toLowerCase();
-  const target = type.toLowerCase();
+  const inferred = resolveProductTypeKey(product.product_type?.name);
+  const wanted = parseProductTypeParam(String(type));
 
-  const aliases: Record<string, string[]> = {
-    tours: ["tours", "tour", "viajes", "viaje"],
-    rental: ["rental", "rentals", "alquiler", "alquileres"],
-  };
+  if (inferred !== null && wanted !== null) {
+    return inferred === wanted;
+  }
 
-  const allowedNames = aliases[target] ?? [target];
+  const rawName = product.product_type?.name?.toLowerCase().trim() ?? "";
+  if (!rawName) return false;
 
-  return !!rawName && allowedNames.includes(rawName);
+  if (wanted !== null) {
+    return PRODUCT_TYPE_ALIASES[wanted].some((a) => a.toLowerCase() === rawName);
+  }
+
+  return rawName === String(type).toLowerCase();
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

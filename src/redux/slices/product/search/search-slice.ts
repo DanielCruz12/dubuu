@@ -1,4 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { DEFAULT_PRODUCT_TYPE_QUERY } from "@/constants/product-type";
 
 export interface Country {
   code: string;
@@ -28,7 +29,7 @@ export const initialSearchState: SearchState = {
   isLocationEnabled: false, // Cambiar a true por defecto
   // Cambiar rating inicial a "0" para no filtrar por defecto
   rating: "0",
-  productType: "tours",
+  productType: DEFAULT_PRODUCT_TYPE_QUERY,
 };
 
 export const searchSlice = createSlice({

@@ -18,12 +18,13 @@ import {
 import { useGetProductsQuery } from "@/redux/slices/product/product-slice"
 import { useUser } from "@clerk/nextjs"
 import type { IProduct } from "@/types/product"
+import { DEFAULT_PRODUCT_TYPE_QUERY } from "@/constants/product-type"
 
 // Define initial state for filters
 const initialFilterState = {
   rating: "0",
   pricing: "1000",
-  productType: "tours",
+  productType: DEFAULT_PRODUCT_TYPE_QUERY,
 }
 
 interface UseSearchLogicProps {

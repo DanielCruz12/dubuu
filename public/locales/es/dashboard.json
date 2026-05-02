@@ -107,11 +107,136 @@
     "payments": "Pagos"
   },
   "addProduct": {
-    "title": "Agregar producto",
+    "title": "Agregar",
     "editTitle": "Editar producto",
-    "editDescription": "Se cargaron los datos del tour. Actualiza lo que necesites y guarda al final del asistente.",
+    "editDescription": "Se cargaron los datos del producto. Actualiza lo que necesites y guarda al final del asistente.",
     "loadError": "No se pudo cargar el producto para editar.",
-    "loadingEdit": "Cargando datos del tour…"
+    "loadingEdit": "Cargando producto…",
+    "loadingEditRental": "Cargando publicación de vehículo…",
+    "unsupportedType": "Este tipo de producto aún no se puede editar aquí.",
+    "redirecting": "Redirigiendo…"
+  },
+  "addProductType": {
+    "title": "¿Qué deseas crear?",
+    "description": "Elige primero el tipo de producto; luego completarás los datos en los pasos del asistente.",
+    "subtitle": "Elige el tipo de publicación para continuar.",
+    "question": "Tipo de producto",
+    "placeholder": "Selecciona un tipo…",
+    "continue": "Continuar",
+    "loadingTypes": "Cargando tipos de producto…",
+    "selectFirst": "Selecciona un tipo de producto primero.",
+    "unsupported": "Ese tipo de producto no está disponible en este flujo.",
+    "emptyTitle": "No hay tipos de producto",
+    "emptyDescription": "Vuelve a intentar más tarde o contacta soporte si continúa el problema.",
+    "invalidTypeParam": "Tipo de producto no válido. Vuelve a Productos y usa “Agregar” de nuevo.",
+    "missingType": "Elige el tipo de listado en Productos y pulsa “Agregar”."
+  },
+  "addRental": {
+    "progress": "Paso {{step}} de {{total}}",
+    "steps": {
+      "basic": {
+        "title": "Información básica",
+        "description": "Nombre, descripción y ubicación de la publicación."
+      },
+      "vehicle": {
+        "title": "Datos del vehículo",
+        "description": "Marca, modelo, especificaciones y categoría."
+      },
+      "terms": {
+        "title": "Entrega y disponibilidad",
+        "description": "Punto de recogida, entrega opcional y rango de fechas."
+      }
+    },
+    "basic": {
+      "name": "Título de la publicación",
+      "namePlaceholder": "Ej. Toyota Camry 2020 – Cómodo y confiable",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Describe el vehículo y lo que debe saber el arrendatario.",
+      "address": "Dirección",
+      "addressPlaceholder": "Calle, colonia",
+      "country": "País",
+      "countryPlaceholder": "Selecciona un país",
+      "validation": {
+        "nameMin": "El título debe tener al menos 5 caracteres.",
+        "descriptionMin": "La descripción debe tener al menos 20 caracteres.",
+        "addressMin": "La dirección es obligatoria.",
+        "countryMin": "El país es obligatorio."
+      }
+    },
+    "vehicle": {
+      "brand": "Marca",
+      "brandPlaceholder": "Ej. Toyota",
+      "model": "Modelo",
+      "modelPlaceholder": "Ej. Camry",
+      "year": "Año",
+      "condition": "Condición",
+      "conditionNew": "Nuevo",
+      "conditionUsed": "Usado",
+      "conditionExcellent": "Excelente",
+      "conditionGood": "Bueno",
+      "conditionFair": "Regular",
+      "mileage": "Kilometraje (km)",
+      "transmission": "Transmisión",
+      "transmissionAutomatic": "Automática",
+      "transmissionManual": "Manual",
+      "seats": "Plazas",
+      "bodyType": "Tipo de carrocería",
+      "bodySedan": "Sedán",
+      "bodySuv": "SUV",
+      "bodyHatchback": "Hatchback",
+      "bodyCoupe": "Coupé",
+      "bodyConvertible": "Convertible",
+      "bodyTruck": "Camioneta",
+      "bodyVan": "Van",
+      "bodyMotorcycle": "Motocicleta",
+      "fuel": "Combustible",
+      "fuelGasoline": "Gasolina",
+      "fuelDiesel": "Diésel",
+      "fuelElectric": "Eléctrico",
+      "fuelHybrid": "Híbrido",
+      "color": "Color",
+      "doors": "Puertas",
+      "engine": "Motor",
+      "enginePlaceholder": "Ej. 2.5L 4 cilindros",
+      "validation": {
+        "brandMin": "La marca es obligatoria.",
+        "modelMin": "El modelo es obligatorio.",
+        "colorMin": "El color es obligatorio.",
+        "engineMin": "El motor es obligatorio."
+      }
+    },
+    "terms": {
+      "pickup": "Lugar de recogida",
+      "pickupPlaceholder": "Ej. Aeropuerto Internacional de la Ciudad de México",
+      "offersDelivery": "Ofrecer entrega al cliente",
+      "maxDeliveryKm": "Distancia máxima de entrega (km)",
+      "baseDeliveryFee": "Tarifa base de entrega (USD)",
+      "feePerKm": "Tarifa por km (USD)",
+      "availableFrom": "Disponible desde",
+      "availableUntil": "Disponible hasta",
+      "isAvailable": "Marcado como disponible",
+      "isLive": "Publicado / en vivo",
+      "isActive": "Publicación activa",
+      "validation": {
+        "pickupMin": "El lugar de recogida es obligatorio.",
+        "deliveryDistancePositive": "Indica una distancia mayor a cero si ofreces entrega.",
+        "deliveryFeesRequired": "Indica tarifa base y por km si ofreces entrega.",
+        "dateRange": "La fecha final debe ser igual o posterior a la inicial."
+      }
+    },
+    "multimedia": {
+      "pricePerDay": "Precio por día (USD)"
+    },
+    "toast": {
+      "success": "Publicación creada",
+      "successDescription": "El alquiler de vehículo se envió correctamente.",
+      "error": "No se pudo crear la publicación",
+      "errorDescription": "Revisa los datos e inténtalo de nuevo.",
+      "updateSuccess": "Publicación actualizada",
+      "updateSuccessDescription": "Los cambios se guardaron.",
+      "updateError": "No se pudo actualizar",
+      "updateErrorDescription": "Inténtalo de nuevo en un momento."
+    }
   },
   "saved": {
     "heading": "Guardados",
@@ -189,6 +314,9 @@
     "title": "Productos",
     "description": "Lista de todos tus productos",
     "filters": {
+      "listKind": "Listado",
+      "kindTours": "Viajes",
+      "kindRental": "Alquiler de autos",
       "product": "Producto",
       "productDate": "Fecha del producto",
       "selectProduct": "Seleccionar producto...",
@@ -197,10 +325,24 @@
       "noDates": "No hay fechas disponibles",
       "searchProduct": "Buscar producto...",
       "noProductsFound": "No se encontraron productos.",
+      "searchRental": "Buscar",
+      "searchRentalPlaceholder": "Buscar por nombre de publicación…",
       "export": "Exportar",
-      "newTour": "Crear"
+      "newTour": "Crear",
+      "newProduct": "Agregar",
+      "addButton": "Agregar",
+      "addDisabledNoProductType": "No hay un tipo de producto en la API que coincida con este listado."
     },
     "exportWorksheet": "Datos",
+    "rentalExportTitle": "Alquiler de vehículos",
+    "rentalTable": {
+      "name": "Nombre",
+      "vehicle": "Vehículo",
+      "pricePerDay": "Precio / día",
+      "pickup": "Recogida",
+      "availability": "Disponibilidad",
+      "listing": "Publicación"
+    },
     "table": {
       "id": "ID",
       "description": "Descripción",
@@ -589,8 +731,8 @@
     "buttons": {
       "back": "Atrás",
       "continue": "Continuar",
-      "creating": "Creando tour...",
-      "create": "Crear tour",
+      "creating": "Creando...",
+      "create": "Crear",
       "save": "Guardar cambios",
       "saving": "Guardando..."
     },

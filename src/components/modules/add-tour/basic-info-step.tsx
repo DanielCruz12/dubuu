@@ -24,8 +24,8 @@ import {
 
 import { type BasicInfoFormValues, getBasicInfoSchema } from "./types";
 import { focusFirstStepField, scrollToFirstError } from "./utils";
-import { countries } from "@/utils/data";
 import { useLanguage } from "@/lib/i18n-context";
+import { getCountrySelectOptions } from "@/lib/country-options";
 
 interface BasicInfoStepProps {
   onSubmit: (data: BasicInfoFormValues) => void;
@@ -33,9 +33,14 @@ interface BasicInfoStepProps {
 }
 
 export function BasicInfoStep({ onSubmit, defaultValues }: BasicInfoStepProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const formRef = useRef<HTMLFormElement>(null);
   const basicInfoSchema = useMemo(() => getBasicInfoSchema(t), [t]);
+
+  const countryOptions = useMemo(
+    () => getCountrySelectOptions(language),
+    [language],
+  );
 
   const form = useForm<BasicInfoFormValues>({
     resolver: zodResolver(basicInfoSchema),
@@ -164,10 +169,7 @@ export function BasicInfoStep({ onSubmit, defaultValues }: BasicInfoStepProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{t("dashboard.addTour.basicInfo.country")}</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white">
                       <SelectValue
@@ -175,14 +177,12 @@ export function BasicInfoStep({ onSubmit, defaultValues }: BasicInfoStepProps) {
                       />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>
-                    {countries
-                      .sort((a, b) => a.orden - b.orden)
-                      .map((country) => (
-                        <SelectItem key={country.id} value={country.id}>
-                          {country.nombre}
-                        </SelectItem>
-                      ))}
+                  <SelectContent position="popper" className="max-h-72">
+                    {countryOptions.map((country) => (
+                      <SelectItem key={country.id} value={country.id}>
+                        {country.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <FormMessage className="text-xs text-red-500" />

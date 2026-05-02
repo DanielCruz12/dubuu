@@ -89,6 +89,8 @@ interface MultimediaStepProps {
     videoUrls?: string[];
     fileUrls?: string[];
   };
+  /** Replaces the default “price” field label (e.g. car rental: price per day). */
+  priceLabelOverride?: string;
 }
 
 export function MultimediaStep({
@@ -96,6 +98,7 @@ export function MultimediaStep({
   defaultValues,
   isEditMode = false,
   existingMedia,
+  priceLabelOverride,
 }: MultimediaStepProps) {
   const { t } = useLanguage();
   const multimediaSchema = useMemo(() => getMultimediaSchema(t), [t]);
@@ -709,7 +712,9 @@ export function MultimediaStep({
             name="price"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("dashboard.addTour.multimedia.priceLabel")}</FormLabel>
+                <FormLabel>
+                  {priceLabelOverride ?? t("dashboard.addTour.multimedia.priceLabel")}
+                </FormLabel>
                 <FormControl>
                   <Input
                     {...field}
