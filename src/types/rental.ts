@@ -5,13 +5,14 @@ export interface IRentalProduct extends IProductBase<"rental"> {
     brand: string;
     model: string;
     year: number;
-    condition: "new" | "used" | "excellent" | "good" | "fair";
-    mileage: number;
+    /** Drizzle: `new` | `used` | `refurbished`. Legacy APIs may return other strings. */
+    condition: "new" | "used" | "refurbished" | "excellent" | "good" | "fair";
     transmission: "automatic" | "manual";
     seating_capacity: number;
-    pickup_location: string;
+    pickup_location?: string;
     max_delivery_distance_km: number;
-    base_delivery_fee: string;
+    /** Legacy field; optional when API matches Drizzle rentals only. */
+    base_delivery_fee?: string;
     fee_per_km: string;
     offers_delivery: boolean;
     price_per_day: string;
@@ -21,18 +22,12 @@ export interface IRentalProduct extends IProductBase<"rental"> {
     is_available: boolean;
     is_approved: boolean;
     is_live: boolean;
-    type_car:
-      | "sedan"
-      | "suv"
-      | "hatchback"
-      | "coupe"
-      | "convertible"
-      | "truck"
-      | "van"
-      | "motorcycle";
     color: string;
-    doors: number;
     engine: string;
+    /** Legacy fields not in Drizzle `rentals`; optional when omitted by API. */
+    mileage?: number;
+    type_car?: RentalCarType;
+    doors?: number;
   };
 }
 
@@ -63,14 +58,19 @@ export interface IRentalBooking {
 export interface IRentalDeliveryOptions {
   offers_delivery: boolean;
   max_delivery_distance_km: number;
-  base_delivery_fee: string;
   fee_per_km: string;
 }
 
 // Utility types for rental filtering and searching
 export type RentalTransmissionType = "automatic" | "manual";
 export type RentalFuelType = "gasoline" | "diesel" | "electric" | "hybrid";
-export type RentalCondition = "new" | "used" | "excellent" | "good" | "fair";
+export type RentalCondition =
+  | "new"
+  | "used"
+  | "refurbished"
+  | "excellent"
+  | "good"
+  | "fair";
 export type RentalCarType =
   | "sedan"
   | "suv"

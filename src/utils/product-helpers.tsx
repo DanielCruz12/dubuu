@@ -61,23 +61,24 @@ export function getProductSpecificInfo(product: IProduct) {
   }
 
   if (isRentalProduct(product)) {
+    const ren = product.rental;
     return {
       type: "rental" as const,
-      brand: product.rental.brand,
-      model: product.rental.model,
-      year: product.rental.year,
-      transmission: product.rental.transmission,
-      seatingCapacity: product.rental.seating_capacity,
-      fuelType: product.rental.fuel_type,
-      condition: product.rental.condition,
-      mileage: product.rental.mileage,
-      typecar: product.rental.type_car,
-      color: product.rental.color,
-      doors: product.rental.doors,
-      engine: product.rental.engine,
-      pickupLocation: product.rental.pickup_location,
-      offersDelivery: product.rental.offers_delivery,
-      maxDeliveryDistance: product.rental.max_delivery_distance_km,
+      brand: ren.brand,
+      model: ren.model,
+      year: ren.year,
+      transmission: ren.transmission,
+      seatingCapacity: ren.seating_capacity,
+      fuelType: ren.fuel_type,
+      condition: ren.condition,
+      mileage: ren.mileage,
+      typecar: ren.type_car,
+      color: ren.color,
+      doors: ren.doors,
+      engine: ren.engine,
+      pickupLocation: ren.pickup_location,
+      offersDelivery: ren.offers_delivery,
+      maxDeliveryDistance: ren.max_delivery_distance_km,
     };
   }
 
@@ -112,7 +113,7 @@ export function getLocationTitle(product: IProduct): string {
 
 export function getDisplayAddress(product: IProduct): string {
   if (isRentalProduct(product)) {
-    return product.rental.pickup_location;
+    return product.rental.pickup_location || product.address || "";
   }
 
   return product.address;
@@ -140,12 +141,9 @@ export function calculateRentalPrice(
   const basePrice = Number.parseFloat(rental.rental.price_per_day) * days;
 
   let deliveryFee = 0;
-  if (needsDelivery && rental.rental.offers_delivery) {
-    deliveryFee = Number.parseFloat(rental.rental.base_delivery_fee);
-    if (deliveryDistance > 0) {
-      deliveryFee +=
-        deliveryDistance * Number.parseFloat(rental.rental.fee_per_km);
-    }
+  if (needsDelivery && rental.rental.offers_delivery && deliveryDistance > 0) {
+    deliveryFee =
+      deliveryDistance * Number.parseFloat(String(rental.rental.fee_per_km ?? "0"));
   }
 
   return {

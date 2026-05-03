@@ -17,14 +17,15 @@ import { toast } from "sonner";
 
 import { RentalBasicStep } from "./basic-step";
 import { RentalVehicleStep } from "./vehicle-step";
-import { RentalTermsStep } from "./terms-step";
+import { RentalDeliveryStep } from "./delivery-step";
 import { CategorizationStep } from "../add-tour/categorization-step";
 import { MultimediaStep } from "../add-tour/multimedia-step";
 import type {
   RentalBasicFormValues,
   RentalVehicleFormValues,
-  RentalTermsFormValues,
+  RentalDeliveryFormValues,
   RentalData,
+  RentalAvailabilitySnapshot,
 } from "./types";
 import type { CategorizationFormValues, MultimediaFormValues, TourFiles } from "../add-tour/types";
 
@@ -51,10 +52,27 @@ function toFiniteNumber(value: unknown, fallback = 0): number {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
+function defaultAvailabilityRange(): RentalAvailabilitySnapshot {
+  const from = new Date();
+  const until = new Date();
+  until.setFullYear(until.getFullYear() + 1);
+  return {
+    available_from: from.toISOString().slice(0, 10),
+    available_until: until.toISOString().slice(0, 10),
+  };
+}
+
+/** Maps legacy API condition values to Drizzle `rentals.condition` enum. */
+function normalizeRentalConditionForForm(c: string): "new" | "used" | "refurbished" {
+  if (c === "new" || c === "used" || c === "refurbished") return c;
+  return "used";
+}
+
 function mapRentalProductToForm(p: IRentalProduct): {
   basic: RentalBasicFormValues;
   vehicle: RentalVehicleFormValues;
-  terms: RentalTermsFormValues;
+  delivery: RentalDeliveryFormValues;
+  availabilitySnapshot: RentalAvailabilitySnapshot;
   categorization: CategorizationFormValues;
   multimedia: MultimediaFormValues;
 } {
@@ -65,34 +83,27 @@ function mapRentalProductToForm(p: IRentalProduct): {
     basic: {
       name: p.name,
       description: p.description,
-      address: p.address,
       country: p.country,
     },
     vehicle: {
       brand: r.brand,
       model: r.model,
       year: r.year,
-      condition: r.condition,
-      mileage: r.mileage,
-      transmission: r.transmission,
-      seating_capacity: r.seating_capacity,
-      type_car: r.type_car,
+      condition: normalizeRentalConditionForForm(String(r.condition)),
       fuel_type: r.fuel_type,
       color: r.color,
-      doors: r.doors,
       engine: r.engine,
+      transmission: r.transmission,
+      seating_capacity: r.seating_capacity,
     },
-    terms: {
-      pickup_location: r.pickup_location,
+    delivery: {
       offers_delivery: r.offers_delivery,
       max_delivery_distance_km: r.max_delivery_distance_km,
-      base_delivery_fee: String(r.base_delivery_fee ?? "0"),
       fee_per_km: String(r.fee_per_km ?? "0"),
+    },
+    availabilitySnapshot: {
       available_from: toDateInputValue(r.available_from),
       available_until: toDateInputValue(r.available_until),
-      is_available: r.is_available,
-      is_live: r.is_live,
-      is_active: p.is_active ?? true,
     },
     categorization: {
       product_type_id: p.product_type?.id ?? "",
@@ -108,11 +119,16 @@ function mapRentalProductToForm(p: IRentalProduct): {
 
 function createRentalFormData(formData: RentalData, userId: string): FormData {
   const data = new FormData();
-  const { basic, vehicle, terms, categorization, multimedia, files } = formData;
+  const { basic, vehicle, delivery, categorization, multimedia, files } = formData;
+
+  const avail =
+    formData.availabilitySnapshot?.available_from && formData.availabilitySnapshot?.available_until
+      ? formData.availabilitySnapshot
+      : defaultAvailabilityRange();
 
   data.append("name", basic.name);
   data.append("description", basic.description);
-  data.append("address", basic.address);
+  data.append("address", "");
   data.append("country", basic.country);
 
   data.append("price", multimedia.price.toString());
@@ -127,25 +143,21 @@ function createRentalFormData(formData: RentalData, userId: string): FormData {
   data.append("model", vehicle.model);
   data.append("year", vehicle.year.toString());
   data.append("condition", vehicle.condition);
-  data.append("mileage", vehicle.mileage.toString());
   data.append("transmission", vehicle.transmission);
   data.append("seating_capacity", vehicle.seating_capacity.toString());
-  data.append("type_car", vehicle.type_car);
   data.append("fuel_type", vehicle.fuel_type);
   data.append("color", vehicle.color);
-  data.append("doors", vehicle.doors.toString());
   data.append("engine", vehicle.engine);
 
-  data.append("pickup_location", terms.pickup_location);
-  data.append("offers_delivery", String(terms.offers_delivery));
-  data.append("max_delivery_distance_km", terms.max_delivery_distance_km.toString());
-  data.append("base_delivery_fee", terms.base_delivery_fee);
-  data.append("fee_per_km", terms.fee_per_km);
-  data.append("available_from", terms.available_from);
-  data.append("available_until", terms.available_until);
-  data.append("is_available", String(terms.is_available));
-  data.append("is_live", String(terms.is_live));
-  data.append("is_active", String(terms.is_active));
+  data.append("pickup_location", "");
+  data.append("offers_delivery", String(delivery.offers_delivery));
+  data.append("max_delivery_distance_km", delivery.max_delivery_distance_km.toString());
+  data.append("fee_per_km", delivery.fee_per_km);
+  data.append("available_from", avail.available_from);
+  data.append("available_until", avail.available_until);
+  data.append("is_available", "true");
+  data.append("is_live", "true");
+  data.append("is_active", "true");
 
   data.append("user_id", userId);
 
@@ -189,7 +201,10 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
 
   const [basic, setBasic] = useState<RentalBasicFormValues | null>(null);
   const [vehicle, setVehicle] = useState<RentalVehicleFormValues | null>(null);
-  const [terms, setTerms] = useState<RentalTermsFormValues | null>(null);
+  const [delivery, setDelivery] = useState<RentalDeliveryFormValues | null>(null);
+  const [availabilitySnapshot, setAvailabilitySnapshot] = useState<RentalAvailabilitySnapshot | null>(
+    null,
+  );
   const [categorization, setCategorization] = useState<CategorizationFormValues | null>(null);
   const [multimedia, setMultimedia] = useState<MultimediaFormValues | null>(null);
 
@@ -216,7 +231,8 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
     const mapped = mapRentalProductToForm(existingProduct);
     setBasic(mapped.basic);
     setVehicle(mapped.vehicle);
-    setTerms(mapped.terms);
+    setDelivery(mapped.delivery);
+    setAvailabilitySnapshot(mapped.availabilitySnapshot);
     setCategorization(mapped.categorization);
     setMultimedia(mapped.multimedia);
     setStep(1);
@@ -242,7 +258,8 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
     const formPayload: RentalData = {
       basic: basic!,
       vehicle: vehicle!,
-      terms: terms!,
+      delivery: delivery!,
+      availabilitySnapshot,
       categorization: categorization!,
       multimedia: data,
       files: uploadedFiles,
@@ -342,7 +359,7 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
       : step === 2
         ? "dashboard.addRental.steps.vehicle.title"
         : step === 3
-          ? "dashboard.addRental.steps.terms.title"
+          ? "dashboard.addRental.steps.delivery.title"
           : step === 4
             ? "dashboard.addTour.steps.categorization.title"
             : "dashboard.addTour.steps.multimedia.title";
@@ -353,7 +370,7 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
       : step === 2
         ? "dashboard.addRental.steps.vehicle.description"
         : step === 3
-          ? "dashboard.addRental.steps.terms.description"
+          ? "dashboard.addRental.steps.delivery.description"
           : step === 4
             ? "dashboard.addTour.steps.categorization.description"
             : "dashboard.addTour.steps.multimedia.description";
@@ -426,13 +443,13 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
             )}
             {step === 3 && (
               <motion.div key="r3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                <RentalTermsStep
-                  key={editProductId ? `rt-${editHydrated}` : "rt-new"}
+                <RentalDeliveryStep
+                  key={editProductId ? `rd-${editHydrated}` : "rd-new"}
                   onSubmit={(d) => {
-                    setTerms(d);
+                    setDelivery(d);
                     setStep(4);
                   }}
-                  defaultValues={terms || undefined}
+                  defaultValues={delivery || undefined}
                 />
               </motion.div>
             )}

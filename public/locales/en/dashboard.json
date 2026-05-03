@@ -136,15 +136,15 @@
     "steps": {
       "basic": {
         "title": "Basic information",
-        "description": "Name, description, and location of the listing."
+        "description": "Name, description, and country for the listing."
       },
       "vehicle": {
         "title": "Vehicle details",
-        "description": "Brand, model, specs, and category."
+        "description": "Brand, model, and vehicle specifications."
       },
-      "terms": {
-        "title": "Pickup & availability",
-        "description": "Pickup location, optional delivery, and rental window."
+      "delivery": {
+        "title": "Delivery",
+        "description": "Choose whether you offer delivery and set the fees."
       }
     },
     "basic": {
@@ -175,6 +175,7 @@
       "conditionExcellent": "Excellent",
       "conditionGood": "Good",
       "conditionFair": "Fair",
+      "conditionRefurbished": "Refurbished",
       "mileage": "Mileage (km)",
       "transmission": "Transmission",
       "transmissionAutomatic": "Automatic",
@@ -221,6 +222,7 @@
         "pickupMin": "Pickup location is required.",
         "deliveryDistancePositive": "Enter a distance greater than zero when delivery is enabled.",
         "deliveryFeesRequired": "Enter base fee and per-km fee when delivery is enabled.",
+        "feePerKmRequired": "Enter the per-km fee when delivery is enabled.",
         "dateRange": "End date must be on or after start date."
       }
     },
@@ -337,10 +339,10 @@
     "rentalExportTitle": "Car rentals",
     "rentalTable": {
       "name": "Name",
-      "vehicle": "Vehicle",
+      "brand": "Brand",
+      "model": "Model",
+      "year": "Year",
       "pricePerDay": "Price / day",
-      "pickup": "Pickup",
-      "availability": "Availability",
       "listing": "Listing"
     },
     "table": {

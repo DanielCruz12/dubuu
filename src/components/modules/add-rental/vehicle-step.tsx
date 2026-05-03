@@ -42,14 +42,11 @@ export function RentalVehicleStep({ onSubmit, defaultValues }: RentalVehicleStep
       model: defaultValues?.model ?? "",
       year: defaultValues?.year ?? new Date().getFullYear(),
       condition: defaultValues?.condition ?? "used",
-      mileage: defaultValues?.mileage ?? 0,
-      transmission: defaultValues?.transmission ?? "automatic",
-      seating_capacity: defaultValues?.seating_capacity ?? 5,
-      type_car: defaultValues?.type_car ?? "sedan",
       fuel_type: defaultValues?.fuel_type ?? "gasoline",
       color: defaultValues?.color ?? "",
-      doors: defaultValues?.doors ?? 4,
       engine: defaultValues?.engine ?? "",
+      transmission: defaultValues?.transmission ?? "automatic",
+      seating_capacity: defaultValues?.seating_capacity ?? 5,
     },
   });
 
@@ -65,7 +62,7 @@ export function RentalVehicleStep({ onSubmit, defaultValues }: RentalVehicleStep
   return (
     <Form {...form}>
       <form ref={formRef} className="space-y-4" onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <FormField
             control={form.control}
             name="brand"
@@ -94,17 +91,20 @@ export function RentalVehicleStep({ onSubmit, defaultValues }: RentalVehicleStep
           />
           <FormField
             control={form.control}
-            name="year"
+            name="color"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("dashboard.addRental.vehicle.year")}</FormLabel>
+                <FormLabel>{t("dashboard.addRental.vehicle.color")}</FormLabel>
                 <FormControl>
-                  <Input {...field} type="number" />
+                  <Input {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <FormField
             control={form.control}
             name="condition"
@@ -120,26 +120,11 @@ export function RentalVehicleStep({ onSubmit, defaultValues }: RentalVehicleStep
                   <SelectContent>
                     <SelectItem value="new">{t("dashboard.addRental.vehicle.conditionNew")}</SelectItem>
                     <SelectItem value="used">{t("dashboard.addRental.vehicle.conditionUsed")}</SelectItem>
-                    <SelectItem value="excellent">
-                      {t("dashboard.addRental.vehicle.conditionExcellent")}
+                    <SelectItem value="refurbished">
+                      {t("dashboard.addRental.vehicle.conditionRefurbished")}
                     </SelectItem>
-                    <SelectItem value="good">{t("dashboard.addRental.vehicle.conditionGood")}</SelectItem>
-                    <SelectItem value="fair">{t("dashboard.addRental.vehicle.conditionFair")}</SelectItem>
                   </SelectContent>
                 </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="mileage"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("dashboard.addRental.vehicle.mileage")}</FormLabel>
-                <FormControl>
-                  <Input {...field} type="number" />
-                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -169,50 +154,6 @@ export function RentalVehicleStep({ onSubmit, defaultValues }: RentalVehicleStep
           />
           <FormField
             control={form.control}
-            name="seating_capacity"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("dashboard.addRental.vehicle.seats")}</FormLabel>
-                <FormControl>
-                  <Input {...field} type="number" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="type_car"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("dashboard.addRental.vehicle.bodyType")}</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="sedan">{t("dashboard.addRental.vehicle.bodySedan")}</SelectItem>
-                    <SelectItem value="suv">{t("dashboard.addRental.vehicle.bodySuv")}</SelectItem>
-                    <SelectItem value="hatchback">{t("dashboard.addRental.vehicle.bodyHatchback")}</SelectItem>
-                    <SelectItem value="coupe">{t("dashboard.addRental.vehicle.bodyCoupe")}</SelectItem>
-                    <SelectItem value="convertible">
-                      {t("dashboard.addRental.vehicle.bodyConvertible")}
-                    </SelectItem>
-                    <SelectItem value="truck">{t("dashboard.addRental.vehicle.bodyTruck")}</SelectItem>
-                    <SelectItem value="van">{t("dashboard.addRental.vehicle.bodyVan")}</SelectItem>
-                    <SelectItem value="motorcycle">
-                      {t("dashboard.addRental.vehicle.bodyMotorcycle")}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
             name="fuel_type"
             render={({ field }) => (
               <FormItem>
@@ -234,14 +175,17 @@ export function RentalVehicleStep({ onSubmit, defaultValues }: RentalVehicleStep
               </FormItem>
             )}
           />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}
-            name="color"
+            name="year"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("dashboard.addRental.vehicle.color")}</FormLabel>
+                <FormLabel>{t("dashboard.addRental.vehicle.year")}</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Input {...field} type="number" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -249,10 +193,10 @@ export function RentalVehicleStep({ onSubmit, defaultValues }: RentalVehicleStep
           />
           <FormField
             control={form.control}
-            name="doors"
+            name="seating_capacity"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("dashboard.addRental.vehicle.doors")}</FormLabel>
+                <FormLabel>{t("dashboard.addRental.vehicle.seats")}</FormLabel>
                 <FormControl>
                   <Input {...field} type="number" />
                 </FormControl>

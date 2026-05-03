@@ -136,15 +136,15 @@
     "steps": {
       "basic": {
         "title": "Información básica",
-        "description": "Nombre, descripción y ubicación de la publicación."
+        "description": "Nombre, descripción y país de la publicación."
       },
       "vehicle": {
         "title": "Datos del vehículo",
-        "description": "Marca, modelo, especificaciones y categoría."
+        "description": "Marca, modelo y especificaciones del vehículo."
       },
-      "terms": {
-        "title": "Entrega y disponibilidad",
-        "description": "Punto de recogida, entrega opcional y rango de fechas."
+      "delivery": {
+        "title": "Entrega",
+        "description": "Indica si ofreces entrega del vehículo y las tarifas aplicables."
       }
     },
     "basic": {
@@ -175,11 +175,12 @@
       "conditionExcellent": "Excelente",
       "conditionGood": "Bueno",
       "conditionFair": "Regular",
+      "conditionRefurbished": "Reacondicionado",
       "mileage": "Kilometraje (km)",
       "transmission": "Transmisión",
       "transmissionAutomatic": "Automática",
       "transmissionManual": "Manual",
-      "seats": "Plazas",
+      "seats": "Asientos",
       "bodyType": "Tipo de carrocería",
       "bodySedan": "Sedán",
       "bodySuv": "SUV",
@@ -221,6 +222,7 @@
         "pickupMin": "El lugar de recogida es obligatorio.",
         "deliveryDistancePositive": "Indica una distancia mayor a cero si ofreces entrega.",
         "deliveryFeesRequired": "Indica tarifa base y por km si ofreces entrega.",
+        "feePerKmRequired": "Indica la tarifa por km si ofreces entrega.",
         "dateRange": "La fecha final debe ser igual o posterior a la inicial."
       }
     },
@@ -337,10 +339,10 @@
     "rentalExportTitle": "Alquiler de vehículos",
     "rentalTable": {
       "name": "Nombre",
-      "vehicle": "Vehículo",
+      "brand": "Marca",
+      "model": "Modelo",
+      "year": "Año",
       "pricePerDay": "Precio / día",
-      "pickup": "Recogida",
-      "availability": "Disponibilidad",
       "listing": "Publicación"
     },
     "table": {

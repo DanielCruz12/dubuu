@@ -9,10 +9,13 @@ import type { IRentalProduct } from "@/types/rental";
 import { cn } from "@/lib/utils";
 
 const TABLE_CELL_MAX = "max-w-[120px] sm:max-w-[160px] min-w-0";
+const TABLE_CELL_NARROW = "max-w-[72px] sm:max-w-[88px] min-w-0";
 const TABLE_CELL_TRUNCATE = cn("font-medium truncate", TABLE_CELL_MAX);
 
+type TKey = (key: string) => string;
+
 export function getRentalColumns(
-  t: (key: string) => string,
+  t: TKey,
   refetch?: () => void,
 ): ColumnDef<IRentalProduct>[] {
   return [
@@ -38,13 +41,49 @@ export function getRentalColumns(
       },
     },
     {
-      id: "vehicle",
-      header: t("dashboard.products.rentalTable.vehicle"),
+      id: "brand",
+      header: t("dashboard.products.rentalTable.brand"),
       cell: ({ row }) => {
-        const r = row.original.rental;
-        const text = r ? `${r.brand} ${r.model} (${r.year})` : "—";
+        const text = row.original.rental?.brand ?? "—";
         return (
           <div className={TABLE_CELL_TRUNCATE} title={text}>
+            {text}
+          </div>
+        );
+      },
+    },
+    {
+      id: "model",
+      header: t("dashboard.products.rentalTable.model"),
+      cell: ({ row }) => {
+        const text = row.original.rental?.model ?? "—";
+        return (
+          <div className={TABLE_CELL_TRUNCATE} title={text}>
+            {text}
+          </div>
+        );
+      },
+    },
+    {
+      id: "year",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          {t("dashboard.products.rentalTable.year")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      accessorFn: (row) => row.rental?.year ?? 0,
+      cell: ({ row }) => {
+        const y = row.original.rental?.year;
+        const text = y != null ? String(y) : "—";
+        return (
+          <div
+            className={cn("font-medium tabular-nums", TABLE_CELL_NARROW)}
+            title={text}
+          >
             {text}
           </div>
         );
@@ -78,33 +117,6 @@ export function getRentalColumns(
       },
     },
     {
-      id: "pickup",
-      header: t("dashboard.products.rentalTable.pickup"),
-      cell: ({ row }) => {
-        const text = row.original.rental?.pickup_location ?? "—";
-        return (
-          <div className={TABLE_CELL_TRUNCATE} title={text}>
-            {text}
-          </div>
-        );
-      },
-    },
-    {
-      id: "period",
-      header: t("dashboard.products.rentalTable.availability"),
-      cell: ({ row }) => {
-        const r = row.original.rental;
-        const from = r?.available_from ? String(r.available_from).slice(0, 10) : "—";
-        const until = r?.available_until ? String(r.available_until).slice(0, 10) : "—";
-        const text = `${from} → ${until}`;
-        return (
-          <div className={TABLE_CELL_TRUNCATE} title={text}>
-            {text}
-          </div>
-        );
-      },
-    },
-    {
       accessorKey: "is_approved",
       header: t("dashboard.products.table.status"),
       cell: ({ row }) => {
@@ -125,32 +137,14 @@ export function getRentalColumns(
         );
       },
     },
-    {
-      accessorKey: "is_active",
-      header: t("dashboard.products.rentalTable.listing"),
-      cell: ({ row }) => {
-        const isActive = row.getValue("is_active") as boolean | undefined;
-        const visLabel = isActive
-          ? t("dashboard.products.table.visible")
-          : t("dashboard.products.table.hidden");
-        return (
-          <div className={TABLE_CELL_MAX}>
-            <Badge
-              variant={isActive ? "default" : "destructive"}
-              className="max-w-full truncate"
-              title={visLabel}
-            >
-              {visLabel}
-            </Badge>
-          </div>
-        );
-      },
-    },
+
     {
       id: "actions",
       header: t("dashboard.products.table.actions"),
       meta: { stickyRight: true },
-      cell: ({ row }) => <RentalActionCell product={row.original} onDeleted={refetch} />,
+      cell: ({ row }) => (
+        <RentalActionCell product={row.original} onDeleted={refetch} />
+      ),
     },
   ];
 }

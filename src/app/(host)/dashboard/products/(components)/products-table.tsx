@@ -133,17 +133,14 @@ function buildRentalExcelRow(
     currency: "USD",
   }).format(Number.isFinite(n) ? n : 0);
 
-  const vehicle = r.rental ? `${r.rental.brand} ${r.rental.model}` : "";
-  const period = r.rental
-    ? `${String(r.rental.available_from).slice(0, 10)} → ${String(r.rental.available_until).slice(0, 10)}`
-    : "";
-
+  const ren = r.rental;
   const columnsInTableOrder: [string, string | number][] = [
     [t("dashboard.products.rentalTable.name"), r.name],
+    [t("dashboard.products.rentalTable.brand"), ren?.brand ?? ""],
+    [t("dashboard.products.rentalTable.model"), ren?.model ?? ""],
+    [t("dashboard.products.rentalTable.year"), ren?.year != null ? String(ren.year) : ""],
     [t("dashboard.products.rentalTable.pricePerDay"), formattedPrice],
-    [t("dashboard.products.rentalTable.vehicle"), vehicle],
-    [t("dashboard.products.rentalTable.pickup"), r.rental?.pickup_location ?? ""],
-    [t("dashboard.products.rentalTable.availability"), period],
+    [t("dashboard.products.rentalTable.listing"), r.is_active ? t("dashboard.products.table.visible") : t("dashboard.products.table.hidden")],
     [t("dashboard.products.table.status"), r.is_approved ? t("dashboard.products.table.approved") : t("dashboard.products.table.pending")],
     [t("dashboard.products.table.id"), r.id],
   ];
@@ -320,10 +317,10 @@ export function ProductsDataTable() {
               ]
             : [
                 t("dashboard.products.rentalTable.name"),
-                t("dashboard.products.rentalTable.vehicle"),
+                t("dashboard.products.rentalTable.brand"),
+                t("dashboard.products.rentalTable.model"),
+                t("dashboard.products.rentalTable.year"),
                 t("dashboard.products.rentalTable.pricePerDay"),
-                t("dashboard.products.rentalTable.pickup"),
-                t("dashboard.products.rentalTable.availability"),
                 t("dashboard.products.table.status"),
                 t("dashboard.products.rentalTable.listing"),
                 t("dashboard.products.table.actions"),

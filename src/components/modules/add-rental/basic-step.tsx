@@ -47,7 +47,6 @@ export function RentalBasicStep({ onSubmit, defaultValues }: RentalBasicStepProp
     defaultValues: {
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
-      address: defaultValues?.address || "",
       country: defaultValues?.country || "",
     },
   });
@@ -90,19 +89,6 @@ export function RentalBasicStep({ onSubmit, defaultValues }: RentalBasicStepProp
                     rows={5}
                     placeholder={t("dashboard.addRental.basic.descriptionPlaceholder")}
                   />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="address"
-            render={({ field }) => (
-              <FormItem className="md:col-span-2">
-                <FormLabel>{t("dashboard.addRental.basic.address")}</FormLabel>
-                <FormControl>
-                  <Input {...field} placeholder={t("dashboard.addRental.basic.addressPlaceholder")} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
