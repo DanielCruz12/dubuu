@@ -28,6 +28,10 @@ export interface IRentalProduct extends IProductBase<"rental"> {
     mileage?: number;
     type_car?: RentalCarType;
     doors?: number;
+    /** ISO `yyyy-MM-dd` — días ya reservados; la API puede enviarlos para deshabilitarlos en el calendario. */
+    unavailable_dates?: string[];
+    /** Intervalos de reserva existentes; cada día entre inicio y fin cuenta como no disponible. */
+    booked_ranges?: { pickup_date: string; return_date: string }[];
   };
 }
 

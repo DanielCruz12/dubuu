@@ -10,7 +10,23 @@ export function isRentalProduct(product: IProduct): product is IRentalProduct {
   return isProductType(product, "rental");
 }
 
+/** Algunas respuestas API marcan `product_type` como alquiler sin incluir el objeto `rental`. */
+export function isRentalProductComplete(product: IProduct): product is IRentalProduct {
+  return isRentalProduct(product) && !!(product as IRentalProduct).rental;
+}
+
 export function getProductDisplayPrice(product: IProduct): number {
+  if (isRentalProduct(product)) {
+    const rental = (product as IRentalProduct).rental;
+    const perDay = rental
+      ? Number.parseFloat(String(rental.price_per_day ?? ""))
+      : Number.NaN;
+    if (Number.isFinite(perDay) && perDay > 0) return perDay;
+    const direct = Number(product.price);
+    if (Number.isFinite(direct) && direct > 0) return direct;
+    return 0;
+  }
+
   const direct = Number(product.price);
   if (Number.isFinite(direct) && direct > 0) return direct;
 
@@ -61,7 +77,10 @@ export function getProductSpecificInfo(product: IProduct) {
   }
 
   if (isRentalProduct(product)) {
-    const ren = product.rental;
+    const ren = (product as IRentalProduct).rental;
+    if (!ren) {
+      return { type: "unknown" as const };
+    }
     return {
       type: "rental" as const,
       brand: ren.brand,
@@ -113,7 +132,8 @@ export function getLocationTitle(product: IProduct): string {
 
 export function getDisplayAddress(product: IProduct): string {
   if (isRentalProduct(product)) {
-    return product.rental.pickup_location || product.address || "";
+    const pickup = (product as IRentalProduct).rental?.pickup_location;
+    return pickup || product.address || "";
   }
 
   return product.address;

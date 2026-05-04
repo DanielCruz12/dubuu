@@ -2,7 +2,7 @@
 "use client";
 
 import type React from "react";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import {
   Dialog,
   DialogContent,
@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search, X, Star, MapPin, RefreshCw } from "lucide-react";
+import { Search, X, Star, MapPin, RefreshCw, Navigation } from "lucide-react";
 import Image from "next/image";
 import type { IProduct } from "@/types/product";
 import {
@@ -34,16 +34,7 @@ import { PriceRangeHistogram } from "@/components/price-range-histogram";
 import { generateSlug } from "@/lib/utils";
 import { formatUsd, USD_SYMBOL } from "@/utils/currency";
 import { useLanguage } from "@/lib/i18n-context";
-import { useLazyGetProductCategoriesQuery } from "@/redux/slices/product/product-category";
-
-function toFilterSlug(input: string): string {
-  return input
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
+import { DEFAULT_PRODUCT_TYPE_QUERY } from "@/constants/product-type";
 
 interface SearchDialogProps {
   isOpen: boolean;
@@ -228,12 +219,12 @@ interface FilterDialogProps {
   setTempRating: (value: string) => void;
   tempPriceRange: [number, number];
   setTempPriceRange: (value: [number, number]) => void;
-  tempCategories: string[];
-  tempDurations: string[];
-  onCategoryChange: (category: string, checked: boolean) => void;
-  onDurationChange: (duration: string, checked: boolean) => void;
   onApplyFilters: () => void;
   onResetFilters: () => void;
+  isLocationEnabled: boolean;
+  country: { code?: string; name?: string };
+  isLoadingLocation: boolean;
+  onLocationToggle: () => void;
 }
 
 const RATING_VALUE_TO_KEY: Record<string, string> = {
@@ -254,53 +245,50 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
   setTempRating,
   tempPriceRange,
   setTempPriceRange,
-  tempCategories,
-  tempDurations,
-  onCategoryChange,
-  onDurationChange,
   onApplyFilters,
   onResetFilters,
+  isLocationEnabled,
+  country,
+  isLoadingLocation,
+  onLocationToggle,
 }) => {
   const { t, language } = useLanguage();
   const productTypes = productTypesTranslations[language];
   const ratingOptions = ratingOptionsTranslations[language];
 
-  const [
-    fetchCategories,
-    { data: apiCategories = [], isFetching: isFetchingCategories },
-  ] = useLazyGetProductCategoriesQuery();
+  const allowedProductTypeNames = useMemo(
+    () => productTypes.map((p) => p.name),
+    [productTypes],
+  );
+  const safeProductType = allowedProductTypeNames.includes(tempProductType)
+    ? tempProductType
+    : DEFAULT_PRODUCT_TYPE_QUERY;
 
-  // Cargar categorías solo cuando se abre el diálogo (evita llamadas al cargar la página)
+  const ratingValueSet = useMemo(
+    () => new Set(ratingOptions.map((o) => o.value)),
+    [ratingOptions],
+  );
+  const safeRating = ratingValueSet.has(tempRating) ? tempRating : "0";
+
   useEffect(() => {
-    if (isOpen) fetchCategories(language);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen]);
+    if (!isOpen) return;
+    if (!allowedProductTypeNames.includes(tempProductType)) {
+      setTempProductType(DEFAULT_PRODUCT_TYPE_QUERY);
+    }
+  }, [
+    isOpen,
+    tempProductType,
+    setTempProductType,
+    allowedProductTypeNames,
+  ]);
 
-  // Si cambia el idioma con el modal abierto, refetch para reflejar traducciones del API
   useEffect(() => {
-    if (isOpen) fetchCategories(language);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [language]);
+    if (!isOpen) return;
+    if (!ratingValueSet.has(tempRating)) {
+      setTempRating("0");
+    }
+  }, [isOpen, tempRating, setTempRating, ratingValueSet]);
 
-  const categoryOptions = apiCategories.map((c) => ({
-    key: c.id,
-    value: toFilterSlug(c.name),
-    label: c.name,
-  }));
-
-  const selectedCategory = tempCategories[0] ?? "all";
-  const selectedDuration = tempDurations[0] ?? "all";
-
-  const setSingleCategory = (value: string) => {
-    // limpiar previas
-    tempCategories.forEach((c) => onCategoryChange(c, false));
-    if (value !== "all") onCategoryChange(value, true);
-  };
-
-  const setSingleDuration = (value: string) => {
-    tempDurations.forEach((d) => onDurationChange(d, false));
-    if (value !== "all") onDurationChange(value, true);
-  };
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px] max-w-[95%] md:max-w-[85%] lg:max-w-[75%] xl:max-w-[55%] p-0 overflow-hidden rounded-xl border-none shadow-xl">
@@ -315,13 +303,38 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
           </DialogHeader>
 
           <div className="grid md:grid-cols-2 grid-cols-1 gap-3 py-3 mx-auto max-w-3xl">
+            <div className="md:col-span-2">
+              <label className="text-xs font-medium mb-1.5 block">
+                {t("common.location")}
+              </label>
+              <Button
+                type="button"
+                variant={isLocationEnabled ? "default" : "outline"}
+                size="sm"
+                onClick={onLocationToggle}
+                disabled={isLoadingLocation}
+                className="w-full sm:w-auto rounded-full h-9 gap-2 justify-center sm:justify-start"
+              >
+                <Navigation
+                  className={`h-3.5 w-3.5 shrink-0 ${isLoadingLocation ? "animate-spin" : ""}`}
+                />
+                <span className="text-xs">
+                  {isLocationEnabled && country?.name
+                    ? country.name
+                    : isLoadingLocation
+                      ? t("common.locating")
+                      : t("common.location")}
+                </span>
+              </Button>
+            </div>
+
             <div>
               <label className="text-xs font-medium mb-1 inline-flex items-center gap-1">
                 <MapPin className="h-3 w-3 text-primary" />
                 {t("filters.dialog.productTypeLabel")}
               </label>
               <Select
-                value={tempProductType}
+                value={safeProductType}
                 onValueChange={setTempProductType}
               >
                 <SelectTrigger className="h-8 text-xs">
@@ -329,7 +342,7 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
                     placeholder={t("filters.dialog.productTypePlaceholder")}
                   />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent position="popper" className="z-[12001]">
                   {productTypes.map(({ name }) => (
                     <SelectItem key={name} value={name} className="text-xs">
                       {t(`filters.productType.${name}`)}
@@ -344,13 +357,13 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
                 <Star className="h-3 w-3 text-amber-400" />
                 {t("filters.dialog.ratingLabel")}
               </label>
-              <Select value={tempRating} onValueChange={setTempRating}>
+              <Select value={safeRating} onValueChange={setTempRating}>
                 <SelectTrigger className="h-8 text-xs">
                   <SelectValue
                     placeholder={t("filters.dialog.ratingPlaceholder")}
                   />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent position="popper" className="z-[12001]">
                   {ratingOptions.map(({ value }) => (
                     <SelectItem key={value} value={value} className="text-xs">
                       {t(
@@ -370,73 +383,6 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
                 max={1000}
                 step={10}
               />
-            </div>
-
-            <div>
-              <label className="text-xs font-medium mb-2 block">
-                {t("filters.dialog.categoriesLabel")}
-              </label>
-              <Select
-                value={selectedCategory}
-                onValueChange={setSingleCategory}
-              >
-                <SelectTrigger className="h-8 text-xs">
-                  <SelectValue
-                    placeholder={
-                      isFetchingCategories
-                        ? t("common.loading")
-                        : t("filters.dialog.allCategories")
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all" className="text-xs">
-                    {t("filters.dialog.allCategories")}
-                  </SelectItem>
-                  {categoryOptions.length === 0 && !isFetchingCategories && (
-                    <SelectItem value="__none" disabled className="text-xs">
-                      {t("filters.dialog.noCategories")}
-                    </SelectItem>
-                  )}
-                  {categoryOptions.map((category) => (
-                    <SelectItem
-                      key={category.key}
-                      value={category.value}
-                      className="text-xs"
-                    >
-                      {category.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <label className="text-xs font-medium mb-2 block">
-                {t("filters.dialog.durationLabel")}
-              </label>
-              <Select
-                value={selectedDuration}
-                onValueChange={setSingleDuration}
-              >
-                <SelectTrigger className="h-8 text-xs">
-                  <SelectValue placeholder={t("filters.dialog.allDurations")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all" className="text-xs">
-                    {t("filters.dialog.allDurations")}
-                  </SelectItem>
-                  {["1-dia", "2-3-dias", "mas-de-3-dias"].map((duration) => (
-                    <SelectItem
-                      key={duration}
-                      value={duration}
-                      className="text-xs"
-                    >
-                      {t(`filters.dialog.duration.${duration}`)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
           </div>
 

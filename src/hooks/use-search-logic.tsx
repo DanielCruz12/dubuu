@@ -43,24 +43,27 @@ export const useSearchLogic = ({ products, onSearchResults, onSearchLoading }: U
   const { user } = useUser()
   const dispatch = useAppDispatch()
 
-  const { searchTerm, country, categories, durations, priceRange, isLocationEnabled, rating, productType } =
-    useAppSelector((state: RootState) => state.search)
+  const { searchTerm, country, priceRange, isLocationEnabled, rating, productType } = useAppSelector(
+    (state: RootState) => state.search,
+  )
 
   // Estados locales para aplicar los filtros al final
   const [tempRating, setTempRating] = useState(rating)
   const [tempProductType, setTempProductType] = useState(productType)
-  const [tempCategories, setTempCategories] = useState(categories)
-  const [tempDurations, setTempDurations] = useState(durations)
   const [tempPriceRange, setTempPriceRange] = useState(priceRange)
 
   // Sincronizar estados temporales cuando cambian los valores del Redux store
   useEffect(() => {
     setTempRating(rating)
     setTempProductType(productType)
-    setTempCategories(categories)
-    setTempDurations(durations)
     setTempPriceRange(priceRange)
-  }, [rating, productType, categories, durations, priceRange])
+  }, [rating, productType, priceRange])
+
+  // Categoría y duración ya no se usan en filtros de búsqueda
+  useEffect(() => {
+    dispatch(setCategories([]))
+    dispatch(setDurations([]))
+  }, [dispatch])
 
   // Efecto para marcar como montado
   useEffect(() => {
@@ -95,17 +98,9 @@ export const useSearchLogic = ({ products, onSearchResults, onSearchLoading }: U
       params.max_price = priceRange[1]
     }
 
-    if (categories.length > 0) {
-      params.categories = categories.join(",")
-    }
-
-    if (durations.length > 0) {
-      params.durations = durations.join(",")
-    }
-
     params.limit = 20
     return params
-  }, [searchTerm, productType, isLocationEnabled, country, rating, priceRange, categories, durations, user])
+  }, [searchTerm, productType, isLocationEnabled, country, rating, priceRange, user])
 
   // Query para búsqueda en API
   const searchParams = buildSearchParams()
@@ -115,9 +110,7 @@ export const useSearchLogic = ({ products, onSearchResults, onSearchLoading }: U
     (isLocationEnabled && country && country.code) ||
     (rating !== initialFilterState.rating && rating !== "0") ||
     priceRange[0] > 0 ||
-    priceRange[1] < 1000 ||
-    categories.length > 0 ||
-    durations.length > 0
+    priceRange[1] < 1000
 
   const {
     data: searchResults,
@@ -220,12 +213,10 @@ export const useSearchLogic = ({ products, onSearchResults, onSearchLoading }: U
     let count = 0
     if (rating !== initialFilterState.rating && rating !== "0") count++
     if (productType !== initialFilterState.productType) count++
-    if (categories.length > 0) count++
-    if (durations.length > 0) count++
     if (priceRange[0] > 0 || priceRange[1] < 1000) count++
     if (isLocationEnabled && country && country.code) count++
     setActiveFiltersCount(count)
-  }, [rating, productType, categories, durations, priceRange, isLocationEnabled, country])
+  }, [rating, productType, priceRange, isLocationEnabled, country])
 
   // Determinar qué productos mostrar
   const displayProducts = useMemo(() => {
@@ -269,12 +260,18 @@ export const useSearchLogic = ({ products, onSearchResults, onSearchLoading }: U
     })
   }, [user, searchTerm, displayProducts])
 
-  // Handlers
   const handleApplyFilters = () => {
-    dispatch(setRating(tempRating))
-    dispatch(setProductType(tempProductType))
-    dispatch(setCategories(tempCategories))
-    dispatch(setDurations(tempDurations))
+    const safeProductType =
+      tempProductType === "tours" || tempProductType === "rental"
+        ? tempProductType
+        : DEFAULT_PRODUCT_TYPE_QUERY
+    const safeRating =
+      ["0", "1", "2", "3", "4", "5"].includes(tempRating) ? tempRating : "0"
+
+    dispatch(setRating(safeRating))
+    dispatch(setProductType(safeProductType))
+    dispatch(setCategories([]))
+    dispatch(setDurations([]))
     dispatch(setPriceRange(tempPriceRange))
     setIsDialogFilterOpen(false)
   }
@@ -283,8 +280,6 @@ export const useSearchLogic = ({ products, onSearchResults, onSearchLoading }: U
     dispatch(resetSearch())
     setTempRating(initialFilterState.rating)
     setTempProductType(initialFilterState.productType)
-    setTempCategories([])
-    setTempDurations([])
     setTempPriceRange([0, 1000])
     if (isMounted) {
       localStorage.removeItem("userCountry")
@@ -322,22 +317,6 @@ export const useSearchLogic = ({ products, onSearchResults, onSearchLoading }: U
     }
   }
 
-  const handleCategoryChange = useCallback(
-    (category: string, checked: boolean) => {
-      const newCategories = checked ? [...tempCategories, category] : tempCategories.filter((c) => c !== category)
-      setTempCategories(newCategories)
-    },
-    [tempCategories],
-  )
-
-  const handleDurationChange = useCallback(
-    (duration: string, checked: boolean) => {
-      const newDurations = checked ? [...tempDurations, duration] : tempDurations.filter((d) => d !== duration)
-      setTempDurations(newDurations)
-    },
-    [tempDurations],
-  )
-
   return {
     // State
     isDialogOpen,
@@ -350,8 +329,6 @@ export const useSearchLogic = ({ products, onSearchResults, onSearchLoading }: U
     user,
     searchTerm,
     country,
-    categories,
-    durations,
     priceRange,
     isLocationEnabled,
     rating,
@@ -360,8 +337,6 @@ export const useSearchLogic = ({ products, onSearchResults, onSearchLoading }: U
     setTempRating,
     tempProductType,
     setTempProductType,
-    tempCategories,
-    tempDurations,
     tempPriceRange,
     setTempPriceRange,
     isSearching,
@@ -376,8 +351,6 @@ export const useSearchLogic = ({ products, onSearchResults, onSearchLoading }: U
     handleSearchChange,
     handleSearchFocus,
     handleLocationToggle,
-    handleCategoryChange,
-    handleDurationChange,
     // Constants
     initialFilterState,
   }

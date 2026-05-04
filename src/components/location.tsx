@@ -33,10 +33,10 @@ export default function LocationMap({
   const mapUrl = `https://www.google.com/maps/embed/v1/place?key=${GOOGLE_API}&q=${latitude},${longitude}&zoom=${zoom}`;
 
   return (
-    <div className="w-full mx-auto rounded-lg overflow-hidden ">
+    <div className="w-full min-w-0 mx-auto rounded-lg overflow-hidden">
       <h2 className="text-base md:text-xl font-semibold py-3">{mapTitle}</h2>
 
-      <div className="relative w-full h-[100px] md:h-[300px]">
+      <div className="relative w-full min-h-[220px] h-[min(42vh,22rem)] sm:min-h-[260px] sm:h-[min(44vh,24rem)] md:min-h-[360px] md:h-[min(48vh,28rem)] lg:min-h-[400px] lg:h-[30rem]">
         {/* Iframe para el mapa de Google */}
         <iframe
           src={mapUrl}

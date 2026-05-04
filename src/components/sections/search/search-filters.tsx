@@ -5,15 +5,13 @@ import type React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { FilterIcon, Navigation, Star, X, DollarSign } from "lucide-react";
+import { Navigation, Star, X, DollarSign } from "lucide-react";
 import {
   productTypesTranslations,
   ratingOptionsTranslations,
 } from "@/utils/data";
 import {
   setRating,
-  setCategories,
-  setDurations,
   setPriceRange,
   setProductType,
 } from "@/redux/slices/product/search/search-slice";
@@ -21,34 +19,26 @@ import { useLanguage } from "@/lib/i18n-context";
 
 interface SearchFiltersProps {
   activeFiltersCount: number;
-  onFilterDialogOpen: () => void;
-  isLocationEnabled: boolean;
-  country: any;
-  isLoadingLocation: boolean;
-  onLocationToggle: () => void;
   productType: string;
   rating: string;
-  categories: string[];
-  durations: string[];
   priceRange: [number, number];
   onResetFilters: () => void;
   dispatch: any;
+  isLocationEnabled: boolean;
+  country: { code?: string; name?: string } | null;
+  onLocationToggle: () => void;
 }
 
 export const SearchFilters: React.FC<SearchFiltersProps> = ({
   activeFiltersCount,
-  onFilterDialogOpen,
-  isLocationEnabled,
-  country,
-  isLoadingLocation,
-  onLocationToggle,
   productType,
   rating,
-  categories,
-  durations,
   priceRange,
   onResetFilters,
   dispatch,
+  isLocationEnabled,
+  country,
+  onLocationToggle,
 }) => {
   const { t, language } = useLanguage();
   const productTypes = productTypesTranslations[language];
@@ -59,41 +49,6 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
       <div className="mb-2">
         <ScrollArea className="w-full">
           <div className="flex items-center gap-2 pb-1 min-w-max">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onFilterDialogOpen}
-              className="flex items-center gap-1.5 whitespace-nowrap rounded-full border-2 px-3 py-1 h-9 flex-shrink-0"
-            >
-              <FilterIcon className="h-3.5 w-3.5" />
-              <span>{t("common.filters")}</span>
-              {activeFiltersCount > 0 && (
-                <Badge className="ml-1 h-5 w-5 rounded-full p-0 flex items-center justify-center">
-                  {activeFiltersCount}
-                </Badge>
-              )}
-            </Button>
-
-            {/* Botón de ubicación */}
-            <Button
-              variant={isLocationEnabled ? "default" : "outline"}
-              size="sm"
-              onClick={onLocationToggle}
-              disabled={isLoadingLocation}
-              className="flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1 h-9 flex-shrink-0"
-            >
-              <Navigation
-                className={`h-3.5 w-3.5 ${isLoadingLocation ? "animate-spin" : ""}`}
-              />
-              <span>
-                {isLocationEnabled && country?.name
-                  ? country.name
-                  : isLoadingLocation
-                    ? t("common.locating")
-                    : t("common.location")}
-              </span>
-            </Button>
-
             {/* Product types */}
             {productTypes.map(({ name, id, description }) => (
               <Button
@@ -140,32 +95,6 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
               <X
                 className="h-3 w-3 ml-1 cursor-pointer"
                 onClick={onLocationToggle}
-              />
-            </Badge>
-          )}
-
-          {categories.length > 0 && (
-            <Badge
-              variant="outline"
-              className="rounded-full px-3 py-1 gap-1.5 flex items-center"
-            >
-              {t("common.categories")}: {categories.length}
-              <X
-                className="h-3 w-3 ml-1 cursor-pointer"
-                onClick={() => dispatch(setCategories([]))}
-              />
-            </Badge>
-          )}
-
-          {durations.length > 0 && (
-            <Badge
-              variant="outline"
-              className="rounded-full px-3 py-1 gap-1.5 flex items-center"
-            >
-              {t("common.duration")}: {durations.length}
-              <X
-                className="h-3 w-3 ml-1 cursor-pointer"
-                onClick={() => dispatch(setDurations([]))}
               />
             </Badge>
           )}

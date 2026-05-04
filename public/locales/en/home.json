@@ -7,7 +7,95 @@
     "removeFromFavorites": "Remove from favorites",
     "addToFavorites": "Add to favorites",
     "perPerson": "p/p",
+    "perDay": "/day",
     "viewDetails": "View details"
+  },
+  "productDetail": {
+    "rentalLocationHint": "Pickup or delivery as agreed with the host."
+  },
+  "rental": {
+    "cardSeats": "seats"
+  },
+  "rentalImportant": {
+    "link": "Important information",
+    "title": "Important rental information",
+    "intro": "Before you proceed, please read the following. It explains what you will need and how approvals work.",
+    "docsTitle": "Documents and approval",
+    "docsBody": "To move forward with a rental request you may need to submit documents requested by the host (for example ID and driving licence). The host will review your documents and may approve or decline the request.\n\nUntil you receive that approval, the booking is not confirmed.",
+    "processTitle": "How the process works",
+    "processBody": "1) You send an inquiry with your preferred dates.\n2) If required, you upload or send documents for review.\n3) The host validates and replies with final availability and conditions.\n4) You agree payment and pickup details as applicable.",
+    "paymentTitle": "Payments and pickup",
+    "paymentBody": "Accepted payment methods (card, cash, transfer, etc.) and any deposit or excess depend on the host and the pickup location. Always confirm the total amount, deposit/excess, and which documents you must present when collecting the vehicle.\n\nIf in doubt, use “Inquire” and describe your question in the message.",
+    "close": "Got it"
+  },
+  "rentalSpecs": {
+    "title": "Vehicle",
+    "subtitle": "Technical details and rental terms",
+    "kicker": "Your vehicle",
+    "availabilityHeading": "Listed availability",
+    "availabilityUnknown": "No date range published — ask the host",
+    "available": "Available",
+    "unavailable": "Unavailable",
+    "brand": "Brand",
+    "model": "Model",
+    "year": "Year",
+    "fuelType": "Fuel",
+    "transmission": "Transmission",
+    "seats": "Seats",
+    "color": "Color",
+    "engine": "Engine",
+    "condition": "Condition",
+    "delivery": "Delivery",
+    "deliveryYes": "Yes — up to {km} km · {fee}/km extra",
+    "deliveryNo": "No delivery service",
+    "availabilityWindow": "Listed availability",
+    "fuel": {
+      "gasoline": "Gasoline",
+      "diesel": "Diesel",
+      "electric": "Electric",
+      "hybrid": "Hybrid"
+    },
+    "transmissionKind": {
+      "automatic": "Automatic",
+      "manual": "Manual"
+    },
+    "vehicleCondition": {
+      "new": "New",
+      "used": "Used",
+      "refurbished": "Refurbished",
+      "excellent": "Excellent",
+      "good": "Good",
+      "fair": "Fair"
+    }
+  },
+  "rentalBooking": {
+    "title": "Inquire —",
+    "subtitle": "Pick dates to see an estimated total and send your inquiry.",
+    "dateRangeLabel": "Rental dates",
+    "dateRangeTriggerHint": "Tap to change",
+    "selectDateRange": "Select date range",
+    "rangePickerTitle": "Dates and times",
+    "rangePickerDone": "Done",
+    "rangeHint": "Click the start day, then the return day.",
+    "pickupTime": "Start time",
+    "returnTime": "Return time",
+    "pickupDate": "Start date",
+    "returnDate": "Return date",
+    "selectDate": "Select",
+    "selectRangeError": "Please select a valid date range.",
+    "pricePerDay": "Price per day",
+    "days": "Days",
+    "estimatedTotal": "Estimated total",
+    "disclaimer": "This total is indicative; the host will confirm final price and availability.",
+    "consult": "Inquire",
+    "modalTitle": "Send inquiry",
+    "modalDescription": "Describe what you need (flexible dates, delivery, etc.). For now we only log the request in the browser console.",
+    "messageLabel": "Message",
+    "messagePlaceholder": "E.g.: I need the car from the 10th to the 15th, airport pickup…",
+    "cancel": "Cancel",
+    "submit": "Send",
+    "sentToast": "Inquiry logged (check the browser console)",
+    "incompleteListing": "This listing is marked as a rental but vehicle details are missing. Try again later or contact the host."
   },
   "hero": {"subtitle": "Discover the treasures of the world"},
   "search": {"placeholder": "Search destinations, tours, experiences...", "placeholderNotLogged": "Sign in to search by text...", "placeholderInitial": "Loading..."},
@@ -38,6 +126,7 @@
     "productDetail": {
       "notFound": "Product not found",
       "departurePoint": "Departure point",
+      "pickupLocation": "Location & map",
       "loginRequiredTitle": "You need to sign in to make a booking",
       "loginRequiredDescription": "Sign in or create an account to book and enjoy our exclusive promotions.",
       "viewDetails": "View details"
@@ -66,6 +155,7 @@
     "ticketsLabel": "Tickets",
     "adults": "Adults",
     "perPerson": "per person",
+    "perDay": "per day",
     "pricePerPerson": "Price",
     "subtotal": "Subtotal",
     "total": "Total",
@@ -162,12 +252,12 @@
     "reviewAvailableFrom": "You can leave your review from {date} onwards (your reservation date)."
   },
   "organizer": {
-    "title": "Who organizes this tour",
+    "title": "Who offers this service",
     "noHostInfo": "There is no host information for this product.",
     "loadErrorTitle": "Could not load profile",
     "loadErrorFallbackUser": "User:",
     "online": "Online",
-    "roleBadge": "Tour operator",
+    "roleBadge": "Provider",
     "operatorInfoTitle": "Operator information",
     "experienceTypesTitle": "Experience types",
     "languagesTitle": "Languages",

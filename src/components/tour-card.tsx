@@ -3,7 +3,16 @@
 import Image from "next/image";
 import type React from "react";
 import { useState, useRef, useEffect, type TouchEvent } from "react";
-import { ChevronLeft, ChevronRight, Heart, MapPin, Star } from "lucide-react";
+import {
+  Armchair,
+  ChevronLeft,
+  ChevronRight,
+  Cog,
+  Droplets,
+  Heart,
+  MapPin,
+  Star,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import type { IProduct } from "@/types/product";
@@ -20,7 +29,12 @@ import { toast } from "sonner";
 import { generateSlug } from "@/lib/utils";
 import { formatUsd, USD_SYMBOL } from "@/utils/currency";
 import { useLanguage } from "@/lib/i18n-context";
-import { getProductDisplayPrice } from "@/utils/product-helpers";
+import {
+  getDisplayAddress,
+  getProductDisplayPrice,
+  isRentalProduct,
+} from "@/utils/product-helpers";
+import RentalImportantInfoModal from "@/components/sections/rental-important-info-modal";
 
 export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
   const {
@@ -48,6 +62,13 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
   const symbol = USD_SYMBOL;
   const { t } = useLanguage();
   const displayPrice = getProductDisplayPrice(props);
+  const isRental = isRentalProduct(props);
+  const displayAddress = getDisplayAddress(props) || address || "";
+  const rent = isRental ? props.rental : null;
+  const fuelLbl = rent ? t(`home.rentalSpecs.fuel.${rent.fuel_type}`) : "";
+  const transLbl = rent ? t(`home.rentalSpecs.transmissionKind.${rent.transmission}`) : "";
+  const vehicleTitle = rent ? `${rent.brand} ${rent.model}`.trim() : "";
+  const priceSuffix = isRental ? t("home.tourCard.perDay") : t("home.tourCard.perPerson");
 
   // Get favorites from API
   const { data: favorites } = useGetUserFavoritesQuery(
@@ -258,27 +279,240 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
           )}
         </div>
 
-        <div className="p-2 w-full min-w-0">
-          {/* Título y ubicación */}
-          <div className="flex flex-col gap-0.5 w-full min-w-0">
-            <div className="text-xs font-semibold line-clamp-1 w-full">
-              {name}
-            </div>
-            <p className="text-xs line-clamp-1 text-muted-foreground w-full">
-              {description}
-            </p>
+        <div className="p-2.5 w-full min-w-0">
+          <div className="flex flex-col gap-1.5 w-full min-w-0">
+            {isRental && rent ? (
+              <>
+                <div>
+                  {product_category?.name ? (
+                    <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                      {product_category.name}
+                    </p>
+                  ) : null}
+                  <p className="text-sm font-bold leading-tight line-clamp-2">{vehicleTitle}</p>
+                  <p className="text-[11px] text-muted-foreground">
+                    {rent.year} · {name}
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  <span className="inline-flex items-center gap-1 rounded-md border border-border/60 bg-muted/40 px-1.5 py-0.5 text-[10px] font-medium">
+                    <Armchair className="h-3 w-3 text-muted-foreground" aria-hidden />
+                    {rent.seating_capacity}
+                  </span>
+                  <span className="inline-flex items-center gap-1 rounded-md border border-border/60 bg-muted/40 px-1.5 py-0.5 text-[10px] font-medium">
+                    <Cog className="h-3 w-3 text-muted-foreground" aria-hidden />
+                    {transLbl}
+                  </span>
+                  <span className="inline-flex items-center gap-1 rounded-md border border-border/60 bg-muted/40 px-1.5 py-0.5 text-[10px] font-medium">
+                    <Droplets className="h-3 w-3 text-muted-foreground" aria-hidden />
+                    {fuelLbl}
+                  </span>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="text-xs font-semibold line-clamp-1 w-full">{name}</div>
+                <p className="text-xs line-clamp-1 text-muted-foreground w-full">{description}</p>
+              </>
+            )}
 
-            {/* Precio y rating en la misma fila */}
-            <div className="flex items-center justify-between gap-2 text-sm">
-              <span className="font-semibold">
+            {(displayAddress || country) && (
+              <div className="flex items-start gap-1 text-[11px] text-muted-foreground w-full min-w-0">
+                <MapPin className="w-3 h-3 shrink-0 mt-0.5 text-primary/80" />
+                <div className="min-w-0 leading-snug">
+                  <span className="line-clamp-2">{displayAddress || country}</span>
+                  {isRental && country && displayAddress ? (
+                    <span className="block text-[10px] opacity-80">{country}</span>
+                  ) : null}
+                </div>
+              </div>
+            )}
+
+            <div className="flex items-center justify-between gap-2 text-sm pt-0.5">
+              <span className="font-semibold tabular-nums">
                 {symbol}
                 {convert(displayPrice)}{" "}
-                <span className="text-muted-foreground font-normal">{t("home.tourCard.perPerson")}</span>
+                <span className="text-muted-foreground font-normal text-xs">{priceSuffix}</span>
               </span>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 shrink-0">
                 <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />
-                <span>{formattedRating}</span>
+                <span className="text-xs">{formattedRating}</span>
               </div>
+            </div>
+
+            {isRental ? (
+              <div className="pt-0.5" onClick={(e) => e.stopPropagation()}>
+                <RentalImportantInfoModal trigger="text" className="text-[10px]" />
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
+  // Desktop — alquiler: layout horizontal tipo listado
+  if (isRental && rent) {
+    return (
+      <Card
+        className="overflow-hidden rounded-xl border border-border/70 bg-card shadow-md h-full transition-all duration-200 hover:shadow-lg cursor-pointer"
+        onClick={() => navigateToTour(name, id, country)}
+      >
+        <div className="flex flex-col md:flex-row md:items-stretch">
+          <div
+            ref={carouselRef}
+            className="relative aspect-[16/10] md:aspect-auto md:w-[min(42%,300px)] md:min-h-[220px] md:shrink-0 overflow-hidden group bg-muted/30"
+            onClick={(e) => e.stopPropagation()}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            style={{ perspective: "1000px" }}
+          >
+            <div className="relative h-full min-h-[180px] md:min-h-[220px] w-full">
+              {productImages.map((image, index) => (
+                <div
+                  key={index}
+                  className={`absolute inset-0 transition-all duration-500 ease-in-out ${
+                    index === currentImageIndex
+                      ? "opacity-100 translate-x-0"
+                      : index < currentImageIndex
+                        ? "opacity-0 -translate-x-full"
+                        : "opacity-0 translate-x-full"
+                  }`}
+                >
+                  <Image
+                    src={image || "/tour.jpg"}
+                    alt={`${name} - Image ${index + 1}`}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 300px"
+                    className="object-cover"
+                    priority={index === 0}
+                  />
+                </div>
+              ))}
+              {productImages.length > 1 && (
+                <>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/60 dark:bg-black/60 z-10 w-8 h-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={prevImage}
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/60 dark:bg-black/60 z-10 w-8 h-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={nextImage}
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
+                    {productImages.map((_, index) => (
+                      <div
+                        key={index}
+                        className={`w-1.5 h-1.5 rounded-full ${index === currentImageIndex ? "bg-white" : "bg-white/50"}`}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+            {product_category && (
+              <Badge className="absolute top-2 left-2 bg-black/65 text-white z-10 text-xs">
+                {product_category.name}
+              </Badge>
+            )}
+            <button
+              type="button"
+              className="absolute top-2 right-2 bg-white/45 hover:bg-white/65 dark:bg-black/45 dark:hover:bg-black/65 z-10 p-1.5 rounded-full transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleFavorite(id);
+              }}
+              disabled={isSaving || isUnsaving}
+              aria-label={
+                isFavorited ? t("home.tourCard.removeFromFavorites") : t("home.tourCard.addToFavorites")
+              }
+            >
+              <Heart
+                className={`h-4 w-4 ${
+                  isFavorited
+                    ? "fill-rose-500 text-rose-500"
+                    : "text-gray-700 dark:text-white stroke-[2.5px] hover:text-rose-400"
+                } ${isSaving || isUnsaving ? "opacity-50" : ""}`}
+              />
+            </button>
+          </div>
+
+          <div className="flex flex-1 flex-col justify-between gap-4 p-4 md:p-5 min-w-0 border-t md:border-t-0 md:border-l border-border/60">
+            <div className="space-y-3 min-w-0">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  {product_category?.name}
+                </p>
+                <h3 className="text-lg md:text-xl font-bold leading-tight text-balance">{vehicleTitle}</h3>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  {rent.year} · {name}
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/45 px-2.5 py-1 text-xs font-medium">
+                  <Armchair className="h-3.5 w-3.5 text-muted-foreground" aria-hidden />
+                  {rent.seating_capacity} {t("home.rental.cardSeats")}
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/45 px-2.5 py-1 text-xs font-medium">
+                  <Cog className="h-3.5 w-3.5 text-muted-foreground" aria-hidden />
+                  {transLbl}
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/45 px-2.5 py-1 text-xs font-medium">
+                  <Droplets className="h-3.5 w-3.5 text-muted-foreground" aria-hidden />
+                  {fuelLbl}
+                </span>
+              </div>
+              {(displayAddress || country) && (
+                <div className="flex items-start gap-2 text-sm text-muted-foreground">
+                  <MapPin className="w-4 h-4 shrink-0 mt-0.5 text-primary" aria-hidden />
+                  <div className="min-w-0 leading-snug">
+                    <span className="text-foreground/90">{displayAddress || country}</span>
+                    {country && displayAddress ? (
+                      <span className="mt-0.5 block text-xs opacity-80">{country}</span>
+                    ) : null}
+                  </div>
+                </div>
+              )}
+              <p className="text-sm text-muted-foreground line-clamp-2">{description}</p>
+              <div onClick={(e) => e.stopPropagation()}>
+                <RentalImportantInfoModal trigger="text" />
+              </div>
+            </div>
+            <div className="flex flex-col gap-3 border-t border-border/60 pt-4 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-xs text-muted-foreground">{t("home.rentalBooking.pricePerDay")}</p>
+                <p className="text-2xl font-bold tabular-nums">
+                  {symbol}
+                  {convert(displayPrice)}
+                  <span className="text-sm font-normal text-muted-foreground ml-1">{priceSuffix}</span>
+                </p>
+                <div className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
+                  <Star className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400" />
+                  <span>{formattedRating}</span>
+                  {total_reviews > 0 ? (
+                    <span className="text-xs">({total_reviews})</span>
+                  ) : null}
+                </div>
+              </div>
+              <Button
+                variant="default"
+                className="rounded-full shrink-0 w-full sm:w-auto"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigateToTour(name, id, country);
+                }}
+              >
+                {t("home.tourCard.viewDetails")}
+              </Button>
             </div>
           </div>
         </div>
@@ -286,7 +520,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
     );
   }
 
-  // Versión desktop (completa con todas las características)
+  // Versión desktop — tours
   return (
     <Card className="overflow-hidden rounded-xl border-none shadow-lg h-full transition-all duration-200 hover:shadow-xl">
       <div
@@ -405,14 +639,16 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
             {description}
           </p>
 
-          {/* Ubicación y audiencia */}
-          <div className="flex flex-wrap items-center gap-x-2 ">
-            {country && (
-              <div className="flex items-center text-sm text-muted-foreground">
-                <MapPin className="w-3.5 h-3.5 mr-1 flex-shrink-0" />
-                <span className="text-sm text-muted-foreground line-clamp-1">
-                  {address}
-                </span>
+          <div className="flex flex-wrap items-start gap-x-2">
+            {(displayAddress || country) && (
+              <div className="flex items-start text-sm text-muted-foreground min-w-0 max-w-full">
+                <MapPin className="w-3.5 h-3.5 mr-1 flex-shrink-0 mt-0.5" />
+                <div className="min-w-0">
+                  <span className="line-clamp-2">{displayAddress || country}</span>
+                  {country && displayAddress ? (
+                    <span className="block text-xs text-muted-foreground/90">{country}</span>
+                  ) : null}
+                </div>
               </div>
             )}
           </div>
@@ -423,7 +659,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
             {symbol}
             {convert(displayPrice)}{" "}
             <span className="text-sm text-muted-foreground font-normal">
-              {t("home.tourCard.perPerson")}
+              {priceSuffix}
             </span>
           </div>
           <Button

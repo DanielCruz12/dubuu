@@ -12,6 +12,8 @@ import { useGetBookingsByUserIdQuery } from "@/redux/slices/booking/booking-slic
 import ReviewSection from "@/components/sections/reviews/reviews-section";
 import CompanyInfo from "@/components/sections/company-info";
 import BookingForm from "@/components/sections/booking-form";
+import RentalBookingForm from "@/components/sections/rental-booking-form";
+import RentalVehicleSpecs from "@/components/sections/rental-vehicle-specs";
 import Rating from "@/components/rating";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
@@ -32,11 +34,15 @@ import { BookingStatus } from "@/components/booking-status";
 import clsx from "clsx";
 import { useGetReviewsQuery } from "@/redux/slices/product/review-slice";
 import { isProductType } from "@/utils";
+import {
+  getProductDisplayPrice,
+  isRentalProduct,
+  isRentalProductComplete,
+} from "@/utils/product-helpers";
 import UpTop from "@/components/up-top";
 import { ShareModal } from "@/components/share-modal";
 import { formatUsd, USD_SYMBOL } from "@/utils/currency";
 import { useLanguage } from "@/lib/i18n-context";
-import { getProductDisplayPrice } from "@/utils/product-helpers";
 
 function withCacheKey(src: string, key?: string) {
   const trimmed = (src ?? "").trim();
@@ -162,6 +168,8 @@ export default function ProductBooking() {
         })
       : undefined;
   const isTour = isProductType(product, "tours");
+  const isRental = isRentalProduct(product);
+  const hasRentalDetail = isRentalProductComplete(product);
   const displayPrice = getProductDisplayPrice(product);
 
   // Show the latest booking status card (completed or in-process) unless user is rebooking
@@ -220,7 +228,9 @@ export default function ProductBooking() {
               {symbol}
               {convert(displayPrice)}
             </Badge>
-            <span className="text-sm font-normal">{t("home.bookingForm.perPerson")}</span>
+            <span className="text-sm font-normal">
+              {isRental ? t("home.bookingForm.perDay") : t("home.bookingForm.perPerson")}
+            </span>
           </div>
         </div>
 
@@ -229,10 +239,21 @@ export default function ProductBooking() {
           images={product?.images}
           cacheKey={product.updated_at}
         />
-        <div className="pt-2 flex items-center gap-1">
-          <MapPin className="w-6 h-6 md:w-5 md:h-5" />
-          <span className="text-sm md:text-base">{product?.address}</span>
-        </div>
+        {!isRental ? (
+          <div className="pt-2 flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-3">
+            <div className="flex items-start gap-2 min-w-0">
+              <MapPin className="w-6 h-6 md:w-5 md:h-5 shrink-0 text-primary" />
+              <div className="min-w-0 space-y-1">
+                <p className="text-sm md:text-base leading-snug">
+                  {product?.address || "—"}
+                </p>
+                {product?.country ? (
+                  <p className="text-xs md:text-sm text-muted-foreground">{product.country}</p>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        ) : null}
         <ScrollArea type="always" className="w-full">
           <div className="flex flex-wrap gap-2 md:gap-4 mt-3">
             {product.amenities?.map((service, index) => (
@@ -258,17 +279,25 @@ export default function ProductBooking() {
             />
           </div>
         ) : (
-          <div className="w-full lg:w-2/3">
+          <div
+            className={clsx(
+              "w-full lg:w-2/3 min-w-0",
+              hasRentalDetail && "flex flex-col gap-6",
+            )}
+          >
+            {hasRentalDetail ? <RentalVehicleSpecs product={product} /> : null}
             <ProductDetails product={product} />
-            <div className="hidden md:block">
-              <LocationMap
-                title={t("home.landing.productDetail.departurePoint")}
-                product={product}
-                latitude={isTour ? product.tour.lat : 0}
-                longitude={isTour ? product.tour.long : 0}
-                zoom={15}
-              />
-            </div>
+            {!isRental ? (
+              <div className="hidden md:block w-full min-w-0">
+                <LocationMap
+                  title={t("home.landing.productDetail.departurePoint")}
+                  product={product}
+                  latitude={isTour ? product.tour.lat : 0}
+                  longitude={isTour ? product.tour.long : 0}
+                  zoom={15}
+                />
+              </div>
+            ) : null}
             <div className="hidden md:block">
               {/* Pass reviews data to ReviewSection */}
               <ReviewSection
@@ -282,7 +311,7 @@ export default function ProductBooking() {
           </div>
         )}
 
-        <div className="w-full lg:w-1/3">
+        <div className="w-full lg:w-1/3 min-w-0">
           <div
             style={{
               position: "sticky",
@@ -339,32 +368,61 @@ export default function ProductBooking() {
                       />
                     ) : (
                       <div className="space-y-2">
-                        <BookingForm
-                          key={`booking-form-${bookingFormKey}`}
-                          setBookingData={setBookingData}
-                          showPaymentStep={showPaymentStep}
-                          setShowPaymentStep={() => setShowPaymentStep(true)}
-                          product={product}
-                          extraActionBelowBookNow={
-                            hasAnyProductBooking && showBookingFormAgain ? (
-                              <Button
-                                type="button"
-                                variant="secondary"
-                                className="w-full"
-                                onClick={() => {
-                                  if (hasMultipleProductBookings) {
-                                    router.push("/account/bookings");
-                                    return;
-                                  }
-                                  setShowBookingFormAgain(false);
-                                }}
-                              >
-                                <Ticket className="h-4 w-4 mr-2" />
-                                {t("home.bookingStatus.viewMyTickets")}
-                              </Button>
-                            ) : null
-                          }
-                        />
+                        {hasRentalDetail ? (
+                          <RentalBookingForm
+                            product={product}
+                            extraActionBelowBookNow={
+                              hasAnyProductBooking && showBookingFormAgain ? (
+                                <Button
+                                  type="button"
+                                  variant="secondary"
+                                  className="w-full"
+                                  onClick={() => {
+                                    if (hasMultipleProductBookings) {
+                                      router.push("/account/bookings");
+                                      return;
+                                    }
+                                    setShowBookingFormAgain(false);
+                                  }}
+                                >
+                                  <Ticket className="h-4 w-4 mr-2" />
+                                  {t("home.bookingStatus.viewMyTickets")}
+                                </Button>
+                              ) : null
+                            }
+                          />
+                        ) : isRental ? (
+                          <p className="text-sm text-muted-foreground">
+                            {t("home.rentalBooking.incompleteListing")}
+                          </p>
+                        ) : (
+                          <BookingForm
+                            key={`booking-form-${bookingFormKey}`}
+                            setBookingData={setBookingData}
+                            showPaymentStep={showPaymentStep}
+                            setShowPaymentStep={() => setShowPaymentStep(true)}
+                            product={product}
+                            extraActionBelowBookNow={
+                              hasAnyProductBooking && showBookingFormAgain ? (
+                                <Button
+                                  type="button"
+                                  variant="secondary"
+                                  className="w-full"
+                                  onClick={() => {
+                                    if (hasMultipleProductBookings) {
+                                      router.push("/account/bookings");
+                                      return;
+                                    }
+                                    setShowBookingFormAgain(false);
+                                  }}
+                                >
+                                  <Ticket className="h-4 w-4 mr-2" />
+                                  {t("home.bookingStatus.viewMyTickets")}
+                                </Button>
+                              ) : null
+                            }
+                          />
+                        )}
                       </div>
                     )}
                   </div>
@@ -425,34 +483,63 @@ export default function ProductBooking() {
                             />
                           ) : (
                             <div className="space-y-2">
-                              <BookingForm
-                                key={`booking-form-${bookingFormKey}`}
-                                setBookingData={setBookingData}
-                                showPaymentStep={showPaymentStep}
-                                setShowPaymentStep={() =>
-                                  setShowPaymentStep(true)
-                                }
-                                product={product}
-                                extraActionBelowBookNow={
-                                  hasAnyProductBooking && showBookingFormAgain ? (
-                                    <Button
-                                      type="button"
-                                      variant="secondary"
-                                      className="w-full"
-                                      onClick={() => {
-                                        if (hasMultipleProductBookings) {
-                                          router.push("/account/bookings");
-                                          return;
-                                        }
-                                        setShowBookingFormAgain(false);
-                                      }}
-                                    >
-                                      <Ticket className="h-4 w-4 mr-2" />
-                                      {t("home.bookingStatus.viewMyTickets")}
-                                    </Button>
-                                  ) : null
-                                }
-                              />
+                              {hasRentalDetail ? (
+                                <RentalBookingForm
+                                  product={product}
+                                  extraActionBelowBookNow={
+                                    hasAnyProductBooking && showBookingFormAgain ? (
+                                      <Button
+                                        type="button"
+                                        variant="secondary"
+                                        className="w-full"
+                                        onClick={() => {
+                                          if (hasMultipleProductBookings) {
+                                            router.push("/account/bookings");
+                                            return;
+                                          }
+                                          setShowBookingFormAgain(false);
+                                        }}
+                                      >
+                                        <Ticket className="h-4 w-4 mr-2" />
+                                        {t("home.bookingStatus.viewMyTickets")}
+                                      </Button>
+                                    ) : null
+                                  }
+                                />
+                              ) : isRental ? (
+                                <p className="text-sm text-muted-foreground">
+                                  {t("home.rentalBooking.incompleteListing")}
+                                </p>
+                              ) : (
+                                <BookingForm
+                                  key={`booking-form-${bookingFormKey}`}
+                                  setBookingData={setBookingData}
+                                  showPaymentStep={showPaymentStep}
+                                  setShowPaymentStep={() =>
+                                    setShowPaymentStep(true)
+                                  }
+                                  product={product}
+                                  extraActionBelowBookNow={
+                                    hasAnyProductBooking && showBookingFormAgain ? (
+                                      <Button
+                                        type="button"
+                                        variant="secondary"
+                                        className="w-full"
+                                        onClick={() => {
+                                          if (hasMultipleProductBookings) {
+                                            router.push("/account/bookings");
+                                            return;
+                                          }
+                                          setShowBookingFormAgain(false);
+                                        }}
+                                      >
+                                        <Ticket className="h-4 w-4 mr-2" />
+                                        {t("home.bookingStatus.viewMyTickets")}
+                                      </Button>
+                                    ) : null
+                                  }
+                                />
+                              )}
                             </div>
                           )}
                         </AccordionContent>
@@ -479,15 +566,17 @@ export default function ProductBooking() {
         </div>
       </section>
 
-      <div className="block md:hidden">
-        <LocationMap
-          product={product}
-          title={t("home.landing.productDetail.departurePoint")}
-          latitude={isTour ? product.tour.lat : 0}
-          longitude={isTour ? product.tour.long : 0}
-          zoom={15}
-        />
-      </div>
+      {!isRental ? (
+        <div className="block md:hidden w-full min-w-0 px-1 sm:px-0">
+          <LocationMap
+            product={product}
+            title={t("home.landing.productDetail.departurePoint")}
+            latitude={isTour ? product.tour.lat : 0}
+            longitude={isTour ? product.tour.long : 0}
+            zoom={15}
+          />
+        </div>
+      ) : null}
       {!showPaymentStep && (
         <div className="md:hidden block">
           <CompanyInfo product={product} />

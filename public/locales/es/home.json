@@ -7,7 +7,95 @@
     "removeFromFavorites": "Quitar de favoritos",
     "addToFavorites": "Añadir a favoritos",
     "perPerson": "p/p",
+    "perDay": "/día",
     "viewDetails": "Ver detalles"
+  },
+  "productDetail": {
+    "rentalLocationHint": "Entrega o recogida según lo acordado con el anfitrión."
+  },
+  "rental": {
+    "cardSeats": "plazas"
+  },
+  "rentalImportant": {
+    "link": "Información importante",
+    "title": "Información importante del alquiler",
+    "intro": "Antes de confirmar cualquier reserva, revisa estos puntos. Te ayudan a saber qué esperar y qué necesitarás.",
+    "docsTitle": "Documentación y aprobación",
+    "docsBody": "Para avanzar con una solicitud de alquiler deberás enviar la documentación que solicite el anfitrión (por ejemplo identificación y licencia de conducir). El anfitrión revisará tus documentos y solo entonces podrá aprobar o rechazar la solicitud.\n\nHasta recibir esa aprobación, la reserva no queda confirmada.",
+    "processTitle": "Cómo sigue el proceso",
+    "processBody": "1) Envías tu consulta con las fechas deseadas.\n2) Si el anfitrión lo requiere, subes o envías tus documentos para revisión.\n3) El anfitrión valida y responde con disponibilidad y condiciones finales.\n4) Acordáis pago y entrega según lo que aplique en cada caso.",
+    "paymentTitle": "Pagos y recogida",
+    "paymentBody": "Los métodos de pago (tarjeta, efectivo, transferencia, etc.) y los depósitos o garantías dependen del anfitrión y del punto de recogida. Confirma siempre el importe total, franquicia o depósito, y qué documentos debes presentar al retirar el vehículo.\n\nSi tienes dudas, usa el botón «Consultar» y detállalas en el mensaje.",
+    "close": "Entendido"
+  },
+  "rentalSpecs": {
+    "title": "Vehículo",
+    "subtitle": "Datos técnicos y condiciones del alquiler",
+    "kicker": "Tu vehículo",
+    "availabilityHeading": "Disponibilidad publicada",
+    "availabilityUnknown": "Sin rango de fechas publicado — pregunta al anfitrión",
+    "available": "Disponible",
+    "unavailable": "No disponible",
+    "brand": "Marca",
+    "model": "Modelo",
+    "year": "Año",
+    "fuelType": "Combustible",
+    "transmission": "Transmisión",
+    "seats": "Plazas",
+    "color": "Color",
+    "engine": "Motor",
+    "condition": "Estado",
+    "delivery": "Entrega",
+    "deliveryYes": "Sí — hasta {km} km · {fee} /km extra",
+    "deliveryNo": "Sin entrega a domicilio",
+    "availabilityWindow": "Disponibilidad publicada",
+    "fuel": {
+      "gasoline": "Gasolina",
+      "diesel": "Diésel",
+      "electric": "Eléctrico",
+      "hybrid": "Híbrido"
+    },
+    "transmissionKind": {
+      "automatic": "Automática",
+      "manual": "Manual"
+    },
+    "vehicleCondition": {
+      "new": "Nuevo",
+      "used": "Usado",
+      "refurbished": "Reacondicionado",
+      "excellent": "Excelente",
+      "good": "Bueno",
+      "fair": "Regular"
+    }
+  },
+  "rentalBooking": {
+    "title": "Consultar —",
+    "subtitle": "Elige fechas para ver un total estimado y enviar tu consulta.",
+    "dateRangeLabel": "Fechas del alquiler",
+    "dateRangeTriggerHint": "Toca para cambiar",
+    "selectDateRange": "Seleccionar rango de fechas",
+    "rangePickerTitle": "Fechas y horario",
+    "rangePickerDone": "Listo",
+    "rangeHint": "Haz clic en el día de inicio y luego en el de devolución.",
+    "pickupTime": "Hora de inicio",
+    "returnTime": "Hora de devolución",
+    "pickupDate": "Fecha de inicio",
+    "returnDate": "Fecha de devolución",
+    "selectDate": "Seleccionar",
+    "selectRangeError": "Selecciona un rango de fechas válido.",
+    "pricePerDay": "Precio por día",
+    "days": "Días",
+    "estimatedTotal": "Total estimado",
+    "disclaimer": "El total es orientativo; el anfitrión confirmará precio final y disponibilidad.",
+    "consult": "Consultar",
+    "modalTitle": "Enviar consulta",
+    "modalDescription": "Describe tu necesidad (fechas flexibles, entrega, etc.). Por ahora solo registramos la solicitud en consola.",
+    "messageLabel": "Mensaje",
+    "messagePlaceholder": "Ej.: Necesito el vehículo del 10 al 15, recogida en aeropuerto…",
+    "cancel": "Cancelar",
+    "submit": "Enviar",
+    "sentToast": "Consulta registrada (revisa la consola del navegador)",
+    "incompleteListing": "Este anuncio está marcado como alquiler pero aún no incluye los datos del vehículo. Vuelve más tarde o contacta al anfitrión."
   },
   "hero": {"subtitle": "Descubra los tesoros del mundo"},
   "search": {"placeholder": "Buscar destinos, tours, experiencias...", "placeholderNotLogged": "Inicia sesión para buscar por texto...", "placeholderInitial": "Cargando..."},
@@ -38,6 +126,7 @@
     "productDetail": {
       "notFound": "Producto no encontrado",
       "departurePoint": "Punto de salida",
+      "pickupLocation": "Ubicación y mapa",
       "loginRequiredTitle": "Necesitas iniciar sesión para realizar la reserva",
       "loginRequiredDescription": "Inicia sesión o crea una cuenta para poder reservar y disfrutar de nuestras promociones exclusivas.",
       "viewDetails": "Ver detalles"
@@ -66,6 +155,7 @@
     "ticketsLabel": "Entradas",
     "adults": "Adultos",
     "perPerson": "por persona",
+    "perDay": "por día",
     "pricePerPerson": "Precio",
     "subtotal": "Subtotal",
     "total": "Total",
@@ -162,12 +252,12 @@
     "reviewAvailableFrom": "Podrás dejar tu reseña a partir del {date} (fecha de tu reserva)."
   },
   "organizer": {
-    "title": "Quién organiza este tour",
+    "title": "Quién ofrece este servicio",
     "noHostInfo": "No hay información del anfitrión para este producto.",
     "loadErrorTitle": "No se pudo cargar el perfil",
     "loadErrorFallbackUser": "Usuario:",
     "online": "En línea",
-    "roleBadge": "Operador turístico",
+    "roleBadge": "Proveedor",
     "operatorInfoTitle": "Información del operador",
     "experienceTypesTitle": "Tipos de experiencia",
     "languagesTitle": "Idiomas",
