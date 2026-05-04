@@ -27,7 +27,6 @@ type BookingStatusProps = {
   status: "completed" | "in-process" | "canceled";
   productName?: string;
   productId: string;
-  product: any;
   paymentMethod: string;
   user: any;
   created_at: string;
@@ -46,7 +45,6 @@ export function BookingStatus({
   paymentMethod,
   productId,
   productName,
-  product,
   created_at,
   tourDate,
   tickets,
@@ -62,6 +60,13 @@ export function BookingStatus({
     user?.firstName && user?.lastName
       ? `${user.firstName} ${user.lastName}`.trim()
       : user?.fullName ?? "";
+  const ticketsCount = tickets.adult > 0 ? tickets.adult : 1;
+  const totalNumber = typeof total === "number" ? total : Number(total);
+  const paidTotal =
+    Number.isFinite(totalNumber) && totalNumber >= 0 ? totalNumber : 0;
+  const unitPrice =
+    ticketsCount > 0 ? paidTotal / ticketsCount : paidTotal;
+
   const receiptData: ReceiptProps = {
     receiptNumber: productId,
     date: new Date().toLocaleDateString(language === "es" ? "es-ES" : "en-US", {
@@ -79,12 +84,12 @@ export function BookingStatus({
       {
         id: tickets.adult.toString(),
         description: productName as string,
-        quantity: tickets.adult,
-        price: product.price,
+        quantity: ticketsCount,
+        price: unitPrice,
       },
     ],
-    subtotal: (product.price as number) * tickets.adult,
-    total: total,
+    subtotal: paidTotal,
+    total: paidTotal,
     notes: t("home.bookingStatus.receiptNotes"),
     companyName: "Dubuu",
     companyLogo: "/logo.svg",
