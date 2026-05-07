@@ -1,17 +1,28 @@
 import type { IProductBase } from "./product";
 
+export interface IRentalSpecificArea {
+  center_lat: number;
+  center_lng: number;
+  radius_km: number;
+  label?: string | null;
+  address_text?: string | null;
+  created_at?: string;
+}
+
 export interface IRentalProduct extends IProductBase<"rental"> {
   rental: {
+    delivery_mode: "specific_areas" | "coverage";
+    specific_areas: IRentalSpecificArea[];
+    coverage_all_country: boolean;
+    coverage_departments: string[];
     brand: string;
     model: string;
     year: number;
-    /** Drizzle: `new` | `used` | `refurbished`. Legacy APIs may return other strings. */
     condition: "new" | "used" | "refurbished" | "excellent" | "good" | "fair";
     transmission: "automatic" | "manual";
     seating_capacity: number;
     pickup_location?: string;
     max_delivery_distance_km: number;
-    /** Legacy field; optional when API matches Drizzle rentals only. */
     base_delivery_fee?: string;
     fee_per_km: string;
     offers_delivery: boolean;
@@ -24,14 +35,14 @@ export interface IRentalProduct extends IProductBase<"rental"> {
     is_live: boolean;
     color: string;
     engine: string;
-    /** Legacy fields not in Drizzle `rentals`; optional when omitted by API. */
     mileage?: number;
-    type_car?: RentalCarType;
     doors?: number;
-    /** ISO `yyyy-MM-dd` — días ya reservados; la API puede enviarlos para deshabilitarlos en el calendario. */
     unavailable_dates?: string[];
-    /** Intervalos de reserva existentes; cada día entre inicio y fin cuenta como no disponible. */
-    booked_ranges?: { pickup_date: string; return_date: string }[];
+
+    booked_ranges?: {
+      pickup_date: string;
+      return_date: string;
+    }[];
   };
 }
 

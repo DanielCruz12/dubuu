@@ -14,18 +14,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 import { type RentalBasicFormValues, getRentalBasicSchema } from "./types";
 import { focusFirstStepField, scrollToFirstError } from "../add-tour/utils";
 import { useLanguage } from "@/lib/i18n-context";
-import { getCountrySelectOptions } from "@/lib/country-options";
 
 interface RentalBasicStepProps {
   onSubmit: (data: RentalBasicFormValues) => void;
@@ -33,21 +25,15 @@ interface RentalBasicStepProps {
 }
 
 export function RentalBasicStep({ onSubmit, defaultValues }: RentalBasicStepProps) {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const formRef = useRef<HTMLFormElement>(null);
   const schema = useMemo(() => getRentalBasicSchema(t), [t]);
-
-  const countryOptions = useMemo(
-    () => getCountrySelectOptions(language),
-    [language],
-  );
 
   const form = useForm<RentalBasicFormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
-      country: defaultValues?.country || "",
     },
   });
 
@@ -90,30 +76,6 @@ export function RentalBasicStep({ onSubmit, defaultValues }: RentalBasicStepProp
                     placeholder={t("dashboard.addRental.basic.descriptionPlaceholder")}
                   />
                 </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="country"
-            render={({ field }) => (
-              <FormItem className="md:col-span-2">
-                <FormLabel>{t("dashboard.addRental.basic.country")}</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder={t("dashboard.addRental.basic.countryPlaceholder")} />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent position="popper" className="max-h-72">
-                    {countryOptions.map((c) => (
-                      <SelectItem key={c.id} value={c.id}>
-                        {c.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
                 <FormMessage />
               </FormItem>
             )}

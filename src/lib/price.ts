@@ -30,7 +30,6 @@ export function getTaxBreakdown(basePrice: number, quantity = 1) {
     platformFee,
     paymentProcessing,
     total,
-    // Para mantener compatibilidad con el código existente
     serviceFee: platformFee,
     iva: paymentProcessing,
   };
@@ -72,13 +71,10 @@ export function getCommissionRates() {
   };
 }
 
-const TOTAL_COMMISSION_RATE =
-  COMMISSION_RATES.PLATFORM_RATE + COMMISSION_RATES.PAYMENT_PROCESSING_RATE;
-
 /**
  * Calcula lo que recibe el host a partir del total cobrado (suma de precios finales).
  * Usado en el panel para mostrar "Ingresos totales" después de comisión.
  */
 export function getHostEarningsFromTotalSum(totalCollected: number): number {
-  return totalCollected * (1 - TOTAL_COMMISSION_RATE);
+  return getHostEarningsFromFinalPrice(totalCollected, 1).hostReceives;
 }

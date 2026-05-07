@@ -27,7 +27,11 @@ import type {
   RentalData,
   RentalAvailabilitySnapshot,
 } from "./types";
-import type { CategorizationFormValues, MultimediaFormValues, TourFiles } from "../add-tour/types";
+import type {
+  CategorizationFormValues,
+  MultimediaFormValues,
+  TourFiles,
+} from "../add-tour/types";
 
 import {
   useCreateProductMutation,
@@ -38,11 +42,13 @@ import { SignInButton, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/lib/i18n-context";
 import { isProductType } from "@/utils";
-import type { IRentalProduct } from "@/types/rental";
+import type { IRentalProduct, IRentalSpecificArea } from "@/types/rental";
 
 function toDateInputValue(isoOrDate: string | undefined): string {
   if (!isoOrDate) return "";
-  const d = isoOrDate.includes("T") ? isoOrDate.split("T")[0] : isoOrDate.slice(0, 10);
+  const d = isoOrDate.includes("T")
+    ? isoOrDate.split("T")[0]
+    : isoOrDate.slice(0, 10);
   return d ?? "";
 }
 
@@ -63,7 +69,9 @@ function defaultAvailabilityRange(): RentalAvailabilitySnapshot {
 }
 
 /** Maps legacy API condition values to Drizzle `rentals.condition` enum. */
-function normalizeRentalConditionForForm(c: string): "new" | "used" | "refurbished" {
+function normalizeRentalConditionForForm(
+  c: string,
+): "new" | "used" | "refurbished" {
   if (c === "new" || c === "used" || c === "refurbished") return c;
   return "used";
 }
@@ -83,7 +91,6 @@ function mapRentalProductToForm(p: IRentalProduct): {
     basic: {
       name: p.name,
       description: p.description,
-      country: p.country,
     },
     vehicle: {
       brand: r.brand,
@@ -97,9 +104,31 @@ function mapRentalProductToForm(p: IRentalProduct): {
       seating_capacity: r.seating_capacity,
     },
     delivery: {
-      offers_delivery: r.offers_delivery,
-      max_delivery_distance_km: r.max_delivery_distance_km,
+      country: p.country,
+
+      delivery_mode:
+        r.delivery_mode === "specific_areas" ? "specific_areas" : "coverage",
+
+      specific_areas:
+        r.delivery_mode === "specific_areas"
+          ? (r.specific_areas ?? []).map((a: IRentalSpecificArea) => ({
+              center: {
+                lat: Number(a.center_lat),
+                lng: Number(a.center_lng),
+              },
+              radius_km: Number(a.radius_km),
+            }))
+          : [],
+
+      coverage_all_country: r.coverage_all_country ?? true,
+
+      coverage_departments: Array.isArray(r.coverage_departments)
+        ? r.coverage_departments
+        : [],
+
       fee_per_km: String(r.fee_per_km ?? "0"),
+
+      max_delivery_distance_km: r.max_delivery_distance_km,
     },
     availabilitySnapshot: {
       available_from: toDateInputValue(r.available_from),
@@ -117,26 +146,39 @@ function mapRentalProductToForm(p: IRentalProduct): {
   };
 }
 
-function createRentalFormData(formData: RentalData, userId: string): FormData {
+function createRentalFormData(
+  formData: RentalData,
+  userId: string,
+  opts?: { isEditMode?: boolean },
+): FormData {
   const data = new FormData();
-  const { basic, vehicle, delivery, categorization, multimedia, files } = formData;
+  const { basic, vehicle, delivery, categorization, multimedia, files } =
+    formData;
 
   const avail =
-    formData.availabilitySnapshot?.available_from && formData.availabilitySnapshot?.available_until
+    formData.availabilitySnapshot?.available_from &&
+    formData.availabilitySnapshot?.available_until
       ? formData.availabilitySnapshot
       : defaultAvailabilityRange();
 
   data.append("name", basic.name);
   data.append("description", basic.description);
   data.append("address", "");
-  data.append("country", basic.country);
+  data.append("country", delivery.country);
 
-  data.append("price", multimedia.price.toString());
+  // Backend: en PATCH de rental, `price` puede ser interpretado como campo de fechas de tour.
+  // Para rentals, el precio real es `price_per_day`; en edición omitimos `price`.
+  if (!opts?.isEditMode) {
+    data.append("price", multimedia.price.toString());
+  }
   data.append("price_per_day", multimedia.price.toString());
 
   data.append("product_type_id", categorization.product_type_id);
   data.append("product_category_id", categorization.product_category_id);
-  data.append("target_product_audience_id", categorization.target_product_audience_id);
+  data.append(
+    "target_product_audience_id",
+    categorization.target_product_audience_id,
+  );
   data.append("amenities", JSON.stringify(categorization.amenities));
 
   data.append("brand", vehicle.brand);
@@ -150,9 +192,33 @@ function createRentalFormData(formData: RentalData, userId: string): FormData {
   data.append("engine", vehicle.engine);
 
   data.append("pickup_location", "");
-  data.append("offers_delivery", String(delivery.offers_delivery));
-  data.append("max_delivery_distance_km", delivery.max_delivery_distance_km.toString());
+  // Entrega siempre se ofrece en rentals (UI step 3).
+  data.append("offers_delivery", "true");
+  data.append(
+    "max_delivery_distance_km",
+    delivery.max_delivery_distance_km.toString(),
+  );
   data.append("fee_per_km", delivery.fee_per_km);
+  // Campos extendidos (si el backend los soporta/ignora).
+  data.append("delivery_mode", delivery.delivery_mode);
+  data.append(
+    "specific_areas",
+    JSON.stringify(
+      (delivery.specific_areas ?? []).map((a) => ({
+        center_lat: a.center?.lat,
+        center_lng: a.center?.lng,
+        radius_km: a.radius_km,
+      })),
+    ),
+  );
+  data.append(
+    "coverage_all_country",
+    JSON.stringify(Boolean(delivery.coverage_all_country)),
+  );
+  data.append(
+    "coverage_departments",
+    JSON.stringify(delivery.coverage_departments ?? []),
+  );
   data.append("available_from", avail.available_from);
   data.append("available_until", avail.available_until);
   data.append("is_available", "true");
@@ -201,15 +267,23 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
 
   const [basic, setBasic] = useState<RentalBasicFormValues | null>(null);
   const [vehicle, setVehicle] = useState<RentalVehicleFormValues | null>(null);
-  const [delivery, setDelivery] = useState<RentalDeliveryFormValues | null>(null);
-  const [availabilitySnapshot, setAvailabilitySnapshot] = useState<RentalAvailabilitySnapshot | null>(
+  const [delivery, setDelivery] = useState<RentalDeliveryFormValues | null>(
     null,
   );
-  const [categorization, setCategorization] = useState<CategorizationFormValues | null>(null);
-  const [multimedia, setMultimedia] = useState<MultimediaFormValues | null>(null);
+  const [availabilitySnapshot, setAvailabilitySnapshot] =
+    useState<RentalAvailabilitySnapshot | null>(null);
+  const [categorization, setCategorization] =
+    useState<CategorizationFormValues | null>(null);
+  const [multimedia, setMultimedia] = useState<MultimediaFormValues | null>(
+    null,
+  );
 
   const resolvedTypeId = useMemo(() => {
-    if (editProductId && existingProduct && isProductType(existingProduct, "rental")) {
+    if (
+      editProductId &&
+      existingProduct &&
+      isProductType(existingProduct, "rental")
+    ) {
       return existingProduct.product_type?.id ?? "";
     }
     return productTypeId ?? "";
@@ -247,13 +321,20 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
   }, [editProductId, isEditProductError, t]);
 
   const existingRental = useMemo(() => {
-    if (!editProductId || !existingProduct || !isProductType(existingProduct, "rental")) {
+    if (
+      !editProductId ||
+      !existingProduct ||
+      !isProductType(existingProduct, "rental")
+    ) {
       return null;
     }
     return existingProduct;
   }, [editProductId, existingProduct]);
 
-  const handleMultimediaSubmit = async (data: MultimediaFormValues, uploadedFiles: TourFiles) => {
+  const handleMultimediaSubmit = async (
+    data: MultimediaFormValues,
+    uploadedFiles: TourFiles,
+  ) => {
     setMultimedia(data);
     const formPayload: RentalData = {
       basic: basic!,
@@ -266,7 +347,9 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
     };
 
     try {
-      const apiFormData = createRentalFormData(formPayload, userId);
+      const apiFormData = createRentalFormData(formPayload, userId, {
+        isEditMode: Boolean(editProductId),
+      });
       if (editProductId) {
         await updateProduct({ id: editProductId, data: apiFormData }).unwrap();
         toast.success(t("dashboard.addRental.toast.updateSuccess"), {
@@ -282,7 +365,9 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
     } catch (error) {
       console.error(error);
       toast.error(
-        editProductId ? t("dashboard.addRental.toast.updateError") : t("dashboard.addRental.toast.error"),
+        editProductId
+          ? t("dashboard.addRental.toast.updateError")
+          : t("dashboard.addRental.toast.error"),
         {
           description: editProductId
             ? t("dashboard.addRental.toast.updateErrorDescription")
@@ -299,7 +384,9 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
   const handleContinue = () => {
     const formEl = document.querySelector("form");
     if (formEl) {
-      formEl.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+      formEl.dispatchEvent(
+        new Event("submit", { cancelable: true, bubbles: true }),
+      );
     }
   };
 
@@ -315,7 +402,9 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
 
   if (editProductId && editLoadError) {
     return (
-      <div className="text-center text-destructive py-16 text-sm">{t("dashboard.addProduct.loadError")}</div>
+      <div className="text-center text-destructive py-16 text-sm">
+        {t("dashboard.addProduct.loadError")}
+      </div>
     );
   }
 
@@ -324,13 +413,17 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
       return (
         <div className="flex flex-col items-center justify-center gap-3 py-20 text-muted-foreground">
           <Loader2 className="h-8 w-8 animate-spin" />
-          <p className="text-sm">{t("dashboard.addProduct.loadingEditRental")}</p>
+          <p className="text-sm">
+            {t("dashboard.addProduct.loadingEditRental")}
+          </p>
         </div>
       );
     }
     if (isEditProductError || !existingProduct) {
       return (
-        <div className="text-center text-destructive py-16 text-sm">{t("dashboard.addProduct.loadError")}</div>
+        <div className="text-center text-destructive py-16 text-sm">
+          {t("dashboard.addProduct.loadError")}
+        </div>
       );
     }
     return (
@@ -344,8 +437,12 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
   if (!isSignedIn) {
     return (
       <div className="text-center">
-        <h2 className="text-xl font-semibold mb-4">{t("dashboard.addTour.auth.title")}</h2>
-        <p className="text-sm text-muted-foreground mb-4">{t("dashboard.addTour.auth.description")}</p>
+        <h2 className="text-xl font-semibold mb-4">
+          {t("dashboard.addTour.auth.title")}
+        </h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          {t("dashboard.addTour.auth.description")}
+        </p>
         <SignInButton>
           <Button>{t("dashboard.addTour.auth.signIn")}</Button>
         </SignInButton>
@@ -376,7 +473,11 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
             : "dashboard.addTour.steps.multimedia.description";
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
       <Card>
         <div className="px-6 pt-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
@@ -395,7 +496,9 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
                   {index < totalSteps - 1 && (
                     <div
                       className={`h-px w-2 sm:w-4 mx-1 ${
-                        step > index + 1 ? "bg-black dark:bg-white" : "bg-gray-300 dark:bg-gray-700"
+                        step > index + 1
+                          ? "bg-black dark:bg-white"
+                          : "bg-gray-300 dark:bg-gray-700"
                       }`}
                     />
                   )}
@@ -411,14 +514,21 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
         </div>
 
         <CardHeader className="pb-2">
-          <CardTitle className="text-xl font-medium">{t(stepTitleKey)}</CardTitle>
+          <CardTitle className="text-xl font-medium">
+            {t(stepTitleKey)}
+          </CardTitle>
           <CardDescription>{t(stepDescKey)}</CardDescription>
         </CardHeader>
 
         <CardContent>
           <AnimatePresence mode="wait">
             {step === 1 && (
-              <motion.div key="r1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <motion.div
+                key="r1"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
                 <RentalBasicStep
                   key={editProductId ? `rb-${editHydrated}` : "rb-new"}
                   onSubmit={(d) => {
@@ -430,7 +540,12 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
               </motion.div>
             )}
             {step === 2 && (
-              <motion.div key="r2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <motion.div
+                key="r2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
                 <RentalVehicleStep
                   key={editProductId ? `rv-${editHydrated}` : "rv-new"}
                   onSubmit={(d) => {
@@ -442,7 +557,12 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
               </motion.div>
             )}
             {step === 3 && (
-              <motion.div key="r3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <motion.div
+                key="r3"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
                 <RentalDeliveryStep
                   key={editProductId ? `rd-${editHydrated}` : "rd-new"}
                   onSubmit={(d) => {
@@ -454,7 +574,12 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
               </motion.div>
             )}
             {step === 4 && (
-              <motion.div key="r4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <motion.div
+                key="r4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
                 <CategorizationStep
                   key={editProductId ? `rc-${editHydrated}` : "rc-new"}
                   onSubmit={(d) => {
@@ -467,13 +592,20 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
               </motion.div>
             )}
             {step === 5 && (
-              <motion.div key="r5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <motion.div
+                key="r5"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
                 <MultimediaStep
                   key={editProductId ? `rm-${editHydrated}` : "rm-new"}
                   onSubmit={handleMultimediaSubmit}
                   defaultValues={multimedia || undefined}
                   isEditMode={Boolean(editProductId && editHydrated)}
-                  priceLabelOverride={t("dashboard.addRental.multimedia.pricePerDay")}
+                  priceLabelOverride={t(
+                    "dashboard.addRental.multimedia.pricePerDay",
+                  )}
                   existingMedia={
                     existingRental
                       ? {
@@ -493,9 +625,16 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
         <CardFooter>
           <div className="flex justify-between w-full">
             {step > 1 ? (
-              <Button type="button" variant="outline" onClick={handleBack} disabled={isSaving}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleBack}
+                disabled={isSaving}
+              >
                 <ArrowLeft className="mr-1 sm:mr-2 h-4 w-4" />
-                <span className="sm:inline">{t("dashboard.addTour.buttons.back")}</span>
+                <span className="sm:inline">
+                  {t("dashboard.addTour.buttons.back")}
+                </span>
               </Button>
             ) : (
               <div />
@@ -508,7 +647,9 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
                 disabled={isSaving}
               >
                 <span className="flex items-center">
-                  <span className="sm:inline">{t("dashboard.addTour.buttons.continue")}</span>
+                  <span className="sm:inline">
+                    {t("dashboard.addTour.buttons.continue")}
+                  </span>
                   <ChevronRight className="ml-1 sm:ml-2 h-4 w-4" />
                 </span>
               </Button>
@@ -521,7 +662,9 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
                 {isSaving ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {editProductId ? t("dashboard.addTour.buttons.saving") : t("dashboard.addTour.buttons.creating")}
+                    {editProductId
+                      ? t("dashboard.addTour.buttons.saving")
+                      : t("dashboard.addTour.buttons.creating")}
                   </>
                 ) : editProductId ? (
                   t("dashboard.addTour.buttons.save")
