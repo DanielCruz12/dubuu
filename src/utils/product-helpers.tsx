@@ -91,7 +91,6 @@ export function getProductSpecificInfo(product: IProduct) {
       fuelType: ren.fuel_type,
       condition: ren.condition,
       mileage: ren.mileage,
-      typecar: ren.type_car,
       color: ren.color,
       doors: ren.doors,
       engine: ren.engine,
