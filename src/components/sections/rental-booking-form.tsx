@@ -1,7 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import type { ReactNode } from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   addDays,
   addYears,
@@ -12,19 +13,17 @@ import {
 } from "date-fns";
 import { es, enUS } from "date-fns/locale";
 import type { DateRange } from "react-day-picker";
-import { CalendarDays, ChevronDown, Clock, MessageCircle } from "lucide-react";
+import { CalendarDays, ChevronDown, Clock, MessageCircle, Upload, X } from "lucide-react";
 import type { IRentalProduct } from "@/types/rental";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Sheet,
@@ -32,11 +31,13 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { TimePicker } from "@/components/ui/time-picker";
 import { Textarea } from "@/components/ui/textarea";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { formatUsd, USD_SYMBOL } from "@/utils/currency";
 import { useLanguage } from "@/lib/i18n-context";
+import { useCreateRentalApplicationMutation } from "@/redux/slices/rental-application/rental-application-slice";
 
 function parseBoundary(s?: string): Date | undefined {
   if (!s?.trim()) return undefined;
@@ -83,6 +84,21 @@ function rentalDaysInclusive(from: Date, to: Date): number {
   return Math.max(1, differenceInCalendarDays(b, a) + 1);
 }
 
+function getRentalHours(
+  pickup: Date,
+  dropoff: Date,
+  pickupTime: string,
+  returnTime: string,
+): number {
+  const [ph, pm] = pickupTime.split(":").map(Number);
+  const [rh, rm] = returnTime.split(":").map(Number);
+  const start = new Date(pickup);
+  start.setHours(ph, pm, 0, 0);
+  const end = new Date(dropoff);
+  end.setHours(rh, rm, 0, 0);
+  return (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+}
+
 function useIsDesktopMd(): boolean {
   const [wide, setWide] = useState(false);
   useEffect(() => {
@@ -109,12 +125,74 @@ export default function RentalBookingForm({
   const symbol = USD_SYMBOL;
   const isDesktop = useIsDesktopMd();
 
-  const [range, setRange] = useState<DateRange | undefined>(undefined);
+  const [range, setRange] = useState<DateRange | undefined>(() => {
+    const todayStart = startOfDay(new Date());
+    return { from: todayStart, to: addDays(todayStart, 1) };
+  });
   const [pickupTime, setPickupTime] = useState("10:00");
   const [returnTime, setReturnTime] = useState("10:00");
   const [rangePickerOpen, setRangePickerOpen] = useState(false);
   const [consultOpen, setConsultOpen] = useState(false);
   const [message, setMessage] = useState("");
+
+  const MAX_DOC_MB = 5;
+
+  const [duiFiles, setDuiFiles] = useState<(File | null)[]>([null, null]);
+  const [duiPreviews, setDuiPreviews] = useState<(string | null)[]>([null, null]);
+  const [licenseFiles, setLicenseFiles] = useState<(File | null)[]>([null, null]);
+  const [licensePreviews, setLicensePreviews] = useState<(string | null)[]>([null, null]);
+
+  const duiInputRef = useRef<HTMLInputElement>(null);
+  const licenseInputRef = useRef<HTMLInputElement>(null);
+
+  const handleDocUpload = (
+    fileList: FileList | null,
+    setFiles: React.Dispatch<React.SetStateAction<(File | null)[]>>,
+    setPreviews: React.Dispatch<React.SetStateAction<(string | null)[]>>,
+  ) => {
+    if (!fileList || fileList.length === 0) return;
+    const incoming = Array.from(fileList).slice(0, 2);
+    const newFiles: (File | null)[] = [null, null];
+    let processed = 0;
+    for (const file of incoming) {
+      if (file.size > MAX_DOC_MB * 1024 * 1024) {
+        toast.error(t("home.rentalBooking.docSizeError").replace("{{max}}", String(MAX_DOC_MB)));
+        continue;
+      }
+      newFiles[processed] = file;
+      const reader = new FileReader();
+      const idx = processed;
+      reader.onload = () => {
+        setPreviews((prev) => {
+          const next = [...prev];
+          next[idx] = reader.result as string;
+          return next;
+        });
+      };
+      reader.readAsDataURL(file);
+      processed++;
+    }
+    setFiles(newFiles);
+  };
+
+  const removeDoc = (
+    index: number,
+    setFiles: React.Dispatch<React.SetStateAction<(File | null)[]>>,
+    setPreviews: React.Dispatch<React.SetStateAction<(string | null)[]>>,
+    inputRef: React.RefObject<HTMLInputElement | null>,
+  ) => {
+    setFiles((prev) => {
+      const next = [...prev];
+      next[index] = null;
+      return next;
+    });
+    setPreviews((prev) => {
+      const next = [...prev];
+      next[index] = null;
+      return next;
+    });
+    if (inputRef.current) inputRef.current.value = "";
+  };
 
   const r = product.rental;
   const pricePerDay = Number.parseFloat(String(r.price_per_day ?? "0"));
@@ -157,6 +235,11 @@ export default function RentalBookingForm({
 
   const estimatedTotal = validPrice && days > 0 ? pricePerDay * days : 0;
 
+  const insufficientHours = useMemo(() => {
+    if (!pickup || !dropoff) return false;
+    return getRentalHours(pickup, dropoff, pickupTime, returnTime) < 24;
+  }, [pickup, dropoff, pickupTime, returnTime]);
+
   const rangeSummary = useMemo(() => {
     if (!pickup) return null;
     const a = format(pickup, "d MMM yyyy", { locale });
@@ -194,65 +277,82 @@ export default function RentalBookingForm({
             <Clock className="h-3.5 w-3.5 opacity-70" aria-hidden />
             {t("home.rentalBooking.pickupTime")}
           </Label>
-          <Input
-            type="time"
-            step={60}
-            value={pickupTime}
-            onChange={(e) => setPickupTime(e.target.value)}
-            className="bg-background/80"
-          />
+          <TimePicker value={pickupTime} onChange={setPickupTime} />
         </div>
         <div className="space-y-1.5">
           <Label className="text-xs flex items-center gap-1.5">
             <Clock className="h-3.5 w-3.5 opacity-70" aria-hidden />
             {t("home.rentalBooking.returnTime")}
           </Label>
-          <Input
-            type="time"
-            step={60}
-            value={returnTime}
-            onChange={(e) => setReturnTime(e.target.value)}
-            className="bg-background/80"
-          />
+          <TimePicker value={returnTime} onChange={setReturnTime} />
         </div>
       </div>
+      {insufficientHours && (
+        <p className="text-xs text-amber-600 dark:text-amber-400 text-center">
+          {t("home.rentalBooking.minHoursWarning")}
+        </p>
+      )}
       <Button type="button" className="w-full rounded-full" onClick={() => setRangePickerOpen(false)}>
         {t("home.rentalBooking.rangePickerDone")}
       </Button>
     </div>
   );
 
+  const consultBlockedReason = useMemo(() => {
+    if (!user) return "login";
+    if (!pickup || !dropoff || dropoff < pickup) return "range";
+    if (insufficientHours) return "hours";
+    return null;
+  }, [user, pickup, dropoff, insufficientHours]);
+
+  const canConsult = consultBlockedReason === null;
+
   const handleConsultClick = () => {
-    if (!user) {
-      toast.error(t("home.bookingForm.toast.loginRequired"));
-      return;
-    }
-    if (!pickup || !dropoff || dropoff < pickup) {
-      toast.error(t("home.rentalBooking.selectRangeError"));
-      return;
-    }
+    if (!canConsult) return;
     setConsultOpen(true);
   };
 
-  const handleConsultSubmit = () => {
-    const payload = {
-      productId: product.id,
-      productName: product.name,
-      pickup: pickup ? format(pickup, "yyyy-MM-dd") : null,
-      dropoff: dropoff ? format(dropoff, "yyyy-MM-dd") : null,
-      pickupTime,
-      returnTime,
-      days,
-      pricePerDay,
-      estimatedTotal,
-      message: message.trim(),
-      userId: user?.id ?? null,
-    };
-    // eslint-disable-next-line no-console
-    console.log("[rental inquiry]", payload);
-    setConsultOpen(false);
-    setMessage("");
-    toast.success(t("home.rentalBooking.sentToast"));
+  const [createApplication, { isLoading: isSubmitting }] =
+    useCreateRentalApplicationMutation();
+
+  const handleConsultSubmit = async () => {
+    if (!user?.id) return;
+
+    const formData = new FormData();
+    formData.append("productId", product.id);
+    formData.append("userId", user.id);
+    formData.append("productName", product.name);
+    formData.append("pickup", pickup ? format(pickup, "yyyy-MM-dd") : "");
+    formData.append("dropoff", dropoff ? format(dropoff, "yyyy-MM-dd") : "");
+    formData.append("pickupTime", pickupTime);
+    formData.append("returnTime", returnTime);
+    formData.append("days", String(days));
+    formData.append("pricePerDay", String(pricePerDay));
+    formData.append("estimatedTotal", String(estimatedTotal));
+    formData.append("message", message.trim());
+
+    for (const file of duiFiles) {
+      if (file) formData.append("dui_files", file);
+    }
+    for (const file of licenseFiles) {
+      if (file) formData.append("license_files", file);
+    }
+
+    try {
+      await createApplication(formData).unwrap();
+
+      setConsultOpen(false);
+      setMessage("");
+      setDuiFiles([null, null]);
+      setDuiPreviews([null, null]);
+      setLicenseFiles([null, null]);
+      setLicensePreviews([null, null]);
+      if (duiInputRef.current) duiInputRef.current.value = "";
+      if (licenseInputRef.current) licenseInputRef.current.value = "";
+      toast.success(t("home.rentalBooking.sentToast"));
+    } catch {
+      toast.error(t("home.rentalBooking.sendError"));
+    }
   };
 
   return (
@@ -340,10 +440,24 @@ export default function RentalBookingForm({
             </div>
           </div>
 
-          <Button type="button" className="w-full gap-2 rounded-full" onClick={handleConsultClick}>
-            <MessageCircle className="h-4 w-4" />
-            {t("home.rentalBooking.consult")}
-          </Button>
+          <div className="space-y-1.5">
+            <Button
+              type="button"
+              className="w-full gap-2 rounded-full"
+              onClick={handleConsultClick}
+              disabled={!canConsult}
+            >
+              <MessageCircle className="h-4 w-4" />
+              {t("home.rentalBooking.consult")}
+            </Button>
+            {consultBlockedReason && (
+              <p className="text-[11px] text-muted-foreground text-center">
+                {consultBlockedReason === "login" && t("home.bookingForm.toast.loginRequired")}
+                {consultBlockedReason === "range" && t("home.rentalBooking.selectRangeError")}
+                {consultBlockedReason === "hours" && t("home.rentalBooking.minHoursError")}
+              </p>
+            )}
+          </div>
 
           {extraActionBelowBookNow ? (
             <div className="pt-1">{extraActionBelowBookNow}</div>
@@ -352,28 +466,158 @@ export default function RentalBookingForm({
       </div>
 
       <Dialog open={consultOpen} onOpenChange={setConsultOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-md max-h-[90dvh] overflow-y-auto">
+         {/*  <DialogHeader>
             <DialogTitle>{t("home.rentalBooking.modalTitle")}</DialogTitle>
             <DialogDescription>{t("home.rentalBooking.modalDescription")}</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-2 py-1">
-            <Label htmlFor="rental-inquiry-msg">{t("home.rentalBooking.messageLabel")}</Label>
-            <Textarea
-              id="rental-inquiry-msg"
-              rows={4}
-              placeholder={t("home.rentalBooking.messagePlaceholder")}
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              className="resize-none"
-            />
+          </DialogHeader> */}
+          <div className="space-y-4 py-1">
+            <div className="space-y-2">
+              <Label htmlFor="rental-inquiry-msg">{t("home.rentalBooking.messageLabel")}</Label>
+              <Textarea
+                id="rental-inquiry-msg"
+                rows={2}
+                placeholder={t("home.rentalBooking.messagePlaceholder")}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                className="resize-none"
+              />
+            </div>
+
+            <div className="border-t border-border/60 pt-3">
+             
+
+              {/* DUI */}
+              <div className="space-y-2 mb-4">
+                <Label className="text-xs font-medium">{t("home.rentalBooking.duiLabel")}</Label>
+                {duiFiles.some(Boolean) && (
+                  <div className="grid grid-cols-2 gap-2">
+                    {duiFiles.map((file, i) => (
+                      <div key={i} className="space-y-1">
+                        <Label className="text-[11px] text-muted-foreground">
+                          {i === 0 ? t("home.rentalBooking.duiFrontLabel") : t("home.rentalBooking.duiBackLabel")}
+                        </Label>
+                        {file && duiPreviews[i] ? (
+                          <div className="relative rounded-lg border border-border/60 overflow-hidden">
+                            <Image
+                              src={duiPreviews[i]}
+                              alt={i === 0 ? "DUI front" : "DUI back"}
+                              className="w-full h-24 object-contain bg-muted/20"
+                              width={400}
+                              height={96}
+                            />
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="icon"
+                              onClick={() => removeDoc(i, setDuiFiles, setDuiPreviews, duiInputRef)}
+                              className="absolute top-1 right-1 h-6 w-6 p-0"
+                            >
+                              <X className="h-3 w-3" />
+                              <span className="sr-only">{t("home.rentalBooking.removeFile")}</span>
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="border border-dashed border-border/40 rounded-lg h-24 flex items-center justify-center">
+                            <span className="text-[10px] text-muted-foreground/50">{t("home.rentalBooking.docClick")}</span>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {!duiFiles.every(Boolean) && (
+                  <div
+                    className="border-2 border-dashed border-border/60 rounded-lg p-3 text-center cursor-pointer hover:bg-muted/20 transition-colors"
+                    onClick={() => duiInputRef.current?.click()}
+                  >
+                    <Upload className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
+                    <p className="text-xs text-muted-foreground">{t("home.rentalBooking.docClick")}</p>
+                    <p className="text-[10px] text-muted-foreground/60 mt-0.5">
+                      {t("home.rentalBooking.docSizeHint").replace("{{max}}", String(MAX_DOC_MB))}
+                    </p>
+                    <input
+                      ref={duiInputRef}
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="hidden"
+                      onChange={(e) => handleDocUpload(e.target.files, setDuiFiles, setDuiPreviews)}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Driver's license */}
+              <div className="space-y-2">
+                <Label className="text-xs font-medium">{t("home.rentalBooking.licenseLabel")}</Label>
+                {licenseFiles.some(Boolean) && (
+                  <div className="grid grid-cols-2 gap-2">
+                    {licenseFiles.map((file, i) => (
+                      <div key={i} className="space-y-1">
+                        <Label className="text-[11px] text-muted-foreground">
+                          {i === 0 ? t("home.rentalBooking.licenseFrontLabel") : t("home.rentalBooking.licenseBackLabel")}
+                        </Label>
+                        {file && licensePreviews[i] ? (
+                          <div className="relative rounded-lg border border-border/60 overflow-hidden">
+                            <Image
+                              src={licensePreviews[i]}
+                              alt={i === 0 ? "License front" : "License back"}
+                              className="w-full h-24 object-contain bg-muted/20"
+                              width={400}
+                              height={96}
+                            />
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="icon"
+                              onClick={() => removeDoc(i, setLicenseFiles, setLicensePreviews, licenseInputRef)}
+                              className="absolute top-1 right-1 h-6 w-6 p-0"
+                            >
+                              <X className="h-3 w-3" />
+                              <span className="sr-only">{t("home.rentalBooking.removeFile")}</span>
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="border border-dashed border-border/40 rounded-lg h-24 flex items-center justify-center">
+                            <span className="text-[10px] text-muted-foreground/50">{t("home.rentalBooking.docClick")}</span>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {!licenseFiles.every(Boolean) && (
+                  <div
+                    className="border-2 border-dashed border-border/60 rounded-lg p-3 text-center cursor-pointer hover:bg-muted/20 transition-colors"
+                    onClick={() => licenseInputRef.current?.click()}
+                  >
+                    <Upload className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
+                    <p className="text-xs text-muted-foreground">
+                      {t("home.rentalBooking.docClick")}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground/60 mt-0.5">
+                      {t("home.rentalBooking.docSizeHint").replace("{{max}}", String(MAX_DOC_MB))}
+                    </p>
+                    <input
+                      ref={licenseInputRef}
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="hidden"
+                      onChange={(e) => handleDocUpload(e.target.files, setLicenseFiles, setLicensePreviews)}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
           <DialogFooter className="gap-2 sm:gap-0">
             <Button type="button" variant="outline" onClick={() => setConsultOpen(false)}>
               {t("home.rentalBooking.cancel")}
             </Button>
-            <Button type="button" onClick={handleConsultSubmit}>
-              {t("home.rentalBooking.submit")}
+            <Button type="button" onClick={handleConsultSubmit} disabled={isSubmitting}>
+              {isSubmitting ? "..." : t("home.rentalBooking.submit")}
             </Button>
           </DialogFooter>
         </DialogContent>

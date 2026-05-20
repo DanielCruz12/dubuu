@@ -120,7 +120,7 @@ export function CategorizationStep({
     if (!fixedProductTypeId) return;
     setSelectedProductTypeId(fixedProductTypeId);
     form.setValue("product_type_id", fixedProductTypeId);
-  }, [fixedProductTypeId]);
+  }, [fixedProductTypeId, form]);
 
   // Manejar cambio de categoría
   const handleCategoryChange = (value: string) => {
