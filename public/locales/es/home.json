@@ -1,378 +1,412 @@
 {
-  "tourCard": {
-    "loginToSave": "Debes iniciar sesión para guardar productos",
-    "removedFromSaved": "Producto eliminado de tus guardados",
-    "savedSuccess": "Producto guardado exitosamente",
-    "saveError": "Ocurrió un error al actualizar tus guardados",
-    "removeFromFavorites": "Quitar de favoritos",
-    "addToFavorites": "Añadir a favoritos",
-    "perPerson": "p/p",
-    "perDay": "/día",
-    "viewDetails": "Ver detalles"
-  },
-  "productDetail": {
-    "rentalLocationHint": "Entrega o recogida según lo acordado con el anfitrión."
-  },
-  "rental": {
-    "cardSeats": "plazas"
-  },
-  "rentalImportant": {
-    "link": "Información importante",
-    "title": "Información importante del alquiler",
-    "intro": "Antes de confirmar cualquier reserva, revisa estos puntos. Te ayudan a saber qué esperar y qué necesitarás.",
-    "docsTitle": "Documentación y aprobación",
-    "docsBody": "Para avanzar con una solicitud de alquiler deberás enviar la documentación que solicite el anfitrión (por ejemplo identificación y licencia de conducir). El anfitrión revisará tus documentos y solo entonces podrá aprobar o rechazar la solicitud.\n\nHasta recibir esa aprobación, la reserva no queda confirmada.",
-    "processTitle": "Cómo sigue el proceso",
-    "processBody": "1) Envías tu consulta con las fechas deseadas.\n2) Si el anfitrión lo requiere, subes o envías tus documentos para revisión.\n3) El anfitrión valida y responde con disponibilidad y condiciones finales.\n4) Acordáis pago y entrega según lo que aplique en cada caso.",
-    "paymentTitle": "Pagos y recogida",
-    "paymentBody": "Los métodos de pago (tarjeta, efectivo, transferencia, etc.) y los depósitos o garantías dependen del anfitrión y del punto de recogida. Confirma siempre el importe total, franquicia o depósito, y qué documentos debes presentar al retirar el vehículo.\n\nSi tienes dudas, usa el botón «Consultar» y detállalas en el mensaje.",
-    "close": "Entendido"
-  },
-  "rentalSpecs": {
-    "title": "Vehículo",
-    "subtitle": "Datos técnicos y condiciones del alquiler",
-    "kicker": "Tu vehículo",
-    "availabilityHeading": "Disponibilidad publicada",
-    "availabilityUnknown": "Sin rango de fechas publicado — pregunta al anfitrión",
-    "available": "Disponible",
-    "unavailable": "No disponible",
-    "brand": "Marca",
-    "model": "Modelo",
-    "year": "Año",
-    "fuelType": "Combustible",
-    "transmission": "Transmisión",
-    "seats": "Plazas",
-    "color": "Color",
-    "engine": "Motor",
-    "condition": "Estado",
-    "delivery": "Entrega",
-    "deliveryYes": "Sí — hasta {km} km · {fee} /km extra",
-    "deliveryNo": "Sin entrega a domicilio",
-    "availabilityWindow": "Disponibilidad publicada",
-    "fuel": {
-      "gasoline": "Gasolina",
-      "diesel": "Diésel",
-      "electric": "Eléctrico",
-      "hybrid": "Híbrido"
-    },
-    "transmissionKind": {
-      "automatic": "Automática",
-      "manual": "Manual"
-    },
-    "vehicleCondition": {
-      "new": "Nuevo",
-      "used": "Usado",
-      "refurbished": "Reacondicionado",
-      "excellent": "Excelente",
-      "good": "Bueno",
-      "fair": "Regular"
-    }
-  },
-  "rentalBooking": {
-    "title": "Consultar —",
-    "subtitle": "Elige fechas para ver un total estimado y enviar tu consulta.",
-    "dateRangeLabel": "Fechas del alquiler",
-    "dateRangeTriggerHint": "Toca para cambiar",
-    "selectDateRange": "Seleccionar rango de fechas",
-    "rangePickerTitle": "Fechas y horario",
-    "rangePickerDone": "Listo",
-    "rangeHint": "Haz clic en el día de inicio y luego en el de devolución.",
-    "pickupTime": "Hora de inicio",
-    "returnTime": "Hora de devolución",
-    "pickupDate": "Fecha de inicio",
-    "returnDate": "Fecha de devolución",
-    "selectDate": "Seleccionar",
-    "selectRangeError": "Selecciona un rango de fechas válido.",
-    "pricePerDay": "Precio por día",
-    "days": "Días",
-    "estimatedTotal": "Total estimado",
-    "disclaimer": "El total es orientativo; el anfitrión confirmará precio final y disponibilidad.",
-    "consult": "Consultar",
-    "modalTitle": "Enviar consulta",
-    "modalDescription": "Describe tu necesidad (Detalles, entrega, etc.)",
-    "messageLabel": "Mensaje",
-    "messagePlaceholder": "Ej.: Viajas con mucho equipaje, silla para bebé, destino específico, etc.",
-    "cancel": "Cancelar",
-    "submit": "Enviar",
-    "sentToast": "Consulta enviada. El anfitrión la revisará pronto.",
-    "sendError": "No se pudo enviar la consulta. Intenta de nuevo.",
-    "incompleteListing": "Este anuncio está marcado como alquiler pero aún no incluye los datos del vehículo. Vuelve más tarde o contacta al anfitrión.",
-    "documentsLabel": "Documentos requeridos",
-    "documentsHint": "Adjunta fotos de tu DUI y licencia de conducir.",
-    "duiLabel": "DUI (Documento Único de Identidad)",
-    "duiFrontLabel": "DUI — Frente",
-    "duiBackLabel": "DUI — Reverso",
-    "licenseLabel": "Licencia de Conducir",
-    "licenseFrontLabel": "Licencia — Frente",
-    "licenseBackLabel": "Licencia — Reverso",
-    "docClick": "Haz clic para subir tus documentos",
-    "docSizeHint": "Máx. {{max}} MB",
-    "docSizeError": "La imagen no puede superar los {{max}} MB",
-    "removeFile": "Eliminar archivo",
-    "minHoursWarning": "El alquiler debe ser de al menos 24 horas.",
-    "minHoursError": "El período mínimo de alquiler es de 24 horas."
-  },
-  "hero": {"subtitle": "Descubra los tesoros del mundo"},
-  "search": {"placeholder": "Buscar destinos, tours, experiencias...", "placeholderNotLogged": "Inicia sesión para buscar por texto...", "placeholderInitial": "Cargando..."},
-  "popularDestinations": {"title": "Destinos populares", "subtitle": "Los mejores destinos turisticos preferidos por la comunidad", "tours": "Viajes", "activities": "Actividades"},
-  "landing": {
-    "slide1": {"title": "Reservas que simplifican tu viaje", "subtitle": "Haz reservas de tours y alquiler de autos en un solo lugar. Dubuu es la plataforma para viajeros y empresas.", "cta": "Descubrir"},
-    "slide2": {"title": "¿Tienes una empresa de tours?", "subtitle": "Lista tus experiencias y tours en Dubuu. Gestiona reservas, disponibilidad y clientes desde un solo panel.", "cta": "Ver cómo funciona"},
-    "slide3": {"title": "Alquiler de autos", "subtitle": "Si ofreces vehículos en alquiler, también puedes listarlos aquí. Tours y autos en la misma plataforma.", "cta": "Descubrir"},
-    "slide4": {"title": "Tu viaje y tu negocio, mejor organizados", "subtitle": "Reserva experiencias y coches con pocos clics, o gestiona tu oferta si eres empresa. Todo en Dubuu.", "cta": "Empezar"},
-    "slide5": {"title": "Experiencias que inspiran", "subtitle": "Alojamientos y experiencias diseñados para que tu viaje sea único. Reserva con confianza en Dubuu.", "cta": "Descubrir"},
-    "about": {
-      "titleBold": "EXPERIENCIAS",
-      "titlePrefix": "DISEÑAMOS ",
-      "titleSuffix": " ÚNICAS",
-      "paragraph1": "En Dubuu, entendemos que cada viajero es único. Por eso, cada experiencia que creamos está meticulosamente diseñada para superar expectativas y crear recuerdos inolvidables.",
-      "paragraph2": "Nuestro equipo de expertos en viajes de lujo trabaja con los mejores proveedores del mundo para ofrecerte acceso exclusivo a destinos y experiencias extraordinarias.",
-      "cta": "Ver experiencias",
-      "testimonial": "Una experiencia transformadora. Dubuu nos mostró la verdadera esencia de una reserva con un nivel de servicio excepcional.",
-      "imageAlt": "Experiencia de lujo"
-    },
-    "tours": {
-      "titleBold": "privados",
-      "titlePrefix": "Viajes ",
-      "titleSuffix": "",
-      "subtitle": "Experiencias guiadas con acceso exclusivo y atención personalizada",
-      "cta": "Ver todos los viajes"
-    },
-    "productDetail": {
-      "notFound": "Producto no encontrado",
-      "departurePoint": "Punto de salida",
-      "pickupLocation": "Ubicación y mapa",
-      "loginRequiredTitle": "Necesitas iniciar sesión para realizar la reserva",
-      "loginRequiredDescription": "Inicia sesión o crea una cuenta para poder reservar y disfrutar de nuestras promociones exclusivas.",
-      "viewDetails": "Ver detalles"
-    }
-  },
-  "productDetails": {
-    "difficultyLevel": "Nivel de dificultad",
-    "overview": "Descripción general",
-    "highlight": "Destacar",
-    "whatsIncluded": "Qué incluye",
-    "itinerary": "Itinerario",
-    "additionalExpenses": "Gastos adicionales",
-    "whatToBring": "Cosas que debes llevar"
-  },
-  "difficulty": {
-    "easy": "Fácil",
-    "medium": "Moderado",
-    "hard": "Difícil",
-    "extreme": "Extremo",
-    "sr": "Nivel de dificultad"
-  },
-  "bookingForm": {
-    "title": "Reservar -",
-    "datetimeLabel": "Fecha y hora",
-    "datetimePlaceholder": "Selecciona una fecha y hora",
-    "ticketsLabel": "Entradas",
-    "adults": "Adultos",
-    "children": "Niños",
-    "perPerson": "por persona",
-    "perDay": "por día",
-    "pricePerPerson": "Precio",
-    "subtotal": "Subtotal",
-    "total": "Total",
-    "bookNow": "Reservar ahora",
-    "cancellationPolicies": "Políticas de cancelación",
-    "cancellationModal": {
-      "title": "Políticas de cancelación",
-      "intro": "Con el fin de ofrecer la mejor experiencia a todos los participantes, aplicamos las siguientes condiciones:",
-      "fullRefund": "Cancelación gratuita y reembolso total hasta 72 horas antes del inicio de la experiencia.",
-      "partialRefund": "Entre 72 y 48 horas antes: reembolso del 50% del monto pagado.",
-      "noRefund": "Menos de 24 horas antes o no presentarse el día de la actividad: no hay reembolso.",
-      "changes": "Los cambios de fecha están sujetos a disponibilidad. Para solicitar un cambio o resolver dudas, contáctanos con antelación."
-    },
-    "validation": {
-      "datetimeRequired": "Selecciona una fecha y hora",
-      "minOneTicket": "Mínimo 1 entrada"
-    },
-    "noDates": "No hay fechas disponibles",
-    "available": "disp.",
-    "soldOut": "Agotado",
-    "toast": {
-      "loginRequired": "Debes iniciar sesión para continuar con la reserva",
-      "spotsLeft": "Solo hay {count} lugares disponibles"
-    }
-  },
-  "bookingStatus": {
-    "completed": {
-      "title": "Reserva Completada",
-      "description": "Tu reserva ha sido confirmada, porfavor verifica los datos de la reserva.",
-      "badgeText": "Completada"
-    },
-    "inProcess": {
-      "title": "Reserva en Proceso",
-      "description": "Tu reserva está siendo procesada. Pronto recibirás confirmación.",
-      "badgeText": "En Proceso"
-    },
-    "canceled": {
-      "title": "Reserva Cancelada",
-      "description": "Esta reserva ha sido cancelada. Puedes realizar una nueva reserva si lo deseas.",
-      "badgeText": "Cancelada"
-    },
-    "info": "Información",
-    "bookingNumber": "Nº de Reserva",
-    "bookingDate": "Fecha de Reserva",
-    "paymentMethod": "Método de Pago",
-    "tickets": "Entradas:",
-    "adult": "adulto",
-    "adults": "adultos",
-    "buyAnotherTicket": "Comprar otro ticket",
-    "viewMyTickets": "Ver mis tickets",
-    "rebook": "Reservar de nuevo",
-    "downloadReceipt": "Descargar Recibo",
-    "receiptNotes": "Gracias por confiar en nuestros servicios. Este recibo sirve como comprobante de pago."
-  },
-  "share": {
-    "button": "Compartir",
-    "dialogTitle": "Comparte este espacio",
-    "copyLink": "Copiar enlace",
-    "email": "Email",
-    "whatsapp": "WhatsApp",
-    "facebook": "Facebook",
-    "twitter": "Twitter",
-    "instagram": "Instagram",
-    "linkedin": "LinkedIn",
-    "telegram": "Telegram",
-    "embed": "Insertar",
-    "moreOptions": "Más opciones",
-    "alertCopied": "Enlace copiado al portapapeles",
-    "alertInstagram": "Enlace copiado. Puedes pegarlo en Instagram Stories",
-    "alertEmbed": "Código de inserción copiado al portapapeles",
-    "alertUnavailable": "Compartir no está disponible en este navegador"
-  },
-  "reviews": {
-    "loading": "Cargando...",
-    "title": "Reseñas",
-    "noReviews": "(No hay reseñas)",
-    "oneReview": "(1 reseña)",
-    "reviewsCount": "({count} reseñas)",
-    "viewAllReviews": "Ver todas las reseñas",
-    "noReviewsYet": "Aún no hay reseñas. ¡Sé el primero en dejar una!",
-    "sheetTitle": "Reseñas",
-    "sheetDescription": "Opiniones verificadas de nuestros clientes.",
-    "thanksTitle": "¡Gracias por tu reseña!",
-    "thanksDescription": "Tu opinión es muy valiosa y ayuda a otros viajeros a tomar decisiones informadas.",
-    "pendingTitle": "Reserva pendiente",
-    "pendingDescription": "Podrás dejar una reseña una vez que tu reserva esté completada. ¡Esperamos que disfrutes tu experiencia!",
-    "leaveReview": "Deja una reseña",
-    "shareExperience": "Compartir mi experiencia",
-    "writeReviewTitle": "Escribe tu reseña",
-    "writeReviewDescription": "Comparte tu experiencia con otros viajeros",
-    "reviewInfo": "Por favor, asegúrate de que tu reseña cumpla con nuestras políticas de contenido. No se permiten comentarios ofensivos, difamatorios o inapropiados.",
-    "reviewIntro": "Tu opinión es importante para nosotros y ayuda a otros viajeros a tomar decisiones informadas y mejoran nuestros servicios. Agradecemos tu tiempo y comentarios.",
-    "srInfo": "Información sobre reseñas",
-    "reviewAvailableFrom": "Podrás dejar tu reseña a partir del {date} (fecha de tu reserva)."
-  },
-  "organizer": {
-    "title": "Quién ofrece este servicio",
-    "noHostInfo": "No hay información del anfitrión para este producto.",
-    "loadErrorTitle": "No se pudo cargar el perfil",
-    "loadErrorFallbackUser": "Usuario:",
-    "online": "En línea",
-    "roleBadge": "Proveedor",
-    "operatorInfoTitle": "Información del operador",
-    "experienceTypesTitle": "Tipos de experiencia",
-    "languagesTitle": "Idiomas",
-    "emptyValue": "—",
-    "details": {
-      "specialty": "Especialidad",
-      "experience_types": "Tipo de experiencias",
-      "style": "Estilo"
-    },
-    "stats": {
-      "tours_one": "{count} tour",
-      "tours_other": "{count} tours",
-      "years_one": "{count} año de experiencia",
-      "years_other": "{count} años de experiencia"
-    }
-  },
-  "imageCollage": {
-    "image": "Imagen",
-    "bannerAlt": "Imagen del banner",
-    "showAllPhotos": "Mostrar todas las fotos"
-  },
-  "location": {
-    "loadingMap": "Cargando mapa..."
-  },
-  "checkout": {
-    "title": "Finalizar Compra",
-    "description": "Complete sus datos para procesar su pedido",
-    "contact": {
-      "title": "Información de Contacto",
-      "description": "Ingresa tus datos de contacto para la confirmación del pedido.",
-      "firstName": "Nombre",
-      "lastName": "Apellido",
-      "phone": "Teléfono",
-      "placeholderFirst": "Juan",
-      "placeholderLast": "Pérez"
-    },
-    "address": {
-      "title": "Dirección",
-      "description": "Ingresa tu dirección.",
-      "address": "Dirección",
-      "country": "País",
-      "region": "Región",
-      "city": "Ciudad",
-      "zipCode": "Código Postal",
-      "placeholderAddress": "Calle Principal 123",
-      "selectCountry": "Seleccionar país",
-      "selectRegion": "Seleccionar región",
-      "placeholderCity": "Ingrese su ciudad",
-      "placeholderZip": "Código postal"
-    },
-    "payment": {
-      "title": "Método de Pago",
-      "description": "Selecciona tu método de pago preferido.",
-      "creditCard": "Tarjeta de Crédito/Débito",
-      "blink": "Bitcoin / Lightning",
-      "bitcoinLightning": "Bitcoin / Lightning",
-      "bitcoinLightningHint": "LN = Lightning Network: pagos instantáneos y de bajo costo.",
-      "blinkDescription": "Paga al instante con Bitcoin. LN (Lightning Network) permite transacciones rápidas y con comisiones mínimas.",
-      "blinkProceedHint": "Al hacer clic en \"Proceder al pago\" se generará un enlace o código para pagar con Bitcoin o Lightning.",
-      "processing": "Procesando...",
-      "proceedToPay": "Proceder al pago",
-      "cancel": "Cancelar",
-      "termsAgreeBefore": "Al hacer clic en ",
-      "termsAgreeButton": "Proceder al pago",
-      "termsAgreeAfter": ", aceptas nuestros ",
-      "termsLink": "términos y condiciones",
-      "cardNumber": "Número de Tarjeta",
-      "cardName": "Nombre en la Tarjeta",
-      "cardExpiry": "Fecha de Expiración",
-      "cardCvc": "CVC",
-      "paymentMethodSheetTitle": "Elegir método de pago",
-      "paymentMethodChangeHint": "Toca para cambiar",
-      "cardOptionHint": "Pago con tarjeta (Visa, Mastercard…)",
-      "placeholderCard": "4242 4242 4242 4242",
-      "placeholderName": "Juan Pérez",
-      "placeholderExpiry": "MM/YY",
-      "placeholderCvc": "123",
-      "testCardWarning": "Este número de tarjeta no es válido para pagos reales",
-      "blinkModal": {
-        "title": "Paga con Lightning",
-        "scanQr": "Escanea el código QR con tu wallet Lightning",
-        "orCopy": "o copia la factura Lightning",
-        "copy": "Copiar",
-        "copied": "Copiado",
-        "close": "Cerrar",
-        "protocolNote": "Protocolo: lightning:"
-      }
-    },
-    "toast": {
-      "invalidCard": "Error de pago",
-      "invalidCardDesc": "Este número de tarjeta no es válido para pagos reales.",
-      "updateError": "No se pudo actualizar la información del usuario",
-      "processing": "Procesando pago.",
-      "redirecting": "Redirigiendo al banco...",
-      "blinkReady": "Listo. Escanea el QR o copia la factura para pagar.",
-      "paymentConfirmed": "Pago confirmado",
-      "paymentError": "Error al procesar el pago",
-      "paymentCompletedSuccess": "¡Pago completado! Tu reserva está confirmada.",
-      "viewMyBookings": "Ir a mis reservas"
-    }
-  }
+	"tourCard": {
+		"loginToSave": "Debes iniciar sesión para guardar productos",
+		"removedFromSaved": "Producto eliminado de tus guardados",
+		"savedSuccess": "Producto guardado exitosamente",
+		"saveError": "Ocurrió un error al actualizar tus guardados",
+		"removeFromFavorites": "Quitar de favoritos",
+		"addToFavorites": "Añadir a favoritos",
+		"perPerson": "p/p",
+		"perDay": "/día",
+		"viewDetails": "Ver detalles"
+	},
+	"productDetail": {
+		"rentalLocationHint": "Entrega o recogida según lo acordado con el anfitrión."
+	},
+	"rental": {
+		"cardSeats": "plazas"
+	},
+	"rentalImportant": {
+		"link": "Información importante",
+		"title": "Información importante del alquiler",
+		"intro": "Revisa los siguientes detalles antes de recoger el vehículo.",
+		"docsTitle": "Documentación necesaria",
+		"docsItem1": "Pasaporte o documento nacional de identidad",
+		"docsItem2": "Permiso de conducir",
+		"docsItem3": "Tarjeta de crédito",
+		"depositTitle": "Depósito de seguridad",
+		"depositBody": "En el momento de la recogida, el conductor principal dejará un depósito de seguridad reembolsable de $200.00 en su tarjeta de crédito. No se acepta efectivo ni tarjetas de débito. El personal del mostrador confirmará cuánto será.",
+		"contractTitle": "Contrato de alquiler",
+		"contractBody": "Al momento de la entrega del vehículo, se firmará un contrato de alquiler entre ambas partes. Este contrato establece los términos y condiciones del alquiler, incluyendo responsabilidades, coberturas de seguro y condiciones de devolución.",
+		"cardsTitle": "Tarjetas aceptadas",
+		"close": "Entendido"
+	},
+	"rentalSpecs": {
+		"title": "Vehículo",
+		"subtitle": "Datos técnicos y condiciones del alquiler",
+		"kicker": "Tu vehículo",
+		"availabilityHeading": "Disponibilidad publicada",
+		"availabilityUnknown": "Sin rango de fechas publicado — pregunta al anfitrión",
+		"available": "Disponible",
+		"unavailable": "No disponible",
+		"brand": "Marca",
+		"model": "Modelo",
+		"year": "Año",
+		"fuelType": "Combustible",
+		"transmission": "Transmisión",
+		"seats": "Plazas",
+		"color": "Color",
+		"engine": "Motor",
+		"condition": "Estado",
+		"delivery": "Entrega",
+		"deliveryYes": "Sí — hasta {km} km · {fee} /km extra",
+		"deliveryNo": "Sin entrega a domicilio",
+		"availabilityWindow": "Disponibilidad publicada",
+		"fuel": {
+			"gasoline": "Gasolina",
+			"diesel": "Diésel",
+			"electric": "Eléctrico",
+			"hybrid": "Híbrido"
+		},
+		"transmissionKind": {
+			"automatic": "Automática",
+			"manual": "Manual"
+		},
+		"vehicleCondition": {
+			"new": "Nuevo",
+			"used": "Usado",
+			"refurbished": "Reacondicionado",
+			"excellent": "Excelente",
+			"good": "Bueno",
+			"fair": "Regular"
+		}
+	},
+	"rentalBooking": {
+		"title": "Consultar —",
+		"subtitle": "Elige fechas para ver un total estimado y enviar tu consulta.",
+		"dateRangeLabel": "Fechas del alquiler",
+		"dateRangeTriggerHint": "Toca para cambiar",
+		"selectDateRange": "Seleccionar rango de fechas",
+		"rangePickerTitle": "Fechas y horario",
+		"rangePickerDone": "Listo",
+		"rangeHint": "Haz clic en el día de inicio y luego en el de devolución.",
+		"pickupTime": "Hora de inicio",
+		"returnTime": "Hora de devolución",
+		"pickupDate": "Fecha de inicio",
+		"returnDate": "Fecha de devolución",
+		"selectDate": "Seleccionar",
+		"selectRangeError": "Selecciona un rango de fechas válido.",
+		"pricePerDay": "Precio por día",
+		"days": "Días",
+		"estimatedTotal": "Total estimado",
+		"disclaimer": "El total es orientativo; el anfitrión confirmará precio final y disponibilidad.",
+		"consult": "Consultar",
+		"modalTitle": "Enviar consulta",
+		"modalDescription": "Describe tu necesidad (Detalles, entrega, etc.)",
+		"messageLabel": "Mensaje",
+		"messagePlaceholder": "Ej.: Viajas con mucho equipaje, silla para bebé, destino específico, etc.",
+		"cancel": "Cancelar",
+		"submit": "Enviar",
+		"sentToast": "Consulta enviada. El anfitrión la revisará pronto.",
+		"sendError": "No se pudo enviar la consulta. Intenta de nuevo.",
+		"incompleteListing": "Este anuncio está marcado como alquiler pero aún no incluye los datos del vehículo. Vuelve más tarde o contacta al anfitrión.",
+		"documentsLabel": "Documentos requeridos",
+		"documentsHint": "Adjunta fotos de tu DUI y licencia de conducir.",
+		"duiLabel": "DUI (Documento Único de Identidad)",
+		"duiFrontLabel": "DUI — Frente",
+		"duiBackLabel": "DUI — Reverso",
+		"licenseLabel": "Licencia de Conducir",
+		"licenseFrontLabel": "Licencia — Frente",
+		"licenseBackLabel": "Licencia — Reverso",
+		"docClick": "Haz clic para subir tus documentos",
+		"docSizeHint": "Máx. {{max}} MB",
+		"docSizeError": "La imagen no puede superar los {{max}} MB",
+		"removeFile": "Eliminar archivo",
+		"minHoursWarning": "El alquiler debe ser de al menos 24 horas.",
+		"minHoursError": "El período mínimo de alquiler es de 24 horas."
+	},
+	"hero": {
+		"subtitle": "Descubra los tesoros del mundo"
+	},
+	"search": {
+		"placeholder": "Buscar destinos, tours, experiencias...",
+		"placeholderNotLogged": "Inicia sesión para buscar por texto...",
+		"placeholderInitial": "Cargando..."
+	},
+	"popularDestinations": {
+		"title": "Destinos populares",
+		"subtitle": "Los mejores destinos turisticos preferidos por la comunidad",
+		"tours": "Viajes",
+		"activities": "Actividades"
+	},
+	"landing": {
+		"slide1": {
+			"title": "Reservas que simplifican tu viaje",
+			"subtitle": "Haz reservas de tours y alquiler de autos en un solo lugar. Dubuu es la plataforma para viajeros y empresas.",
+			"cta": "Descubrir"
+		},
+		"slide2": {
+			"title": "¿Tienes una empresa de tours?",
+			"subtitle": "Lista tus experiencias y tours en Dubuu. Gestiona reservas, disponibilidad y clientes desde un solo panel.",
+			"cta": "Ver cómo funciona"
+		},
+		"slide3": {
+			"title": "Alquiler de autos",
+			"subtitle": "Si ofreces vehículos en alquiler, también puedes listarlos aquí. Tours y autos en la misma plataforma.",
+			"cta": "Descubrir"
+		},
+		"slide4": {
+			"title": "Tu viaje y tu negocio, mejor organizados",
+			"subtitle": "Reserva experiencias y coches con pocos clics, o gestiona tu oferta si eres empresa. Todo en Dubuu.",
+			"cta": "Empezar"
+		},
+		"slide5": {
+			"title": "Experiencias que inspiran",
+			"subtitle": "Alojamientos y experiencias diseñados para que tu viaje sea único. Reserva con confianza en Dubuu.",
+			"cta": "Descubrir"
+		},
+		"about": {
+			"titleBold": "EXPERIENCIAS",
+			"titlePrefix": "DISEÑAMOS ",
+			"titleSuffix": " ÚNICAS",
+			"paragraph1": "En Dubuu, entendemos que cada viajero es único. Por eso, cada experiencia que creamos está meticulosamente diseñada para superar expectativas y crear recuerdos inolvidables.",
+			"paragraph2": "Nuestro equipo de expertos en viajes de lujo trabaja con los mejores proveedores del mundo para ofrecerte acceso exclusivo a destinos y experiencias extraordinarias.",
+			"cta": "Ver experiencias",
+			"testimonial": "Una experiencia transformadora. Dubuu nos mostró la verdadera esencia de una reserva con un nivel de servicio excepcional.",
+			"imageAlt": "Experiencia de lujo"
+		},
+		"tours": {
+			"titleBold": "privados",
+			"titlePrefix": "Viajes ",
+			"titleSuffix": "",
+			"subtitle": "Experiencias guiadas con acceso exclusivo y atención personalizada",
+			"cta": "Ver todos los viajes"
+		},
+		"productDetail": {
+			"notFound": "Producto no encontrado",
+			"departurePoint": "Punto de salida",
+			"pickupLocation": "Ubicación y mapa",
+			"loginRequiredTitle": "Necesitas iniciar sesión para realizar la reserva",
+			"loginRequiredDescription": "Inicia sesión o crea una cuenta para poder reservar y disfrutar de nuestras promociones exclusivas.",
+			"viewDetails": "Ver detalles"
+		}
+	},
+	"productDetails": {
+		"difficultyLevel": "Nivel de dificultad",
+		"overview": "Descripción general",
+		"highlight": "Destacar",
+		"whatsIncluded": "Qué incluye",
+		"itinerary": "Itinerario",
+		"additionalExpenses": "Gastos adicionales",
+		"whatToBring": "Cosas que debes llevar"
+	},
+	"difficulty": {
+		"easy": "Fácil",
+		"medium": "Moderado",
+		"hard": "Difícil",
+		"extreme": "Extremo",
+		"sr": "Nivel de dificultad"
+	},
+	"bookingForm": {
+		"title": "Reservar -",
+		"datetimeLabel": "Fecha y hora",
+		"datetimePlaceholder": "Selecciona una fecha y hora",
+		"ticketsLabel": "Entradas",
+		"adults": "Adultos",
+		"children": "Niños",
+		"perPerson": "por persona",
+		"perDay": "por día",
+		"pricePerPerson": "Precio",
+		"subtotal": "Subtotal",
+		"total": "Total",
+		"bookNow": "Reservar ahora",
+		"cancellationPolicies": "Políticas de cancelación",
+		"cancellationModal": {
+			"title": "Políticas de cancelación",
+			"intro": "Con el fin de ofrecer la mejor experiencia a todos los participantes, aplicamos las siguientes condiciones:",
+			"fullRefund": "Cancelación gratuita y reembolso total hasta 72 horas antes del inicio de la experiencia.",
+			"partialRefund": "Entre 72 y 48 horas antes: reembolso del 50% del monto pagado.",
+			"noRefund": "Menos de 24 horas antes o no presentarse el día de la actividad: no hay reembolso.",
+			"changes": "Los cambios de fecha están sujetos a disponibilidad. Para solicitar un cambio o resolver dudas, contáctanos con antelación."
+		},
+		"validation": {
+			"datetimeRequired": "Selecciona una fecha y hora",
+			"minOneTicket": "Mínimo 1 entrada"
+		},
+		"noDates": "No hay fechas disponibles",
+		"available": "disp.",
+		"soldOut": "Agotado",
+		"toast": {
+			"loginRequired": "Debes iniciar sesión para continuar con la reserva",
+			"spotsLeft": "Solo hay {count} lugares disponibles"
+		}
+	},
+	"bookingStatus": {
+		"completed": {
+			"title": "Reserva Completada",
+			"description": "Tu reserva ha sido confirmada, porfavor verifica los datos de la reserva.",
+			"badgeText": "Completada"
+		},
+		"inProcess": {
+			"title": "Reserva en Proceso",
+			"description": "Tu reserva está siendo procesada. Pronto recibirás confirmación.",
+			"badgeText": "En Proceso"
+		},
+		"canceled": {
+			"title": "Reserva Cancelada",
+			"description": "Esta reserva ha sido cancelada. Puedes realizar una nueva reserva si lo deseas.",
+			"badgeText": "Cancelada"
+		},
+		"info": "Información",
+		"bookingNumber": "Nº de Reserva",
+		"bookingDate": "Fecha de Reserva",
+		"paymentMethod": "Método de Pago",
+		"tickets": "Entradas:",
+		"adult": "adulto",
+		"adults": "adultos",
+		"buyAnotherTicket": "Comprar otro ticket",
+		"viewMyTickets": "Ver mis tickets",
+		"rebook": "Reservar de nuevo",
+		"downloadReceipt": "Descargar Recibo",
+		"receiptNotes": "Gracias por confiar en nuestros servicios. Este recibo sirve como comprobante de pago."
+	},
+	"share": {
+		"button": "Compartir",
+		"dialogTitle": "Comparte este espacio",
+		"copyLink": "Copiar enlace",
+		"email": "Email",
+		"whatsapp": "WhatsApp",
+		"facebook": "Facebook",
+		"twitter": "Twitter",
+		"instagram": "Instagram",
+		"linkedin": "LinkedIn",
+		"telegram": "Telegram",
+		"embed": "Insertar",
+		"moreOptions": "Más opciones",
+		"alertCopied": "Enlace copiado al portapapeles",
+		"alertInstagram": "Enlace copiado. Puedes pegarlo en Instagram Stories",
+		"alertEmbed": "Código de inserción copiado al portapapeles",
+		"alertUnavailable": "Compartir no está disponible en este navegador"
+	},
+	"reviews": {
+		"loading": "Cargando...",
+		"title": "Reseñas",
+		"noReviews": "(No hay reseñas)",
+		"oneReview": "(1 reseña)",
+		"reviewsCount": "({count} reseñas)",
+		"viewAllReviews": "Ver todas las reseñas",
+		"noReviewsYet": "Aún no hay reseñas. ¡Sé el primero en dejar una!",
+		"sheetTitle": "Reseñas",
+		"sheetDescription": "Opiniones verificadas de nuestros clientes.",
+		"thanksTitle": "¡Gracias por tu reseña!",
+		"thanksDescription": "Tu opinión es muy valiosa y ayuda a otros viajeros a tomar decisiones informadas.",
+		"pendingTitle": "Reserva pendiente",
+		"pendingDescription": "Podrás dejar una reseña una vez que tu reserva esté completada. ¡Esperamos que disfrutes tu experiencia!",
+		"leaveReview": "Deja una reseña",
+		"shareExperience": "Compartir mi experiencia",
+		"writeReviewTitle": "Escribe tu reseña",
+		"writeReviewDescription": "Comparte tu experiencia con otros viajeros",
+		"reviewInfo": "Por favor, asegúrate de que tu reseña cumpla con nuestras políticas de contenido. No se permiten comentarios ofensivos, difamatorios o inapropiados.",
+		"reviewIntro": "Tu opinión es importante para nosotros y ayuda a otros viajeros a tomar decisiones informadas y mejoran nuestros servicios. Agradecemos tu tiempo y comentarios.",
+		"srInfo": "Información sobre reseñas",
+		"reviewAvailableFrom": "Podrás dejar tu reseña a partir del {date} (fecha de tu reserva)."
+	},
+	"organizer": {
+		"title": "Quién ofrece este servicio",
+		"noHostInfo": "No hay información del anfitrión para este producto.",
+		"loadErrorTitle": "No se pudo cargar el perfil",
+		"loadErrorFallbackUser": "Usuario:",
+		"online": "En línea",
+		"roleBadge": "Proveedor",
+		"operatorInfoTitle": "Información del operador",
+		"experienceTypesTitle": "Tipos de experiencia",
+		"languagesTitle": "Idiomas",
+		"emptyValue": "—",
+		"details": {
+			"specialty": "Especialidad",
+			"experience_types": "Tipo de experiencias",
+			"style": "Estilo"
+		},
+		"stats": {
+			"tours_one": "{count} tour",
+			"tours_other": "{count} tours",
+			"years_one": "{count} año de experiencia",
+			"years_other": "{count} años de experiencia"
+		}
+	},
+	"imageCollage": {
+		"image": "Imagen",
+		"bannerAlt": "Imagen del banner",
+		"showAllPhotos": "Mostrar todas las fotos"
+	},
+	"location": {
+		"loadingMap": "Cargando mapa..."
+	},
+	"checkout": {
+		"title": "Finalizar Compra",
+		"description": "Complete sus datos para procesar su pedido",
+		"contact": {
+			"title": "Información de Contacto",
+			"description": "Ingresa tus datos de contacto para la confirmación del pedido.",
+			"firstName": "Nombre",
+			"lastName": "Apellido",
+			"phone": "Teléfono",
+			"placeholderFirst": "Juan",
+			"placeholderLast": "Pérez"
+		},
+		"address": {
+			"title": "Dirección",
+			"description": "Ingresa tu dirección.",
+			"address": "Dirección",
+			"country": "País",
+			"region": "Región",
+			"city": "Ciudad",
+			"zipCode": "Código Postal",
+			"placeholderAddress": "Calle Principal 123",
+			"selectCountry": "Seleccionar país",
+			"selectRegion": "Seleccionar región",
+			"placeholderCity": "Ingrese su ciudad",
+			"placeholderZip": "Código postal"
+		},
+		"payment": {
+			"title": "Método de Pago",
+			"description": "Selecciona tu método de pago preferido.",
+			"creditCard": "Tarjeta de Crédito/Débito",
+			"blink": "Bitcoin / Lightning",
+			"bitcoinLightning": "Bitcoin / Lightning",
+			"bitcoinLightningHint": "LN = Lightning Network: pagos instantáneos y de bajo costo.",
+			"blinkDescription": "Paga al instante con Bitcoin. LN (Lightning Network) permite transacciones rápidas y con comisiones mínimas.",
+			"blinkProceedHint": "Al hacer clic en \"Proceder al pago\" se generará un enlace o código para pagar con Bitcoin o Lightning.",
+			"processing": "Procesando...",
+			"proceedToPay": "Proceder al pago",
+			"cancel": "Cancelar",
+			"termsAgreeBefore": "Al hacer clic en ",
+			"termsAgreeButton": "Proceder al pago",
+			"termsAgreeAfter": ", aceptas nuestros ",
+			"termsLink": "términos y condiciones",
+			"cardNumber": "Número de Tarjeta",
+			"cardName": "Nombre en la Tarjeta",
+			"cardExpiry": "Fecha de Expiración",
+			"cardCvc": "CVC",
+			"paymentMethodSheetTitle": "Elegir método de pago",
+			"paymentMethodChangeHint": "Toca para cambiar",
+			"cardOptionHint": "Pago con tarjeta (Visa, Mastercard…)",
+			"placeholderCard": "4242 4242 4242 4242",
+			"placeholderName": "Juan Pérez",
+			"placeholderExpiry": "MM/YY",
+			"placeholderCvc": "123",
+			"testCardWarning": "Este número de tarjeta no es válido para pagos reales",
+			"blinkModal": {
+				"title": "Paga con Lightning",
+				"scanQr": "Escanea el código QR con tu wallet Lightning",
+				"orCopy": "o copia la factura Lightning",
+				"copy": "Copiar",
+				"copied": "Copiado",
+				"close": "Cerrar",
+				"protocolNote": "Protocolo: lightning:"
+			}
+		},
+		"toast": {
+			"invalidCard": "Error de pago",
+			"invalidCardDesc": "Este número de tarjeta no es válido para pagos reales.",
+			"updateError": "No se pudo actualizar la información del usuario",
+			"processing": "Procesando pago.",
+			"redirecting": "Redirigiendo al banco...",
+			"blinkReady": "Listo. Escanea el QR o copia la factura para pagar.",
+			"paymentConfirmed": "Pago confirmado",
+			"paymentError": "Error al procesar el pago",
+			"paymentCompletedSuccess": "¡Pago completado! Tu reserva está confirmada.",
+			"viewMyBookings": "Ir a mis reservas"
+		}
+	}
 }

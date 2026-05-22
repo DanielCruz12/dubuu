@@ -14,6 +14,7 @@ import CompanyInfo from "@/components/sections/company-info";
 import BookingForm from "@/components/sections/booking-form";
 import RentalBookingForm from "@/components/sections/rental-booking-form";
 import RentalVehicleSpecs from "@/components/sections/rental-vehicle-specs";
+import RentalImportantInfoModal from "@/components/sections/rental-important-info-modal";
 import Rating from "@/components/rating";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
@@ -371,23 +372,26 @@ export default function ProductBooking() {
                           <RentalBookingForm
                             product={product}
                             extraActionBelowBookNow={
-                              hasAnyProductBooking && showBookingFormAgain ? (
-                                <Button
-                                  type="button"
-                                  variant="secondary"
-                                  className="w-full"
-                                  onClick={() => {
-                                    if (hasMultipleProductBookings) {
-                                      router.push("/account/bookings");
-                                      return;
-                                    }
-                                    setShowBookingFormAgain(false);
-                                  }}
-                                >
-                                  <Ticket className="h-4 w-4 mr-2" />
-                                  {t("home.bookingStatus.viewMyTickets")}
-                                </Button>
-                              ) : null
+                              <div className="space-y-2">
+                                {hasAnyProductBooking && showBookingFormAgain ? (
+                                  <Button
+                                    type="button"
+                                    variant="secondary"
+                                    className="w-full"
+                                    onClick={() => {
+                                      if (hasMultipleProductBookings) {
+                                        router.push("/account/bookings");
+                                        return;
+                                      }
+                                      setShowBookingFormAgain(false);
+                                    }}
+                                  >
+                                    <Ticket className="h-4 w-4 mr-2" />
+                                    {t("home.bookingStatus.viewMyTickets")}
+                                  </Button>
+                                ) : null}
+                                <RentalImportantInfoModal trigger="button" />
+                              </div>
                             }
                           />
                         ) : isRental ? (
@@ -485,23 +489,26 @@ export default function ProductBooking() {
                                 <RentalBookingForm
                                   product={product}
                                   extraActionBelowBookNow={
-                                    hasAnyProductBooking && showBookingFormAgain ? (
-                                      <Button
-                                        type="button"
-                                        variant="secondary"
-                                        className="w-full"
-                                        onClick={() => {
-                                          if (hasMultipleProductBookings) {
-                                            router.push("/account/bookings");
-                                            return;
-                                          }
-                                          setShowBookingFormAgain(false);
-                                        }}
-                                      >
-                                        <Ticket className="h-4 w-4 mr-2" />
-                                        {t("home.bookingStatus.viewMyTickets")}
-                                      </Button>
-                                    ) : null
+                                    <div className="space-y-2">
+                                      {hasAnyProductBooking && showBookingFormAgain ? (
+                                        <Button
+                                          type="button"
+                                          variant="secondary"
+                                          className="w-full"
+                                          onClick={() => {
+                                            if (hasMultipleProductBookings) {
+                                              router.push("/account/bookings");
+                                              return;
+                                            }
+                                            setShowBookingFormAgain(false);
+                                          }}
+                                        >
+                                          <Ticket className="h-4 w-4 mr-2" />
+                                          {t("home.bookingStatus.viewMyTickets")}
+                                        </Button>
+                                      ) : null}
+                                      <RentalImportantInfoModal trigger="button" />
+                                    </div>
                                   }
                                 />
                               ) : isRental ? (

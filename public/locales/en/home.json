@@ -1,407 +1,410 @@
 {
-  "tourCard": {
-    "loginToSave": "You must sign in to save products",
-    "removedFromSaved": "Product removed from your saved items",
-    "savedSuccess": "Product saved successfully",
-    "saveError": "An error occurred while updating your saved items",
-    "removeFromFavorites": "Remove from favorites",
-    "addToFavorites": "Add to favorites",
-    "perPerson": "p/p",
-    "perDay": "/day",
-    "viewDetails": "View details"
-  },
-  "productDetail": {
-    "rentalLocationHint": "Pickup or delivery as agreed with the host."
-  },
-  "rental": {
-    "cardSeats": "seats"
-  },
-  "rentalImportant": {
-    "link": "Important information",
-    "title": "Important rental information",
-    "intro": "Before you proceed, please read the following. It explains what you will need and how approvals work.",
-    "docsTitle": "Documents and approval",
-    "docsBody": "To move forward with a rental request you may need to submit documents requested by the host (for example ID and driving licence). The host will review your documents and may approve or decline the request.\n\nUntil you receive that approval, the booking is not confirmed.",
-    "processTitle": "How the process works",
-    "processBody": "1) You send an inquiry with your preferred dates.\n2) If required, you upload or send documents for review.\n3) The host validates and replies with final availability and conditions.\n4) You agree payment and pickup details as applicable.",
-    "paymentTitle": "Payments and pickup",
-    "paymentBody": "Accepted payment methods (card, cash, transfer, etc.) and any deposit or excess depend on the host and the pickup location. Always confirm the total amount, deposit/excess, and which documents you must present when collecting the vehicle.\n\nIf in doubt, use “Inquire” and describe your question in the message.",
-    "close": "Got it"
-  },
-  "rentalSpecs": {
-    "title": "Vehicle",
-    "subtitle": "Technical details and rental terms",
-    "kicker": "Your vehicle",
-    "availabilityHeading": "Listed availability",
-    "availabilityUnknown": "No date range published — ask the host",
-    "available": "Available",
-    "unavailable": "Unavailable",
-    "brand": "Brand",
-    "model": "Model",
-    "year": "Year",
-    "fuelType": "Fuel",
-    "transmission": "Transmission",
-    "seats": "Seats",
-    "color": "Color",
-    "engine": "Engine",
-    "condition": "Condition",
-    "delivery": "Delivery",
-    "deliveryYes": "Yes — up to {km} km · {fee}/km extra",
-    "deliveryNo": "No delivery service",
-    "availabilityWindow": "Listed availability",
-    "fuel": {
-      "gasoline": "Gasoline",
-      "diesel": "Diesel",
-      "electric": "Electric",
-      "hybrid": "Hybrid"
-    },
-    "transmissionKind": {
-      "automatic": "Automatic",
-      "manual": "Manual"
-    },
-    "vehicleCondition": {
-      "new": "New",
-      "used": "Used",
-      "refurbished": "Refurbished",
-      "excellent": "Excellent",
-      "good": "Good",
-      "fair": "Fair"
-    }
-  },
-  "rentalBooking": {
-    "title": "Inquire —",
-    "subtitle": "Pick dates to see an estimated total and send your inquiry.",
-    "dateRangeLabel": "Rental dates",
-    "dateRangeTriggerHint": "Tap to change",
-    "selectDateRange": "Select date range",
-    "rangePickerTitle": "Dates and times",
-    "rangePickerDone": "Done",
-    "rangeHint": "Click the start day, then the return day.",
-    "pickupTime": "Start time",
-    "returnTime": "Return time",
-    "pickupDate": "Start date",
-    "returnDate": "Return date",
-    "selectDate": "Select",
-    "selectRangeError": "Please select a valid date range.",
-    "pricePerDay": "Price per day",
-    "days": "Days",
-    "estimatedTotal": "Estimated total",
-    "disclaimer": "This total is indicative; the host will confirm final price and availability.",
-    "consult": "Inquire",
-    "modalTitle": "Send inquiry",
-    "modalDescription": "Describe what you need (Details, delivery, etc.)",
-    "messageLabel": "Message",
-    "messagePlaceholder": "E.g.: I need the car from the 10th to the 15th, airport pickup…",
-    "cancel": "Cancel",
-    "submit": "Send",
-    "sentToast": "Inquiry sent. The host will review it soon.",
-    "sendError": "Could not send the inquiry. Please try again.",
-    "incompleteListing": "This listing is marked as a rental but vehicle details are missing. Try again later or contact the host.",
-    "documentsLabel": "Required documents",
-    "documentsHint": "Attach photos of your ID and driver's license so the host can review your request.",
-    "duiLabel": "DUI (National ID)",
-    "duiFrontLabel": "DUI — Front",
-    "duiBackLabel": "DUI — Back",
-    "licenseLabel": "Driver's License",
-    "licenseFrontLabel": "License — Front",
-    "licenseBackLabel": "License — Back",
-    "docClick": "Click to upload a photo",
-    "docSizeHint": "Max {{max}} MB",
-    "docSizeError": "The image cannot exceed {{max}} MB",
-    "removeFile": "Remove file"
-  },
-  "hero": {
-    "subtitle": "Discover the treasures of the world"
-  },
-  "search": {
-    "placeholder": "Search destinations, tours, experiences...",
-    "placeholderNotLogged": "Sign in to search by text...",
-    "placeholderInitial": "Loading..."
-  },
-  "popularDestinations": {
-    "title": "Popular destinations",
-    "subtitle": "The best tourist destinations preferred by the community",
-    "tours": "Trips",
-    "activities": "Activities"
-  },
-  "landing": {
-    "slide1": {
-      "title": "Bookings that simplify your trip",
-      "subtitle": "Book tours and car rentals in one place. Dubuu is the platform for travelers and businesses.",
-      "cta": "Discover"
-    },
-    "slide2": {
-      "title": "Do you have a tour company?",
-      "subtitle": "List your experiences and tours on Dubuu. Manage bookings, availability and customers from one dashboard.",
-      "cta": "See how it works"
-    },
-    "slide3": {
-      "title": "Car rental",
-      "subtitle": "If you offer vehicles for rent, you can list them here too. Tours and cars on the same platform.",
-      "cta": "Discover"
-    },
-    "slide4": {
-      "title": "Your trip and your business, better organized",
-      "subtitle": "Book experiences and cars in a few clicks, or manage your offer if you're a business. All on Dubuu.",
-      "cta": "Get started"
-    },
-    "slide5": {
-      "title": "Experiences that inspire",
-      "subtitle": "Accommodations and experiences designed to make your trip unique. Book with confidence on Dubuu.",
-      "cta": "Discover"
-    },
-    "about": {
-      "titleBold": "UNIQUE",
-      "titlePrefix": "WE DESIGN ",
-      "titleSuffix": " EXPERIENCES",
-      "paragraph1": "At Dubuu, we understand that every traveler is unique. That's why every experience we create is meticulously designed to exceed expectations and create unforgettable memories.",
-      "paragraph2": "Our team of luxury travel experts works with the world's best providers to give you exclusive access to extraordinary destinations and experiences.",
-      "cta": "View experiences",
-      "testimonial": "A transformative experience. Dubuu showed us the true essence of booking with an exceptional level of service.",
-      "imageAlt": "Luxury experience"
-    },
-    "tours": {
-      "titleBold": "trips",
-      "titlePrefix": "Private ",
-      "titleSuffix": "",
-      "subtitle": "Guided experiences with exclusive access and personalized attention",
-      "cta": "View all trips"
-    },
-    "productDetail": {
-      "notFound": "Product not found",
-      "departurePoint": "Departure point",
-      "pickupLocation": "Location & map",
-      "loginRequiredTitle": "You need to sign in to make a booking",
-      "loginRequiredDescription": "Sign in or create an account to book and enjoy our exclusive promotions.",
-      "viewDetails": "View details"
-    }
-  },
-  "productDetails": {
-    "difficultyLevel": "Difficulty level",
-    "overview": "Overview",
-    "highlight": "Highlight",
-    "whatsIncluded": "What's included",
-    "itinerary": "Itinerary",
-    "additionalExpenses": "Additional expenses",
-    "whatToBring": "What to bring"
-  },
-  "difficulty": {
-    "easy": "Easy",
-    "medium": "Moderate",
-    "hard": "Hard",
-    "extreme": "Extreme",
-    "sr": "Difficulty level"
-  },
-  "bookingForm": {
-    "title": "Book -",
-    "datetimeLabel": "Date and time",
-    "datetimePlaceholder": "Select date and time",
-    "ticketsLabel": "Tickets",
-    "adults": "Adults",
-    "children": "Children",
-    "perPerson": "per person",
-    "perDay": "per day",
-    "pricePerPerson": "Price",
-    "subtotal": "Subtotal",
-    "total": "Total",
-    "bookNow": "Book now",
-    "cancellationPolicies": "Cancellation policies",
-    "cancellationModal": {
-      "title": "Cancellation policies",
-      "intro": "To offer the best experience for all participants, we apply the following conditions:",
-      "fullRefund": "Free cancellation and full refund up to 72 hours before the start of the experience.",
-      "partialRefund": "Between 72 and 48 hours before: 50% refund of the amount paid.",
-      "noRefund": "Less than 24 hours before or no-show on the day of the activity: no refund.",
-      "changes": "Date changes are subject to availability. To request a change or for any questions, contact us in advance."
-    },
-    "validation": {
-      "datetimeRequired": "Select a date and time",
-      "minOneTicket": "Minimum 1 ticket"
-    },
-    "noDates": "No dates available",
-    "available": "avail.",
-    "soldOut": "Sold out",
-    "toast": {
-      "loginRequired": "You must sign in to continue with the booking",
-      "spotsLeft": "Only {count} spots left"
-    }
-  },
-  "bookingStatus": {
-    "completed": {
-      "title": "Booking completed",
-      "description": "Your booking has been confirmed. Please verify the booking details.",
-      "badgeText": "Completed"
-    },
-    "inProcess": {
-      "title": "Booking in progress",
-      "description": "Your booking is being processed. You will receive confirmation soon.",
-      "badgeText": "In progress"
-    },
-    "canceled": {
-      "title": "Booking canceled",
-      "description": "This booking has been canceled. You can make a new booking if you wish.",
-      "badgeText": "Canceled"
-    },
-    "info": "Information",
-    "bookingNumber": "Booking No.",
-    "bookingDate": "Booking date",
-    "paymentMethod": "Payment method",
-    "tickets": "Tickets",
-    "adult": "adult",
-    "adults": "adults",
-    "buyAnotherTicket": "Buy another ticket",
-    "viewMyTickets": "View my tickets",
-    "rebook": "Book again",
-    "downloadReceipt": "Download receipt",
-    "receiptNotes": "Thank you for trusting our services. This receipt serves as proof of payment."
-  },
-  "share": {
-    "button": "Share",
-    "dialogTitle": "Share this space",
-    "copyLink": "Copy link",
-    "email": "Email",
-    "whatsapp": "WhatsApp",
-    "facebook": "Facebook",
-    "twitter": "Twitter",
-    "instagram": "Instagram",
-    "linkedin": "LinkedIn",
-    "telegram": "Telegram",
-    "embed": "Embed",
-    "moreOptions": "More options",
-    "alertCopied": "Link copied to clipboard",
-    "alertInstagram": "Link copied. You can paste it in Instagram Stories",
-    "alertEmbed": "Embed code copied to clipboard",
-    "alertUnavailable": "Sharing is not available in this browser"
-  },
-  "reviews": {
-    "loading": "Loading...",
-    "title": "Reviews",
-    "noReviews": "(No reviews)",
-    "oneReview": "(1 review)",
-    "reviewsCount": "({count} reviews)",
-    "viewAllReviews": "View all reviews",
-    "noReviewsYet": "There are no reviews yet. Be the first to leave one!",
-    "sheetTitle": "Reviews",
-    "sheetDescription": "Verified opinions from our customers.",
-    "thanksTitle": "Thanks for your review!",
-    "thanksDescription": "Your opinion is very valuable and helps other travelers make informed decisions.",
-    "pendingTitle": "Pending booking",
-    "pendingDescription": "You can leave a review once your booking is completed. We hope you enjoy your experience!",
-    "leaveReview": "Leave a review",
-    "shareExperience": "Share my experience",
-    "writeReviewTitle": "Write your review",
-    "writeReviewDescription": "Share your experience with other travelers",
-    "reviewInfo": "Please ensure your review complies with our content policies. Offensive, defamatory or inappropriate comments are not allowed.",
-    "reviewIntro": "Your opinion matters to us and helps other travelers make informed decisions and improves our services. We appreciate your time and feedback.",
-    "srInfo": "Review information",
-    "reviewAvailableFrom": "You can leave your review from {date} onwards (your reservation date)."
-  },
-  "organizer": {
-    "title": "Who offers this service",
-    "noHostInfo": "There is no host information for this product.",
-    "loadErrorTitle": "Could not load profile",
-    "loadErrorFallbackUser": "User:",
-    "online": "Online",
-    "roleBadge": "Provider",
-    "operatorInfoTitle": "Operator information",
-    "experienceTypesTitle": "Experience types",
-    "languagesTitle": "Languages",
-    "emptyValue": "—",
-    "details": {
-      "specialty": "Specialty",
-      "experience_types": "Experience type",
-      "style": "Style"
-    },
-    "stats": {
-      "tours_one": "{count} tour",
-      "tours_other": "{count} tours",
-      "years_one": "{count} year of experience",
-      "years_other": "{count} years of experience"
-    }
-  },
-  "imageCollage": {
-    "image": "Image",
-    "bannerAlt": "Banner image",
-    "showAllPhotos": "Show all photos"
-  },
-  "location": {
-    "loadingMap": "Loading map..."
-  },
-  "checkout": {
-    "title": "Complete purchase",
-    "description": "Fill in your details to process your order",
-    "contact": {
-      "title": "Contact Information",
-      "description": "Enter your contact details for order confirmation.",
-      "firstName": "First name",
-      "lastName": "Last name",
-      "phone": "Phone",
-      "placeholderFirst": "John",
-      "placeholderLast": "Doe"
-    },
-    "address": {
-      "title": "Address",
-      "description": "Enter your address.",
-      "address": "Address",
-      "country": "Country",
-      "region": "Region",
-      "city": "City",
-      "zipCode": "Postal code",
-      "placeholderAddress": "Main Street 123",
-      "selectCountry": "Select country",
-      "selectRegion": "Select region",
-      "placeholderCity": "Enter your city",
-      "placeholderZip": "Postal code"
-    },
-    "payment": {
-      "title": "Payment method",
-      "description": "Select your preferred payment method.",
-      "creditCard": "Credit/Debit Card",
-      "blink": "Bitcoin / Lightning",
-      "bitcoinLightning": "Bitcoin / Lightning",
-      "bitcoinLightningHint": "LN = Lightning Network: instant, low-cost payments.",
-      "blinkDescription": "Pay instantly with Bitcoin. LN (Lightning Network) enables fast transactions with minimal fees.",
-      "blinkProceedHint": "When you click \"Proceed to payment\", a link or code will be generated to pay with Bitcoin or Lightning.",
-      "processing": "Processing...",
-      "proceedToPay": "Proceed to payment",
-      "cancel": "Cancel",
-      "termsAgreeBefore": "By clicking ",
-      "termsAgreeButton": "Proceed to payment",
-      "termsAgreeAfter": ", you agree to our ",
-      "termsLink": "terms and conditions",
-      "cardNumber": "Card number",
-      "cardName": "Name on card",
-      "cardExpiry": "Expiry date",
-      "cardCvc": "CVC",
-      "paymentMethodSheetTitle": "Choose payment method",
-      "paymentMethodChangeHint": "Tap to change",
-      "cardOptionHint": "Card payment (Visa, Mastercard…)",
-      "placeholderCard": "4242 4242 4242 4242",
-      "placeholderName": "John Doe",
-      "placeholderExpiry": "MM/YY",
-      "placeholderCvc": "123",
-      "testCardWarning": "This card number is not valid for real payments",
-      "blinkModal": {
-        "title": "Pay with Lightning",
-        "scanQr": "Scan the QR code with your Lightning wallet",
-        "orCopy": "or copy the Lightning invoice",
-        "copy": "Copy",
-        "copied": "Copied",
-        "close": "Close",
-        "protocolNote": "Protocol: lightning:"
-      }
-    },
-    "toast": {
-      "invalidCard": "Payment error",
-      "invalidCardDesc": "This card number is not valid for real payments.",
-      "updateError": "Could not update user information",
-      "processing": "Processing payment.",
-      "redirecting": "Redirecting to bank...",
-      "blinkReady": "Ready. Scan the QR or copy the invoice to pay.",
-      "paymentConfirmed": "Payment confirmed",
-      "paymentError": "Error processing payment",
-      "paymentCompletedSuccess": "Payment completed! Your booking is confirmed.",
-      "viewMyBookings": "Go to my bookings"
-    }
-  }
+	"tourCard": {
+		"loginToSave": "You must sign in to save products",
+		"removedFromSaved": "Product removed from your saved items",
+		"savedSuccess": "Product saved successfully",
+		"saveError": "An error occurred while updating your saved items",
+		"removeFromFavorites": "Remove from favorites",
+		"addToFavorites": "Add to favorites",
+		"perPerson": "p/p",
+		"perDay": "/day",
+		"viewDetails": "View details"
+	},
+	"productDetail": {
+		"rentalLocationHint": "Pickup or delivery as agreed with the host."
+	},
+	"rental": {
+		"cardSeats": "seats"
+	},
+	"rentalImportant": {
+		"link": "Important information",
+		"title": "Important rental information",
+		"intro": "Please review the following details before picking up the vehicle.",
+		"docsTitle": "Required documentation",
+		"docsItem1": "Passport or national ID card",
+		"docsItem2": "Driver's license",
+		"docsItem3": "Credit card",
+		"depositTitle": "Security deposit",
+		"depositBody": "At pick-up, the main driver will leave a refundable security deposit of $200.00 on their credit card. Cash or debit cards are not accepted. The counter staff will confirm the exact amount.",
+		"contractTitle": "Rental agreement",
+		"contractBody": "At the time of vehicle delivery, a rental agreement will be signed by both parties. This contract outlines the terms and conditions of the rental, including responsibilities, insurance coverage and return conditions.",
+		"cardsTitle": "Accepted cards",
+		"close": "Got it"
+	},
+	"rentalSpecs": {
+		"title": "Vehicle",
+		"subtitle": "Technical details and rental terms",
+		"kicker": "Your vehicle",
+		"availabilityHeading": "Listed availability",
+		"availabilityUnknown": "No date range published — ask the host",
+		"available": "Available",
+		"unavailable": "Unavailable",
+		"brand": "Brand",
+		"model": "Model",
+		"year": "Year",
+		"fuelType": "Fuel",
+		"transmission": "Transmission",
+		"seats": "Seats",
+		"color": "Color",
+		"engine": "Engine",
+		"condition": "Condition",
+		"delivery": "Delivery",
+		"deliveryYes": "Yes — up to {km} km · {fee}/km extra",
+		"deliveryNo": "No delivery service",
+		"availabilityWindow": "Listed availability",
+		"fuel": {
+			"gasoline": "Gasoline",
+			"diesel": "Diesel",
+			"electric": "Electric",
+			"hybrid": "Hybrid"
+		},
+		"transmissionKind": {
+			"automatic": "Automatic",
+			"manual": "Manual"
+		},
+		"vehicleCondition": {
+			"new": "New",
+			"used": "Used",
+			"refurbished": "Refurbished",
+			"excellent": "Excellent",
+			"good": "Good",
+			"fair": "Fair"
+		}
+	},
+	"rentalBooking": {
+		"title": "Inquire —",
+		"subtitle": "Pick dates to see an estimated total and send your inquiry.",
+		"dateRangeLabel": "Rental dates",
+		"dateRangeTriggerHint": "Tap to change",
+		"selectDateRange": "Select date range",
+		"rangePickerTitle": "Dates and times",
+		"rangePickerDone": "Done",
+		"rangeHint": "Click the start day, then the return day.",
+		"pickupTime": "Start time",
+		"returnTime": "Return time",
+		"pickupDate": "Start date",
+		"returnDate": "Return date",
+		"selectDate": "Select",
+		"selectRangeError": "Please select a valid date range.",
+		"pricePerDay": "Price per day",
+		"days": "Days",
+		"estimatedTotal": "Estimated total",
+		"disclaimer": "This total is indicative; the host will confirm final price and availability.",
+		"consult": "Inquire",
+		"modalTitle": "Send inquiry",
+		"modalDescription": "Describe what you need (Details, delivery, etc.)",
+		"messageLabel": "Message",
+		"messagePlaceholder": "E.g.: I need the car from the 10th to the 15th, airport pickup…",
+		"cancel": "Cancel",
+		"submit": "Send",
+		"sentToast": "Inquiry sent. The host will review it soon.",
+		"sendError": "Could not send the inquiry. Please try again.",
+		"incompleteListing": "This listing is marked as a rental but vehicle details are missing. Try again later or contact the host.",
+		"documentsLabel": "Required documents",
+		"documentsHint": "Attach photos of your ID and driver's license so the host can review your request.",
+		"duiLabel": "DUI (National ID)",
+		"duiFrontLabel": "DUI — Front",
+		"duiBackLabel": "DUI — Back",
+		"licenseLabel": "Driver's License",
+		"licenseFrontLabel": "License — Front",
+		"licenseBackLabel": "License — Back",
+		"docClick": "Click to upload a photo",
+		"docSizeHint": "Max {{max}} MB",
+		"docSizeError": "The image cannot exceed {{max}} MB",
+		"removeFile": "Remove file"
+	},
+	"hero": {
+		"subtitle": "Discover the treasures of the world"
+	},
+	"search": {
+		"placeholder": "Search destinations, tours, experiences...",
+		"placeholderNotLogged": "Sign in to search by text...",
+		"placeholderInitial": "Loading..."
+	},
+	"popularDestinations": {
+		"title": "Popular destinations",
+		"subtitle": "The best tourist destinations preferred by the community",
+		"tours": "Trips",
+		"activities": "Activities"
+	},
+	"landing": {
+		"slide1": {
+			"title": "Bookings that simplify your trip",
+			"subtitle": "Book tours and car rentals in one place. Dubuu is the platform for travelers and businesses.",
+			"cta": "Discover"
+		},
+		"slide2": {
+			"title": "Do you have a tour company?",
+			"subtitle": "List your experiences and tours on Dubuu. Manage bookings, availability and customers from one dashboard.",
+			"cta": "See how it works"
+		},
+		"slide3": {
+			"title": "Car rental",
+			"subtitle": "If you offer vehicles for rent, you can list them here too. Tours and cars on the same platform.",
+			"cta": "Discover"
+		},
+		"slide4": {
+			"title": "Your trip and your business, better organized",
+			"subtitle": "Book experiences and cars in a few clicks, or manage your offer if you're a business. All on Dubuu.",
+			"cta": "Get started"
+		},
+		"slide5": {
+			"title": "Experiences that inspire",
+			"subtitle": "Accommodations and experiences designed to make your trip unique. Book with confidence on Dubuu.",
+			"cta": "Discover"
+		},
+		"about": {
+			"titleBold": "UNIQUE",
+			"titlePrefix": "WE DESIGN ",
+			"titleSuffix": " EXPERIENCES",
+			"paragraph1": "At Dubuu, we understand that every traveler is unique. That's why every experience we create is meticulously designed to exceed expectations and create unforgettable memories.",
+			"paragraph2": "Our team of luxury travel experts works with the world's best providers to give you exclusive access to extraordinary destinations and experiences.",
+			"cta": "View experiences",
+			"testimonial": "A transformative experience. Dubuu showed us the true essence of booking with an exceptional level of service.",
+			"imageAlt": "Luxury experience"
+		},
+		"tours": {
+			"titleBold": "trips",
+			"titlePrefix": "Private ",
+			"titleSuffix": "",
+			"subtitle": "Guided experiences with exclusive access and personalized attention",
+			"cta": "View all trips"
+		},
+		"productDetail": {
+			"notFound": "Product not found",
+			"departurePoint": "Departure point",
+			"pickupLocation": "Location & map",
+			"loginRequiredTitle": "You need to sign in to make a booking",
+			"loginRequiredDescription": "Sign in or create an account to book and enjoy our exclusive promotions.",
+			"viewDetails": "View details"
+		}
+	},
+	"productDetails": {
+		"difficultyLevel": "Difficulty level",
+		"overview": "Overview",
+		"highlight": "Highlight",
+		"whatsIncluded": "What's included",
+		"itinerary": "Itinerary",
+		"additionalExpenses": "Additional expenses",
+		"whatToBring": "What to bring"
+	},
+	"difficulty": {
+		"easy": "Easy",
+		"medium": "Moderate",
+		"hard": "Hard",
+		"extreme": "Extreme",
+		"sr": "Difficulty level"
+	},
+	"bookingForm": {
+		"title": "Book -",
+		"datetimeLabel": "Date and time",
+		"datetimePlaceholder": "Select date and time",
+		"ticketsLabel": "Tickets",
+		"adults": "Adults",
+		"children": "Children",
+		"perPerson": "per person",
+		"perDay": "per day",
+		"pricePerPerson": "Price",
+		"subtotal": "Subtotal",
+		"total": "Total",
+		"bookNow": "Book now",
+		"cancellationPolicies": "Cancellation policies",
+		"cancellationModal": {
+			"title": "Cancellation policies",
+			"intro": "To offer the best experience for all participants, we apply the following conditions:",
+			"fullRefund": "Free cancellation and full refund up to 72 hours before the start of the experience.",
+			"partialRefund": "Between 72 and 48 hours before: 50% refund of the amount paid.",
+			"noRefund": "Less than 24 hours before or no-show on the day of the activity: no refund.",
+			"changes": "Date changes are subject to availability. To request a change or for any questions, contact us in advance."
+		},
+		"validation": {
+			"datetimeRequired": "Select a date and time",
+			"minOneTicket": "Minimum 1 ticket"
+		},
+		"noDates": "No dates available",
+		"available": "avail.",
+		"soldOut": "Sold out",
+		"toast": {
+			"loginRequired": "You must sign in to continue with the booking",
+			"spotsLeft": "Only {count} spots left"
+		}
+	},
+	"bookingStatus": {
+		"completed": {
+			"title": "Booking completed",
+			"description": "Your booking has been confirmed. Please verify the booking details.",
+			"badgeText": "Completed"
+		},
+		"inProcess": {
+			"title": "Booking in progress",
+			"description": "Your booking is being processed. You will receive confirmation soon.",
+			"badgeText": "In progress"
+		},
+		"canceled": {
+			"title": "Booking canceled",
+			"description": "This booking has been canceled. You can make a new booking if you wish.",
+			"badgeText": "Canceled"
+		},
+		"info": "Information",
+		"bookingNumber": "Booking No.",
+		"bookingDate": "Booking date",
+		"paymentMethod": "Payment method",
+		"tickets": "Tickets",
+		"adult": "adult",
+		"adults": "adults",
+		"buyAnotherTicket": "Buy another ticket",
+		"viewMyTickets": "View my tickets",
+		"rebook": "Book again",
+		"downloadReceipt": "Download receipt",
+		"receiptNotes": "Thank you for trusting our services. This receipt serves as proof of payment."
+	},
+	"share": {
+		"button": "Share",
+		"dialogTitle": "Share this space",
+		"copyLink": "Copy link",
+		"email": "Email",
+		"whatsapp": "WhatsApp",
+		"facebook": "Facebook",
+		"twitter": "Twitter",
+		"instagram": "Instagram",
+		"linkedin": "LinkedIn",
+		"telegram": "Telegram",
+		"embed": "Embed",
+		"moreOptions": "More options",
+		"alertCopied": "Link copied to clipboard",
+		"alertInstagram": "Link copied. You can paste it in Instagram Stories",
+		"alertEmbed": "Embed code copied to clipboard",
+		"alertUnavailable": "Sharing is not available in this browser"
+	},
+	"reviews": {
+		"loading": "Loading...",
+		"title": "Reviews",
+		"noReviews": "(No reviews)",
+		"oneReview": "(1 review)",
+		"reviewsCount": "({count} reviews)",
+		"viewAllReviews": "View all reviews",
+		"noReviewsYet": "There are no reviews yet. Be the first to leave one!",
+		"sheetTitle": "Reviews",
+		"sheetDescription": "Verified opinions from our customers.",
+		"thanksTitle": "Thanks for your review!",
+		"thanksDescription": "Your opinion is very valuable and helps other travelers make informed decisions.",
+		"pendingTitle": "Pending booking",
+		"pendingDescription": "You can leave a review once your booking is completed. We hope you enjoy your experience!",
+		"leaveReview": "Leave a review",
+		"shareExperience": "Share my experience",
+		"writeReviewTitle": "Write your review",
+		"writeReviewDescription": "Share your experience with other travelers",
+		"reviewInfo": "Please ensure your review complies with our content policies. Offensive, defamatory or inappropriate comments are not allowed.",
+		"reviewIntro": "Your opinion matters to us and helps other travelers make informed decisions and improves our services. We appreciate your time and feedback.",
+		"srInfo": "Review information",
+		"reviewAvailableFrom": "You can leave your review from {date} onwards (your reservation date)."
+	},
+	"organizer": {
+		"title": "Who offers this service",
+		"noHostInfo": "There is no host information for this product.",
+		"loadErrorTitle": "Could not load profile",
+		"loadErrorFallbackUser": "User:",
+		"online": "Online",
+		"roleBadge": "Provider",
+		"operatorInfoTitle": "Operator information",
+		"experienceTypesTitle": "Experience types",
+		"languagesTitle": "Languages",
+		"emptyValue": "—",
+		"details": {
+			"specialty": "Specialty",
+			"experience_types": "Experience type",
+			"style": "Style"
+		},
+		"stats": {
+			"tours_one": "{count} tour",
+			"tours_other": "{count} tours",
+			"years_one": "{count} year of experience",
+			"years_other": "{count} years of experience"
+		}
+	},
+	"imageCollage": {
+		"image": "Image",
+		"bannerAlt": "Banner image",
+		"showAllPhotos": "Show all photos"
+	},
+	"location": {
+		"loadingMap": "Loading map..."
+	},
+	"checkout": {
+		"title": "Complete purchase",
+		"description": "Fill in your details to process your order",
+		"contact": {
+			"title": "Contact Information",
+			"description": "Enter your contact details for order confirmation.",
+			"firstName": "First name",
+			"lastName": "Last name",
+			"phone": "Phone",
+			"placeholderFirst": "John",
+			"placeholderLast": "Doe"
+		},
+		"address": {
+			"title": "Address",
+			"description": "Enter your address.",
+			"address": "Address",
+			"country": "Country",
+			"region": "Region",
+			"city": "City",
+			"zipCode": "Postal code",
+			"placeholderAddress": "Main Street 123",
+			"selectCountry": "Select country",
+			"selectRegion": "Select region",
+			"placeholderCity": "Enter your city",
+			"placeholderZip": "Postal code"
+		},
+		"payment": {
+			"title": "Payment method",
+			"description": "Select your preferred payment method.",
+			"creditCard": "Credit/Debit Card",
+			"blink": "Bitcoin / Lightning",
+			"bitcoinLightning": "Bitcoin / Lightning",
+			"bitcoinLightningHint": "LN = Lightning Network: instant, low-cost payments.",
+			"blinkDescription": "Pay instantly with Bitcoin. LN (Lightning Network) enables fast transactions with minimal fees.",
+			"blinkProceedHint": "When you click \"Proceed to payment\", a link or code will be generated to pay with Bitcoin or Lightning.",
+			"processing": "Processing...",
+			"proceedToPay": "Proceed to payment",
+			"cancel": "Cancel",
+			"termsAgreeBefore": "By clicking ",
+			"termsAgreeButton": "Proceed to payment",
+			"termsAgreeAfter": ", you agree to our ",
+			"termsLink": "terms and conditions",
+			"cardNumber": "Card number",
+			"cardName": "Name on card",
+			"cardExpiry": "Expiry date",
+			"cardCvc": "CVC",
+			"paymentMethodSheetTitle": "Choose payment method",
+			"paymentMethodChangeHint": "Tap to change",
+			"cardOptionHint": "Card payment (Visa, Mastercard…)",
+			"placeholderCard": "4242 4242 4242 4242",
+			"placeholderName": "John Doe",
+			"placeholderExpiry": "MM/YY",
+			"placeholderCvc": "123",
+			"testCardWarning": "This card number is not valid for real payments",
+			"blinkModal": {
+				"title": "Pay with Lightning",
+				"scanQr": "Scan the QR code with your Lightning wallet",
+				"orCopy": "or copy the Lightning invoice",
+				"copy": "Copy",
+				"copied": "Copied",
+				"close": "Close",
+				"protocolNote": "Protocol: lightning:"
+			}
+		},
+		"toast": {
+			"invalidCard": "Payment error",
+			"invalidCardDesc": "This card number is not valid for real payments.",
+			"updateError": "Could not update user information",
+			"processing": "Processing payment.",
+			"redirecting": "Redirecting to bank...",
+			"blinkReady": "Ready. Scan the QR or copy the invoice to pay.",
+			"paymentConfirmed": "Payment confirmed",
+			"paymentError": "Error processing payment",
+			"paymentCompletedSuccess": "Payment completed! Your booking is confirmed.",
+			"viewMyBookings": "Go to my bookings"
+		}
+	}
 }

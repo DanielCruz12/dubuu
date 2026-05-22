@@ -402,7 +402,7 @@ export default function RentalBookingForm({
             </Button>
 
             {isDesktop ? (
-              <Dialog open={rangePickerOpen} onOpenChange={setRangePickerOpen}>
+              <Dialog open={rangePickerOpen} onOpenChange={setRangePickerOpen} modal={false}>
                 <DialogContent className="w-full min-w-0 max-w-[calc(100vw-1.5rem)] gap-0 overflow-visible p-0 pt-5 sm:max-w-lg sm:pt-6">
                   <DialogHeader className="px-6 pb-1.5 text-left">
                     <DialogTitle>{t("home.rentalBooking.rangePickerTitle")}</DialogTitle>

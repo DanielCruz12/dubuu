@@ -61,7 +61,7 @@ export function TimePicker({ value, onChange }: TimePickerProps) {
       <PopoverContent
         align="start"
         sideOffset={6}
-        className="w-auto p-3"
+        className="w-auto p-3 z-[11100]"
       >
         <div className="space-y-3">
           {/* Period toggle */}

@@ -10,7 +10,16 @@
       "PowerShell(npx tsc --noEmit --pretty 2>&1 | Select-Object -First 40)",
       "Bash(Select-Object -First 30)",
       "Bash(Get-ChildItem *)",
-      "Bash(npx --prefix \"C:/Users/daniel/Desktop/projects/personal_work/projects/dantours-drizzle-nodejs\" tsc --noEmit --pretty)"
+      "Bash(npx --prefix \"C:/Users/daniel/Desktop/projects/personal_work/projects/dantours-drizzle-nodejs\" tsc --noEmit --pretty)",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('public/locales/en/home.json','utf8'\\)\\); console.log\\('en OK'\\); JSON.parse\\(require\\('fs'\\).readFileSync\\('public/locales/es/home.json','utf8'\\)\\); console.log\\('es OK'\\)\")",
+      "Bash(Select-Object -First 60)",
+      "PowerShell(Get-Content *)",
+      "Bash(node -e \"var fs=require\\('fs'\\);var f='public/locales/en/home.json';var d=fs.readFileSync\\(f,'utf8'\\);d=d.replace\\('\\\\\",\\\\`r\\\\`n\\\\t\\\\t\\\\\"', '\\\\\",\\\\n\\\\t\\\\t\\\\\"'\\);fs.writeFileSync\\(f,d,'utf8'\\);console.log\\('en done'\\)\")",
+      "Bash(node -e \"try { JSON.parse\\(require\\('fs'\\).readFileSync\\('public/locales/en/home.json','utf8'\\)\\); console.log\\('en OK'\\); } catch\\(e\\) { console.log\\('en:', e.message.substring\\(0,100\\)\\); } try { JSON.parse\\(require\\('fs'\\).readFileSync\\('public/locales/es/home.json','utf8'\\)\\); console.log\\('es OK'\\); } catch\\(e\\) { console.log\\('es:', e.message.substring\\(0,100\\)\\); }\")",
+      "Bash(node -e \"var fs=require\\('fs'\\);var d=fs.readFileSync\\('public/locales/en/home.json','utf8'\\);var m=d.match\\(/contractTitle.*?\\(?=\\\\\"close\\\\\"\\)/s\\); console.log\\(JSON.stringify\\(m[0]\\)\\)\")",
+      "Bash(node fix-locales.js)",
+      "Bash(node -e \"var fs=require\\('fs'\\);var d=fs.readFileSync\\('public/locales/en/home.json','utf8'\\);var idx=d.indexOf\\('contractTitle'\\);console.log\\(d.substring\\(idx, idx+200\\)\\)\")",
+      "Bash(git checkout *)"
     ]
   }
 }
