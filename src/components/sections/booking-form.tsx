@@ -34,12 +34,22 @@ function getBookingFormSchema(t: (key: string) => string) {
     datetime: z.string().min(1, t("home.bookingForm.validation.datetimeRequired")),
     tickets: z.object({
       adult: z.coerce.number().min(1, t("home.bookingForm.validation.minOneTicket")),
+      children: z.coerce.number().min(0).default(0),
     }),
     addons: z.array(z.enum(["lunch", "transport"])),
   });
 }
 
 type FormData = z.infer<ReturnType<typeof getBookingFormSchema>>;
+
+export type BookingFormData = {
+  datetime: string;
+  tickets: { adult: number; children: number };
+  addons: string[];
+  total: number;
+  user_id: string;
+  product_id: string;
+};
 
 export default function BookingForm({
   product,
@@ -52,14 +62,7 @@ export default function BookingForm({
   product: IProduct;
   displayPrice?: number;
   setShowPaymentStep: () => void;
-  setBookingData: (data: {
-    datetime: string;
-    tickets: { adult: number };
-    addons: string[];
-    total: number;
-    user_id: string;
-    product_id: string;
-  }) => void;
+  setBookingData: (data: BookingFormData) => void;
   showPaymentStep: boolean;
   extraActionBelowBookNow?: ReactNode;
 }) {
@@ -74,6 +77,8 @@ export default function BookingForm({
   const [selectedDatePrice, setSelectedDatePrice] = useState<number | null>(
     null,
   );
+  const [selectedDateChildrenPrice, setSelectedDateChildrenPrice] =
+    useState<number | null>(null);
 
   const fallbackPrice =
     typeof displayPrice === "number" && Number.isFinite(displayPrice)
@@ -100,6 +105,8 @@ export default function BookingForm({
   }, []);
 
   const isTour = isProductType(product, "tours");
+  const acceptsChildren =
+    isTour && product.tour?.accepts_children === true;
 
   const availableDates = isTour
     ? (product.tour?.tour_dates ?? [])
@@ -115,8 +122,24 @@ export default function BookingForm({
           peopleBooked: dateObj.people_booked,
           availableSpots: dateObj.max_people - dateObj.people_booked,
           price: typeof dateObj.price === "number" ? dateObj.price : null,
+          childrenPrice:
+            dateObj.children_price != null
+              ? Number(dateObj.children_price)
+              : null,
         }))
     : [];
+
+  const childrenFallbackPrice = (() => {
+    if (!acceptsChildren) return unitPrice;
+    const prices = availableDates
+      .map((d) => d.childrenPrice)
+      .filter(
+        (p): p is number =>
+          p != null && Number.isFinite(p) && p > 0,
+      );
+    if (prices.length === 0) return unitPrice;
+    return Math.min(...prices);
+  })();
 
   const {
     control,
@@ -127,18 +150,29 @@ export default function BookingForm({
     resolver: zodResolver(getBookingFormSchema(t)),
     defaultValues: {
       datetime: "",
-      tickets: { adult: 1 },
+      tickets: { adult: 1, children: 0 },
       addons: [],
     },
   });
 
   const watchData = watch();
   const adultTickets = watchData.tickets.adult;
-  const baseForBreakdown = convert(unitPrice);
-  const bookingBreakdown = getHostEarningsFromFinalPrice(
-    baseForBreakdown,
-    adultTickets,
-  );
+  const childrenTickets = watchData.tickets.children ?? 0;
+  const totalTickets = adultTickets + childrenTickets;
+
+  const childrenUnitPrice =
+    acceptsChildren &&
+    selectedDateChildrenPrice != null &&
+    Number.isFinite(selectedDateChildrenPrice)
+      ? selectedDateChildrenPrice
+      : acceptsChildren
+        ? childrenFallbackPrice
+        : unitPrice;
+
+  const adultTotal = unitPrice * adultTickets;
+  const childrenTotal = childrenUnitPrice * childrenTickets;
+  const combinedTotal = adultTotal + childrenTotal;
+  const bookingBreakdown = getHostEarningsFromFinalPrice(combinedTotal, 1);
 
   const onSubmit = async () => {
     if (!user) {
@@ -176,10 +210,17 @@ export default function BookingForm({
     // Verificar si hay suficientes lugares disponibles
     if (
       selectedDateAvailability &&
-      watchData.tickets.adult > selectedDateAvailability.availableSpots
+      totalTickets > selectedDateAvailability.availableSpots
     ) {
       toast.error(
-        t("home.bookingForm.toast.spotsLeft").replace("{count}", String(selectedDateAvailability.availableSpots))
+        t("home.bookingForm.toast.spotsLeft").replace("{count}", String(selectedDateAvailability.availableSpots)),
+      );
+      return;
+    }
+
+    if (totalTickets < 1) {
+      toast.error(
+        t("home.bookingForm.validation.minOneTicket"),
       );
       return;
     }
@@ -214,8 +255,12 @@ export default function BookingForm({
                       availableSpots: selectedDate.availableSpots,
                     });
                     setSelectedDatePrice(selectedDate.price);
+                    setSelectedDateChildrenPrice(
+                      selectedDate.childrenPrice,
+                    );
                   } else {
                     setSelectedDatePrice(null);
+                    setSelectedDateChildrenPrice(null);
                   }
                 }}
                 value={field.value}
@@ -286,11 +331,13 @@ export default function BookingForm({
                       disabled={
                         showPaymentStep ||
                         !selectedDateAvailability ||
-                        field.value >= selectedDateAvailability.availableSpots
+                        totalTickets >= selectedDateAvailability.availableSpots
                       }
                       onClick={() => {
                         if (!selectedDateAvailability) return;
-                        const max = selectedDateAvailability.availableSpots;
+                        const max =
+                          selectedDateAvailability.availableSpots -
+                          childrenTickets;
                         const newValue = Math.min(field.value + 1, max);
                         field.onChange(newValue);
                       }}
@@ -305,6 +352,68 @@ export default function BookingForm({
           {errors.tickets?.adult && (
             <p className="text-sm text-red-500">
               {errors.tickets.adult.message}
+            </p>
+          )}
+
+          {acceptsChildren && (
+            <div className="flex flex-col gap-2 md:flex-row md:justify-between md:items-center mt-2">
+              <span>{t("home.bookingForm.children")}</span>
+              <div className="flex items-center gap-2">
+                {symbol}
+                {convert(childrenUnitPrice)}
+                <Controller
+                  control={control}
+                  name="tickets.children"
+                  render={({ field }) => (
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        disabled={
+                          showPaymentStep || (field.value ?? 0) <= 0
+                        }
+                        onClick={() =>
+                          field.onChange(
+                            Math.max((field.value ?? 0) - 1, 0),
+                          )
+                        }
+                      >
+                        –
+                      </Button>
+                      <span>{field.value ?? 0}</span>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        disabled={
+                          showPaymentStep ||
+                          !selectedDateAvailability ||
+                          totalTickets >=
+                            selectedDateAvailability.availableSpots
+                        }
+                        onClick={() => {
+                          if (!selectedDateAvailability) return;
+                          const max =
+                            selectedDateAvailability.availableSpots -
+                            adultTickets;
+                          const newValue = Math.min(
+                            (field.value ?? 0) + 1,
+                            max,
+                          );
+                          field.onChange(newValue);
+                        }}
+                      >
+                        +
+                      </Button>
+                    </div>
+                  )}
+                />
+              </div>
+            </div>
+          )}
+
+          {errors.tickets?.children && (
+            <p className="text-sm text-red-500">
+              {errors.tickets.children.message}
             </p>
           )}
         </div>
@@ -360,6 +469,8 @@ export default function BookingForm({
                 </span>
                 <span className="truncate text-[11px] text-white/65">
                   {adultTickets} {t("home.bookingForm.adults").toLowerCase()}
+                  {childrenTickets > 0 &&
+                    ` + ${childrenTickets} ${t("home.bookingForm.children").toLowerCase()}`}
                 </span>
               </div>
               <Button

@@ -91,7 +91,7 @@ export default function ProductBooking() {
 
   const [bookingData, setBookingData] = useState<{
     datetime: string;
-    tickets: { adult: number };
+    tickets: { adult: number; children: number };
     addons: string[];
     total: number;
     user_id: string;

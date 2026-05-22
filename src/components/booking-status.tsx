@@ -31,7 +31,7 @@ type BookingStatusProps = {
   user: any;
   created_at: string;
   tourDate?: string;
-  tickets: { adult: number };
+  tickets: { adult: number; children?: number };
   total: number;
   onRebook?: () => void;
   onViewDetails?: () => void;
@@ -60,7 +60,8 @@ export function BookingStatus({
     user?.firstName && user?.lastName
       ? `${user.firstName} ${user.lastName}`.trim()
       : user?.fullName ?? "";
-  const ticketsCount = tickets.adult > 0 ? tickets.adult : 1;
+  const childrenCount = tickets.children ?? 0;
+  const ticketsCount = (tickets.adult > 0 ? tickets.adult : 0) + childrenCount || 1;
   const totalNumber = typeof total === "number" ? total : Number(total);
   const paidTotal =
     Number.isFinite(totalNumber) && totalNumber >= 0 ? totalNumber : 0;
@@ -164,6 +165,7 @@ export function BookingStatus({
               <span>{t("home.bookingStatus.tickets")}</span>
               <span>
                 {tickets.adult} {tickets.adult === 1 ? t("home.bookingStatus.adult") : t("home.bookingStatus.adults")}
+                {childrenCount > 0 && ` + ${childrenCount} ${t("home.bookingForm.children").toLowerCase()}`}
               </span>
             </div>
             <Separator className="my-1" />

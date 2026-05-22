@@ -107,6 +107,8 @@ export function getMultimediaSchema(t: TFunction) {
     price: z.coerce.number().positive({
       message: t("dashboard.addTour.multimedia.validation.pricePositive"),
     }),
+    accepts_children: z.boolean().default(false),
+    children_price: z.coerce.number().min(0).nullable().default(null),
   });
 }
 
@@ -167,6 +169,8 @@ export interface TourAPIPayload {
   lat: string;
   long: string;
   duration: number;
+  accepts_children?: boolean;
+  children_price?: number | null;
   images: File[];
   banner: File | null;
   videos?: File[];

@@ -48,7 +48,7 @@ export default function CheckoutForm({
 }: {
   bookingData: {
     datetime: string;
-    tickets: { adult: number };
+    tickets: { adult: number; children: number };
     addons: string[];
     total: number;
     user_id: string;
@@ -213,7 +213,7 @@ export default function CheckoutForm({
         total: bookingData.total,
         user_id: bookingData.user_id,
         product_id: bookingData.product_id,
-        tickets: bookingData.tickets.adult,
+        tickets: bookingData.tickets.adult + (bookingData.tickets.children ?? 0),
         tour_date_id: bookingData.datetime,
       };
       try {
@@ -250,7 +250,7 @@ export default function CheckoutForm({
           user_id: bookingData.user_id,
           product_id: bookingData.product_id,
           is_live: true,
-          tickets: bookingData.tickets.adult,
+          tickets: bookingData.tickets.adult + (bookingData.tickets.children ?? 0),
           total: bookingData.total,
           tour_date_id: [bookingData.datetime],
           paymentMethod: values.paymentMethod,

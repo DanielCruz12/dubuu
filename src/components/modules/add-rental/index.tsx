@@ -142,6 +142,8 @@ function mapRentalProductToForm(p: IRentalProduct): {
     },
     multimedia: {
       price: priceDay,
+      accepts_children: false,
+      children_price: null,
     },
   };
 }

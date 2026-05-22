@@ -11,6 +11,7 @@ import { DollarSign, FileText, Loader2, Upload, Video, X } from "lucide-react";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -20,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
 import {
@@ -125,6 +127,8 @@ export function MultimediaStep({
     resolver: zodResolver(multimediaSchema),
     defaultValues: {
       price: defaultValues?.price || undefined,
+      accepts_children: defaultValues?.accepts_children ?? false,
+      children_price: defaultValues?.children_price ?? null,
     },
   });
 
@@ -728,6 +732,62 @@ export function MultimediaStep({
               </FormItem>
             )}
           />
+          <div className="mb-2" />
+
+          <Separator className="my-4" />
+
+          <FormField
+            control={form.control}
+            name="accepts_children"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                <div className="space-y-0.5">
+                  <FormLabel className="text-base">
+                    {t("dashboard.addTour.multimedia.acceptsChildrenLabel")}
+                  </FormLabel>
+                  <FormDescription>
+                    {t("dashboard.addTour.multimedia.acceptsChildrenDescription")}
+                  </FormDescription>
+                </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          {form.watch("accepts_children") && (
+            <FormField
+              control={form.control}
+              name="children_price"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t("dashboard.addTour.multimedia.childrenPriceLabel")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="number"
+                      step="0.01"
+                      value={field.value ?? ""}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        field.onChange(v === "" ? null : parseFloat(v));
+                      }}
+                      placeholder={t("dashboard.addTour.multimedia.childrenPricePlaceholder")}
+                      className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs text-red-500" />
+                </FormItem>
+              )}
+            />
+          )}
+
           <div className="mb-2" />
 
           {form.watch("price") > 0 && (

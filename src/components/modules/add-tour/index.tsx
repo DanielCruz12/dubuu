@@ -52,6 +52,7 @@ export type TourDateMetaRow = {
   id: string;
   date: string;
   price: number;
+  children_price?: number | null;
   max_people: number;
   status: TourDateStatus;
 };
@@ -80,6 +81,13 @@ function mapTourProductToForm(p: ITourProduct): {
   const priceNums = tourDates
     .map((d) => (typeof d.price === "number" ? d.price : Number.NaN))
     .filter((n) => Number.isFinite(n));
+  const childrenPriceNums = tourDates
+    .map((d) =>
+      d.children_price != null ? Number(d.children_price) : Number.NaN,
+    )
+    .filter((n) => Number.isFinite(n));
+  const fallbackChildrenPrice =
+    childrenPriceNums.length > 0 ? childrenPriceNums[0] : null;
   const fallbackPrice =
     priceNums.length > 0
       ? Math.min(...priceNums)
@@ -126,11 +134,14 @@ function mapTourProductToForm(p: ITourProduct): {
     },
     multimedia: {
       price: Number.isFinite(fallbackPrice) ? fallbackPrice : 1,
+      accepts_children: p.tour?.accepts_children ?? false,
+      children_price: fallbackChildrenPrice,
     },
     tourDatesMeta: tourDates.map((td) => ({
       id: td.id,
       date: td.date,
       price: typeof td.price === "number" ? td.price : fallbackPrice,
+      children_price: td.children_price ?? null,
       max_people: td.max_people,
       status: (td.status ?? "active") as TourDateStatus,
     })),
@@ -300,6 +311,7 @@ export function TourForm({ editProductId, productTypeId }: TourFormProps) {
           id: meta.id,
           date: (d ?? new Date(meta.date)).toISOString(),
           price: meta.price,
+          children_price: meta.children_price ?? undefined,
           // Un solo cupo en paso 1: todas las fechas deben reflejar basicInfo (no valores viejos de tourDatesMeta).
           max_people: formData.basicInfo.max_people,
           status: meta.status,
@@ -335,6 +347,17 @@ export function TourForm({ editProductId, productTypeId }: TourFormProps) {
 
     // Precio
     data.append("price", formData.multimedia.price.toString());
+
+    // Niños
+    if (formData.multimedia.accepts_children) {
+      data.append("accepts_children", "true");
+      if (formData.multimedia.children_price != null) {
+        data.append(
+          "children_price",
+          formData.multimedia.children_price.toString(),
+        );
+      }
+    }
 
     // Usuario (esto debería venir del contexto de autenticación)
     data.append("user_id", userId);
@@ -396,6 +419,7 @@ export function TourForm({ editProductId, productTypeId }: TourFormProps) {
           id: "",
           date: d.toISOString(),
           price: multimedia?.price ?? 0,
+          children_price: multimedia?.children_price ?? null,
           max_people: basicInfo?.max_people ?? 10,
           status: "active",
         };

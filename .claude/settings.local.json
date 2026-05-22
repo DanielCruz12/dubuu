@@ -8,7 +8,9 @@
       "Bash(npx tsc *)",
       "Bash(Select-Object -First 40)",
       "PowerShell(npx tsc --noEmit --pretty 2>&1 | Select-Object -First 40)",
-      "Bash(Select-Object -First 30)"
+      "Bash(Select-Object -First 30)",
+      "Bash(Get-ChildItem *)",
+      "Bash(npx --prefix \"C:/Users/daniel/Desktop/projects/personal_work/projects/dantours-drizzle-nodejs\" tsc --noEmit --pretty)"
     ]
   }
 }

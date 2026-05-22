@@ -68,6 +68,8 @@ export interface ITourProductDates {
   people_booked: number;
   /** Precio por persona para esta fecha (obligatorio en API actual). */
   price?: number;
+  /** Precio especial para niños (solo cuando el tour acepta niños). */
+  children_price?: number | null;
   status?: TourDateStatus;
 }
 
@@ -105,6 +107,7 @@ export interface ITourProduct extends IProductBase<"tours"> {
     lat: number;
     long: number;
     duration: number;
+    accepts_children?: boolean;
   };
 }
 
