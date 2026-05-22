@@ -422,7 +422,7 @@ export function MultimediaStep({
               <div className="relative">
                 <div className="aspect-[3/1] rounded-md overflow-hidden">
                   <Image
-                    src={bannerPreview || "/tour1.jpg"}
+                    src={bannerPreview || "/homepage/6.webp"}
                     alt="Banner preview"
                     className="w-full h-full object-cover"
                     width={1000}
@@ -500,7 +500,7 @@ export function MultimediaStep({
                   <div key={`existing-${url}-${index}`} className="relative group">
                     <div className="aspect-video rounded-md overflow-hidden">
                       <Image
-                        src={url || "/tour1.jpg"}
+                        src={url || "/homepage/6.webp"}
                         alt={`Tour image ${index + 1}`}
                         className="w-full h-full object-cover"
                         width={1000}
@@ -524,7 +524,7 @@ export function MultimediaStep({
                   <div key={`new-${index}`} className="relative group">
                     <div className="aspect-video rounded-md overflow-hidden">
                       <Image
-                        src={preview || "/tour1.jpg"}
+                        src={preview || "/homepage/6.webp"}
                         alt={`Tour image ${keptExistingImageUrls.length + index + 1}`}
                         className="w-full h-full object-cover"
                         width={1000}

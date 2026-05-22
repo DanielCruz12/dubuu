@@ -139,9 +139,11 @@ function mapTourProductToForm(p: ITourProduct): {
 
 interface TourFormProps {
   editProductId?: string;
+  /** Product type id for the tour flow (create only). */
+  productTypeId?: string;
 }
 
-export function TourForm({ editProductId }: TourFormProps) {
+export function TourForm({ editProductId, productTypeId }: TourFormProps) {
   const [step, setStep] = useState(1);
   const totalSteps = 5;
   const { user, isSignedIn } = useUser();
@@ -164,6 +166,17 @@ export function TourForm({ editProductId }: TourFormProps) {
   );
   const [editHydrated, setEditHydrated] = useState(false);
   const [editLoadError, setEditLoadError] = useState(false);
+
+  const resolvedTypeId = useMemo(() => {
+    if (
+      editProductId &&
+      existingProduct &&
+      isProductType(existingProduct, "tours")
+    ) {
+      return existingProduct.product_type?.id ?? "";
+    }
+    return productTypeId ?? "";
+  }, [editProductId, existingProduct, productTypeId]);
 
   // Estados para almacenar los datos del formulario
   const [basicInfo, setBasicInfo] = useState<BasicInfoFormValues | null>(null);
@@ -653,6 +666,7 @@ export function TourForm({ editProductId }: TourFormProps) {
                   key={editProductId ? `c-${editHydrated}` : "c-new"}
                   onSubmit={handleCategorizationSubmit}
                   defaultValues={categorization || undefined}
+                  fixedProductTypeId={resolvedTypeId || undefined}
                 />
               </motion.div>
             )}

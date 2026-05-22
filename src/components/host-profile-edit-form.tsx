@@ -74,19 +74,10 @@ function getHostProfileFormSchema(t: (key: string) => string) {
       .int()
       .min(0, t("dashboard.profile.hostProfile.errors.min0"))
       .max(80, t("dashboard.profile.hostProfile.errors.max80")),
-    especialidad: z
-      .string()
-      .min(1, t("dashboard.profile.hostProfile.errors.pickCategory"))
-      .max(200),
-    tipoExperiencias: z
-      .string()
-      .min(1, t("dashboard.profile.hostProfile.errors.pickType"))
-      .max(200),
-    estilo: z.string().max(500),
-    idiomas: z
-      .array(z.string())
-      .min(1, t("dashboard.profile.hostProfile.errors.pickAtLeastOneLanguage"))
-      .max(12),
+    especialidad: z.string().max(200).optional().or(z.literal("")),
+    tipoExperiencias: z.string().max(200).optional().or(z.literal("")),
+    estilo: z.string().max(500).optional().or(z.literal("")),
+    idiomas: z.array(z.string()).max(12).default([]),
   });
 }
 
@@ -184,52 +175,26 @@ const HostProfileEditForm = forwardRef<
       }
       const clerkImageUrl =
         userLoaded && user?.imageUrl?.trim() ? user.imageUrl.trim() : undefined;
-      const tipoName = values.tipoExperiencias.trim();
+      const tipoName = values.tipoExperiencias?.trim();
       const tiposExperiencia = tipoName ? [tipoName] : [];
-      const data = {
-        // Si el usuario ya tiene foto en Clerk, úsala como default en host_profiles
+      const body = {
+        locale: language,
+        user_id: userId ?? undefined,
         image_url: values.image_url?.trim() || clerkImageUrl || undefined,
         intro: values.intro.trim() || undefined,
         description: values.descripcion.trim() || undefined,
         years_experience: values.anosExperiencia,
-        specialty: values.especialidad.trim() || undefined,
+        specialty: values.especialidad?.trim() || undefined,
         experience_summary: tipoName || undefined,
-        hosting_style: values.estilo.trim() || undefined,
+        hosting_style: values.estilo?.trim() || undefined,
         experience_tags: tiposExperiencia,
         languages: values.idiomas,
       };
-      const body = {
-        locale: language,
-        user_id: userId ?? undefined,
-        data,
-
-        // Legacy (por si algún endpoint viejo lo sigue esperando)
-        descripcion: values.descripcion.trim() || undefined,
-        anosExperiencia: values.anosExperiencia,
-        especialidad: values.especialidad.trim() || undefined,
-        tipoExperiencias: tipoName || undefined,
-        estilo: values.estilo.trim() || undefined,
-        tiposExperiencia,
-        idiomas: values.idiomas,
-      };
-      await patchProfile({ token, body }).unwrap();
-      if (userId) {
-        const refreshed = await triggerFetchProfile({ userId }).unwrap();
-        setLoadedProfile(refreshed);
-        form.reset(profileToFormValues(refreshed));
-      }
+      const patched = await patchProfile({ token, body }).unwrap();
+      setLoadedProfile(patched);
+      form.reset(profileToFormValues(patched));
     },
-    [
-      getToken,
-      form,
-      user,
-      userLoaded,
-      t,
-      language,
-      userId,
-      patchProfile,
-      triggerFetchProfile,
-    ],
+    [getToken, form, user, userLoaded, t, language, userId, patchProfile],
   );
 
   const loadProfile = useCallback(async () => {

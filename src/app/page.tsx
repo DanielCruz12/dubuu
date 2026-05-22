@@ -4,11 +4,9 @@ import { useRef } from "react";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { buttonVariants } from "@/components/ui/button";
-import { toursTranslations } from "@/utils/data";
 import UpTop from "@/components/up-top";
 import Link from "next/link";
 import { Star } from "lucide-react";
-import { formatUsd, USD_SYMBOL } from "@/utils/currency";
 import {
   Carousel,
   CarouselContent,
@@ -21,10 +19,7 @@ import { useLanguage } from "@/lib/i18n-context";
 import { HERO_SLIDE_KEYS, HERO_SLIDE_IMAGES } from "@/utils/data";
 
 export default function Home() {
-  const convert = formatUsd;
-  const symbol = USD_SYMBOL;
-  const { t, language } = useLanguage();
-  const tours = toursTranslations[language];
+  const { t } = useLanguage();
 
   const containerRef = useRef(null);
   const aboutRef = useRef(null);
@@ -136,7 +131,7 @@ export default function Home() {
             >
               <div className="aspect-[3/3] relative overflow-hidden rounded-2xl">
                 <Image
-                  src="/tour1.webp"
+                  src="/homepage/6.webp"
                   alt={t("home.landing.about.imageAlt")}
                   fill
                   className="object-cover"
@@ -170,7 +165,7 @@ export default function Home() {
       </section>
 
       {/* Tours Section */}
-      <section className="py-24 md:py-32 ">
+      {/* <section className="py-24 md:py-32 ">
         <div className="md:px-20 px-4">
           <motion.div
             className="max-w-3xl mx-auto text-center mb-16"
@@ -208,11 +203,8 @@ export default function Home() {
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
-                  {/* Gradiente base desde abajo */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
-                  {/* Gradiente adicional en hover para efecto más dramático */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                  {/* Gradiente radial sutil desde el centro */}
                   <div className="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-black/30"></div>
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 p-8">
@@ -247,7 +239,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
     </div>
   );
 }

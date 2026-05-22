@@ -68,7 +68,7 @@ function CreateProductByType({ typeId }: { typeId: string }) {
   }
 
   if (kind === "tours") {
-    return <TourForm />;
+    return <TourForm productTypeId={typeId} />;
   }
 
   return <RentalForm productTypeId={typeId} />;

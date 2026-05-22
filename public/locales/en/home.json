@@ -89,7 +89,7 @@
     "disclaimer": "This total is indicative; the host will confirm final price and availability.",
     "consult": "Inquire",
     "modalTitle": "Send inquiry",
-    "modalDescription": "Describe what you need (flexible dates, delivery, etc.). For now we only log the request in the browser console.",
+    "modalDescription": "Describe what you need (Details, delivery, etc.)",
     "messageLabel": "Message",
     "messagePlaceholder": "E.g.: I need the car from the 10th to the 15th, airport pickup…",
     "cancel": "Cancel",
@@ -110,15 +110,46 @@
     "docSizeError": "The image cannot exceed {{max}} MB",
     "removeFile": "Remove file"
   },
-  "hero": {"subtitle": "Discover the treasures of the world"},
-  "search": {"placeholder": "Search destinations, tours, experiences...", "placeholderNotLogged": "Sign in to search by text...", "placeholderInitial": "Loading..."},
-  "popularDestinations": {"title": "Popular destinations", "subtitle": "The best tourist destinations preferred by the community", "tours": "Trips", "activities": "Activities"},
+  "hero": {
+    "subtitle": "Discover the treasures of the world"
+  },
+  "search": {
+    "placeholder": "Search destinations, tours, experiences...",
+    "placeholderNotLogged": "Sign in to search by text...",
+    "placeholderInitial": "Loading..."
+  },
+  "popularDestinations": {
+    "title": "Popular destinations",
+    "subtitle": "The best tourist destinations preferred by the community",
+    "tours": "Trips",
+    "activities": "Activities"
+  },
   "landing": {
-    "slide1": {"title": "Bookings that simplify your trip", "subtitle": "Book tours and car rentals in one place. Dubuu is the platform for travelers and businesses.", "cta": "Discover"},
-    "slide2": {"title": "Do you have a tour company?", "subtitle": "List your experiences and tours on Dubuu. Manage bookings, availability and customers from one dashboard.", "cta": "See how it works"},
-    "slide3": {"title": "Car rental", "subtitle": "If you offer vehicles for rent, you can list them here too. Tours and cars on the same platform.", "cta": "Discover"},
-    "slide4": {"title": "Your trip and your business, better organized", "subtitle": "Book experiences and cars in a few clicks, or manage your offer if you're a business. All on Dubuu.", "cta": "Get started"},
-    "slide5": {"title": "Experiences that inspire", "subtitle": "Accommodations and experiences designed to make your trip unique. Book with confidence on Dubuu.", "cta": "Discover"},
+    "slide1": {
+      "title": "Bookings that simplify your trip",
+      "subtitle": "Book tours and car rentals in one place. Dubuu is the platform for travelers and businesses.",
+      "cta": "Discover"
+    },
+    "slide2": {
+      "title": "Do you have a tour company?",
+      "subtitle": "List your experiences and tours on Dubuu. Manage bookings, availability and customers from one dashboard.",
+      "cta": "See how it works"
+    },
+    "slide3": {
+      "title": "Car rental",
+      "subtitle": "If you offer vehicles for rent, you can list them here too. Tours and cars on the same platform.",
+      "cta": "Discover"
+    },
+    "slide4": {
+      "title": "Your trip and your business, better organized",
+      "subtitle": "Book experiences and cars in a few clicks, or manage your offer if you're a business. All on Dubuu.",
+      "cta": "Get started"
+    },
+    "slide5": {
+      "title": "Experiences that inspire",
+      "subtitle": "Accommodations and experiences designed to make your trip unique. Book with confidence on Dubuu.",
+      "cta": "Discover"
+    },
     "about": {
       "titleBold": "UNIQUE",
       "titlePrefix": "WE DESIGN ",
@@ -130,8 +161,8 @@
       "imageAlt": "Luxury experience"
     },
     "tours": {
-      "titleBold": "private",
-      "titlePrefix": "Trips ",
+      "titleBold": "trips",
+      "titlePrefix": "Private ",
       "titleSuffix": "",
       "subtitle": "Guided experiences with exclusive access and personalized attention",
       "cta": "View all trips"

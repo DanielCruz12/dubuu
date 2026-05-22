@@ -31,47 +31,19 @@ export interface HostProfileApiErrorBody {
   message: string;
 }
 
-/** Cuerpo PATCH (campos opcionales, nombres en español). */
+/** Cuerpo PATCH (campos opcionales, snake_case como espera el backend). */
 export interface HostProfilePatchBody {
   /** Idioma de la UI (se usa para guardar la traducción actual). */
   locale: "es" | "en" | (string & {});
-  /**
-   * Nuevo patrón backend: identificar el usuario en el body y
-   * agrupar los campos en un objeto `data`.
-   */
   user_id?: string;
-  data?: Partial<{
-    image_url: string;
-    intro: string;
-    description: string;
-    years_experience: number;
-    specialty: string;
-    experience_summary: string;
-    hosting_style: string;
-    experience_tags: string[];
-    languages: string[];
-  }>;
-  /** URL pública de la imagen de perfil (snake_case como backend). */
-  image_url?: string;
-  intro?: string;
-  /**
-   * Nuevo shape backend (snake_case).
-   * Mantenemos los campos "viejos" abajo por compatibilidad.
-   */
-  description?: string;
-  years_experience?: number;
-  specialty?: string;
-  experience_summary?: string;
-  hosting_style?: string;
-  experience_tags?: string[];
-  languages?: string[];
-
-  /** Compatibilidad (legacy) */
-  descripcion?: string;
-  anosExperiencia?: number;
-  especialidad?: string;
-  tipoExperiencias?: string;
-  estilo?: string;
-  tiposExperiencia?: string[];
-  idiomas?: string[];
+  /** URL pública de la imagen de perfil. */
+  image_url?: string | null;
+  intro?: string | null;
+  description?: string | null;
+  years_experience?: number | null;
+  specialty?: string | null;
+  experience_summary?: string | null;
+  hosting_style?: string | null;
+  experience_tags?: string[] | null;
+  languages?: string[] | null;
 }

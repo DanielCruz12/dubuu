@@ -23,6 +23,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getBookingsColumns } from "../(columns)/columns";
@@ -31,11 +38,15 @@ import "moment/locale/es";
 import { DataTableSkeleton } from "@/components/skeletons/datatable-skeleton";
 import { useUser } from "@clerk/nextjs";
 import { useLanguage } from "@/lib/i18n-context";
+import { isProductType } from "@/utils";
+
+type ProductTableKind = "tours" | "rental";
 
 export function BookingsDataTable() {
   const { user } = useUser();
   const userId = user?.id as string;
 
+  const [tableKind, setTableKind] = useState<ProductTableKind>("tours");
   const [selectedProductId, setSelectedProductId] = useState<string>("");
   const [openProductSelect, setOpenProductSelect] = useState(false);
   const [bookingsData, setBookingsData] = useState<any[]>([]);
@@ -52,6 +63,12 @@ export function BookingsDataTable() {
     skip: !userId,
   });
 
+  // Filter products by selected type
+  const productsByType = useMemo(() => {
+    if (!products) return [];
+    return products.filter((p) => isProductType(p, tableKind));
+  }, [products, tableKind]);
+
   // Fetch bookings for the selected product
   const {
     data: bookings,
@@ -65,15 +82,20 @@ export function BookingsDataTable() {
     }
   );
 
-  // Set the first product as selected when products load
+  // Set the first product as selected when products load or type changes
   useEffect(() => {
-    if (products && products.length > 0) {
-      setFilteredProducts(products);
-      if (!selectedProductId) {
-        setSelectedProductId(products[0].id);
+    if (productsByType.length > 0) {
+      setFilteredProducts(productsByType);
+      const isCurrentValid = productsByType.some((p) => p.id === selectedProductId);
+      if (!isCurrentValid) {
+        setSelectedProductId(productsByType[0].id);
       }
+    } else {
+      setFilteredProducts([]);
+      setSelectedProductId("");
     }
-  }, [products, selectedProductId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [productsByType]);
 
   // Update bookingsData when bookings change or when there's an error
   useEffect(() => {
@@ -102,21 +124,19 @@ export function BookingsDataTable() {
     (value: string) => {
       setSearchTerm(value);
 
-      if (!products) return;
-
       if (!value.trim()) {
-        setFilteredProducts(products);
+        setFilteredProducts(productsByType);
         return;
       }
 
       const lowercaseSearch = value.toLowerCase();
-      const filtered = products.filter((product) =>
+      const filtered = productsByType.filter((product) =>
         product.name.toLowerCase().includes(lowercaseSearch)
       );
 
       setFilteredProducts(filtered);
     },
-    [products]
+    [productsByType]
   );
 
   // Export to Excel - Manteniendo la lógica original
@@ -173,7 +193,26 @@ export function BookingsDataTable() {
     <div className="space-y-4 pt-6">
       <Card>
         <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row gap-4 items-end mb-6">
+          <div className="flex flex-col gap-4 mb-6">
+            <div className="w-full max-w-xs">
+              <label className="text-sm font-medium mb-1 block">
+                {t("dashboard.bookings.filters.listKind")}
+              </label>
+              <Select
+                value={tableKind}
+                onValueChange={(v) => setTableKind(v as ProductTableKind)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="tours">{t("dashboard.bookings.filters.kindTours")}</SelectItem>
+                  <SelectItem value="rental">{t("dashboard.bookings.filters.kindRental")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex flex-col md:flex-row gap-4 items-end">
             <div className="w-full md:w-1/3 min-w-0">
               <label className="text-sm font-medium mb-1 block">
                 {t("dashboard.bookings.filters.product")}
@@ -191,7 +230,7 @@ export function BookingsDataTable() {
                   >
                     <span className="truncate">
                       {selectedProductId
-                        ? products.find(
+                        ? productsByType.find(
                             (product) => product.id === selectedProductId
                           )?.name
                         : t("dashboard.bookings.filters.selectProduct")}
@@ -255,6 +294,7 @@ export function BookingsDataTable() {
                 </Button>
               )}
             </div>
+          </div>
           </div>
 
           {isLoadingBookings ? (

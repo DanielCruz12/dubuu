@@ -253,10 +253,6 @@ export default function PersonalInfoForm() {
             body: {
               locale: language,
               user_id: user.id,
-              data: {
-                image_url: user.imageUrl?.trim() || undefined,
-              },
-              // compat (legacy)
               image_url: user.imageUrl?.trim() || undefined,
             },
           }).unwrap();
@@ -296,10 +292,6 @@ export default function PersonalInfoForm() {
             body: {
               locale: language,
               user_id: user.id,
-              data: {
-                image_url: undefined,
-              },
-              // compat (legacy)
               image_url: undefined,
             },
           }).unwrap();

@@ -62,8 +62,8 @@ export function getRentalDeliverySchema(t: TFunction) {
       coverage_all_country: z.boolean().default(true),
       coverage_departments: z.array(z.string()).default([]),
 
-      /** Tarifa por km (se mantiene). */
-      fee_per_km: z.string().min(1),
+      /** Tarifa por km (opcional, por defecto 0). */
+      fee_per_km: z.string(),
 
       /**
        * Campo legado que sigue esperando el backend hoy.
@@ -72,14 +72,6 @@ export function getRentalDeliverySchema(t: TFunction) {
       max_delivery_distance_km: z.coerce.number().min(0),
     })
     .superRefine((data, ctx) => {
-      if (!data.fee_per_km.trim()) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: t("dashboard.addRental.terms.validation.feePerKmRequired"),
-          path: ["fee_per_km"],
-        });
-      }
-
       if (data.delivery_mode === "specific_areas") {
         if (!data.specific_areas?.length) {
           ctx.addIssue({

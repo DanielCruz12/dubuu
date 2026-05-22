@@ -95,9 +95,31 @@ export function RentalVehicleStep({ onSubmit, defaultValues }: RentalVehicleStep
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{t("dashboard.addRental.vehicle.color")}</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {[
+                      { value: "red", label: t("dashboard.addRental.vehicle.colorRed"), dot: "bg-red-500" },
+                      { value: "white", label: t("dashboard.addRental.vehicle.colorWhite"), dot: "bg-white border" },
+                      { value: "blue", label: t("dashboard.addRental.vehicle.colorBlue"), dot: "bg-blue-500" },
+                      { value: "black", label: t("dashboard.addRental.vehicle.colorBlack"), dot: "bg-black" },
+                      { value: "green", label: t("dashboard.addRental.vehicle.colorGreen"), dot: "bg-green-500" },
+                      { value: "yellow", label: t("dashboard.addRental.vehicle.colorYellow"), dot: "bg-yellow-400" },
+                      { value: "gray", label: t("dashboard.addRental.vehicle.colorGray"), dot: "bg-gray-400" },
+                    ].map((c) => (
+                      <SelectItem key={c.value} value={c.value}>
+                        <span className="flex items-center gap-2">
+                          <span className={`inline-block h-4 w-4 rounded-full ${c.dot}`} />
+                          {c.label}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}

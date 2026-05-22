@@ -99,8 +99,7 @@ export default function ReviewForm({
         });
       });
 
-      const imageUrls = await Promise.all(imagePromises);
-      console.log(imageUrls);
+      await Promise.all(imagePromises);
 
       const reviewData: Omit<Review, "id"> = {
         product_id: productId,
@@ -158,7 +157,7 @@ export default function ReviewForm({
                     "text-xs",
                     field.value.length < 100
                       ? "dark:text-red-400 text-destructive"
-                      : "text-muted-foreground"
+                      : "text-muted-foreground",
                   )}
                 >
                   {field.value.length}/100 caracteres mínimos

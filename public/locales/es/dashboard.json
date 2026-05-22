@@ -196,6 +196,13 @@
       "fuelElectric": "Eléctrico",
       "fuelHybrid": "Híbrido",
       "color": "Color",
+      "colorRed": "Rojo",
+      "colorWhite": "Blanco",
+      "colorBlue": "Azul",
+      "colorBlack": "Negro",
+      "colorGreen": "Verde",
+      "colorYellow": "Amarillo",
+      "colorGray": "Gris",
       "doors": "Puertas",
       "engine": "Motor",
       "enginePlaceholder": "Ej. 2.5L 4 cilindros",
@@ -444,7 +451,10 @@
       "selectProduct": "Seleccionar producto...",
       "searchProduct": "Buscar producto...",
       "noProductsFound": "No se encontraron productos.",
-      "export": "Exportar"
+      "export": "Exportar",
+      "listKind": "Lista",
+      "kindTours": "Tours",
+      "kindRental": "Renta de autos"
     },
     "table": {
       "client": "Cliente",

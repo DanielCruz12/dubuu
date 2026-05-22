@@ -20,6 +20,7 @@ import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -467,10 +468,10 @@ export default function RentalBookingForm({
 
       <Dialog open={consultOpen} onOpenChange={setConsultOpen}>
         <DialogContent className="sm:max-w-md max-h-[90dvh] overflow-y-auto">
-         {/*  <DialogHeader>
+          <DialogHeader>
             <DialogTitle>{t("home.rentalBooking.modalTitle")}</DialogTitle>
             <DialogDescription>{t("home.rentalBooking.modalDescription")}</DialogDescription>
-          </DialogHeader> */}
+          </DialogHeader>
           <div className="space-y-4 py-1">
             <div className="space-y-2">
               <Label htmlFor="rental-inquiry-msg">{t("home.rentalBooking.messageLabel")}</Label>

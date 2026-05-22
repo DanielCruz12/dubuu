@@ -196,6 +196,13 @@
       "fuelElectric": "Electric",
       "fuelHybrid": "Hybrid",
       "color": "Color",
+      "colorRed": "Red",
+      "colorWhite": "White",
+      "colorBlue": "Blue",
+      "colorBlack": "Black",
+      "colorGreen": "Green",
+      "colorYellow": "Yellow",
+      "colorGray": "Gray",
       "doors": "Doors",
       "engine": "Engine",
       "enginePlaceholder": "e.g. 2.5L 4-cylinder",
@@ -444,7 +451,10 @@
       "selectProduct": "Select product...",
       "searchProduct": "Search product...",
       "noProductsFound": "No products found.",
-      "export": "Export"
+      "export": "Export",
+      "listKind": "List",
+      "kindTours": "Tours",
+      "kindRental": "Car rental"
     },
     "table": {
       "client": "Client",
