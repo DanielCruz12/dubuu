@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useLanguage } from "@/lib/i18n-context";
 
 interface LeafletMapComponentProps {
   onLocationSelect: (lat: number, lng: number) => void;
@@ -80,6 +81,7 @@ export default function LeafletMapComponent({
   onLocationSelect,
   selectedLocation,
 }: LeafletMapComponentProps) {
+  const { t } = useLanguage();
   const mapRef = useRef<L.Map | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
   const currentLayerRef = useRef<L.TileLayer | null>(null);
@@ -653,7 +655,7 @@ export default function LeafletMapComponent({
               <Input
                 value={searchQuery}
                 onChange={(e) => handleSearchChange(e.target.value)}
-                placeholder="Ej. Gasolinera Puma Los Héroes, El Salvador"
+                placeholder={t("dashboard.addTour.location.searchPlaceholder")}
                 className="w-full pr-10"
                 onFocus={() =>
                   suggestions.length > 0 && setShowSuggestions(true)
@@ -690,7 +692,7 @@ export default function LeafletMapComponent({
           <div className="flex gap-2">
             <Button onClick={getCurrentLocation} variant="outline" size="sm">
               <MapPin className="h-4 w-4" />
-              <span className="hidden sm:inline ml-2">Mi ubicación</span>
+              <span className="hidden sm:inline ml-2">{t("dashboard.addTour.location.myLocation")}</span>
             </Button>
           </div>
         </div>
@@ -700,7 +702,7 @@ export default function LeafletMapComponent({
       <div className="map-layer-selector">
         <div className="flex items-center gap-2 mb-2">
           <Layers className="h-4 w-4" />
-          <span className="text-sm font-medium">Estilo de mapa</span>
+          <span className="text-sm font-medium">{t("dashboard.addTour.location.mapTypeLabel")}</span>
         </div>
         <Select
           value={selectedLayer}

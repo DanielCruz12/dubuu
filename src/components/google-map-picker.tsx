@@ -34,10 +34,18 @@ export interface LocationSelection {
   address: string;
 }
 
+export interface QuickLocation {
+  lat: number;
+  lng: number;
+  label: string;
+  address: string;
+}
+
 interface GoogleMapPickerProps {
   onLocationSelect: (location: LocationSelection) => void;
   selectedLocation: LocationSelection | null;
   apiKey: string;
+  quickLocations?: QuickLocation[];
 }
 
 function createCustomMarkerContent(): HTMLDivElement {
@@ -150,6 +158,7 @@ export function GoogleMapPicker({
   onLocationSelect,
   selectedLocation,
   apiKey,
+  quickLocations,
 }: GoogleMapPickerProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const autocompleteContainerRef = useRef<HTMLDivElement>(null);
@@ -472,6 +481,26 @@ export function GoogleMapPicker({
           ref={autocompleteContainerRef}
           className="min-h-10 w-full [&_gmp-place-autocomplete]:block [&_gmp-place-autocomplete]:w-full"
         />
+        {quickLocations && quickLocations.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {quickLocations.map((ql, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => {
+                  if (!window.google?.maps) return;
+                  onLocationSelect({ lat: ql.lat, lng: ql.lng, address: ql.address });
+                  mapRef.current?.setCenter({ lat: ql.lat, lng: ql.lng });
+                  mapRef.current?.setZoom(16);
+                }}
+                className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-background/95 px-2.5 py-1 text-[11px] font-medium shadow-sm backdrop-blur hover:bg-accent hover:text-accent-foreground transition-colors"
+              >
+                <MapPin className="h-3 w-3 shrink-0 text-muted-foreground" />
+                <span className="truncate max-w-[140px]">{ql.label}</span>
+              </button>
+            ))}
+          </div>
+        )}
         <div className="flex w-[155px] flex-col gap-2 self-end">
           <Button
             type="button"

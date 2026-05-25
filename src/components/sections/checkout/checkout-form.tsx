@@ -41,19 +41,13 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
 import { CreditCard, X } from "lucide-react";
+import type { BookingFormData } from "@/types/booking";
 
 export default function CheckoutForm({
   setShowPaymentStep,
   bookingData,
 }: {
-  bookingData: {
-    datetime: string;
-    tickets: { adult: number; children: number };
-    addons: string[];
-    total: number;
-    user_id: string;
-    product_id: string;
-  } | null;
+  bookingData: BookingFormData | null;
   setShowPaymentStep: (show: boolean) => void;
 }) {
   const { t } = useLanguage();
@@ -209,13 +203,29 @@ export default function CheckoutForm({
     }
 
     if (paymentMethod === "blink") {
-      const blinkPayload = {
-        total: bookingData.total,
-        user_id: bookingData.user_id,
-        product_id: bookingData.product_id,
-        tickets: bookingData.tickets.adult + (bookingData.tickets.children ?? 0),
-        tour_date_id: bookingData.datetime,
-      };
+      const blinkPayload =
+        bookingData.kind === "rental"
+          ? {
+              total: bookingData.total,
+              user_id: bookingData.user_id,
+              product_id: bookingData.product_id,
+              pickup_time: bookingData.pickup_time,
+              dropoff_time: bookingData.dropoff_time,
+              pickup_location: bookingData.pickup_location,
+              dropoff_location: bookingData.dropoff_location,
+              documents: bookingData.documents,
+              is_live: true,
+            }
+          : {
+              total: bookingData.total,
+              user_id: bookingData.user_id,
+              product_id: bookingData.product_id,
+              tickets:
+                bookingData.tickets.adult +
+                (bookingData.tickets.children ?? 0),
+              tour_date_id: bookingData.datetime,
+              is_live: true,
+            };
       try {
         const response = await createBlinkPayment(blinkPayload).unwrap();
         const paymentRequest =
@@ -245,17 +255,33 @@ export default function CheckoutForm({
       (async () => {
         const response = await create3DSTransaction(payload).unwrap();
 
-        const bookingPayload = {
-          ...bookingData,
-          user_id: bookingData.user_id,
-          product_id: bookingData.product_id,
-          is_live: true,
-          tickets: bookingData.tickets.adult + (bookingData.tickets.children ?? 0),
-          total: bookingData.total,
-          tour_date_id: [bookingData.datetime],
-          paymentMethod: values.paymentMethod,
-          idTransaccion: response.idTransaccion ?? "",
-        };
+        const bookingPayload =
+          bookingData.kind === "rental"
+            ? {
+                user_id: bookingData.user_id,
+                product_id: bookingData.product_id,
+                is_live: true,
+                total: bookingData.total,
+                pickup_time: bookingData.pickup_time,
+                dropoff_time: bookingData.dropoff_time,
+                pickup_location: bookingData.pickup_location,
+                dropoff_location: bookingData.dropoff_location,
+                documents: bookingData.documents,
+                paymentMethod: values.paymentMethod,
+                idTransaccion: response.idTransaccion ?? "",
+              }
+            : {
+                user_id: bookingData.user_id,
+                product_id: bookingData.product_id,
+                is_live: true,
+                tickets:
+                  bookingData.tickets.adult +
+                  (bookingData.tickets.children ?? 0),
+                total: bookingData.total,
+                tour_date_id: [bookingData.datetime],
+                paymentMethod: values.paymentMethod,
+                idTransaccion: response.idTransaccion ?? "",
+              };
 
         await createBooking(bookingPayload).unwrap();
 
@@ -310,50 +336,51 @@ export default function CheckoutForm({
         <ContactForm />
         {paymentMethod !== "blink" && <ShippingForm />}
 
-        <div>
-          <div className="flex flex-col gap-3">
-            <Button
-              size="lg"
-              disabled={isLoading}
-              type="submit"
-              className="w-full text-base py-2"
-            >
-              <CreditCard className="h-4 w-4 mr-2" />
-              {isLoading
-                ? t("home.checkout.payment.processing")
-                : t("home.checkout.payment.proceedToPay")}
-            </Button>
-            <Button
-              onClick={() => setShowPaymentStep(false)}
+        <div className="flex flex-col gap-3">
+          <Button
+            size="lg"
+            disabled={isLoading}
+            type="submit"
+            className="w-full text-base py-2"
+          >
+            <CreditCard className="h-4 w-4 mr-2" />
+            {isLoading
+              ? t("home.checkout.payment.processing")
+              : t("home.checkout.payment.proceedToPay")}
+          </Button>
+          <Button
+            type="button"
+            variant="destructive"
+            size="lg"
+            onClick={() => setShowPaymentStep(false)}
+            className="w-full text-base py-2 font-semibold"
+          >
+            <X className="h-4 w-4 mr-2" />
+            {t("home.checkout.payment.cancel")}
+          </Button>
+        </div>
+
+        {/* Terms + cancellation links */}
+        <div className="mt-4 space-y-2 px-2 text-center text-xs leading-relaxed text-muted-foreground sm:px-6">
+          <p>
+            <span className="font-medium text-foreground">
+              {t("home.checkout.payment.termsAgreeButton")}
+            </span>{" "}
+            {t("home.checkout.payment.termsAgreeAfter")}
+            <Link href="/terms" className={legalLinkClass}>
+              {t("home.checkout.payment.termsLink")}
+            </Link>
+            .
+          </p>
+          <p>
+            <button
               type="button"
-              variant="destructive"
-              className="w-full text-base py-2 font-semibold"
+              onClick={() => setCancellationModalOpen(true)}
+              className={legalLinkClass}
             >
-              <X className="h-4 w-4 mr-2 shrink-0" />
-              {t("home.checkout.payment.cancel")}
-            </Button>
-          </div>
-          <div className="mt-4 space-y-2 px-2 text-center text-xs leading-relaxed text-muted-foreground sm:px-6">
-            <p>
-              <span className="font-medium text-foreground">
-                {t("home.checkout.payment.termsAgreeButton")}
-              </span>{" "}
-              {t("home.checkout.payment.termsAgreeAfter")}
-              <Link href="/terms" className={legalLinkClass}>
-                {t("home.checkout.payment.termsLink")}
-              </Link>
-              .
-            </p>
-            <p>
-              <button
-                type="button"
-                onClick={() => setCancellationModalOpen(true)}
-                className={legalLinkClass}
-              >
-                {t("home.bookingForm.cancellationPolicies")}
-              </button>
-            </p>
-          </div>
+              {t("home.bookingForm.cancellationPolicies")}
+            </button>
+          </p>
         </div>
       </form>
 

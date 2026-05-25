@@ -52,3 +52,27 @@ export interface IBooking {
   };
   // Puedes añadir más campos según sea necesario
 }
+
+export type TourBookingData = {
+  kind: 'tour';
+  datetime: string;
+  tickets: { adult: number; children: number };
+  addons: string[];
+  total: number;
+  user_id: string;
+  product_id: string;
+};
+
+export type RentalBookingData = {
+  kind: 'rental';
+  pickup_time: string;
+  dropoff_time: string;
+  pickup_location: string;
+  dropoff_location: string;
+  total: number;
+  user_id: string;
+  product_id: string;
+  documents?: string[];
+};
+
+export type BookingFormData = TourBookingData | RentalBookingData;

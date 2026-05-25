@@ -13,15 +13,24 @@ import {
 } from "date-fns";
 import { es, enUS } from "date-fns/locale";
 import type { DateRange } from "react-day-picker";
-import { CalendarDays, ChevronDown, Clock, MessageCircle, Upload, X } from "lucide-react";
+import { createPortal } from "react-dom";
+import {
+  CalendarCheck,
+  CalendarDays,
+  ChevronDown,
+  Clock,
+  MapPin,
+  Upload,
+  X,
+  FileText,
+} from "lucide-react";
 import type { IRentalProduct } from "@/types/rental";
+import type { RentalBookingData } from "@/types/booking";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -33,12 +42,17 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { TimePicker } from "@/components/ui/time-picker";
-import { Textarea } from "@/components/ui/textarea";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { formatUsd, USD_SYMBOL } from "@/utils/currency";
 import { useLanguage } from "@/lib/i18n-context";
-import { useCreateRentalApplicationMutation } from "@/redux/slices/rental-application/rental-application-slice";
+import LocationPicker from "@/components/location-picker";
+
+const DEFAULT_AIRPORT = {
+  address: "Aeropuerto Internacional de El Salvador, San Luis Talpa",
+  lat: 13.4447,
+  lng: -89.0557,
+};
 
 function parseBoundary(s?: string): Date | undefined {
   if (!s?.trim()) return undefined;
@@ -54,7 +68,9 @@ function dateKey(d: Date): string {
   return format(startOfDay(d), "yyyy-MM-dd");
 }
 
-function expandBookedDaysFromRental(rental: IRentalProduct["rental"]): Set<string> {
+function expandBookedDaysFromRental(
+  rental: IRentalProduct["rental"],
+): Set<string> {
   const set = new Set<string>();
   if (rental.unavailable_dates?.length) {
     for (const raw of rental.unavailable_dates) {
@@ -114,9 +130,15 @@ function useIsDesktopMd(): boolean {
 
 export default function RentalBookingForm({
   product,
+  setShowPaymentStep,
+  setBookingData,
+  showPaymentStep,
   extraActionBelowBookNow,
 }: {
   product: IRentalProduct;
+  setShowPaymentStep: () => void;
+  setBookingData: (data: RentalBookingData) => void;
+  showPaymentStep: boolean;
   extraActionBelowBookNow?: ReactNode;
 }) {
   const { t, language } = useLanguage();
@@ -126,6 +148,11 @@ export default function RentalBookingForm({
   const symbol = USD_SYMBOL;
   const isDesktop = useIsDesktopMd();
 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const [range, setRange] = useState<DateRange | undefined>(() => {
     const todayStart = startOfDay(new Date());
     return { from: todayStart, to: addDays(todayStart, 1) };
@@ -133,18 +160,38 @@ export default function RentalBookingForm({
   const [pickupTime, setPickupTime] = useState("10:00");
   const [returnTime, setReturnTime] = useState("10:00");
   const [rangePickerOpen, setRangePickerOpen] = useState(false);
-  const [consultOpen, setConsultOpen] = useState(false);
-  const [message, setMessage] = useState("");
 
+  // Location state
+  const [useDefaultPickup, setUseDefaultPickup] = useState(true);
+  const [pickupAddress, setPickupAddress] = useState(DEFAULT_AIRPORT.address);
+  const [sameDropoff, setSameDropoff] = useState(true);
+  const [dropoffAddress, setDropoffAddress] = useState(DEFAULT_AIRPORT.address);
+  const [locationModalOpen, setLocationModalOpen] = useState(false);
+  const [activeMapMode, setActiveMapMode] = useState<
+    "pickup" | "dropoff" | null
+  >(null);
+
+  // Document upload modal
+  const [showDocsModal, setShowDocsModal] = useState(false);
+
+  // Document upload state
   const MAX_DOC_MB = 5;
-
   const [duiFiles, setDuiFiles] = useState<(File | null)[]>([null, null]);
-  const [duiPreviews, setDuiPreviews] = useState<(string | null)[]>([null, null]);
-  const [licenseFiles, setLicenseFiles] = useState<(File | null)[]>([null, null]);
-  const [licensePreviews, setLicensePreviews] = useState<(string | null)[]>([null, null]);
-
+  const [duiPreviews, setDuiPreviews] = useState<(string | null)[]>([
+    null,
+    null,
+  ]);
+  const [licenseFiles, setLicenseFiles] = useState<(File | null)[]>([
+    null,
+    null,
+  ]);
+  const [licensePreviews, setLicensePreviews] = useState<(string | null)[]>([
+    null,
+    null,
+  ]);
   const duiInputRef = useRef<HTMLInputElement>(null);
   const licenseInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleDocUpload = (
     fileList: FileList | null,
@@ -157,7 +204,12 @@ export default function RentalBookingForm({
     let processed = 0;
     for (const file of incoming) {
       if (file.size > MAX_DOC_MB * 1024 * 1024) {
-        toast.error(t("home.rentalBooking.docSizeError").replace("{{max}}", String(MAX_DOC_MB)));
+        toast.error(
+          t("home.rentalBooking.docSizeError").replace(
+            "{{max}}",
+            String(MAX_DOC_MB),
+          ),
+        );
         continue;
       }
       newFiles[processed] = file;
@@ -180,7 +232,7 @@ export default function RentalBookingForm({
     index: number,
     setFiles: React.Dispatch<React.SetStateAction<(File | null)[]>>,
     setPreviews: React.Dispatch<React.SetStateAction<(string | null)[]>>,
-    inputRef: React.RefObject<HTMLInputElement | null>,
+    inputRef: React.RefObject<HTMLInputElement>,
   ) => {
     setFiles((prev) => {
       const next = [...prev];
@@ -254,9 +306,98 @@ export default function RentalBookingForm({
       ? `${rangeSummary} · ${pickupTime} – ${returnTime}`
       : t("home.rentalBooking.selectDateRange");
 
+  const canReserve = useMemo(() => {
+    if (!user) return false;
+    if (!pickup || !dropoff || dropoff < pickup) return false;
+    if (insufficientHours) return false;
+    return true;
+  }, [user, pickup, dropoff, insufficientHours]);
+
+  const reserveBlockedReason = useMemo(() => {
+    if (!user) return "login";
+    if (!pickup || !dropoff || dropoff < pickup) return "range";
+    if (insufficientHours) return "hours";
+    return null;
+  }, [user, pickup, dropoff, insufficientHours]);
+
+  const hasAllDocs = duiFiles.some(Boolean) && licenseFiles.some(Boolean);
+
+  const pickupAddressSummary = useDefaultPickup
+    ? t("home.rentalBooking.defaultPickupLabel")
+    : pickupAddress;
+
+  const locationSummary = sameDropoff
+    ? pickupAddressSummary
+    : `${pickupAddressSummary} → ${dropoffAddress}`;
+
+  const handleReserveClick = async () => {
+    if (!canReserve || !user?.id || isUploading) return;
+
+    setIsUploading(true);
+
+    let documentUrls: string[] = [];
+    const allDocFiles = [...duiFiles, ...licenseFiles].filter(
+      Boolean,
+    ) as File[];
+
+    if (allDocFiles.length > 0) {
+      const uploadFormData = new FormData();
+      allDocFiles.forEach((file) => uploadFormData.append("files", file));
+      try {
+        const res = await fetch("/backend/api/v1/files/upload", {
+          method: "POST",
+          body: uploadFormData,
+        });
+        if (!res.ok) throw new Error("Upload failed");
+        const result = await res.json();
+        documentUrls = (result.files ?? []).map(
+          (f: { s3Location: string }) => f.s3Location,
+        );
+      } catch {
+        toast.error(t("home.rentalBooking.uploadError"));
+        setIsUploading(false);
+        return;
+      }
+    }
+
+    const pickupDt = pickup ? new Date(pickup) : new Date();
+    const [ph, pm] = pickupTime.split(":").map(Number);
+    pickupDt.setHours(ph, pm, 0, 0);
+
+    const dropoffDt = dropoff ? new Date(dropoff) : new Date();
+    const [rh, rm] = returnTime.split(":").map(Number);
+    dropoffDt.setHours(rh, rm, 0, 0);
+
+    const finalPickupLocation = useDefaultPickup
+      ? DEFAULT_AIRPORT.address
+      : pickupAddress;
+    const finalDropoffLocation = sameDropoff
+      ? finalPickupLocation
+      : dropoffAddress;
+
+    setBookingData({
+      kind: "rental",
+      pickup_time: pickupDt.toISOString(),
+      dropoff_time: dropoffDt.toISOString(),
+      pickup_location: finalPickupLocation,
+      dropoff_location: finalDropoffLocation,
+      total: estimatedTotal,
+      user_id: user.id,
+      product_id: product.id,
+      documents: documentUrls.length > 0 ? documentUrls : undefined,
+    });
+
+    setIsUploading(false);
+    setShowDocsModal(false);
+    setShowPaymentStep();
+  };
+
+  // === DATE RANGE PICKER BODY ===
   const rangePickerBody = (
     <div className="w-full min-w-0 space-y-3">
-      <p className="text-xs text-muted-foreground leading-snug">{t("home.rentalBooking.rangeHint")}</p>
+      <p className="text-xs text-muted-foreground leading-snug">
+        {t("home.rentalBooking.rangeHint")}
+      </p>
       <div className="w-full min-w-0 rounded-lg border border-border/50 bg-muted/15 p-2">
         <Calendar
           fullWidth
@@ -293,68 +434,233 @@ export default function RentalBookingForm({
           {t("home.rentalBooking.minHoursWarning")}
         </p>
       )}
-      <Button type="button" className="w-full rounded-full" onClick={() => setRangePickerOpen(false)}>
+      <Button
+        type="button"
+        className="w-full rounded-full"
+        onClick={() => setRangePickerOpen(false)}
+      >
         {t("home.rentalBooking.rangePickerDone")}
       </Button>
     </div>
   );
 
-  const consultBlockedReason = useMemo(() => {
-    if (!user) return "login";
-    if (!pickup || !dropoff || dropoff < pickup) return "range";
-    if (insufficientHours) return "hours";
-    return null;
-  }, [user, pickup, dropoff, insufficientHours]);
+  // === LOCATION MODAL BODY ===
+  const locationModalBody = (
+    <div className="space-y-4">
+      {/* Pickup location */}
+      <div className="space-y-2.5">
+        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          {t("home.rentalBooking.pickupLocation")}
+        </Label>
 
-  const canConsult = consultBlockedReason === null;
+        <div className="rounded-xl border p-2.5">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+              <MapPin className="h-4 w-4 text-primary" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium truncate">{pickupAddress}</p>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="shrink-0 h-8 text-xs text-muted-foreground hover:text-foreground"
+              onClick={() => setActiveMapMode("pickup")}
+            >
+              {t("home.rentalBooking.changeLocation")}
+            </Button>
+          </div>
+        </div>
+      </div>
 
-  const handleConsultClick = () => {
-    if (!canConsult) return;
-    setConsultOpen(true);
-  };
+      {/* Same dropoff toggle */}
+      <div className="border-t border-border/60 pt-3 space-y-2.5">
+        <div className="flex items-center gap-2.5 rounded-xl border p-2.5">
+          <input
+            type="checkbox"
+            id="sameDropoff"
+            checked={sameDropoff}
+            onChange={(e) => setSameDropoff(e.target.checked)}
+            className="h-4 w-4 shrink-0 accent-primary"
+          />
+          <label
+            htmlFor="sameDropoff"
+            className="text-sm font-medium cursor-pointer"
+          >
+            {t("home.rentalBooking.sameDropoff")}
+          </label>
+        </div>
 
-  const [createApplication, { isLoading: isSubmitting }] =
-    useCreateRentalApplicationMutation();
+        {!sameDropoff && (
+          <div className="space-y-2">
+            <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              {t("home.rentalBooking.dropoffLocation")}
+            </Label>
+            <button
+              type="button"
+              className="w-full flex items-center gap-2.5 rounded-xl border p-2.5 text-left hover:bg-muted/20 transition-colors"
+              onClick={() => setActiveMapMode("dropoff")}
+            >
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted/60">
+                <MapPin className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                  {t("home.rentalBooking.dropoffLocation")}
+                </span>
+                <p className="text-sm truncate mt-0.5">{dropoffAddress}</p>
+              </div>
+            </button>
+          </div>
+        )}
+      </div>
 
-  const handleConsultSubmit = async () => {
-    if (!user?.id) return;
+      <Button
+        type="button"
+        className="w-full rounded-full"
+        onClick={() => setLocationModalOpen(false)}
+      >
+        {t("home.rentalBooking.rangePickerDone")}
+      </Button>
+    </div>
+  );
 
-    const formData = new FormData();
-    formData.append("productId", product.id);
-    formData.append("userId", user.id);
-    formData.append("productName", product.name);
-    formData.append("pickup", pickup ? format(pickup, "yyyy-MM-dd") : "");
-    formData.append("dropoff", dropoff ? format(dropoff, "yyyy-MM-dd") : "");
-    formData.append("pickupTime", pickupTime);
-    formData.append("returnTime", returnTime);
-    formData.append("days", String(days));
-    formData.append("pricePerDay", String(pricePerDay));
-    formData.append("estimatedTotal", String(estimatedTotal));
-    formData.append("message", message.trim());
+  // === DOCUMENT UPLOAD SLOT ===
+  const docUploadSlot = (
+    label: string,
+    files: (File | null)[],
+    previews: (string | null)[],
+    setFiles: React.Dispatch<React.SetStateAction<(File | null)[]>>,
+    setPreviews: React.Dispatch<React.SetStateAction<(string | null)[]>>,
+    inputRef: React.RefObject<HTMLInputElement>,
+    frontLabel: string,
+    backLabel: string,
+  ) => (
+    <div className="space-y-2.5">
+      <Label className="text-xs font-semibold">{label}</Label>
+      {files.some(Boolean) ? (
+        <div className="grid grid-cols-2 gap-3">
+          {files.map((file, i) => (
+            <div key={i} className="space-y-1.5">
+              <Label className="text-[11px] font-medium text-muted-foreground">
+                {i === 0 ? frontLabel : backLabel}
+              </Label>
+              {file && previews[i] ? (
+                <div className="relative rounded-xl border border-border/60 overflow-hidden bg-muted/10">
+                  <Image
+                    src={previews[i]}
+                    alt={i === 0 ? "Front" : "Back"}
+                    className="w-full h-28 object-contain"
+                    width={400}
+                    height={112}
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    onClick={() =>
+                      removeDoc(i, setFiles, setPreviews, inputRef)
+                    }
+                    className="absolute top-1.5 right-1.5 h-6 w-6 p-0 rounded-full shadow-sm"
+                  >
+                    <X className="h-3 w-3" />
+                    <span className="sr-only">
+                      {t("home.rentalBooking.removeFile")}
+                    </span>
+                  </Button>
+                </div>
+              ) : (
+                <div className="border-2 border-dashed border-border/40 rounded-xl h-28 flex items-center justify-center bg-muted/5">
+                  <span className="text-[10px] text-muted-foreground/50">
+                    {t("home.rentalBooking.docClick")}
+                  </span>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div
+          className="border-2 border-dashed border-border/60 rounded-xl p-4 text-center cursor-pointer hover:bg-muted/20 hover:border-primary/40 transition-all"
+          onClick={() => inputRef.current?.click()}
+        >
+          <Upload className="h-6 w-6 mx-auto mb-1.5 text-muted-foreground" />
+          <p className="text-xs font-medium text-muted-foreground">
+            {t("home.rentalBooking.docClick")}
+          </p>
+          <p className="text-[10px] text-muted-foreground/60 mt-0.5">
+            {t("home.rentalBooking.docSizeHint").replace(
+              "{{max}}",
+              String(MAX_DOC_MB),
+            )}
+          </p>
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            className="hidden"
+            onChange={(e) =>
+              handleDocUpload(e.target.files, setFiles, setPreviews)
+            }
+          />
+        </div>
+      )}
+    </div>
+  );
 
-    for (const file of duiFiles) {
-      if (file) formData.append("dui_files", file);
-    }
-    for (const file of licenseFiles) {
-      if (file) formData.append("license_files", file);
-    }
+  const docsModalBody = (
+    <div className="space-y-5">
+      <p className="text-sm text-muted-foreground leading-relaxed">
+        {t("home.rentalBooking.documentsModalDescription")}
+      </p>
 
-    try {
-      await createApplication(formData).unwrap();
+      {docUploadSlot(
+        t("home.rentalBooking.duiLabel"),
+        duiFiles,
+        duiPreviews,
+        setDuiFiles,
+        setDuiPreviews,
+        duiInputRef,
+        t("home.rentalBooking.duiFrontLabel"),
+        t("home.rentalBooking.duiBackLabel"),
+      )}
 
-      setConsultOpen(false);
-      setMessage("");
-      setDuiFiles([null, null]);
-      setDuiPreviews([null, null]);
-      setLicenseFiles([null, null]);
-      setLicensePreviews([null, null]);
-      if (duiInputRef.current) duiInputRef.current.value = "";
-      if (licenseInputRef.current) licenseInputRef.current.value = "";
-      toast.success(t("home.rentalBooking.sentToast"));
-    } catch {
-      toast.error(t("home.rentalBooking.sendError"));
-    }
-  };
+      {docUploadSlot(
+        t("home.rentalBooking.licenseLabel"),
+        licenseFiles,
+        licensePreviews,
+        setLicenseFiles,
+        setLicensePreviews,
+        licenseInputRef,
+        t("home.rentalBooking.licenseFrontLabel"),
+        t("home.rentalBooking.licenseBackLabel"),
+      )}
+
+      <Button
+        type="button"
+        className="w-full gap-2 rounded-full"
+        onClick={handleReserveClick}
+        disabled={!hasAllDocs || isUploading}
+      >
+        {isUploading ? (
+          t("home.rentalBooking.uploading")
+        ) : (
+          <>
+            <CalendarCheck className="h-4 w-4" />
+            {t("home.rentalBooking.confirmReserve")}
+          </>
+        )}
+      </Button>
+
+      {/*  {!hasAllDocs && (
+        <p className="text-[11px] text-muted-foreground text-center">
+          {t("home.rentalBooking.documentsHint")}
+        </p>
+      )} */}
+    </div>
+  );
 
   return (
     <>
@@ -366,21 +672,12 @@ export default function RentalBookingForm({
           {t("home.rentalBooking.subtitle")}
         </p>
 
-        <div className="space-y-5">
-          <div className="flex items-baseline justify-between gap-2 border-b border-border/60 pb-3">
-            <div>
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                {t("home.rentalBooking.pricePerDay")}
-              </p>
-              <p className="text-2xl font-bold tabular-nums">
-                {symbol}
-                {validPrice ? convert(pricePerDay) : "—"}
-              </p>
-            </div>
-          </div>
-
+        <div className="space-y-2">
+          {/* DATE RANGE */}
           <div className="space-y-2">
-            <Label className="text-xs font-medium">{t("home.rentalBooking.dateRangeLabel")}</Label>
+            <Label className="text-xs font-medium">
+              {t("home.rentalBooking.dateRangeLabel")}
+            </Label>
             <Button
               type="button"
               variant="outline"
@@ -389,35 +686,53 @@ export default function RentalBookingForm({
             >
               <div className="flex min-w-0 items-center gap-3">
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-muted/60">
-                  <CalendarDays className="h-5 w-5 text-muted-foreground" aria-hidden />
+                  <CalendarDays
+                    className="h-5 w-5 text-muted-foreground"
+                    aria-hidden
+                  />
                 </div>
                 <div className="flex min-w-0 flex-col gap-0.5 text-left">
                   <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
                     {t("home.rentalBooking.dateRangeTriggerHint")}
                   </span>
-                  <span className="truncate text-sm font-semibold text-foreground">{rangeButtonMain}</span>
+                  <span className="truncate text-sm font-semibold text-foreground">
+                    {rangeButtonMain}
+                  </span>
                 </div>
               </div>
-              <ChevronDown className="h-5 w-5 shrink-0 text-muted-foreground" aria-hidden />
+              <ChevronDown
+                className="h-5 w-5 shrink-0 text-muted-foreground"
+                aria-hidden
+              />
             </Button>
 
             {isDesktop ? (
-              <Dialog open={rangePickerOpen} onOpenChange={setRangePickerOpen} modal={false}>
+              <Dialog
+                open={rangePickerOpen}
+                onOpenChange={setRangePickerOpen}
+                modal={false}
+              >
                 <DialogContent className="w-full min-w-0 max-w-[calc(100vw-1.5rem)] gap-0 overflow-visible p-0 pt-5 sm:max-w-lg sm:pt-6">
                   <DialogHeader className="px-6 pb-1.5 text-left">
-                    <DialogTitle>{t("home.rentalBooking.rangePickerTitle")}</DialogTitle>
+                    <DialogTitle>
+                      {t("home.rentalBooking.rangePickerTitle")}
+                    </DialogTitle>
                   </DialogHeader>
-                  <div className="w-full min-w-0 px-6 pb-5 sm:pb-6">{rangePickerBody}</div>
+                  <div className="w-full min-w-0 px-6 pb-5 sm:pb-6">
+                    {rangePickerBody}
+                  </div>
                 </DialogContent>
               </Dialog>
             ) : (
               <Sheet open={rangePickerOpen} onOpenChange={setRangePickerOpen}>
                 <SheetContent
                   side="bottom"
-                  className="rounded-t-[1.25rem] max-h-[min(92dvh,680px)] w-full px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-5 overflow-y-auto"
+                  className="rounded-t-[1.25rem] max-h-[min(92dvh,680px)] w-full px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 overflow-y-auto"
                 >
                   <SheetHeader className="pb-3 text-left space-y-1">
-                    <SheetTitle className="text-lg">{t("home.rentalBooking.rangePickerTitle")}</SheetTitle>
+                    <SheetTitle className="text-lg">
+                      {t("home.rentalBooking.rangePickerTitle")}
+                    </SheetTitle>
                   </SheetHeader>
                   {rangePickerBody}
                 </SheetContent>
@@ -425,14 +740,97 @@ export default function RentalBookingForm({
             )}
           </div>
 
+          {/* PICKUP / DROPOFF LOCATION — Trigger button */}
+          <div className="space-y-2">
+            <Label className="text-xs font-medium">
+              {t("home.rentalBooking.locationLabel")}
+            </Label>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setLocationModalOpen(true)}
+              className="w-full h-auto min-h-[3.25rem] justify-between gap-3 px-4 py-3 text-left font-normal border-2 rounded-xl"
+            >
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-muted/60">
+                  <MapPin
+                    className="h-5 w-5 text-muted-foreground"
+                    aria-hidden
+                  />
+                </div>
+                <div className="flex min-w-0 flex-col gap-0.5 text-left">
+                  <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                    {t("home.rentalBooking.dateRangeTriggerHint")}
+                  </span>
+                  <span className="truncate text-sm font-semibold text-foreground">
+                    {locationSummary}
+                  </span>
+                </div>
+              </div>
+              <ChevronDown
+                className="h-5 w-5 shrink-0 text-muted-foreground"
+                aria-hidden
+              />
+            </Button>
+
+            {isDesktop ? (
+              <Dialog
+                open={locationModalOpen}
+                onOpenChange={setLocationModalOpen}
+                modal={false}
+              >
+                <DialogContent className="w-full min-w-0 max-w-[calc(100vw-1.5rem)] gap-0 overflow-visible p-0 pt-4 sm:max-w-lg sm:pt-5">
+                  <DialogHeader className="px-5 pb-1 text-left space-y-1">
+                    <DialogTitle>
+                      {t("home.rentalBooking.locationModalTitle")}
+                    </DialogTitle>
+                    <p className="text-xs text-muted-foreground">
+                      {t("home.rentalBooking.locationModalDescription")}
+                    </p>
+                  </DialogHeader>
+                  <div className="w-full min-w-0 px-5 pb-4 sm:pb-5">
+                    {locationModalBody}
+                  </div>
+                </DialogContent>
+              </Dialog>
+            ) : (
+              <Sheet
+                open={locationModalOpen}
+                onOpenChange={setLocationModalOpen}
+              >
+                <SheetContent
+                  side="bottom"
+                  className="rounded-t-[1.25rem] max-h-[min(92dvh,680px)] w-full px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 overflow-y-auto"
+                >
+                  <SheetHeader className="pb-2 text-left space-y-1">
+                    <SheetTitle className="text-lg">
+                      {t("home.rentalBooking.locationModalTitle")}
+                    </SheetTitle>
+                    <p className="text-xs text-muted-foreground">
+                      {t("home.rentalBooking.locationModalDescription")}
+                    </p>
+                  </SheetHeader>
+                  {locationModalBody}
+                </SheetContent>
+              </Sheet>
+            )}
+          </div>
+
+          {/* TOTAL */}
           <div className="rounded-lg bg-background/80 px-3 py-2.5">
             <div className="flex justify-between gap-2 text-sm">
-              <span className="text-muted-foreground">{t("home.rentalBooking.days")}</span>
-              <span className="font-medium tabular-nums">{days > 0 ? days : "—"}</span>
+              <span className="text-muted-foreground">
+                {t("home.rentalBooking.days")}
+              </span>
+              <span className="font-medium tabular-nums">
+                {days > 0 ? days : "—"}
+              </span>
             </div>
             <div className="pt-3 border-t border-border dark:border-muted">
               <div className="flex items-center justify-between rounded px-2 py-2 font-semibold">
-                <span className="text-lg md:text-2xl">{t("home.bookingForm.total")}</span>
+                <span className="text-lg md:text-2xl">
+                  {t("home.bookingForm.total")}
+                </span>
                 <span className="text-lg md:text-2xl tabular-nums">
                   {symbol}
                   {estimatedTotal > 0 ? convert(estimatedTotal) : "—"}
@@ -441,188 +839,147 @@ export default function RentalBookingForm({
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <Button
-              type="button"
-              className="w-full gap-2 rounded-full"
-              onClick={handleConsultClick}
-              disabled={!canConsult}
-            >
-              <MessageCircle className="h-4 w-4" />
-              {t("home.rentalBooking.consult")}
-            </Button>
-            {consultBlockedReason && (
-              <p className="text-[11px] text-muted-foreground text-center">
-                {consultBlockedReason === "login" && t("home.bookingForm.toast.loginRequired")}
-                {consultBlockedReason === "range" && t("home.rentalBooking.selectRangeError")}
-                {consultBlockedReason === "hours" && t("home.rentalBooking.minHoursError")}
-              </p>
-            )}
-          </div>
+          {/* RESERVE BUTTON — Desktop */}
+          {!showPaymentStep && (
+            <>
+              <div className="space-y-1.5 hidden md:block">
+                <Button
+                  type="button"
+                  className="w-full gap-2 rounded-full"
+                  onClick={() => setShowDocsModal(true)}
+                  disabled={!canReserve}
+                >
+                  <CalendarCheck className="h-4 w-4" />
+                  {t("home.rentalBooking.reserve")}
+                </Button>
+                {reserveBlockedReason && (
+                  <p className="text-[11px] text-muted-foreground text-center">
+                    {reserveBlockedReason === "login" &&
+                      t("home.bookingForm.toast.loginRequired")}
+                    {reserveBlockedReason === "range" &&
+                      t("home.rentalBooking.selectRangeError")}
+                    {reserveBlockedReason === "hours" &&
+                      t("home.rentalBooking.minHoursError")}
+                  </p>
+                )}
+              </div>
 
-          {extraActionBelowBookNow ? (
-            <div className="pt-1">{extraActionBelowBookNow}</div>
-          ) : null}
+              {extraActionBelowBookNow ? (
+                <div className="pt-1">{extraActionBelowBookNow}</div>
+              ) : null}
+            </>
+          )}
         </div>
       </div>
 
-      <Dialog open={consultOpen} onOpenChange={setConsultOpen}>
-        <DialogContent className="sm:max-w-md max-h-[90dvh] overflow-y-auto">
+      {/* DOCUMENTS MODAL */}
+      {isDesktop ? (
+        <Dialog open={showDocsModal} onOpenChange={setShowDocsModal}>
+          <DialogContent className="sm:max-w-md max-h-[90dvh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-muted-foreground" />
+                {t("home.rentalBooking.documentsModalTitle")}
+              </DialogTitle>
+            </DialogHeader>
+            {docsModalBody}
+          </DialogContent>
+        </Dialog>
+      ) : (
+        <Sheet open={showDocsModal} onOpenChange={setShowDocsModal}>
+          <SheetContent
+            side="bottom"
+            className="rounded-t-[1.25rem] max-h-[min(92dvh,680px)] w-full px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 overflow-y-auto"
+          >
+            <SheetHeader className="pb-3 text-left space-y-1">
+              <SheetTitle className="text-lg flex items-center gap-2">
+                <FileText className="h-5 w-5 text-muted-foreground" />
+                {t("home.rentalBooking.documentsModalTitle")}
+              </SheetTitle>
+            </SheetHeader>
+            {docsModalBody}
+          </SheetContent>
+        </Sheet>
+      )}
+
+      {/* MAP PICKER DIALOG (shared for pickup + dropoff) */}
+      <Dialog
+        open={activeMapMode !== null}
+        onOpenChange={(open) => {
+          if (!open) setActiveMapMode(null);
+        }}
+      >
+        <DialogContent className="sm:max-w-lg max-h-[90dvh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{t("home.rentalBooking.modalTitle")}</DialogTitle>
-            <DialogDescription>{t("home.rentalBooking.modalDescription")}</DialogDescription>
+            <DialogTitle>
+              {activeMapMode === "dropoff"
+                ? t("home.rentalBooking.selectDropoffLocation")
+                : t("home.rentalBooking.selectPickupLocation")}
+            </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-1">
-            <div className="space-y-2">
-              <Label htmlFor="rental-inquiry-msg">{t("home.rentalBooking.messageLabel")}</Label>
-              <Textarea
-                id="rental-inquiry-msg"
-                rows={2}
-                placeholder={t("home.rentalBooking.messagePlaceholder")}
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                className="resize-none"
-              />
-            </div>
-
-            <div className="border-t border-border/60 pt-3">
-             
-
-              {/* DUI */}
-              <div className="space-y-2 mb-4">
-                <Label className="text-xs font-medium">{t("home.rentalBooking.duiLabel")}</Label>
-                {duiFiles.some(Boolean) && (
-                  <div className="grid grid-cols-2 gap-2">
-                    {duiFiles.map((file, i) => (
-                      <div key={i} className="space-y-1">
-                        <Label className="text-[11px] text-muted-foreground">
-                          {i === 0 ? t("home.rentalBooking.duiFrontLabel") : t("home.rentalBooking.duiBackLabel")}
-                        </Label>
-                        {file && duiPreviews[i] ? (
-                          <div className="relative rounded-lg border border-border/60 overflow-hidden">
-                            <Image
-                              src={duiPreviews[i]}
-                              alt={i === 0 ? "DUI front" : "DUI back"}
-                              className="w-full h-24 object-contain bg-muted/20"
-                              width={400}
-                              height={96}
-                            />
-                            <Button
-                              type="button"
-                              variant="destructive"
-                              size="icon"
-                              onClick={() => removeDoc(i, setDuiFiles, setDuiPreviews, duiInputRef)}
-                              className="absolute top-1 right-1 h-6 w-6 p-0"
-                            >
-                              <X className="h-3 w-3" />
-                              <span className="sr-only">{t("home.rentalBooking.removeFile")}</span>
-                            </Button>
-                          </div>
-                        ) : (
-                          <div className="border border-dashed border-border/40 rounded-lg h-24 flex items-center justify-center">
-                            <span className="text-[10px] text-muted-foreground/50">{t("home.rentalBooking.docClick")}</span>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {!duiFiles.every(Boolean) && (
-                  <div
-                    className="border-2 border-dashed border-border/60 rounded-lg p-3 text-center cursor-pointer hover:bg-muted/20 transition-colors"
-                    onClick={() => duiInputRef.current?.click()}
-                  >
-                    <Upload className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
-                    <p className="text-xs text-muted-foreground">{t("home.rentalBooking.docClick")}</p>
-                    <p className="text-[10px] text-muted-foreground/60 mt-0.5">
-                      {t("home.rentalBooking.docSizeHint").replace("{{max}}", String(MAX_DOC_MB))}
-                    </p>
-                    <input
-                      ref={duiInputRef}
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      className="hidden"
-                      onChange={(e) => handleDocUpload(e.target.files, setDuiFiles, setDuiPreviews)}
-                    />
-                  </div>
-                )}
-              </div>
-
-              {/* Driver's license */}
-              <div className="space-y-2">
-                <Label className="text-xs font-medium">{t("home.rentalBooking.licenseLabel")}</Label>
-                {licenseFiles.some(Boolean) && (
-                  <div className="grid grid-cols-2 gap-2">
-                    {licenseFiles.map((file, i) => (
-                      <div key={i} className="space-y-1">
-                        <Label className="text-[11px] text-muted-foreground">
-                          {i === 0 ? t("home.rentalBooking.licenseFrontLabel") : t("home.rentalBooking.licenseBackLabel")}
-                        </Label>
-                        {file && licensePreviews[i] ? (
-                          <div className="relative rounded-lg border border-border/60 overflow-hidden">
-                            <Image
-                              src={licensePreviews[i]}
-                              alt={i === 0 ? "License front" : "License back"}
-                              className="w-full h-24 object-contain bg-muted/20"
-                              width={400}
-                              height={96}
-                            />
-                            <Button
-                              type="button"
-                              variant="destructive"
-                              size="icon"
-                              onClick={() => removeDoc(i, setLicenseFiles, setLicensePreviews, licenseInputRef)}
-                              className="absolute top-1 right-1 h-6 w-6 p-0"
-                            >
-                              <X className="h-3 w-3" />
-                              <span className="sr-only">{t("home.rentalBooking.removeFile")}</span>
-                            </Button>
-                          </div>
-                        ) : (
-                          <div className="border border-dashed border-border/40 rounded-lg h-24 flex items-center justify-center">
-                            <span className="text-[10px] text-muted-foreground/50">{t("home.rentalBooking.docClick")}</span>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {!licenseFiles.every(Boolean) && (
-                  <div
-                    className="border-2 border-dashed border-border/60 rounded-lg p-3 text-center cursor-pointer hover:bg-muted/20 transition-colors"
-                    onClick={() => licenseInputRef.current?.click()}
-                  >
-                    <Upload className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
-                    <p className="text-xs text-muted-foreground">
-                      {t("home.rentalBooking.docClick")}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground/60 mt-0.5">
-                      {t("home.rentalBooking.docSizeHint").replace("{{max}}", String(MAX_DOC_MB))}
-                    </p>
-                    <input
-                      ref={licenseInputRef}
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      className="hidden"
-                      onChange={(e) => handleDocUpload(e.target.files, setLicenseFiles, setLicensePreviews)}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-          <DialogFooter className="gap-2 sm:gap-0">
-            <Button type="button" variant="outline" onClick={() => setConsultOpen(false)}>
-              {t("home.rentalBooking.cancel")}
-            </Button>
-            <Button type="button" onClick={handleConsultSubmit} disabled={isSubmitting}>
-              {isSubmitting ? "..." : t("home.rentalBooking.submit")}
-            </Button>
-          </DialogFooter>
+          <LocationPicker
+            quickLocations={[
+              {
+                lat: DEFAULT_AIRPORT.lat,
+                lng: DEFAULT_AIRPORT.lng,
+                label: t("home.rentalBooking.defaultPickupLabel"),
+                address: DEFAULT_AIRPORT.address,
+              },
+            ]}
+            onLocationSelect={(loc) => {
+              if (activeMapMode === "dropoff") {
+                setDropoffAddress(loc.address);
+              } else {
+                setPickupAddress(loc.address);
+                setUseDefaultPickup(false);
+              }
+              setActiveMapMode(null);
+            }}
+          />
         </DialogContent>
       </Dialog>
+
+      {/* FLOATING MOBILE RESERVE BUTTON */}
+      {mounted &&
+        typeof document !== "undefined" &&
+        !showPaymentStep &&
+        createPortal(
+          <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[9999] md:hidden print:hidden">
+            <div className="pointer-events-auto px-3 pb-[max(0.65rem,env(safe-area-inset-bottom,0px))] pt-2">
+              <div className="isolate mx-auto flex max-w-lg items-stretch gap-3 rounded-2xl border border-white/20 bg-gradient-to-tr from-black/30 to-gray-800/30 p-3 text-white shadow-lg backdrop-blur-md ring-1 ring-white/10">
+                <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5">
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-white/70">
+                    {t("home.bookingForm.total")}
+                  </span>
+                  <span className="text-xl font-bold tabular-nums leading-none tracking-tight text-white">
+                    {symbol}
+                    {estimatedTotal > 0 ? convert(estimatedTotal) : "—"}
+                  </span>
+                  <span className="truncate text-[11px] text-white/65">
+                    {days > 0
+                      ? `${days} ${t("home.rentalBooking.days").toLowerCase()}`
+                      : ""}
+                  </span>
+                </div>
+                <Button
+                  type="button"
+                  variant="default"
+                  onClick={() => setShowDocsModal(true)}
+                  disabled={!canReserve}
+                  className="h-auto min-h-[3.25rem] min-w-0 shrink-0 rounded-xl !bg-white !text-gray-900 shadow-md transition-transform hover:!bg-white/90 active:scale-[0.98] sm:px-5 [&_svg]:!text-gray-900"
+                >
+                  <span className="flex min-w-0 items-center gap-2 px-1 sm:px-0">
+                    <CalendarCheck className="h-4 w-4 shrink-0" aria-hidden />
+                    <span className="text-left leading-tight whitespace-nowrap">
+                      {t("home.rentalBooking.reserve")}
+                    </span>
+                  </span>
+                </Button>
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
     </>
   );
 }

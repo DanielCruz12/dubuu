@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { MapPin, Ticket } from "lucide-react";
+import { Heart, MapPin, Ticket } from "lucide-react";
 import { toast } from "sonner";
 import ImageCollage from "@/components/sections/image-collage";
 import { useParams } from "next/navigation";
@@ -22,6 +22,7 @@ import { SignInButton, useUser } from "@clerk/nextjs";
 import ProductsSkeleton from "@/components/skeletons/product-skeleton";
 import { Badge } from "@/components/ui/badge";
 import type { IProduct } from "@/types/product";
+import type { BookingFormData } from "@/types/booking";
 import ProductDetails from "@/components/sections/product-details";
 import CheckoutForm from "@/components/sections/checkout/checkout-form";
 import LocationMap from "@/components/location";
@@ -42,6 +43,11 @@ import {
 } from "@/utils/product-helpers";
 import UpTop from "@/components/up-top";
 import { ShareModal } from "@/components/share-modal";
+import {
+  useSaveProductMutation,
+  useUnsaveProductMutation,
+  useGetUserFavoritesQuery,
+} from "@/redux/slices/favorite/favorite-slice";
 import { formatUsd, USD_SYMBOL } from "@/utils/currency";
 import { useLanguage } from "@/lib/i18n-context";
 
@@ -90,20 +96,43 @@ export default function ProductBooking() {
   const convert = formatUsd;
   const symbol = USD_SYMBOL;
 
-  const [bookingData, setBookingData] = useState<{
-    datetime: string;
-    tickets: { adult: number; children: number };
-    addons: string[];
-    total: number;
-    user_id: string;
-    product_id: string;
-  } | null>(null);
+  const [bookingData, setBookingData] = useState<BookingFormData | null>(null);
+
+  const handleSetBookingData = (data: BookingFormData) => setBookingData(data);
 
   const { data: userBookings, isLoading: isLoadingBooking } =
     useGetBookingsByUserIdQuery(user?.id ?? "", {
       skip: !user?.id,
       refetchOnMountOrArgChange: true,
     });
+
+  const { data: favorites } = useGetUserFavoritesQuery(
+    { userId: user?.id || "" },
+    { skip: !user?.id },
+  );
+  const [saveProduct, { isLoading: isSaving }] = useSaveProductMutation();
+  const [unsaveProduct, { isLoading: isUnsaving }] = useUnsaveProductMutation();
+
+  const isFavorited =
+    favorites?.some((fav: { productId: string }) => fav.productId === (id as string)) || false;
+
+  const toggleFavorite = async () => {
+    if (!user?.id) {
+      toast.error(t("home.tourCard.loginToSave"));
+      return;
+    }
+    try {
+      if (isFavorited) {
+        await unsaveProduct({ productId: id as string, userId: user.id }).unwrap();
+        toast.success(t("home.tourCard.removedFromSaved"));
+      } else {
+        await saveProduct({ productId: id as string, userId: user.id }).unwrap();
+        toast.success(t("home.tourCard.savedSuccess"));
+      }
+    } catch {
+      toast.error(t("home.tourCard.saveError"));
+    }
+  };
 
   // Fetch reviews using the product ID from the URL params instead of bookingData
   const { data: reviews = [], isLoading: isLoadingReviews } =
@@ -211,14 +240,21 @@ export default function ProductBooking() {
                 description={product?.description?.substring(0, 100) + "..."}
                 image={withCacheKey(product?.banner ?? "", product?.updated_at)}
               />
-              {/*   <Button
+              <Button
                 variant="ghost"
                 size="sm"
-                className="rounded-full hover:bg-gray-100 p-2"
+                className="rounded-full"
+                onClick={toggleFavorite}
+                disabled={isSaving || isUnsaving}
               >
-                <Heart className="h-4 w-4 " />
-                <span className="text-sm font-medium underline">Guardar</span>
-              </Button> */}
+                <Heart
+                  className={`h-4 w-4 ${
+                    isFavorited
+                      ? "fill-rose-500 text-rose-500"
+                      : "text-gray-700 dark:text-white stroke-[2.5px] hover:text-rose-400"
+                  } ${isSaving || isUnsaving ? "opacity-50" : ""}`}
+                />
+              </Button>
             </div>
           </div>
           <div className="flex items-center gap-2 md:mt-2">
@@ -371,6 +407,9 @@ export default function ProductBooking() {
                         {hasRentalDetail ? (
                           <RentalBookingForm
                             product={product}
+                            setBookingData={handleSetBookingData}
+                            showPaymentStep={showPaymentStep}
+                            setShowPaymentStep={() => setShowPaymentStep(true)}
                             extraActionBelowBookNow={
                               <div className="space-y-2">
                                 {hasAnyProductBooking && showBookingFormAgain ? (
@@ -401,7 +440,7 @@ export default function ProductBooking() {
                         ) : (
                           <BookingForm
                             key={`booking-form-${bookingFormKey}`}
-                            setBookingData={setBookingData}
+                            setBookingData={handleSetBookingData}
                             showPaymentStep={showPaymentStep}
                             setShowPaymentStep={() => setShowPaymentStep(true)}
                             product={product}
@@ -488,6 +527,9 @@ export default function ProductBooking() {
                               {hasRentalDetail ? (
                                 <RentalBookingForm
                                   product={product}
+                                  setBookingData={handleSetBookingData}
+                                  showPaymentStep={showPaymentStep}
+                                  setShowPaymentStep={() => setShowPaymentStep(true)}
                                   extraActionBelowBookNow={
                                     <div className="space-y-2">
                                       {hasAnyProductBooking && showBookingFormAgain ? (
@@ -518,7 +560,7 @@ export default function ProductBooking() {
                               ) : (
                                 <BookingForm
                                   key={`booking-form-${bookingFormKey}`}
-                                  setBookingData={setBookingData}
+                                  setBookingData={handleSetBookingData}
                                   showPaymentStep={showPaymentStep}
                                   setShowPaymentStep={() =>
                                     setShowPaymentStep(true)

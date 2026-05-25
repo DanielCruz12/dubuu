@@ -17,6 +17,7 @@ import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 import { CalendarCheck } from "lucide-react";
 import type { IProduct } from "@/types/product";
+import type { BookingFormData } from "@/types/booking";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { isProductType } from "@/utils";
@@ -41,15 +42,6 @@ function getBookingFormSchema(t: (key: string) => string) {
 }
 
 type FormData = z.infer<ReturnType<typeof getBookingFormSchema>>;
-
-export type BookingFormData = {
-  datetime: string;
-  tickets: { adult: number; children: number };
-  addons: string[];
-  total: number;
-  user_id: string;
-  product_id: string;
-};
 
 export default function BookingForm({
   product,
@@ -181,6 +173,7 @@ export default function BookingForm({
     }
 
     setBookingData({
+      kind: "tour" as const,
       datetime: watchData.datetime,
       tickets: watchData.tickets,
       addons: watchData.addons,

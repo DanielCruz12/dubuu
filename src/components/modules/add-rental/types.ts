@@ -31,6 +31,9 @@ export function getRentalVehicleSchema(t: TFunction) {
     engine: z.string().min(1, { message: t("dashboard.addRental.vehicle.validation.engineMin") }),
     transmission: z.enum(["automatic", "manual"]),
     seating_capacity: z.coerce.number().int().min(1).max(50),
+    plate: z.string().optional().default(""),
+    vin: z.string().optional().default(""),
+    has_gps: z.boolean().default(false),
   });
 }
 

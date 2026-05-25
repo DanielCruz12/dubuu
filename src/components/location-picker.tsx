@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import dynamic from "next/dynamic";
 import { useLanguage } from "@/lib/i18n-context";
-import { GoogleMapPicker } from "@/components/google-map-picker";
+import { GoogleMapPicker, type QuickLocation } from "@/components/google-map-picker";
 
 const LeafletMapComponent = dynamic(() => import("@/components/leaflet-map"), {
   ssr: false,
@@ -27,11 +27,13 @@ interface Location {
 interface LocationPickerProps {
   onLocationSelect: (location: Location) => void;
   initialLocation?: Location | null;
+  quickLocations?: QuickLocation[];
 }
 
 export default function LocationPicker({
   onLocationSelect,
   initialLocation,
+  quickLocations,
 }: LocationPickerProps) {
   const { t } = useLanguage();
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(
@@ -81,6 +83,7 @@ export default function LocationPicker({
               apiKey={googleApiKey!}
               onLocationSelect={handleLocationSelect}
               selectedLocation={selectedLocation}
+              quickLocations={quickLocations}
             />
           ) : (
             <LeafletMapComponent

@@ -35,6 +35,9 @@ export interface IRentalProduct extends IProductBase<"rental"> {
     is_live: boolean;
     color: string;
     engine: string;
+    plate?: string | null;
+    vin?: string | null;
+    has_gps?: boolean;
     mileage?: number;
     doors?: number;
     unavailable_dates?: string[];

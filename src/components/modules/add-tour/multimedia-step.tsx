@@ -93,6 +93,8 @@ interface MultimediaStepProps {
   };
   /** Replaces the default “price” field label (e.g. car rental: price per day). */
   priceLabelOverride?: string;
+  /** Hides the “accepts children” and “children price” fields (e.g. for rentals). */
+  hideChildrenSection?: boolean;
 }
 
 export function MultimediaStep({
@@ -101,6 +103,7 @@ export function MultimediaStep({
   isEditMode = false,
   existingMedia,
   priceLabelOverride,
+  hideChildrenSection = false,
 }: MultimediaStepProps) {
   const { t } = useLanguage();
   const multimediaSchema = useMemo(() => getMultimediaSchema(t), [t]);
@@ -734,61 +737,65 @@ export function MultimediaStep({
           />
           <div className="mb-2" />
 
-          <Separator className="my-4" />
+          {!hideChildrenSection && (
+            <>
+              <Separator className="my-4" />
 
-          <FormField
-            control={form.control}
-            name="accepts_children"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                <div className="space-y-0.5">
-                  <FormLabel className="text-base">
-                    {t("dashboard.addTour.multimedia.acceptsChildrenLabel")}
-                  </FormLabel>
-                  <FormDescription>
-                    {t("dashboard.addTour.multimedia.acceptsChildrenDescription")}
-                  </FormDescription>
-                </div>
-                <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
+              <FormField
+                control={form.control}
+                name="accepts_children"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base">
+                        {t("dashboard.addTour.multimedia.acceptsChildrenLabel")}
+                      </FormLabel>
+                      <FormDescription>
+                        {t("dashboard.addTour.multimedia.acceptsChildrenDescription")}
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
 
-          {form.watch("accepts_children") && (
-            <FormField
-              control={form.control}
-              name="children_price"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {t("dashboard.addTour.multimedia.childrenPriceLabel")}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      type="number"
-                      step="0.01"
-                      value={field.value ?? ""}
-                      onChange={(e) => {
-                        const v = e.target.value;
-                        field.onChange(v === "" ? null : parseFloat(v));
-                      }}
-                      placeholder={t("dashboard.addTour.multimedia.childrenPricePlaceholder")}
-                      className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
-                    />
-                  </FormControl>
-                  <FormMessage className="text-xs text-red-500" />
-                </FormItem>
+              {form.watch("accepts_children") && (
+                <FormField
+                  control={form.control}
+                  name="children_price"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {t("dashboard.addTour.multimedia.childrenPriceLabel")}
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="number"
+                          step="0.01"
+                          value={field.value ?? ""}
+                          onChange={(e) => {
+                            const v = e.target.value;
+                            field.onChange(v === "" ? null : parseFloat(v));
+                          }}
+                          placeholder={t("dashboard.addTour.multimedia.childrenPricePlaceholder")}
+                          className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs text-red-500" />
+                    </FormItem>
+                  )}
+                />
               )}
-            />
-          )}
 
-          <div className="mb-2" />
+              <div className="mb-2" />
+            </>
+          )}
 
           {form.watch("price") > 0 && (
             <div className="bg-gray-50 dark:bg-gray-900 rounded-lg py-2 px-4 mb-4">

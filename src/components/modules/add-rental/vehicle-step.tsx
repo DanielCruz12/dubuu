@@ -47,6 +47,9 @@ export function RentalVehicleStep({ onSubmit, defaultValues }: RentalVehicleStep
       engine: defaultValues?.engine ?? "",
       transmission: defaultValues?.transmission ?? "automatic",
       seating_capacity: defaultValues?.seating_capacity ?? 5,
+      plate: defaultValues?.plate ?? "",
+      vin: defaultValues?.vin ?? "",
+      has_gps: defaultValues?.has_gps ?? false,
     },
   });
 
@@ -235,6 +238,55 @@ export function RentalVehicleStep({ onSubmit, defaultValues }: RentalVehicleStep
                 <FormControl>
                   <Input {...field} placeholder={t("dashboard.addRental.vehicle.enginePlaceholder")} />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <FormField
+            control={form.control}
+            name="plate"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("dashboard.addRental.vehicle.plate")}</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder={t("dashboard.addRental.vehicle.platePlaceholder")} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="vin"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("dashboard.addRental.vehicle.vin")}</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder={t("dashboard.addRental.vehicle.vinPlaceholder")} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="has_gps"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-end gap-2 pb-1">
+                <FormControl>
+                  <input
+                    type="checkbox"
+                    checked={field.value}
+                    onChange={(e) => field.onChange(e.target.checked)}
+                    className="h-4 w-4 rounded border-gray-300 accent-primary"
+                  />
+                </FormControl>
+                <FormLabel className="!mt-0 cursor-pointer">
+                  {t("dashboard.addRental.vehicle.hasGps")}
+                </FormLabel>
                 <FormMessage />
               </FormItem>
             )}

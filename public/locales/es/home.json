@@ -72,8 +72,8 @@
 		}
 	},
 	"rentalBooking": {
-		"title": "Consultar —",
-		"subtitle": "Elige fechas para ver un total estimado y enviar tu consulta.",
+		"title": "Reservar —",
+		"subtitle": "Elige fechas y completa los datos para realizar tu reserva.",
 		"dateRangeLabel": "Fechas del alquiler",
 		"dateRangeTriggerHint": "Toca para cambiar",
 		"selectDateRange": "Seleccionar rango de fechas",
@@ -90,15 +90,22 @@
 		"days": "Días",
 		"estimatedTotal": "Total estimado",
 		"disclaimer": "El total es orientativo; el anfitrión confirmará precio final y disponibilidad.",
-		"consult": "Consultar",
-		"modalTitle": "Enviar consulta",
-		"modalDescription": "Describe tu necesidad (Detalles, entrega, etc.)",
-		"messageLabel": "Mensaje",
-		"messagePlaceholder": "Ej.: Viajas con mucho equipaje, silla para bebé, destino específico, etc.",
-		"cancel": "Cancelar",
-		"submit": "Enviar",
-		"sentToast": "Consulta enviada. El anfitrión la revisará pronto.",
-		"sendError": "No se pudo enviar la consulta. Intenta de nuevo.",
+		"documentsTitle": "Documentos",
+		"pickupLocation": "Lugar de recogida",
+		"defaultPickupLabel": "Aeropuerto Internacional de El Salvador",
+		"otherLocation": "¿Desea seleccionar otra ubicación?",
+		"sameDropoff": "Entregar en el mismo lugar de recogida",
+		"dropoffLocation": "Lugar de entrega",
+		"selectPickupLocation": "Seleccionar lugar de recogida",
+		"selectDropoffLocation": "Seleccionar lugar de entrega",
+		"reserve": "Reservar",
+		"uploadError": "Error al subir documentos. Intenta de nuevo.",
+		"uploading": "Subiendo documentos...",
+		"outsideAvailableRange": "Fecha fuera del rango disponible",
+		"alreadyBooked": "Ya reservado",
+		"documentsModalTitle": "Documentos requeridos",
+		"documentsModalDescription": "Adjunta fotos de tu DUI y licencia de conducir para continuar con la reserva.",
+		"confirmReserve": "Confirmar y reservar",
 		"incompleteListing": "Este anuncio está marcado como alquiler pero aún no incluye los datos del vehículo. Vuelve más tarde o contacta al anfitrión.",
 		"documentsLabel": "Documentos requeridos",
 		"documentsHint": "Adjunta fotos de tu DUI y licencia de conducir.",
@@ -113,13 +120,17 @@
 		"docSizeError": "La imagen no puede superar los {{max}} MB",
 		"removeFile": "Eliminar archivo",
 		"minHoursWarning": "El alquiler debe ser de al menos 24 horas.",
-		"minHoursError": "El período mínimo de alquiler es de 24 horas."
+		"minHoursError": "El período mínimo de alquiler es de 24 horas.",
+		"changeLocation": "Cambiar ubicación",
+		"locationLabel": "Direcciones",
+		"locationModalTitle": "Lugares de recogida y entrega",
+		"locationModalDescription": "Aquí podrás seleccionar el lugar de recogida y el lugar de entrega."
 	},
 	"hero": {
 		"subtitle": "Descubra los tesoros del mundo"
 	},
 	"search": {
-		"placeholder": "Buscar destinos, tours, experiencias...",
+		"placeholder": "Buscar destinos, viajes, experiencias...",
 		"placeholderNotLogged": "Inicia sesión para buscar por texto...",
 		"placeholderInitial": "Cargando..."
 	},
@@ -407,6 +418,26 @@
 			"paymentError": "Error al procesar el pago",
 			"paymentCompletedSuccess": "¡Pago completado! Tu reserva está confirmada.",
 			"viewMyBookings": "Ir a mis reservas"
+		}
+	},
+	"dashboard": {
+		"addTour": {
+			"location": {
+				"myLocation": "Mi ubicación",
+				"addressNotFound": "Dirección no encontrada",
+				"meetingPointTitle": "Punto de encuentro",
+				"meetingPointLabel": "Punto de encuentro seleccionado",
+				"meetingPointHint": "Este será el punto de recogida para tu reserva.",
+				"loadingMap": "Cargando mapa...",
+				"mapBlockedByKey": "Google Maps bloqueado por clave de API",
+				"mapBlockedHint": "Añade este dominio a las restricciones HTTP en Google Cloud Console:",
+				"mapTypeLabel": "Tipo de mapa",
+				"mapTypeRoadmap": "Mapa estándar",
+				"mapTypeSatellite": "Satélite",
+				"mapTypeHybrid": "Híbrido",
+				"mapTypeTerrain": "Terreno",
+				"searchPlaceholder": "Buscar lugares, direcciones..."
+			}
 		}
 	}
 }

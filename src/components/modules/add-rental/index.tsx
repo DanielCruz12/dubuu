@@ -102,6 +102,9 @@ function mapRentalProductToForm(p: IRentalProduct): {
       engine: r.engine,
       transmission: r.transmission,
       seating_capacity: r.seating_capacity,
+      plate: r.plate ?? "",
+      vin: r.vin ?? "",
+      has_gps: r.has_gps ?? false,
     },
     delivery: {
       country: p.country,
@@ -192,6 +195,9 @@ function createRentalFormData(
   data.append("fuel_type", vehicle.fuel_type);
   data.append("color", vehicle.color);
   data.append("engine", vehicle.engine);
+  data.append("plate", vehicle.plate ?? "");
+  data.append("vin", vehicle.vin ?? "");
+  data.append("has_gps", String(Boolean(vehicle.has_gps)));
 
   data.append("pickup_location", "");
   // Entrega siempre se ofrece en rentals (UI step 3).
@@ -608,6 +614,7 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
                   priceLabelOverride={t(
                     "dashboard.addRental.multimedia.pricePerDay",
                   )}
+                  hideChildrenSection
                   existingMedia={
                     existingRental
                       ? {

@@ -114,7 +114,7 @@ export default function RentalImportantInfoModal({
           variant="outline"
           size="sm"
           className={cn(
-            "w-full justify-center gap-2 font-semibold border-primary/30 text-primary hover:bg-primary/5 hover:border-primary/50",
+            "w-full justify-center gap-2 font-semibold rounded-full border-primary/30 text-primary hover:bg-primary/5 hover:border-primary/50",
             className,
           )}
           onClick={openModal}

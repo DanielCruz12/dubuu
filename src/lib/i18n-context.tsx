@@ -79,24 +79,37 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     loadedRouteRef.current = null; // forzar recarga de namespaces para el nuevo idioma
   }, []);
 
+  function deepLookup(obj: Record<string, unknown>, segments: string[]): string | undefined {
+    let value: any = obj;
+    for (const key of segments) {
+      value = value?.[key];
+      if (value === undefined) return undefined;
+    }
+    return typeof value === "string" ? value : undefined;
+  }
+
   const t = useCallback(
     (path: string): string => {
-      // Mientras las traducciones no estén cargadas, no mostrar la key (evita flash de "home.hero.subtitle" etc.)
       if (!isReady || Object.keys(translations).length === 0) {
-        return "\u00A0"; // espacio no separable para no colapsar el layout
+        return "\u00A0";
       }
       const keys = path.split(".");
-      let value: any = translations;
-      for (const key of keys) {
-        value = value?.[key];
-        if (value === undefined) {
-          if (process.env.NODE_ENV === "development") {
-            console.warn(`Translation missing for key: ${path}`);
-          }
-          return path;
-        }
+
+      // Try root-level lookup first (e.g. "home.bookingForm.title")
+      const rootHit = deepLookup(translations, keys);
+      if (rootHit !== undefined) return rootHit;
+
+      // Fallback: search inside each namespace
+      for (const nsData of Object.values(translations)) {
+        if (typeof nsData !== "object" || nsData === null) continue;
+        const hit = deepLookup(nsData as Record<string, unknown>, keys);
+        if (hit !== undefined) return hit;
       }
-      return typeof value === "string" ? value : path;
+
+      if (process.env.NODE_ENV === "development") {
+        console.warn(`Translation missing for key: ${path}`);
+      }
+      return path;
     },
     [translations, isReady]
   );
