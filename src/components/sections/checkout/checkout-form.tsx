@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
-import { useRouter } from "next/navigation";
 import { useLanguage } from "@/lib/i18n-context";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, FormProvider } from "react-hook-form";
@@ -52,7 +51,6 @@ export default function CheckoutForm({
 }) {
   const { t } = useLanguage();
   const user = useUser();
-  const router = useRouter();
   const dispatch = useDispatch();
 
   const methods = useForm<CheckoutFormValues>({
@@ -118,12 +116,7 @@ export default function CheckoutForm({
   useOnPaymentCompleted(() => {
     setBlinkModalOpen(false);
     setBlinkResponse(null);
-    toast.success(t("home.checkout.toast.paymentCompletedSuccess"), {
-      action: {
-        label: t("home.checkout.toast.viewMyBookings"),
-        onClick: () => router.push("/account/bookings"),
-      },
-    });
+    toast.success(t("home.checkout.toast.paymentCompletedSuccess"));
     dispatch(
       bookingsApiSlice.util.invalidateTags([{ type: "Bookings", id: "USER_LIST" }])
     );

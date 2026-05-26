@@ -134,7 +134,7 @@ export default function ReviewSection({
       );
     }
 
-    // Si el usuario tiene una reserva completada, no ha dejado reseña y ya pasó la fecha del tour
+    // Si el usuario tiene una reserva completada y ya pasó la fecha del tour
     if (state.isBookingCompleted && state.hasTourDatePassed) {
       return (
         <div className="mt-6 p-4 border rounded-lg">

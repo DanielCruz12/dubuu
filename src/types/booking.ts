@@ -25,6 +25,12 @@ export interface IBookingUser {
   country: string
   product_description: string
   tourDate: string
+  booking_kind?: string
+  paymentMethod?: string
+  pickup_location?: string
+  dropoff_location?: string
+  pickup_time?: string
+  dropoff_time?: string
 }
 
 export type CreateBookingInput = Omit<

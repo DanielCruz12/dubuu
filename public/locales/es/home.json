@@ -104,7 +104,7 @@
 		"outsideAvailableRange": "Fecha fuera del rango disponible",
 		"alreadyBooked": "Ya reservado",
 		"documentsModalTitle": "Documentos requeridos",
-		"documentsModalDescription": "Adjunta fotos de tu DUI y licencia de conducir para continuar con la reserva.",
+		"documentsModalDescription": "Adjunta fotos de tu DUI y licencia de conducir.",
 		"confirmReserve": "Confirmar y reservar",
 		"incompleteListing": "Este anuncio está marcado como alquiler pero aún no incluye los datos del vehículo. Vuelve más tarde o contacta al anfitrión.",
 		"documentsLabel": "Documentos requeridos",
@@ -265,11 +265,14 @@
 		"tickets": "Entradas:",
 		"adult": "adulto",
 		"adults": "adultos",
+		"makeAnotherReservation": "Hacer otra reserva",
 		"buyAnotherTicket": "Comprar otro ticket",
 		"viewMyTickets": "Ver mis tickets",
 		"rebook": "Reservar de nuevo",
 		"downloadReceipt": "Descargar Recibo",
-		"receiptNotes": "Gracias por confiar en nuestros servicios. Este recibo sirve como comprobante de pago."
+		"receiptNotes": "Gracias por confiar en nuestros servicios. Este recibo sirve como comprobante de pago.",
+		"pickupLocation": "Lugar de recogida",
+		"dropoffLocation": "Lugar de entrega"
 	},
 	"share": {
 		"button": "Compartir",

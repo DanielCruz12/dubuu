@@ -6,6 +6,7 @@ export interface Review {
   email: string;
   rating: number;
   review: string;
+  image_url?: string;
   images?: string[] | File[];
   created_at?: string;
   updated_at?: string;

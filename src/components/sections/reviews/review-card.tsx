@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import moment from "moment"
@@ -21,6 +21,7 @@ export function ReviewCard({ review }: { review: Review }) {
         <div className="flex gap-4">
           {/* Avatar Section */}
           <Avatar className="h-12 w-12 border shadow-sm">
+            <AvatarImage src={review.image_url} alt={review.username} />
             <AvatarFallback className="bg-primary/10 text-primary font-medium">
               {review.username.charAt(0).toUpperCase()}
             </AvatarFallback>

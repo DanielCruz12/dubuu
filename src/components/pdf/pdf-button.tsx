@@ -6,6 +6,24 @@ import { Button } from "@/components/ui/button";
 import { FileDown } from "lucide-react";
 import { ReceiptProps } from "@/types/pdf";
 
+function loadImageAsDataUrl(src: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return reject(new Error("No canvas context"));
+      ctx.drawImage(img, 0, 0);
+      resolve(canvas.toDataURL("image/png"));
+    };
+    img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
+    img.src = src;
+  });
+}
+
 export default function PDFButton({
   receiptData,
   buttonText,
@@ -70,14 +88,29 @@ export default function PDFButton({
       doc.setFontSize(60);
       doc.text("RECIBO", 105, 150, { align: "center" });
 
-      // Encabezado - Información de la empresa
-      doc.setFontSize(16);
-      doc.setTextColor(0, 0, 0);
-      doc.text(receiptData.companyName, 10, 25);
+      // Cargar el logo como data URL para jsPDF
+      let logoDataUrl: string | null = null;
+      try {
+        logoDataUrl = await loadImageAsDataUrl("/logo.png");
+      } catch {
+        // sin logo, se usará texto fallback
+      }
+
+      // Encabezado - Logo de la empresa
+      let companyInfoStartY: number;
+      if (logoDataUrl) {
+        doc.addImage(logoDataUrl, "PNG", 10, 12, 42, 20);
+        companyInfoStartY = 35;
+      } else {
+        doc.setFontSize(16);
+        doc.setTextColor(0, 0, 0);
+        doc.text(receiptData.companyName, 10, 25);
+        companyInfoStartY = 30;
+      }
 
       doc.setFontSize(9);
       doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
-      let yPos = 30;
+      let yPos = companyInfoStartY;
       if (receiptData.companyAddress) {
         doc.text(receiptData.companyAddress, 10, yPos);
         yPos += 5;
@@ -94,18 +127,12 @@ export default function PDFButton({
         doc.text(`Web: ${receiptData.companyWebsite}`, 10, yPos);
       }
 
-      // Título del recibo
-      try {
-        doc.addImage("/logo.svg", "SVG", 155, 15, 45, 22);
-      } catch (error) {
-        console.error("Error al cargar el logo:", error);
-        // Si hay error al cargar el logo, mostramos el texto como fallback
-        doc.setFontSize(24);
-        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-        doc.text("RECIBO", 200, 25, { align: "right" });
-      }
+      // Título del recibo a la derecha
+      doc.setFontSize(24);
+      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+      doc.text("RECIBO", 200, 25, { align: "right" });
 
-      // Información del recibo
+      // Línea separadora
       doc.setDrawColor(238, 238, 238);
       doc.line(10, 50, 200, 50);
 

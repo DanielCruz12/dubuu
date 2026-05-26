@@ -104,7 +104,7 @@
 		"outsideAvailableRange": "Date outside available range",
 		"alreadyBooked": "Already booked",
 		"documentsModalTitle": "Required documents",
-		"documentsModalDescription": "Attach photos of your ID and driver's license to proceed with the reservation.",
+		"documentsModalDescription": "Attach photos of your ID and driver's license.",
 		"confirmReserve": "Confirm & reserve",
 		"incompleteListing": "This listing is marked as a rental but vehicle details are missing. Try again later or contact the host.",
 		"documentsLabel": "Required documents",
@@ -265,11 +265,14 @@
 		"tickets": "Tickets",
 		"adult": "adult",
 		"adults": "adults",
+		"makeAnotherReservation": "Make another reservation",
 		"buyAnotherTicket": "Buy another ticket",
 		"viewMyTickets": "View my tickets",
 		"rebook": "Book again",
 		"downloadReceipt": "Download receipt",
-		"receiptNotes": "Thank you for trusting our services. This receipt serves as proof of payment."
+		"receiptNotes": "Thank you for trusting our services. This receipt serves as proof of payment.",
+		"pickupLocation": "Pickup location",
+		"dropoffLocation": "Drop-off location"
 	},
 	"share": {
 		"button": "Share",

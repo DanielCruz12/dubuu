@@ -33,6 +33,11 @@ type BookingStatusProps = {
   tourDate?: string;
   tickets: { adult: number; children?: number };
   total: number;
+  bookingKind?: string;
+  pickupLocation?: string;
+  dropoffLocation?: string;
+  pickupTime?: string;
+  dropoffTime?: string;
   onRebook?: () => void;
   onViewDetails?: () => void;
   extraFooterAction?: ReactNode;
@@ -50,12 +55,18 @@ export function BookingStatus({
   tickets,
   user,
   total,
+  bookingKind,
+  pickupLocation,
+  dropoffLocation,
+  pickupTime,
+  dropoffTime,
   onRebook,
   onViewDetails,
   extraFooterAction,
   className,
 }: BookingStatusProps) {
   const { t, language } = useLanguage();
+  const isRental = bookingKind === "rental";
   const customerName =
     user?.firstName && user?.lastName
       ? `${user.firstName} ${user.lastName}`.trim()
@@ -68,27 +79,48 @@ export function BookingStatus({
   const unitPrice =
     ticketsCount > 0 ? paidTotal / ticketsCount : paidTotal;
 
+  const paymentMethodLabel =
+    paymentMethod === "blink"
+      ? "Bitcoin Lightning (Blink)"
+      : paymentMethod === "credit"
+        ? t("home.checkout.payment.creditCard")
+        : paymentMethod || t("home.bookingStatus.paymentMethod");
+
+  const receiptItems = isRental
+    ? [
+        {
+          id: productId.slice(0, 8),
+          description:
+            `${productName ?? ""} — ${t("home.bookingStatus.pickupLocation")}: ${pickupLocation ?? ""}, ${t("home.bookingStatus.dropoffLocation")}: ${dropoffLocation ?? ""}`,
+          quantity: 1,
+          price: paidTotal,
+        },
+      ]
+    : [
+        {
+          id: tickets.adult.toString(),
+          description: productName as string,
+          quantity: ticketsCount,
+          price: unitPrice,
+        },
+      ];
+
   const receiptData: ReceiptProps = {
-    receiptNumber: productId,
+    receiptNumber: id.slice(0, 13),
     date: new Date().toLocaleDateString(language === "es" ? "es-ES" : "en-US", {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
     }),
-    reservationDate: tourDate
-      ? moment(tourDate)
-          .locale(language)
-          .format(language === "es" ? "dddd, D [de] MMMM - h:mm A" : "dddd, MMM D - h:mm A")
-      : undefined,
+    reservationDate: isRental
+      ? `${moment(pickupTime).locale(language).format("LLL")} — ${moment(dropoffTime).locale(language).format("LLL")}`
+      : tourDate
+        ? moment(tourDate)
+            .locale(language)
+            .format(language === "es" ? "dddd, D [de] MMMM - h:mm A" : "dddd, MMM D - h:mm A")
+        : undefined,
     customerName,
-    items: [
-      {
-        id: tickets.adult.toString(),
-        description: productName as string,
-        quantity: ticketsCount,
-        price: unitPrice,
-      },
-    ],
+    items: receiptItems,
     subtotal: paidTotal,
     total: paidTotal,
     notes: t("home.bookingStatus.receiptNotes"),
@@ -98,8 +130,8 @@ export function BookingStatus({
     companyPhone: "+503 64562432",
     companyEmail: "support@dubuu.com",
     companyWebsite: "https://www.dubuu.com",
-    qrValue: "https://miempresa.com/verificar/INV-2023-001",
-    paymentMethod: "Transferencia Bancaria",
+    qrValue: `https://www.dubuu.com/booking/${id.slice(0, 13)}`,
+    paymentMethod: paymentMethodLabel,
     paymentStatus: "Completado",
   };
 
@@ -118,9 +150,9 @@ export function BookingStatus({
   return (
     <Card
       id={`booking-status-${id}`}
-      className={cn("overflow-hidden", config.borderColor, className)}
+      className={cn("overflow-hidden border-0 shadow-none", className)}
     >
-      <div className={cn("h-2", config.bgColor)} />
+      <div className={cn("h-2 border-b")} />
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-2">
@@ -145,29 +177,54 @@ export function BookingStatus({
                 <span className="text-gray-500">{t("home.bookingStatus.bookingNumber")}</span>
                 <span className="font-normal">#{id.slice(0, 13)}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">{t("home.bookingStatus.bookingDate")}</span>
-                <span className="font-normal">
-                  {tourDate
-                    ? moment(tourDate).locale(language).format("LLL")
-                    : moment(created_at).locale(language).format("LLL")}
-                </span>
-              </div>
+              {!isRental && (
+                <div className="flex justify-between">
+                  <span className="text-gray-500">{t("home.bookingStatus.bookingDate")}</span>
+                  <span className="font-normal">
+                    {tourDate
+                      ? moment(tourDate).locale(language).format("LLL")
+                      : moment(created_at).locale(language).format("LLL")}
+                  </span>
+                </div>
+              )}
               <div className="flex justify-between">
                 <span className="text-gray-500">{t("home.bookingStatus.paymentMethod")}</span>
-                <span className="font-normal">{paymentMethod}</span>
+                <span className="font-normal">{paymentMethodLabel}</span>
               </div>
             </div>
           </div>
 
           <div className="bg-muted/50 rounded-md p-3 space-y-2">
-            <div className="flex justify-between text-sm">
-              <span>{t("home.bookingStatus.tickets")}</span>
-              <span>
-                {tickets.adult} {tickets.adult === 1 ? t("home.bookingStatus.adult") : t("home.bookingStatus.adults")}
-                {childrenCount > 0 && ` + ${childrenCount} ${t("home.bookingForm.children").toLowerCase()}`}
-              </span>
-            </div>
+            {isRental ? (
+              <>
+                <div className="flex justify-between text-sm">
+                  <span>{t("home.bookingStatus.pickupLocation")}</span>
+                  <span className="font-medium">{pickupLocation}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>{t("home.bookingStatus.dropoffLocation")}</span>
+                  <span className="font-medium">{dropoffLocation}</span>
+                </div>
+                {pickupTime && dropoffTime && (
+                  <div className="flex justify-between text-sm">
+                    <span>{t("home.bookingStatus.bookingDate")}</span>
+                    <span className="font-medium">
+                      {moment(pickupTime).locale(language).format("LLL")}
+                      {" — "}
+                      {moment(dropoffTime).locale(language).format("LLL")}
+                    </span>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="flex justify-between text-sm">
+                <span>{t("home.bookingStatus.tickets")}</span>
+                <span>
+                  {tickets.adult} {tickets.adult === 1 ? t("home.bookingStatus.adult") : t("home.bookingStatus.adults")}
+                  {childrenCount > 0 && ` + ${childrenCount} ${t("home.bookingForm.children").toLowerCase()}`}
+                </span>
+              </div>
+            )}
             <Separator className="my-1" />
             <div className="flex justify-between font-medium">
               <span>{t("home.bookingForm.total")}</span>
@@ -192,7 +249,7 @@ export function BookingStatus({
         {onRebook && (
           <Button variant="outline" className="w-full hide-for-pdf" onClick={onRebook}>
             <RefreshCcw className="h-4 w-4 mr-2" />
-            {t("home.bookingStatus.buyAnotherTicket")}
+            {t("home.bookingStatus.makeAnotherReservation")}
           </Button>
         )}
       </CardFooter>

@@ -78,7 +78,6 @@ export default function ProductBooking() {
     function onPaymentCompleted(_data: { bookingId: string; status: string }) {
       console.log(_data);
       toast.success(t("home.checkout.toast.paymentConfirmed"));
-      router.push("/account/bookings");
     }
 
     if (socket.connected) onConnect();
@@ -144,11 +143,15 @@ export default function ProductBooking() {
   const [showPaymentStep, setShowPaymentStep] = useState(false);
   const [showBookingFormAgain, setShowBookingFormAgain] = useState(false);
   const [bookingFormKey, setBookingFormKey] = useState(0);
+  const [mobileAccordionOpen, setMobileAccordionOpen] = useState<string[]>(["overview"]);
   const bookingBoxRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (showPaymentStep && paymentRef.current) {
-      paymentRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (showPaymentStep) {
+      setMobileAccordionOpen([]);
+      if (paymentRef.current) {
+        paymentRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
   }, [showPaymentStep]);
 
@@ -379,6 +382,11 @@ export default function ProductBooking() {
                         productId={product.id}
                         paymentMethod={existingBooking.paymentMethod}
                         total={Number(existingBooking.total)}
+                        bookingKind={existingBooking.booking_kind}
+                        pickupLocation={existingBooking.pickup_location}
+                        dropoffLocation={existingBooking.dropoff_location}
+                        pickupTime={existingBooking.pickup_time}
+                        dropoffTime={existingBooking.dropoff_time}
                         onViewDetails={() =>
                           alert(t("home.landing.productDetail.viewDetails"))
                         }
@@ -470,7 +478,8 @@ export default function ProductBooking() {
                   </div>
                   <div className="block md:hidden">
                     <Accordion
-                      value={showPaymentStep ? [] : ["overview"]}
+                      value={mobileAccordionOpen}
+                      onValueChange={setMobileAccordionOpen}
                       type="multiple"
                     >
                       <AccordionItem value="overview">
@@ -497,6 +506,11 @@ export default function ProductBooking() {
                               productId={product.id}
                               paymentMethod={existingBooking.paymentMethod}
                               total={Number(existingBooking.total)}
+                              bookingKind={existingBooking.booking_kind}
+                              pickupLocation={existingBooking.pickup_location}
+                              dropoffLocation={existingBooking.dropoff_location}
+                              pickupTime={existingBooking.pickup_time}
+                              dropoffTime={existingBooking.dropoff_time}
                               onViewDetails={() =>
                                 alert(
                                   t("home.landing.productDetail.viewDetails"),
