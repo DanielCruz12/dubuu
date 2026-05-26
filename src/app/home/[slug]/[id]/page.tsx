@@ -316,6 +316,12 @@ export default function ProductBooking() {
             <CheckoutForm
               setShowPaymentStep={setShowPaymentStep}
               bookingData={bookingData}
+              onPaymentSuccess={() => {
+                setShowPaymentStep(false);
+                setBookingData(null);
+                setShowBookingFormAgain(true);
+                setBookingFormKey((k) => k + 1);
+              }}
             />
           </div>
         ) : (

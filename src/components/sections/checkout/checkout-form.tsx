@@ -45,9 +45,11 @@ import type { BookingFormData } from "@/types/booking";
 export default function CheckoutForm({
   setShowPaymentStep,
   bookingData,
+  onPaymentSuccess,
 }: {
   bookingData: BookingFormData | null;
   setShowPaymentStep: (show: boolean) => void;
+  onPaymentSuccess?: () => void;
 }) {
   const { t } = useLanguage();
   const user = useUser();
@@ -120,6 +122,7 @@ export default function CheckoutForm({
     dispatch(
       bookingsApiSlice.util.invalidateTags([{ type: "Bookings", id: "USER_LIST" }])
     );
+    onPaymentSuccess?.();
   });
 
   useEffect(() => {
@@ -277,6 +280,8 @@ export default function CheckoutForm({
               };
 
         await createBooking(bookingPayload).unwrap();
+
+        onPaymentSuccess?.();
 
         if (response?.urlCompletarPago3Ds) {
           setTimeout(() => {
