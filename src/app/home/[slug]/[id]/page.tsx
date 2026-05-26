@@ -319,8 +319,7 @@ export default function ProductBooking() {
               onPaymentSuccess={() => {
                 setShowPaymentStep(false);
                 setBookingData(null);
-                setShowBookingFormAgain(true);
-                setBookingFormKey((k) => k + 1);
+                setShowBookingFormAgain(false);
               }}
             />
           </div>

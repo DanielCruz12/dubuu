@@ -211,6 +211,10 @@ export default function CheckoutForm({
               dropoff_location: bookingData.dropoff_location,
               documents: bookingData.documents,
               is_live: true,
+              start_date_display: bookingData.start_date_display,
+              end_date_display: bookingData.end_date_display,
+              maps_link: bookingData.maps_link,
+              vehicle_model: bookingData.vehicle_model,
             }
           : {
               total: bookingData.total,
@@ -265,6 +269,10 @@ export default function CheckoutForm({
                 documents: bookingData.documents,
                 paymentMethod: values.paymentMethod,
                 idTransaccion: response.idTransaccion ?? "",
+                start_date_display: bookingData.start_date_display,
+                end_date_display: bookingData.end_date_display,
+                maps_link: bookingData.maps_link,
+                vehicle_model: bookingData.vehicle_model,
               }
             : {
                 user_id: bookingData.user_id,

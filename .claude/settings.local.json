@@ -19,7 +19,9 @@
       "Bash(node -e \"var fs=require\\('fs'\\);var d=fs.readFileSync\\('public/locales/en/home.json','utf8'\\);var m=d.match\\(/contractTitle.*?\\(?=\\\\\"close\\\\\"\\)/s\\); console.log\\(JSON.stringify\\(m[0]\\)\\)\")",
       "Bash(node fix-locales.js)",
       "Bash(node -e \"var fs=require\\('fs'\\);var d=fs.readFileSync\\('public/locales/en/home.json','utf8'\\);var idx=d.indexOf\\('contractTitle'\\);console.log\\(d.substring\\(idx, idx+200\\)\\)\")",
-      "Bash(git checkout *)"
+      "Bash(git checkout *)",
+      "Bash(Select-Object -First 50)",
+      "PowerShell(npx tsc --noEmit --pretty 2>&1 | Select-Object -First 50)"
     ]
   }
 }

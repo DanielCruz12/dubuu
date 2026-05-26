@@ -68,6 +68,24 @@ function dateKey(d: Date): string {
   return format(startOfDay(d), "yyyy-MM-dd");
 }
 
+function toLocalISOString(d: Date): string {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  const hours = String(d.getHours()).padStart(2, "0");
+  const minutes = String(d.getMinutes()).padStart(2, "0");
+  const seconds = String(d.getSeconds()).padStart(2, "0");
+  const tzOffset = -d.getTimezoneOffset();
+  const sign = tzOffset >= 0 ? "+" : "-";
+  const offH = String(Math.floor(Math.abs(tzOffset) / 60)).padStart(2, "0");
+  const offM = String(Math.abs(tzOffset) % 60).padStart(2, "0");
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${sign}${offH}:${offM}`;
+}
+
+function googleMapsLink(address: string): string {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+}
+
 function expandBookedDaysFromRental(
   rental: IRentalProduct["rental"],
 ): Set<string> {
@@ -154,8 +172,8 @@ export default function RentalBookingForm({
   }, []);
 
   const [range, setRange] = useState<DateRange | undefined>(() => {
-    const todayStart = startOfDay(new Date());
-    return { from: todayStart, to: addDays(todayStart, 1) };
+    const tomorrowStart = startOfDay(addDays(new Date(), 1));
+    return { from: tomorrowStart, to: addDays(tomorrowStart, 1) };
   });
   const [pickupTime, setPickupTime] = useState("10:00");
   const [returnTime, setReturnTime] = useState("10:00");
@@ -252,12 +270,13 @@ export default function RentalBookingForm({
   const validPrice = Number.isFinite(pricePerDay) && pricePerDay > 0;
 
   const today = useMemo(() => startOfDay(new Date()), []);
+  const tomorrow = useMemo(() => addDays(today, 1), [today]);
 
   const minDate = useMemo(() => {
     const from = parseBoundary(r.available_from);
-    if (!from) return today;
-    return from > today ? from : today;
-  }, [r.available_from, today]);
+    if (!from) return tomorrow;
+    return from > tomorrow ? from : tomorrow;
+  }, [r.available_from, tomorrow]);
 
   const maxNavDate = useMemo(() => {
     const cap = startOfDay(addYears(today, 1));
@@ -375,16 +394,22 @@ export default function RentalBookingForm({
       ? finalPickupLocation
       : dropoffAddress;
 
+    const displayFmt = "d MMM yyyy 'a las' h:mm a";
+
     setBookingData({
       kind: "rental",
-      pickup_time: pickupDt.toISOString(),
-      dropoff_time: dropoffDt.toISOString(),
+      pickup_time: toLocalISOString(pickupDt),
+      dropoff_time: toLocalISOString(dropoffDt),
       pickup_location: finalPickupLocation,
       dropoff_location: finalDropoffLocation,
       total: estimatedTotal,
       user_id: user.id,
       product_id: product.id,
       documents: documentUrls.length > 0 ? documentUrls : undefined,
+      start_date_display: format(pickupDt, displayFmt, { locale }),
+      end_date_display: format(dropoffDt, displayFmt, { locale }),
+      maps_link: googleMapsLink(finalPickupLocation),
+      vehicle_model: product.name,
     });
 
     setIsUploading(false);

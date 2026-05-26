@@ -79,6 +79,14 @@ export type RentalBookingData = {
   user_id: string;
   product_id: string;
   documents?: string[];
+  /** Formatted local date string for notifications (e.g. "27 may 2026 a las 10:00 AM") */
+  start_date_display?: string;
+  /** Formatted local date string for notifications */
+  end_date_display?: string;
+  /** Google Maps search link for the pickup location */
+  maps_link?: string;
+  /** Vehicle model name for notifications */
+  vehicle_model?: string;
 };
 
 export type BookingFormData = TourBookingData | RentalBookingData;
