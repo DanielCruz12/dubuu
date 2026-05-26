@@ -59,7 +59,8 @@ export default function ReviewSection({
     hasLeftReview:
       !!existingBooking &&
       existingBooking.status === "completed" &&
-      reviews.some((review) => existingBooking.user_id === review.user_id),
+      !!user &&
+      reviews.some((review) => user.id === review.user_id),
     hasTourDatePassed,
     tourDateFormatted: tourDate
       ? moment(tourDate)
@@ -75,7 +76,7 @@ export default function ReviewSection({
       )}
 
       <ReviewSummary reviews={reviews} />
-      <Separator className="" />
+      {reviews.length > 0 && <Separator className="" />}
       <ReviewList reviews={reviews} />
 
       {/* Sección de interacción del usuario con reseñas - solo mostrar en casos específicos */}

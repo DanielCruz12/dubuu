@@ -173,7 +173,22 @@ export default function RentalBookingForm({
 
   const [range, setRange] = useState<DateRange | undefined>(() => {
     const tomorrowStart = startOfDay(addDays(new Date(), 1));
-    return { from: tomorrowStart, to: addDays(tomorrowStart, 1) };
+    const booked = expandBookedDaysFromRental(r);
+
+    const findNextFree = (d: Date): Date => {
+      let cur = startOfDay(d);
+      for (let i = 0; i < 365; i++) {
+        if (!booked.has(dateKey(cur))) return cur;
+        cur = addDays(cur, 1);
+      }
+      return d;
+    };
+
+    const from = findNextFree(tomorrowStart);
+    let to = findNextFree(addDays(from, 1));
+    if (dateKey(to) === dateKey(from)) to = addDays(from, 1);
+
+    return { from, to };
   });
   const [pickupTime, setPickupTime] = useState("10:00");
   const [returnTime, setReturnTime] = useState("10:00");
