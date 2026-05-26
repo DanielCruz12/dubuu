@@ -25,7 +25,7 @@
 		"docsItem2": "Driver's license",
 		"docsItem3": "Credit card",
 		"depositTitle": "Security deposit",
-		"depositBody": "At pick-up, the main driver will leave a refundable security deposit of $200.00 on their credit card. Cash or debit cards are not accepted. The counter staff will confirm the exact amount.",
+		"depositBody": "At pick-up, the main driver will leave a refundable security deposit of {amount} on their credit card. Cash or debit cards are not accepted.",
 		"contractTitle": "Rental agreement",
 		"contractBody": "At the time of vehicle delivery, a rental agreement will be signed by both parties. This contract outlines the terms and conditions of the rental, including responsibilities, insurance coverage and return conditions.",
 		"cardsTitle": "Accepted cards",
@@ -69,6 +69,15 @@
 			"excellent": "Excellent",
 			"good": "Good",
 			"fair": "Fair"
+		},
+		"colors": {
+			"red": "Red",
+			"white": "White",
+			"blue": "Blue",
+			"black": "Black",
+			"green": "Green",
+			"yellow": "Yellow",
+			"gray": "Gray"
 		}
 	},
 	"rentalBooking": {

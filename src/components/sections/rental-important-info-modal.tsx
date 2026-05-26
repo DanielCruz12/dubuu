@@ -25,6 +25,8 @@ import { cn } from "@/lib/utils";
 type RentalImportantInfoModalProps = {
   trigger?: "text" | "button";
   className?: string;
+  hasDeposit?: boolean;
+  depositAmount?: string | null;
 };
 
 function SectionCard({
@@ -84,8 +86,11 @@ function SectionCard({
 export default function RentalImportantInfoModal({
   trigger = "text",
   className,
+  hasDeposit = false,
+  depositAmount = null,
 }: RentalImportantInfoModalProps) {
   const { t } = useLanguage();
+  const amount = depositAmount ? Number(depositAmount).toFixed(2) : "0.00";
   const [open, setOpen] = useState(false);
 
   const openModal = (e: MouseEvent) => {
@@ -159,17 +164,19 @@ export default function RentalImportantInfoModal({
               </SectionCard>
 
               {/* 2. Depósito de seguridad */}
-              <SectionCard icon={CircleDollarSign} color="amber">
-                <h3 className="text-sm font-semibold text-foreground">
-                  {t("home.rentalImportant.depositTitle")}
-                </h3>
-                <p className="text-2xl font-bold tabular-nums text-amber-600 dark:text-amber-400">
-                  $200.00
-                </p>
-                <p className="text-muted-foreground leading-relaxed">
-                  {t("home.rentalImportant.depositBody")}
-                </p>
-              </SectionCard>
+              {hasDeposit && (
+                <SectionCard icon={CircleDollarSign} color="amber">
+                  <h3 className="text-sm font-semibold text-foreground">
+                    {t("home.rentalImportant.depositTitle")}
+                  </h3>
+                  <p className="text-2xl font-bold tabular-nums text-amber-600 dark:text-amber-400">
+                    ${amount}
+                  </p>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {t("home.rentalImportant.depositBody").replace("{amount}", `$${amount}`)}
+                  </p>
+                </SectionCard>
+              )}
 
               {/* 3. Contrato */}
               <SectionCard icon={FileText} color="purple">

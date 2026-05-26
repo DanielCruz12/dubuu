@@ -50,6 +50,8 @@ export function RentalVehicleStep({ onSubmit, defaultValues }: RentalVehicleStep
       plate: defaultValues?.plate ?? "",
       vin: defaultValues?.vin ?? "",
       has_gps: defaultValues?.has_gps ?? false,
+      has_deposit: defaultValues?.has_deposit ?? false,
+      deposit_amount: defaultValues?.deposit_amount ?? "0.00",
     },
   });
 
@@ -291,6 +293,44 @@ export function RentalVehicleStep({ onSubmit, defaultValues }: RentalVehicleStep
               </FormItem>
             )}
           />
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 border-t pt-4 mt-2">
+          <FormField
+            control={form.control}
+            name="has_deposit"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-end gap-2 pb-1">
+                <FormControl>
+                  <input
+                    type="checkbox"
+                    checked={field.value}
+                    onChange={(e) => field.onChange(e.target.checked)}
+                    className="h-4 w-4 rounded border-gray-300 accent-primary"
+                  />
+                </FormControl>
+                <FormLabel className="!mt-0 cursor-pointer">
+                  {t("dashboard.addRental.vehicle.hasDeposit")}
+                </FormLabel>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {form.watch("has_deposit") && (
+            <FormField
+              control={form.control}
+              name="deposit_amount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("dashboard.addRental.vehicle.depositAmount")}</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="number" step="0.01" min="0" placeholder="200.00" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
         </div>
       </form>
     </Form>

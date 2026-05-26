@@ -25,7 +25,7 @@
 		"docsItem2": "Permiso de conducir",
 		"docsItem3": "Tarjeta de crédito",
 		"depositTitle": "Depósito de seguridad",
-		"depositBody": "En el momento de la recogida, el conductor principal dejará un depósito de seguridad reembolsable de $200.00 en su tarjeta de crédito. No se acepta efectivo ni tarjetas de débito. El personal del mostrador confirmará cuánto será.",
+		"depositBody": "En el momento de la recogida, el conductor principal dejará un depósito de seguridad reembolsable de {amount} en su tarjeta de crédito. No se acepta efectivo ni tarjetas de débito.",
 		"contractTitle": "Contrato de alquiler",
 		"contractBody": "Al momento de la entrega del vehículo, se firmará un contrato de alquiler entre ambas partes. Este contrato establece los términos y condiciones del alquiler, incluyendo responsabilidades, coberturas de seguro y condiciones de devolución.",
 		"cardsTitle": "Tarjetas aceptadas",
@@ -69,6 +69,15 @@
 			"excellent": "Excelente",
 			"good": "Bueno",
 			"fair": "Regular"
+		},
+		"colors": {
+			"red": "Rojo",
+			"white": "Blanco",
+			"blue": "Azul",
+			"black": "Negro",
+			"green": "Verde",
+			"yellow": "Amarillo",
+			"gray": "Gris"
 		}
 	},
 	"rentalBooking": {

@@ -492,7 +492,11 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
                 {description}
               </p>
               <div onClick={(e) => e.stopPropagation()}>
-                <RentalImportantInfoModal trigger="text" />
+                <RentalImportantInfoModal
+                  trigger="text"
+                  hasDeposit={rent?.has_deposit ?? false}
+                  depositAmount={rent?.deposit_amount ?? null}
+                />
               </div>
             </div>
             <div className="flex flex-col gap-3 border-t border-border/60 pt-4 sm:flex-row sm:items-end sm:justify-between">

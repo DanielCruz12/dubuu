@@ -38,6 +38,8 @@ export interface IRentalProduct extends IProductBase<"rental"> {
     plate?: string | null;
     vin?: string | null;
     has_gps?: boolean;
+    has_deposit?: boolean;
+    deposit_amount?: string;
     mileage?: number;
     doors?: number;
     unavailable_dates?: string[];

@@ -442,7 +442,19 @@ export default function ProductBooking() {
                                     {t("home.bookingStatus.viewMyTickets")}
                                   </Button>
                                 ) : null}
-                                <RentalImportantInfoModal trigger="button" />
+                                <RentalImportantInfoModal
+                                  trigger="button"
+                                  hasDeposit={
+                                    isRentalProduct(product)
+                                      ? (product.rental?.has_deposit ?? false)
+                                      : false
+                                  }
+                                  depositAmount={
+                                    isRentalProduct(product)
+                                      ? (product.rental?.deposit_amount ?? null)
+                                      : null
+                                  }
+                                />
                               </div>
                             }
                           />
@@ -568,7 +580,19 @@ export default function ProductBooking() {
                                           {t("home.bookingStatus.viewMyTickets")}
                                         </Button>
                                       ) : null}
-                                      <RentalImportantInfoModal trigger="button" />
+                                      <RentalImportantInfoModal
+                                  trigger="button"
+                                  hasDeposit={
+                                    isRentalProduct(product)
+                                      ? (product.rental?.has_deposit ?? false)
+                                      : false
+                                  }
+                                  depositAmount={
+                                    isRentalProduct(product)
+                                      ? (product.rental?.deposit_amount ?? null)
+                                      : null
+                                  }
+                                />
                                     </div>
                                   }
                                 />

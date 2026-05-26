@@ -41,6 +41,9 @@ export default function RentalVehicleSpecs({
   const fuel = t(`home.rentalSpecs.fuel.${r.fuel_type}`);
   const transmission = t(`home.rentalSpecs.transmissionKind.${r.transmission}`);
   const condition = t(`home.rentalSpecs.vehicleCondition.${r.condition}`);
+  const colorKey = `home.rentalSpecs.colors.${r.color}`;
+  const color = t(colorKey);
+  const displayColor = color === colorKey ? r.color : color;
 
   const titleVehicle = `${r.brand} ${r.model}`.trim();
 
@@ -68,7 +71,7 @@ export default function RentalVehicleSpecs({
             </SpecChip>
             <SpecChip icon={Cog}>{transmission}</SpecChip>
             <SpecChip icon={Droplets}>{fuel}</SpecChip>
-            <SpecChip icon={Palette}>{r.color}</SpecChip>
+            <SpecChip icon={Palette}>{displayColor}</SpecChip>
             <SpecChip icon={Car}>{r.engine}</SpecChip>
           </div>
         </div>

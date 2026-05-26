@@ -34,6 +34,8 @@ export function getRentalVehicleSchema(t: TFunction) {
     plate: z.string().optional().default(""),
     vin: z.string().optional().default(""),
     has_gps: z.boolean().default(false),
+    has_deposit: z.boolean().default(false),
+    deposit_amount: z.string().optional().default("0.00"),
   });
 }
 

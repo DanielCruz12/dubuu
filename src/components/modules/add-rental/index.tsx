@@ -105,6 +105,8 @@ function mapRentalProductToForm(p: IRentalProduct): {
       plate: r.plate ?? "",
       vin: r.vin ?? "",
       has_gps: r.has_gps ?? false,
+      has_deposit: r.has_deposit ?? false,
+      deposit_amount: r.deposit_amount ?? "0.00",
     },
     delivery: {
       country: p.country,
@@ -198,6 +200,8 @@ function createRentalFormData(
   data.append("plate", vehicle.plate ?? "");
   data.append("vin", vehicle.vin ?? "");
   data.append("has_gps", String(Boolean(vehicle.has_gps)));
+  data.append("has_deposit", String(Boolean(vehicle.has_deposit)));
+  data.append("deposit_amount", vehicle.deposit_amount ?? "0.00");
 
   data.append("pickup_location", "");
   // Entrega siempre se ofrece en rentals (UI step 3).

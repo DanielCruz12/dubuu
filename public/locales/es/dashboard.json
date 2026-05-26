@@ -211,6 +211,8 @@
       "vin": "VIN",
       "vinPlaceholder": "Ej. JTDBR22E800012345",
       "hasGps": "¿Posee GPS?",
+      "hasDeposit": "¿Requiere depósito de seguridad?",
+      "depositAmount": "Monto del depósito (USD)",
       "validation": {
         "brandMin": "La marca es obligatoria.",
         "modelMin": "El modelo es obligatorio.",
