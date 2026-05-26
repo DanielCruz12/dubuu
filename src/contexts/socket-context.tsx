@@ -40,8 +40,12 @@ export function SocketProvider({ children }: { children: ReactNode }) {
 
     const s = io(url, {
       path,
-      transports: ["websocket"],
+      transports: ["websocket", "polling"],
       autoConnect: true,
+      reconnection: true,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 10000,
     });
 
     setSocket(s);

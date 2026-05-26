@@ -70,7 +70,7 @@ export default function ReviewSection({
 
   return (
     <div className="mt-6 space-y-4">
-      {reviews.length < 0 && (
+      {reviews.length > 0 && (
         <h2 className="text-xl md:text-2xl font-semibold">{t("home.reviews.title")}</h2>
       )}
 

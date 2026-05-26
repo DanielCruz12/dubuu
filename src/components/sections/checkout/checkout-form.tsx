@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 import { useLanguage } from "@/lib/i18n-context";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,6 +18,7 @@ import {
 import { toast } from "sonner";
 import {
   useCreateBookingMutation,
+  useLazyGetBookingByIdQuery,
   bookingsApiSlice,
 } from "@/redux/slices/booking/booking-slice";
 import { useDispatch } from "react-redux";
@@ -90,26 +91,69 @@ export default function CheckoutForm({
     paymentRequest: string;
     idTransaccion: string;
     amount: number;
+    bookingId?: string;
   } | null>(null);
   const [copiedBlink, setCopiedBlink] = useState(false);
   const [invoiceExpiresSeconds, setInvoiceExpiresSeconds] = useState(0);
+  const [getBookingById] = useLazyGetBookingByIdQuery();
+  const hasCompletedRef = useRef(false);
 
-  // Countdown 3 min cuando se abre el modal Lightning; al llegar a 0 se cierra
+  // Detectar cuando el usuario vuelve a la pestaña (mobile: volver de Blink wallet)
+  useEffect(() => {
+    if (!blinkModalOpen || !blinkResponse?.bookingId) return;
+
+    const handleVisibility = () => {
+      if (document.visibilityState !== "visible" || !blinkResponse?.bookingId) return;
+      getBookingById(blinkResponse.bookingId).unwrap().then((data) => {
+        if (data?.status === "completed" && !hasCompletedRef.current) {
+          hasCompletedRef.current = true;
+          setBlinkModalOpen(false);
+          setBlinkResponse(null);
+          toast.success(t("home.checkout.toast.paymentCompletedSuccess"));
+          dispatch(
+            bookingsApiSlice.util.invalidateTags([{ type: "Bookings", id: "USER_LIST" }])
+          );
+          onPaymentSuccess?.();
+        }
+      }).catch(() => {});
+    };
+
+    handleVisibility();
+
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, [blinkModalOpen, blinkResponse, dispatch, getBookingById, onPaymentSuccess, t]);
+
+  // Countdown 3 min cuando se abre el modal Lightning; al llegar a 0 verifica pago
   useEffect(() => {
     if (!blinkModalOpen || !blinkResponse) return;
+    hasCompletedRef.current = false;
+    const bookingId = blinkResponse.bookingId;
+
     setInvoiceExpiresSeconds(180);
-    const interval = setInterval(() => {
+    const countdown = setInterval(() => {
       setInvoiceExpiresSeconds((prev) => {
         if (prev <= 1) {
-          clearInterval(interval);
-          setBlinkModalOpen(false);
+          clearInterval(countdown);
+          if (bookingId) {
+            getBookingById(bookingId).unwrap().then((data) => {
+              if (data?.status !== "completed") {
+                setBlinkModalOpen(false);
+              }
+            }).catch(() => {
+              setBlinkModalOpen(false);
+            });
+          } else {
+            setBlinkModalOpen(false);
+          }
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
-    return () => clearInterval(interval);
-  }, [blinkModalOpen, blinkResponse]);
+
+    return () => clearInterval(countdown);
+  }, [blinkModalOpen, blinkResponse, getBookingById]);
 
   const { data: currentUser } = useGetUserQuery(bookingData?.user_id ?? "", {
     skip: !bookingData?.user_id,
@@ -234,7 +278,9 @@ export default function CheckoutForm({
           (response as { idTransaccion?: string }).idTransaccion ?? "";
         const amount =
           (response as { amount?: number }).amount ?? bookingData.total;
-        setBlinkResponse({ paymentRequest, idTransaccion, amount });
+        const bookingId =
+          (response as { booking?: { id?: string } }).booking?.id ?? "";
+        setBlinkResponse({ paymentRequest, idTransaccion, amount, bookingId });
         setBlinkModalOpen(true);
         toast.success(t("home.checkout.toast.blinkReady"));
       } catch (err: unknown) {

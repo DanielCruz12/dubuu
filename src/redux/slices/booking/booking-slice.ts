@@ -92,6 +92,7 @@ export const {
   useGetBookingsByUserIdQuery,
   useGetBookingsByUserIdProductIdQuery,
   useGetBookingByIdQuery,
+  useLazyGetBookingByIdQuery,
   useCreateBookingMutation,
   useDeleteBookingMutation,
 } = bookingsApiSlice;

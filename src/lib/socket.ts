@@ -17,5 +17,12 @@ const { url, path } = getSocketConfig();
 
 export const socket: Socket =
   typeof window !== "undefined"
-    ? io(url, { path, transports: ["websocket"] })
+    ? io(url, {
+        path,
+        transports: ["websocket", "polling"],
+        reconnection: true,
+        reconnectionAttempts: 10,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 10000,
+      })
     : ({} as Socket);
