@@ -32,14 +32,14 @@ export function SocketProvider({ children }: { children: ReactNode }) {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    const base =
-      typeof process !== "undefined" && process.env.NEXT_PUBLIC_API_URL
-        ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, "")
-        : "";
-    if (!isLoaded || !user?.id || !base) return;
+    if (!isLoaded || !user?.id) return;
 
-    const s = io(base, {
-      path: "/socket.io",
+    const direct = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
+    const url = direct ?? "";
+    const path = direct ? "/socket.io" : "/backend/socket.io";
+
+    const s = io(url, {
+      path,
       transports: ["websocket"],
       autoConnect: true,
     });
