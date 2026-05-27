@@ -3,7 +3,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin } from "lucide-react";
+import { Calendar, MapPin, Car } from "lucide-react";
 import type { IBookingUser } from "@/types/booking";
 import moment from "moment";
 import "moment/locale/es";
@@ -17,10 +17,11 @@ interface BookingCardProps {
 }
 
 export function BookingCard({ booking, onClick }: BookingCardProps) {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const statusText = statusTextTranslations[language];
   const dateLabelFormat =
     language === "es" ? "dddd, D [de] MMMM - h:mm A" : "dddd, MMMM D - h:mm A";
+  const isRental = booking.booking_kind === "rental";
 
   // Map API status to UI status
   const mapStatus = (status: string) => {
@@ -34,6 +35,14 @@ export function BookingCard({ booking, onClick }: BookingCardProps) {
   };
 
   const uiStatus = mapStatus(booking.status);
+
+  const rentalDateLabel = isRental && booking.pickup_time && booking.dropoff_time
+    ? `${moment(booking.pickup_time).locale(language === "es" ? "es" : "en").format(dateLabelFormat)} → ${moment(booking.dropoff_time).locale(language === "es" ? "es" : "en").format(dateLabelFormat)}`
+    : "";
+
+  const locationLabel = isRental
+    ? booking.pickup_location ?? ""
+    : `${booking.product_address}, ${booking.country}`;
 
   return (
     <Card
@@ -50,12 +59,20 @@ export function BookingCard({ booking, onClick }: BookingCardProps) {
             className="object-cover transition-transform duration-500 group-hover:scale-110"
           />
         </div>
-        <Badge
-          className={`absolute bottom-3 left-3 font-normal py-1.5 px-2.5 backdrop-blur-sm shadow-md ${statusColors[uiStatus as keyof typeof statusColors]}`}
-          variant="outline"
-        >
-          {statusText[uiStatus as keyof typeof statusText]}
-        </Badge>
+        <div className="absolute bottom-3 left-3 flex gap-2">
+          <Badge
+            className={`font-normal py-1.5 px-2.5 backdrop-blur-sm shadow-md ${statusColors[uiStatus as keyof typeof statusColors]}`}
+            variant="outline"
+          >
+            {statusText[uiStatus as keyof typeof statusText]}
+          </Badge>
+          <Badge
+            variant="outline"
+            className="font-normal py-1.5 px-2.5 backdrop-blur-sm shadow-md bg-primary/80 text-primary-foreground border-primary"
+          >
+            {isRental ? t("dashboard.bookingsPage.rentalKind") : t("dashboard.bookingsPage.tourKind")}
+          </Badge>
+        </div>
       </div>
       <CardContent className="p-4">
         <h3 className="text-base md:text-lg font-bold pt-2 text-wrap line-clamp-1">
@@ -66,15 +83,20 @@ export function BookingCard({ booking, onClick }: BookingCardProps) {
           <div className="flex items-center text-sm text-muted-foreground">
             <Calendar className="h-3.5 w-3.5 mr-2 flex-shrink-0" />
             <span className="truncate">
-              {" "}
-              {moment(booking.tourDate)
-                .locale(language === "es" ? "es" : "en")
-                .format(dateLabelFormat)}
+              {isRental && booking.pickup_time && booking.dropoff_time
+                ? rentalDateLabel
+                : moment(booking.tourDate)
+                    .locale(language === "es" ? "es" : "en")
+                    .format(dateLabelFormat)}
             </span>
           </div>
           <div className="flex items-center text-sm text-muted-foreground">
-            <MapPin className="h-3.5 w-3.5 mr-2 flex-shrink-0" />
-            <span className="truncate">{`${booking.product_address}, ${booking.country}`}</span>
+            {isRental ? (
+              <Car className="h-3.5 w-3.5 mr-2 flex-shrink-0" />
+            ) : (
+              <MapPin className="h-3.5 w-3.5 mr-2 flex-shrink-0" />
+            )}
+            <span className="truncate">{locationLabel}</span>
           </div>
         </div>
 

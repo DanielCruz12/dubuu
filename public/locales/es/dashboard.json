@@ -307,7 +307,10 @@
     "duration": "Duración",
     "oneDay": "1 día",
     "tripInfo": "Información del viaje",
-    "downloadTicket": "Descargar ticket"
+    "downloadTicket": "Descargar ticket",
+    "pickupLocation": "Lugar de recogida",
+    "dropoffLocation": "Lugar de entrega",
+    "days": "días"
   },
   "bookingsPage": {
     "heading": "Reservas",
@@ -324,7 +327,9 @@
       "pendiente": "Pendiente",
       "completado": "Completado",
       "cancelado": "Cancelado"
-    }
+    },
+    "rentalKind": "Alquiler",
+    "tourKind": "Tour"
   },
   "products": {
     "title": "Productos",
@@ -357,7 +362,8 @@
       "model": "Modelo",
       "year": "Año",
       "pricePerDay": "Precio / día",
-      "listing": "Publicación"
+      "listing": "Publicación",
+      "plate": "Placa"
     },
     "table": {
       "id": "ID",
@@ -469,7 +475,10 @@
       "total": "Total",
       "date": "Fecha",
       "status": "Estado",
-      "bookingDate": "Fecha de reserva"
+      "bookingDate": "Fecha de reserva",
+      "pickupDate": "Fecha de recogida",
+      "dropoffDate": "Fecha de entrega",
+      "pickupLocation": "Lugar de recogida"
     },
     "exportSheetName": "Reservas"
   },

@@ -33,6 +33,7 @@ import {
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getBookingsColumns } from "../(columns)/columns";
+import type { HostBooking } from "@/types/booking";
 import moment from "moment";
 import "moment/locale/es";
 import { DataTableSkeleton } from "@/components/skeletons/datatable-skeleton";
@@ -49,13 +50,13 @@ export function BookingsDataTable() {
   const [tableKind, setTableKind] = useState<ProductTableKind>("tours");
   const [selectedProductId, setSelectedProductId] = useState<string>("");
   const [openProductSelect, setOpenProductSelect] = useState(false);
-  const [bookingsData, setBookingsData] = useState<any[]>([]);
+  const [bookingsData, setBookingsData] = useState<HostBooking[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
   const { t, language } = useLanguage();
   const columns = useMemo(
-    () => getBookingsColumns(t, language),
-    [t, language]
+    () => getBookingsColumns(t, language, tableKind),
+    [t, language, tableKind]
   );
 
   // Fetch products for the user
@@ -139,34 +140,57 @@ export function BookingsDataTable() {
     [productsByType]
   );
 
-  // Export to Excel - Manteniendo la lógica original
+  // Export to Excel
   const handleExport = () => {
     if (!bookingsData || bookingsData.length === 0) {
       return;
     }
 
+    const currencyFormat = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    });
+
     const dataToExport = bookingsData.map((booking) => {
-      const tourDate = booking.tourDate ?? booking.bookingDate;
-      const tourDateFormatted = tourDate
-        ? moment(tourDate).format("dddd, D [de] MMMM - h:mm A")
-        : "";
       const u = booking.user;
       const fullName =
         u?.first_name && u?.last_name
           ? `${u.first_name} ${u.last_name}`.trim()
           : u?.username ?? "";
+
+      if (tableKind === "rental") {
+        return {
+          ID: booking.bookingId,
+          [t("dashboard.bookings.table.client")]: fullName,
+          [t("dashboard.products.filters.product")]: booking.name,
+          [t("dashboard.bookings.table.status")]: booking.status,
+          [t("dashboard.bookings.table.pickupDate")]: booking.pickup_time
+            ? moment(booking.pickup_time).format("DD/MM/YYYY h:mm A")
+            : "",
+          [t("dashboard.bookings.table.dropoffDate")]: booking.dropoff_time
+            ? moment(booking.dropoff_time).format("DD/MM/YYYY h:mm A")
+            : "",
+          [t("dashboard.bookings.table.pickupLocation")]: booking.pickup_location ?? "",
+          [t("dashboard.bookings.table.total")]: currencyFormat.format(
+            Number.parseFloat(booking.total)
+          ),
+        };
+      }
+
+      const tourDate = booking.tourDate;
+      const tourDateFormatted = tourDate
+        ? moment(tourDate).format("dddd, D [de] MMMM - h:mm A")
+        : "";
       return {
         ID: booking.bookingId,
         [t("dashboard.bookings.table.client")]: fullName,
         [t("dashboard.products.filters.product")]: booking.name,
         [t("dashboard.bookings.table.status")]: booking.status,
         [t("dashboard.bookings.table.tickets")]: booking.tickets,
-        [t("dashboard.bookings.table.date")]: tourDateFormatted,
         [t("dashboard.bookings.table.bookingDate")]: tourDateFormatted,
-        [t("dashboard.bookings.table.total")]: new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-        }).format(Number.parseFloat(booking.total.toString())),
+        [t("dashboard.bookings.table.total")]: currencyFormat.format(
+          Number.parseFloat(booking.total)
+        ),
       };
     });
 

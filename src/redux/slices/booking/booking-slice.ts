@@ -1,7 +1,7 @@
 "use client";
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { Booking, IBookingUser } from "@/types/booking";
+import type { Booking, HostBooking, IBookingUser } from "@/types/booking";
 import { urlWithLocale } from "@/redux/url-with-locale";
 
 export type CreateBookingInput = Omit<
@@ -43,7 +43,7 @@ export const bookingsApiSlice = createApi({
 
     // 🔹 Get bookings by product
     getBookingsByUserIdProductId: builder.query<
-      Booking[],
+      HostBooking[],
       { productId: string; userId: string }
     >({
       query: ({ productId, userId }) =>
@@ -52,7 +52,7 @@ export const bookingsApiSlice = createApi({
         result
           ? [
               { type: "Bookings", id: "PRODUCT_LIST" },
-              ...result.map(({ id }) => ({ type: "Bookings" as const, id })),
+              ...result.map(({ bookingId }) => ({ type: "Bookings" as const, id: bookingId })),
             ]
           : [{ type: "Bookings", id: "PRODUCT_LIST" }],
     }),

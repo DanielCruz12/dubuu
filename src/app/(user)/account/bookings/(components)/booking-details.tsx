@@ -35,12 +35,26 @@ export function BookingDetails({
   const { language, t } = useLanguage();
   const statusText = statusTextTranslations[language];
   const bookingIdShort = booking.id.split("-").pop() ?? "";
-  const ticketsCount = Number(booking.tickets) || 1;
+  const isRental = booking.booking_kind === "rental";
+  const ticketsCount = isRental ? 1 : (Number(booking.tickets) || 1);
   const totalNumber =
     typeof booking.total === "number" ? booking.total : Number(booking.total);
   const total =
     Number.isFinite(totalNumber) && totalNumber > 0 ? totalNumber : 0;
-  const unitPrice = ticketsCount > 0 ? total / ticketsCount : total;
+  const unitPrice = isRental ? total : (ticketsCount > 0 ? total / ticketsCount : total);
+
+  const dateLabelFormat =
+    language === "es"
+      ? "dddd, D [de] MMMM - h:mm A"
+      : "dddd, MMMM D - h:mm A";
+
+  const reservationDateText = isRental
+    ? `${booking.pickup_time ? moment(booking.pickup_time).locale(language === "es" ? "es" : "en").format(dateLabelFormat) : ""} → ${booking.dropoff_time ? moment(booking.dropoff_time).locale(language === "es" ? "es" : "en").format(dateLabelFormat) : ""}`
+    : booking.tourDate
+      ? moment(booking.tourDate)
+          .locale(language === "es" ? "es" : "en")
+          .format(dateLabelFormat)
+      : undefined;
 
   const receiptData: ReceiptProps = {
     receiptNumber: booking.product_id,
@@ -49,25 +63,17 @@ export function BookingDetails({
       month: "2-digit",
       day: "2-digit",
     }),
-    reservationDate: booking.tourDate
-      ? moment(booking.tourDate)
-          .locale(language === "es" ? "es" : "en")
-          .format(
-            language === "es"
-              ? "dddd, D [de] MMMM - h:mm A"
-              : "dddd, MMMM D - h:mm A",
-          )
-      : undefined,
+    reservationDate: reservationDateText || undefined,
     customerName: "—",
     items: [
       {
-        id: String(ticketsCount),
+        id: isRental ? "1" : String(ticketsCount),
         description: booking.product_name,
-        quantity: ticketsCount,
+        quantity: isRental ? 1 : ticketsCount,
         price: unitPrice,
       },
     ],
-    subtotal: unitPrice * ticketsCount,
+    subtotal: unitPrice * (isRental ? 1 : ticketsCount),
     total,
     notes: "",
     companyName: "Dubuu",
@@ -176,13 +182,18 @@ export function BookingDetails({
                         {t("dashboard.bookingDetails.dates")}
                       </p>
                       <p className="text-muted-foreground">
-                        {moment(booking.tourDate)
-                          .locale(language === "es" ? "es" : "en")
-                          .format(
-                            language === "es"
-                              ? "dddd, D [de] MMMM - h:mm A"
-                              : "dddd, MMMM D - h:mm A"
-                          )}
+                        {isRental && booking.pickup_time && booking.dropoff_time ? (
+                          <>
+                            {moment(booking.pickup_time).locale(language === "es" ? "es" : "en").format(dateLabelFormat)}
+                            <br />
+                            <span className="text-xs">→</span>{" "}
+                            {moment(booking.dropoff_time).locale(language === "es" ? "es" : "en").format(dateLabelFormat)}
+                          </>
+                        ) : (
+                          moment(booking.tourDate)
+                            .locale(language === "es" ? "es" : "en")
+                            .format(dateLabelFormat)
+                        )}
                       </p>
                     </div>
                   </div>
@@ -192,34 +203,65 @@ export function BookingDetails({
                       <p className="font-medium">
                         {t("dashboard.bookingDetails.location")}
                       </p>
-                      <p className="text-muted-foreground">{`${booking.product_address}, ${booking.country}`}</p>
+                      {isRental ? (
+                        <div className="text-muted-foreground text-xs space-y-0.5">
+                          <p>
+                            <span className="font-medium">{t("dashboard.bookingDetails.pickupLocation")}:</span>{" "}
+                            {booking.pickup_location || "—"}
+                          </p>
+                          <p>
+                            <span className="font-medium">{t("dashboard.bookingDetails.dropoffLocation")}:</span>{" "}
+                            {booking.dropoff_location || "—"}
+                          </p>
+                        </div>
+                      ) : (
+                        <p className="text-muted-foreground">{`${booking.product_address}, ${booking.country}`}</p>
+                      )}
                     </div>
                   </div>
-                  <div className="flex items-start">
-                    <Users className="h-4 w-4 mr-3 mt-0.5 text-primary" />
-                    <div>
-                      <p className="font-medium">
-                        {t("dashboard.bookingDetails.participants")}
-                      </p>
-                      <p className="text-muted-foreground">
-                        {booking.tickets}{" "}
-                        {booking.tickets === 1
-                          ? t("dashboard.bookingDetails.person")
-                          : t("dashboard.bookingDetails.people")}
-                      </p>
+                  {isRental ? (
+                    <div className="flex items-start">
+                      <Clock className="h-4 w-4 mr-3 mt-0.5 text-primary" />
+                      <div>
+                        <p className="font-medium">
+                          {t("dashboard.bookingDetails.duration")}
+                        </p>
+                        <p className="text-muted-foreground">
+                          {booking.pickup_time && booking.dropoff_time
+                            ? moment(booking.dropoff_time).diff(moment(booking.pickup_time), "days") + 1 + " " + t("dashboard.bookingDetails.days")
+                            : "—"}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-start">
-                    <Clock className="h-4 w-4 mr-3 mt-0.5 text-primary" />
-                    <div>
-                      <p className="font-medium">
-                        {t("dashboard.bookingDetails.duration")}
-                      </p>
-                      <p className="text-muted-foreground">
-                        {t("dashboard.bookingDetails.oneDay")}
-                      </p>
-                    </div>
-                  </div>
+                  ) : (
+                    <>
+                      <div className="flex items-start">
+                        <Users className="h-4 w-4 mr-3 mt-0.5 text-primary" />
+                        <div>
+                          <p className="font-medium">
+                            {t("dashboard.bookingDetails.participants")}
+                          </p>
+                          <p className="text-muted-foreground">
+                            {booking.tickets}{" "}
+                            {booking.tickets === 1
+                              ? t("dashboard.bookingDetails.person")
+                              : t("dashboard.bookingDetails.people")}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-start">
+                        <Clock className="h-4 w-4 mr-3 mt-0.5 text-primary" />
+                        <div>
+                          <p className="font-medium">
+                            {t("dashboard.bookingDetails.duration")}
+                          </p>
+                          <p className="text-muted-foreground">
+                            {t("dashboard.bookingDetails.oneDay")}
+                          </p>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 <Separator />

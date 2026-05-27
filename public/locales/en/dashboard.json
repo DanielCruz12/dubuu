@@ -307,7 +307,10 @@
     "duration": "Duration",
     "oneDay": "1 day",
     "tripInfo": "Trip information",
-    "downloadTicket": "Download ticket"
+    "downloadTicket": "Download ticket",
+    "pickupLocation": "Pickup location",
+    "dropoffLocation": "Dropoff location",
+    "days": "days"
   },
   "bookingsPage": {
     "heading": "Bookings",
@@ -324,7 +327,9 @@
       "pendiente": "Pending",
       "completado": "Completed",
       "cancelado": "Cancelled"
-    }
+    },
+    "rentalKind": "Rental",
+    "tourKind": "Tour"
   },
   "products": {
     "title": "Products",
@@ -357,7 +362,8 @@
       "model": "Model",
       "year": "Year",
       "pricePerDay": "Price / day",
-      "listing": "Listing"
+      "listing": "Listing",
+      "plate": "Plate"
     },
     "table": {
       "id": "ID",
@@ -469,7 +475,10 @@
       "total": "Total",
       "date": "Date",
       "status": "Status",
-      "bookingDate": "Booking date"
+      "bookingDate": "Booking date",
+      "pickupDate": "Pickup date",
+      "dropoffDate": "Dropoff date",
+      "pickupLocation": "Pickup location"
     },
     "exportSheetName": "Bookings"
   },

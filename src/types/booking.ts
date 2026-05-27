@@ -90,3 +90,26 @@ export type RentalBookingData = {
 };
 
 export type BookingFormData = TourBookingData | RentalBookingData;
+
+export interface HostBooking {
+  bookingId: string;
+  booking_kind: string;
+  tickets: number | null;
+  total: string;
+  productId: string;
+  user: {
+    first_name: string | null;
+    username: string | null;
+    last_name: string | null;
+    email: string | null;
+  };
+  status: string;
+  name: string;
+  tourDate: string | null;
+  pickup_time: string | null;
+  dropoff_time: string | null;
+  pickup_location: string | null;
+  dropoff_location: string | null;
+  createdAt: string;
+  updatedAt: string;
+}

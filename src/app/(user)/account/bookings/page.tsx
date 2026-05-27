@@ -75,14 +75,20 @@ export default function BookingsPage() {
 
   const todayStart = moment().startOf("day");
 
+  const getBookingDate = (booking: IBookingUser) => {
+    // Para rentals usar pickup_time; para tours usar tourDate
+    if (booking.booking_kind === "rental" && booking.pickup_time) {
+      return moment(booking.pickup_time);
+    }
+    return moment(booking.tourDate);
+  };
+
   const upcomingBookings = filteredBookings.filter((booking: IBookingUser) => {
-    const tourDate = moment(booking.tourDate);
-    return tourDate.isSameOrAfter(todayStart);
+    return getBookingDate(booking).isSameOrAfter(todayStart);
   });
 
   const pastBookings = filteredBookings.filter((booking: IBookingUser) => {
-    const tourDate = moment(booking.tourDate);
-    return tourDate.isBefore(todayStart);
+    return getBookingDate(booking).isBefore(todayStart);
   });
 
   return (

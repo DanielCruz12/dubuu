@@ -3,61 +3,68 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { Booking, IBooking } from "@/types/booking";
+import type { HostBooking } from "@/types/booking";
 import { Badge } from "@/components/ui/badge";
 import moment from "moment";
 import "moment/locale/es";
 
 export function getBookingsColumns(
   t: (key: string) => string,
-  language: string
-): ColumnDef<Booking>[] {
+  language: string,
+  tableKind: "tours" | "rental",
+): ColumnDef<HostBooking>[] {
   const locale = language === "en" ? "en" : "es";
-  return [
-  {
-    accessorKey: "user",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          {t("dashboard.bookings.table.client")}
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      const user = row.getValue("user") as IBooking["user"];
-      const displayName =
-        user?.first_name && user?.last_name
-          ? `${user.first_name} ${user.last_name}`.trim()
-          : user?.username ?? "";
-      return <div className="font-medium">{displayName || "—"}</div>;
-    },
-  },
-  {
-    accessorKey: "tickets",
-    header: ({ column }) => {
-      return (
-        <div className="text-end">
+  const dateFormat = language === "es" ? "DD/MM/YYYY h:mm A" : "MM/DD/YYYY h:mm A";
+
+  const columns: ColumnDef<HostBooking>[] = [
+    {
+      accessorKey: "user",
+      header: ({ column }) => {
+        return (
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            {t("dashboard.bookings.table.tickets")}
+            {t("dashboard.bookings.table.client")}
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
-        </div>
-      );
+        );
+      },
+      cell: ({ row }) => {
+        const user = row.getValue("user") as HostBooking["user"];
+        const displayName =
+          user?.first_name && user?.last_name
+            ? `${user.first_name} ${user.last_name}`.trim()
+            : user?.username ?? "";
+        return <div className="font-medium">{displayName || "—"}</div>;
+      },
     },
-    cell: ({ row }) => {
-      const tickets = row.getValue("tickets") as number;
-      return <div className="text-center">{tickets}</div>;
-    },
-  },
+  ];
 
-  {
+  if (tableKind === "tours") {
+    columns.push({
+      accessorKey: "tickets",
+      header: ({ column }) => {
+        return (
+          <div className="text-end">
+            <Button
+              variant="ghost"
+              onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            >
+              {t("dashboard.bookings.table.tickets")}
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        );
+      },
+      cell: ({ row }) => {
+        const tickets = row.getValue("tickets") as number;
+        return <div className="text-center">{tickets}</div>;
+      },
+    });
+  }
+
+  columns.push({
     accessorKey: "total",
     header: ({ column }) => {
       return (
@@ -81,34 +88,87 @@ export function getBookingsColumns(
       const totalB = Number.parseFloat(rowB.getValue("total") as string);
       return totalA - totalB;
     },
-  },
+  });
 
-  {
-    accessorKey: "tourDate",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          {t("dashboard.bookings.table.bookingDate")}
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      const date = row.getValue("tourDate") as string;
-      if (!date) return <div>—</div>;
-      return (
-        <div>
-          {moment(date).locale(locale).format("dddd, D [de] MMMM - h:mm A")}
-        </div>
-      );
-    },
-    sortingFn: "datetime",
-  },
+  if (tableKind === "tours") {
+    columns.push({
+      accessorKey: "tourDate",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            {t("dashboard.bookings.table.bookingDate")}
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => {
+        const date = row.getValue("tourDate") as string;
+        if (!date) return <div>—</div>;
+        return (
+          <div>
+            {moment(date).locale(locale).format("dddd, D [de] MMMM - h:mm A")}
+          </div>
+        );
+      },
+      sortingFn: "datetime",
+    });
+  } else {
+    columns.push(
+      {
+        accessorKey: "pickup_time",
+        header: ({ column }) => {
+          return (
+            <Button
+              variant="ghost"
+              onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            >
+              {t("dashboard.bookings.table.pickupDate")}
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          );
+        },
+        cell: ({ row }) => {
+          const date = row.getValue("pickup_time") as string;
+          if (!date) return <div>—</div>;
+          return <div>{moment(date).locale(locale).format(dateFormat)}</div>;
+        },
+        sortingFn: "datetime",
+      },
+      {
+        accessorKey: "dropoff_time",
+        header: ({ column }) => {
+          return (
+            <Button
+              variant="ghost"
+              onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            >
+              {t("dashboard.bookings.table.dropoffDate")}
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          );
+        },
+        cell: ({ row }) => {
+          const date = row.getValue("dropoff_time") as string;
+          if (!date) return <div>—</div>;
+          return <div>{moment(date).locale(locale).format(dateFormat)}</div>;
+        },
+        sortingFn: "datetime",
+      },
+      {
+        accessorKey: "pickup_location",
+        header: t("dashboard.bookings.table.pickupLocation"),
+        cell: ({ row }) => {
+          const loc = row.getValue("pickup_location") as string;
+          return <div className="max-w-[200px] truncate" title={loc}>{loc || "—"}</div>;
+        },
+      },
+    );
+  }
 
-  {
+  columns.push({
     accessorKey: "status",
     header: t("dashboard.bookings.table.status"),
     cell: ({ row }) => {
@@ -128,6 +188,7 @@ export function getBookingsColumns(
         </Badge>
       );
     },
-  },
-  ];
+  });
+
+  return columns;
 }
