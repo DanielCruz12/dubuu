@@ -18,7 +18,7 @@ function SpecChip({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/40 px-2.5 py-1 text-xs font-medium text-foreground/95",
+        "flex items-center justify-center gap-1.5 rounded-full border border-border/60 bg-muted/40 px-2.5 py-1.5 text-xs font-medium text-foreground/95",
         className,
       )}
     >
@@ -52,9 +52,6 @@ export default function RentalVehicleSpecs({
       <div className="overflow-hidden rounded-xl border border-border/80 bg-card shadow-sm">
         <div className="border-b border-border/60 bg-muted/25 px-4 py-4 sm:px-6">
           <div className="min-w-0 space-y-1">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-              {t("home.rentalSpecs.kicker")}
-            </p>
             <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
               {titleVehicle}
             </h2>
@@ -65,7 +62,7 @@ export default function RentalVehicleSpecs({
         </div>
 
         <div className="space-y-4 px-4 py-4 sm:px-6 sm:py-5">
-          <div className="flex flex-wrap gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             <SpecChip icon={Armchair}>
               {r.seating_capacity} {t("home.rental.cardSeats")}
             </SpecChip>
