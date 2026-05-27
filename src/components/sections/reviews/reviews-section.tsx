@@ -44,11 +44,16 @@ export default function ReviewSection({
     );
   }
 
-  // Solo se puede dejar reseña a partir del día de la fecha del tour
-  const tourDate = existingBooking?.tourDate;
-  const hasTourDatePassed = tourDate
-    ? new Date() >= new Date(tourDate)
-    : true;
+  // Solo se puede dejar reseña a partir de la fecha del tour (o fin del alquiler)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const bookingAny = existingBooking as any;
+  const isRental = bookingAny?.booking_kind === "rental";
+  const reviewDate = isRental
+    ? bookingAny?.dropoff_time ?? bookingAny?.tourDate
+    : bookingAny?.tourDate;
+  const hasTourDatePassed = reviewDate
+    ? new Date() >= new Date(reviewDate)
+    : false;
 
   // Determinar el estado del usuario y su reserva
   const userState = {
@@ -62,8 +67,8 @@ export default function ReviewSection({
       !!user &&
       reviews.some((review) => user.id === review.user_id),
     hasTourDatePassed,
-    tourDateFormatted: tourDate
-      ? moment(tourDate)
+    tourDateFormatted: reviewDate
+      ? moment(reviewDate)
           .locale(language)
           .format(language === "es" ? "dddd, D [de] MMMM - h:mm A" : "dddd, MMM D - h:mm A")
       : "",

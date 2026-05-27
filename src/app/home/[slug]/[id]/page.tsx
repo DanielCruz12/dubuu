@@ -152,6 +152,8 @@ export default function ProductBooking() {
       if (paymentRef.current) {
         paymentRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
       }
+    } else {
+      setMobileAccordionOpen(["overview"]);
     }
   }, [showPaymentStep]);
 
