@@ -18,7 +18,7 @@ function SpecChip({
   return (
     <span
       className={cn(
-        "flex items-center justify-center gap-1.5 rounded-full border border-border/60 bg-muted/40 px-2.5 py-1.5 text-xs font-medium text-foreground/95",
+        "inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/40 px-2.5 py-1 text-xs font-medium text-foreground/95",
         className,
       )}
     >
@@ -50,26 +50,25 @@ export default function RentalVehicleSpecs({
   return (
     <section className={cn("min-w-0", className)}>
       <div className="overflow-hidden rounded-xl border border-border/80 bg-card shadow-sm">
-        <div className="border-b border-border/60 bg-muted/25 px-4 py-4 sm:px-6">
-          <div className="min-w-0 space-y-1">
-            <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-              {titleVehicle}
-            </h2>
+        <div className="px-4 py-4 sm:px-6">
+          <div className="min-w-0 space-y-2">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+              <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+                {titleVehicle}
+              </h2>
+              <div className="flex flex-wrap gap-1.5">
+                <SpecChip icon={Armchair}>
+                  {r.seating_capacity} {t("home.rental.cardSeats")}
+                </SpecChip>
+                <SpecChip icon={Cog}>{transmission}</SpecChip>
+                <SpecChip icon={Droplets}>{fuel}</SpecChip>
+                <SpecChip icon={Palette}>{displayColor}</SpecChip>
+                <SpecChip icon={Car}>{r.engine}</SpecChip>
+              </div>
+            </div>
             <p className="text-sm text-muted-foreground">
               {r.year} · {condition} · {product.product_category?.name ?? ""}
             </p>
-          </div>
-        </div>
-
-        <div className="space-y-4 px-4 py-4 sm:px-6 sm:py-5">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            <SpecChip icon={Armchair}>
-              {r.seating_capacity} {t("home.rental.cardSeats")}
-            </SpecChip>
-            <SpecChip icon={Cog}>{transmission}</SpecChip>
-            <SpecChip icon={Droplets}>{fuel}</SpecChip>
-            <SpecChip icon={Palette}>{displayColor}</SpecChip>
-            <SpecChip icon={Car}>{r.engine}</SpecChip>
           </div>
         </div>
       </div>
