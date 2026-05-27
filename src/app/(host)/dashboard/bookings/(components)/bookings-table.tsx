@@ -40,14 +40,22 @@ import { DataTableSkeleton } from "@/components/skeletons/datatable-skeleton";
 import { useUser } from "@clerk/nextjs";
 import { useLanguage } from "@/lib/i18n-context";
 import { isProductType } from "@/utils";
+import { ProductTypeKey, productTypeKeyToFormKind, formKindToProductTypeKey, type ProductFormKind } from "@/constants/product-type";
 
-type ProductTableKind = "tours" | "rental";
+const STORAGE_KEY = "dashboard-table-kind";
+
+function readTableKind(): ProductFormKind {
+  if (typeof window === "undefined") return productTypeKeyToFormKind(ProductTypeKey.TOUR);
+  return window.localStorage.getItem(STORAGE_KEY) === ProductTypeKey.RENTAL
+    ? productTypeKeyToFormKind(ProductTypeKey.RENTAL)
+    : productTypeKeyToFormKind(ProductTypeKey.TOUR);
+}
 
 export function BookingsDataTable() {
   const { user } = useUser();
   const userId = user?.id as string;
 
-  const [tableKind, setTableKind] = useState<ProductTableKind>("tours");
+  const [tableKind, setTableKind] = useState<ProductFormKind>(readTableKind);
   const [selectedProductId, setSelectedProductId] = useState<string>("");
   const [openProductSelect, setOpenProductSelect] = useState(false);
   const [bookingsData, setBookingsData] = useState<HostBooking[]>([]);
@@ -224,7 +232,7 @@ export function BookingsDataTable() {
               </label>
               <Select
                 value={tableKind}
-                onValueChange={(v) => setTableKind(v as ProductTableKind)}
+                onValueChange={(v) => { const k = v as ProductFormKind; setTableKind(k); localStorage.setItem(STORAGE_KEY, formKindToProductTypeKey(k)); }}
               >
                 <SelectTrigger>
                   <SelectValue />

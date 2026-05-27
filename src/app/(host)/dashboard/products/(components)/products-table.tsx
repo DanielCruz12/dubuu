@@ -43,8 +43,16 @@ import { useLanguage } from "@/lib/i18n-context";
 import moment from "moment";
 import "moment/locale/es";
 import { Input } from "@/components/ui/input";
+import { ProductTypeKey, productTypeKeyToFormKind, formKindToProductTypeKey, type ProductFormKind } from "@/constants/product-type";
 
-type ProductTableKind = "tours" | "rental";
+const STORAGE_KEY = "dashboard-table-kind";
+
+function readTableKind(): ProductFormKind {
+  if (typeof window === "undefined") return productTypeKeyToFormKind(ProductTypeKey.TOUR);
+  return window.localStorage.getItem(STORAGE_KEY) === ProductTypeKey.RENTAL
+    ? productTypeKeyToFormKind(ProductTypeKey.RENTAL)
+    : productTypeKeyToFormKind(ProductTypeKey.TOUR);
+}
 
 function buildTourProductExcelRow(
   tour: ITourProduct & { selectedDateId?: string },
@@ -150,7 +158,7 @@ function buildRentalExcelRow(
 
 export function ProductsDataTable() {
   const { user } = useUser();
-  const [tableKind, setTableKind] = useState<ProductTableKind>("tours");
+  const [tableKind, setTableKind] = useState<ProductFormKind>(readTableKind);
   const [selectedTourId, setSelectedTourId] = useState<string>("");
   const [selectedDateId, setSelectedDateId] = useState<string>("");
   const [filteredTours, setFilteredTours] = useState<
@@ -342,7 +350,7 @@ export function ProductsDataTable() {
               </label>
               <Select
                 value={tableKind}
-                onValueChange={(v) => setTableKind(v as ProductTableKind)}
+                onValueChange={(v) => { const k = v as ProductFormKind; setTableKind(k); localStorage.setItem(STORAGE_KEY, formKindToProductTypeKey(k)); }}
               >
                 <SelectTrigger>
                   <SelectValue />
