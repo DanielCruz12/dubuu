@@ -113,7 +113,7 @@ export function BookingStatus({
       day: "2-digit",
     }),
     reservationDate: isRental
-      ? `${moment(pickupTime).locale(language).format("LLL")} — ${moment(dropoffTime).locale(language).format("LLL")}`
+      ? `${moment(pickupTime).locale(language).format("MMM D, YYYY h:mm A")} — ${moment(dropoffTime).locale(language).format("MMM D, YYYY h:mm A")}`
       : tourDate
         ? moment(tourDate)
             .locale(language)
@@ -182,8 +182,8 @@ export function BookingStatus({
                   <span className="text-gray-500">{t("home.bookingStatus.bookingDate")}</span>
                   <span className="font-normal">
                     {tourDate
-                      ? moment(tourDate).locale(language).format("LLL")
-                      : moment(created_at).locale(language).format("LLL")}
+                      ? moment(tourDate).locale(language).format("MMM D, YYYY h:mm A")
+                      : moment(created_at).locale(language).format("MMM D, YYYY h:mm A")}
                   </span>
                 </div>
               )}
@@ -209,9 +209,9 @@ export function BookingStatus({
                   <div className="flex justify-between text-sm">
                     <span>{t("home.bookingStatus.bookingDate")}</span>
                     <span className="font-medium">
-                      {moment(pickupTime).locale(language).format("LLL")}
+                      {moment(pickupTime).locale(language).format("MMM D, YYYY h:mm A")}
                       {" — "}
-                      {moment(dropoffTime).locale(language).format("LLL")}
+                      {moment(dropoffTime).locale(language).format("MMM D, YYYY h:mm A")}
                     </span>
                   </div>
                 )}

@@ -9,6 +9,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n-context";
 
 function to12h(value: string) {
   const [h, m] = value.split(":").map(Number);
@@ -30,10 +31,99 @@ const HOURS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 interface TimePickerProps {
   value: string;
   onChange: (value: string) => void;
+  /** Renders inline without Popover — use inside mobile sheets */
+  inline?: boolean;
 }
 
-export function TimePicker({ value, onChange }: TimePickerProps) {
+function TimePickerContent({
+  hour12,
+  minutes,
+  period,
+  selectHour,
+  selectMinute,
+  setPeriod,
+  t,
+}: {
+  hour12: number;
+  minutes: number;
+  period: "AM" | "PM";
+  selectHour: (h: number) => void;
+  selectMinute: (m: number) => void;
+  setPeriod: (p: "AM" | "PM") => void;
+  t: (key: string) => string;
+}) {
+  return (
+    <div className="space-y-3">
+      <div className="flex rounded-lg border border-border/60 p-0.5 bg-muted/30">
+        {(["AM", "PM"] as const).map((p) => (
+          <button
+            key={p}
+            type="button"
+            onClick={() => setPeriod(p)}
+            className={cn(
+              "flex-1 rounded-md px-3 py-1 text-xs font-medium transition-colors",
+              period === p
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {p}
+          </button>
+        ))}
+      </div>
+
+      <div className="space-y-1">
+        <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/70">
+          {t("home.timePicker.hour")}
+        </p>
+        <div className="grid grid-cols-4 gap-1">
+          {HOURS.map((h) => (
+            <button
+              key={h}
+              type="button"
+              onClick={() => selectHour(h)}
+              className={cn(
+                "rounded-md px-2 py-1.5 text-sm tabular-nums transition-colors",
+                hour12 === h
+                  ? "bg-primary text-primary-foreground font-medium"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
+              )}
+            >
+              {h}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-1">
+        <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/70">
+          {t("home.timePicker.minutes")}
+        </p>
+        <div className="grid grid-cols-4 gap-1">
+          {MINUTES.map((m) => (
+            <button
+              key={m}
+              type="button"
+              onClick={() => selectMinute(m)}
+              className={cn(
+                "rounded-md px-2 py-1.5 text-sm tabular-nums transition-colors",
+                minutes === m
+                  ? "bg-primary text-primary-foreground font-medium"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
+              )}
+            >
+              {String(m).padStart(2, "0")}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function TimePicker({ value, onChange, inline = false }: TimePickerProps) {
   const [open, setOpen] = useState(false);
+  const { t } = useLanguage();
   const { hour12, minutes, period } = to12h(value);
 
   const display = `${hour12}:${String(minutes).padStart(2, "0")} ${period}`;
@@ -45,6 +135,30 @@ export function TimePicker({ value, onChange }: TimePickerProps) {
   const selectMinute = (m: number) => {
     onChange(to24h(hour12, m, period));
   };
+
+  const setPeriod = (p: "AM" | "PM") => {
+    onChange(to24h(hour12, minutes, p));
+  };
+
+  if (inline) {
+    return (
+      <div className="w-full rounded-lg border border-border/50 bg-muted/15 p-2">
+        <div className="mb-2 flex items-center justify-between">
+          <span className="tabular-nums text-sm font-medium">{display}</span>
+          <Clock className="h-3.5 w-3.5 shrink-0 opacity-60" />
+        </div>
+        <TimePickerContent
+          hour12={hour12}
+          minutes={minutes}
+          period={period}
+          selectHour={selectHour}
+          selectMinute={selectMinute}
+          setPeriod={setPeriod}
+          t={t}
+        />
+      </div>
+    );
+  }
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -63,76 +177,15 @@ export function TimePicker({ value, onChange }: TimePickerProps) {
         sideOffset={6}
         className="w-auto p-3 z-[11100]"
       >
-        <div className="space-y-3">
-          {/* Period toggle */}
-          <div className="flex rounded-lg border border-border/60 p-0.5 bg-muted/30">
-            {(["AM", "PM"] as const).map((p) => (
-              <button
-                key={p}
-                type="button"
-                onClick={() => {
-                  onChange(to24h(hour12, minutes, p));
-                }}
-                className={cn(
-                  "flex-1 rounded-md px-3 py-1 text-xs font-medium transition-colors",
-                  period === p
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                {p}
-              </button>
-            ))}
-          </div>
-
-          {/* Hours grid */}
-          <div className="space-y-1">
-            <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/70">
-              Hour
-            </p>
-            <div className="grid grid-cols-4 gap-1">
-              {HOURS.map((h) => (
-                <button
-                  key={h}
-                  type="button"
-                  onClick={() => selectHour(h)}
-                  className={cn(
-                    "rounded-md px-2 py-1.5 text-sm tabular-nums transition-colors",
-                    hour12 === h
-                      ? "bg-primary text-primary-foreground font-medium"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                  )}
-                >
-                  {h}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Minutes grid */}
-          <div className="space-y-1">
-            <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/70">
-              Minutes
-            </p>
-            <div className="grid grid-cols-4 gap-1">
-              {MINUTES.map((m) => (
-                <button
-                  key={m}
-                  type="button"
-                  onClick={() => selectMinute(m)}
-                  className={cn(
-                    "rounded-md px-2 py-1.5 text-sm tabular-nums transition-colors",
-                    minutes === m
-                      ? "bg-primary text-primary-foreground font-medium"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                  )}
-                >
-                  {String(m).padStart(2, "0")}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
+        <TimePickerContent
+          hour12={hour12}
+          minutes={minutes}
+          period={period}
+          selectHour={selectHour}
+          selectMinute={selectMinute}
+          setPeriod={setPeriod}
+          t={t}
+        />
       </PopoverContent>
     </Popover>
   );

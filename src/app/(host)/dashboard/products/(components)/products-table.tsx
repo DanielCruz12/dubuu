@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileSpreadsheet, Loader2, PlusCircle, SearchIcon } from "lucide-react";
 import { getToursColumns } from "../(columns)/columns";
-import { HostRentalCard } from "./host-rental-card";
+import { getRentalColumns } from "../(columns)/rental-columns";
 import {
   Select,
   SelectContent,
@@ -178,6 +178,8 @@ export function ProductsDataTable() {
     [t, language, refetch],
   );
 
+  const rentalColumns = useMemo(() => getRentalColumns(t, refetch), [t, refetch]);
+
 
   const filteredRentals = useMemo(() => {
     const q = rentalSearchTerm.trim().toLowerCase();
@@ -298,49 +300,33 @@ export function ProductsDataTable() {
   };
 
   if (isLoading || !user) {
-    if (tableKind === "rental") {
-      return (
-        <div className="space-y-4 pt-6">
-          <Card>
-            <CardContent className="p-6">
-              <div className="grid grid-cols-1 gap-4">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="rounded-xl border border-border/70 bg-card p-4 flex gap-4 animate-pulse">
-                    <div className="w-[min(42%,280px)] h-[200px] bg-muted rounded-lg shrink-0 hidden md:block" />
-                    <div className="flex-1 space-y-3">
-                      <div className="h-3 w-20 bg-muted rounded" />
-                      <div className="h-5 w-48 bg-muted rounded" />
-                      <div className="h-3 w-32 bg-muted rounded" />
-                      <div className="flex gap-2">
-                        <div className="h-6 w-16 bg-muted rounded-full" />
-                        <div className="h-6 w-16 bg-muted rounded-full" />
-                        <div className="h-6 w-16 bg-muted rounded-full" />
-                      </div>
-                      <div className="h-4 w-full bg-muted rounded" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      );
-    }
-
     return (
       <DataTableSkeleton
-        headers={[
-          t("dashboard.products.table.name"),
-          t("dashboard.products.table.price"),
-          t("dashboard.products.table.date"),
-          t("dashboard.products.table.availability"),
-          t("dashboard.products.table.status"),
-          t("dashboard.products.table.availableSpots"),
-          t("dashboard.products.table.bookings"),
-          t("dashboard.products.table.departurePoint"),
-          t("dashboard.products.table.maxPeople"),
-          t("dashboard.products.table.actions"),
-        ]}
+        headers={
+          tableKind === "tours"
+            ? [
+                t("dashboard.products.table.name"),
+                t("dashboard.products.table.price"),
+                t("dashboard.products.table.date"),
+                t("dashboard.products.table.availability"),
+                t("dashboard.products.table.status"),
+                t("dashboard.products.table.availableSpots"),
+                t("dashboard.products.table.bookings"),
+                t("dashboard.products.table.departurePoint"),
+                t("dashboard.products.table.maxPeople"),
+                t("dashboard.products.table.actions"),
+              ]
+            : [
+                t("dashboard.products.rentalTable.name"),
+                t("dashboard.products.rentalTable.brand"),
+                t("dashboard.products.rentalTable.model"),
+                t("dashboard.products.rentalTable.year"),
+                t("dashboard.products.rentalTable.pricePerDay"),
+                t("dashboard.products.table.status"),
+                t("dashboard.products.rentalTable.listing"),
+                t("dashboard.products.table.actions"),
+              ]
+        }
       />
     );
   }
@@ -557,17 +543,7 @@ export function ProductsDataTable() {
           {tableKind === "tours" ? (
             <DataTable columns={tourColumns} data={filteredTours} showSearch={false} />
           ) : (
-            <div className="grid grid-cols-1 gap-4">
-              {filteredRentals.length > 0 ? (
-                filteredRentals.map((product) => (
-                  <HostRentalCard key={product.id} product={product} onDeleted={refetch} />
-                ))
-              ) : (
-                <div className="text-center py-16 text-muted-foreground">
-                  {t("dashboard.products.filters.noProductsFound")}
-                </div>
-              )}
-            </div>
+            <DataTable columns={rentalColumns} data={filteredRentals} showSearch={false} />
           )}
         </CardContent>
       </Card>

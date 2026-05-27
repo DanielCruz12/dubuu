@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import HeroSection from "@/components/sections/hero-section";
-import PopularDestinations from "@/components/sections/popular-destination";
 import TourSection from "@/components/sections/tour-section";
 import UpTop from "@/components/up-top";
 import { useGetProductsQuery } from "@/redux/slices/product/product-slice";
@@ -105,7 +104,7 @@ export default function Home() {
         hasMore={hasMoreProducts}
         isLoadingMore={isLoadingMore}
       />
-      <PopularDestinations />
+      {/* <PopularDestinations /> */}
     </>
   );
 }

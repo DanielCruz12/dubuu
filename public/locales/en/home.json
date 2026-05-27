@@ -451,5 +451,9 @@
 				"searchPlaceholder": "Search places, addresses..."
 			}
 		}
+	},
+	"timePicker": {
+		"hour": "Hour",
+		"minutes": "Minutes"
 	}
 }

@@ -411,36 +411,43 @@ export default function BookingForm({
           )}
         </div>
 
-        <div className="pt-3 border-t dark:border-muted space-y-2">
-          <>
-            <div className="flex rounded py-2 px-2 justify-between font-semibold items-center">
+        <div className="rounded-lg bg-background/80 px-3 py-2.5">
+          <div className="flex justify-between gap-2 text-base">
+            <span className="text-muted-foreground">
+              {t("home.bookingForm.ticketsLabel")}
+            </span>
+            <span className="font-semibold tabular-nums">
+              {adultTickets} {t("home.bookingForm.adults").toLowerCase()}
+              {childrenTickets > 0 &&
+                ` + ${childrenTickets} ${t("home.bookingForm.children").toLowerCase()}`}
+            </span>
+          </div>
+          <div className="pt-3 border-t border-border dark:border-muted">
+            <div className="flex items-center justify-between rounded px-2 py-2 font-semibold">
               <span className="text-lg md:text-2xl">
                 {t("home.bookingForm.total")}
               </span>
-              <div className="flex items-center gap-2">
-                <span className="text-lg md:text-2xl">
-                  {symbol}
-                  {bookingBreakdown.userPays.toFixed(2)}
-                </span>
-              </div>
+              <span className="text-lg md:text-2xl tabular-nums">
+                {symbol}
+                {bookingBreakdown.userPays.toFixed(2)}
+              </span>
             </div>
-          </>
-
-          {!showPaymentStep && (
-            <>
-              <Button
-                type="button"
-                variant={"default"}
-                className="hidden w-full md:inline-flex"
-                onClick={handleReserveClick}
-              >
-                <CalendarCheck className="h-4 w-4 mr-2" />
-                {t("home.bookingForm.bookNow")}
-              </Button>
-              {extraActionBelowBookNow}
-            </>
-          )}
+          </div>
         </div>
+
+        {!showPaymentStep && (
+          <Button
+            type="button"
+            variant={"default"}
+            className="hidden w-full md:inline-flex"
+            onClick={handleReserveClick}
+          >
+            <CalendarCheck className="h-4 w-4 mr-2" />
+            {t("home.bookingForm.bookNow")}
+          </Button>
+        )}
+
+        {extraActionBelowBookNow}
 
       </form>
     </div>

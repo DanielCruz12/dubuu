@@ -335,24 +335,29 @@ export default function RentalBookingForm({
     return `${a} — ${b}`;
   }, [pickup, dropoff, locale]);
 
+  const formatTime12h = (t24: string) => {
+    const [h, m] = t24.split(":").map(Number);
+    const period = h >= 12 ? "PM" : "AM";
+    const h12 = h % 12 || 12;
+    return `${h12}:${String(m).padStart(2, "0")} ${period}`;
+  };
+
   const rangeButtonMain =
     pickup && dropoff && dropoff >= pickup && rangeSummary
-      ? `${rangeSummary} · ${pickupTime} – ${returnTime}`
+      ? `${rangeSummary} · ${formatTime12h(pickupTime)} – ${formatTime12h(returnTime)}`
       : t("home.rentalBooking.selectDateRange");
 
   const canReserve = useMemo(() => {
     if (!user) return false;
     if (!pickup || !dropoff || dropoff < pickup) return false;
-    if (insufficientHours) return false;
     return true;
-  }, [user, pickup, dropoff, insufficientHours]);
+  }, [user, pickup, dropoff]);
 
   const reserveBlockedReason = useMemo(() => {
     if (!user) return "login";
     if (!pickup || !dropoff || dropoff < pickup) return "range";
-    if (insufficientHours) return "hours";
     return null;
-  }, [user, pickup, dropoff, insufficientHours]);
+  }, [user, pickup, dropoff]);
 
   const hasAllDocs = duiFiles.some(Boolean) && licenseFiles.some(Boolean);
 
@@ -459,14 +464,14 @@ export default function RentalBookingForm({
             <Clock className="h-3.5 w-3.5 opacity-70" aria-hidden />
             {t("home.rentalBooking.pickupTime")}
           </Label>
-          <TimePicker value={pickupTime} onChange={setPickupTime} />
+          <TimePicker value={pickupTime} onChange={setPickupTime} inline={!isDesktop} />
         </div>
         <div className="space-y-1.5">
           <Label className="text-xs flex items-center gap-1.5">
             <Clock className="h-3.5 w-3.5 opacity-70" aria-hidden />
             {t("home.rentalBooking.returnTime")}
           </Label>
-          <TimePicker value={returnTime} onChange={setReturnTime} />
+          <TimePicker value={returnTime} onChange={setReturnTime} inline={!isDesktop} />
         </div>
       </div>
       {insufficientHours && (
@@ -858,11 +863,11 @@ export default function RentalBookingForm({
 
           {/* TOTAL */}
           <div className="rounded-lg bg-background/80 px-3 py-2.5">
-            <div className="flex justify-between gap-2 text-sm">
+            <div className="flex justify-between gap-2 text-base">
               <span className="text-muted-foreground">
                 {t("home.rentalBooking.days")}
               </span>
-              <span className="font-medium tabular-nums">
+              <span className="font-semibold tabular-nums">
                 {days > 0 ? days : "—"}
               </span>
             </div>
@@ -881,34 +886,30 @@ export default function RentalBookingForm({
 
           {/* RESERVE BUTTON — Desktop */}
           {!showPaymentStep && (
-            <>
-              <div className="space-y-1.5 hidden md:block">
-                <Button
-                  type="button"
-                  className="w-full gap-2 rounded-full"
-                  onClick={() => setShowDocsModal(true)}
-                  disabled={!canReserve}
-                >
-                  <CalendarCheck className="h-4 w-4" />
-                  {t("home.rentalBooking.reserve")}
-                </Button>
-                {reserveBlockedReason && (
-                  <p className="text-[11px] text-muted-foreground text-center">
-                    {reserveBlockedReason === "login" &&
-                      t("home.bookingForm.toast.loginRequired")}
-                    {reserveBlockedReason === "range" &&
-                      t("home.rentalBooking.selectRangeError")}
-                    {reserveBlockedReason === "hours" &&
-                      t("home.rentalBooking.minHoursError")}
-                  </p>
-                )}
-              </div>
-
-              {extraActionBelowBookNow ? (
-                <div className="pt-1">{extraActionBelowBookNow}</div>
-              ) : null}
-            </>
+            <div className="space-y-1.5 hidden md:block">
+              <Button
+                type="button"
+                className="w-full gap-2 rounded-full"
+                onClick={() => setShowDocsModal(true)}
+                disabled={!canReserve}
+              >
+                <CalendarCheck className="h-4 w-4" />
+                {t("home.rentalBooking.reserve")}
+              </Button>
+              {reserveBlockedReason && (
+                <p className="text-[11px] text-muted-foreground text-center">
+                  {reserveBlockedReason === "login" &&
+                    t("home.bookingForm.toast.loginRequired")}
+                  {reserveBlockedReason === "range" &&
+                    t("home.rentalBooking.selectRangeError")}
+                </p>
+              )}
+            </div>
           )}
+
+          {extraActionBelowBookNow ? (
+            <div className="pt-1">{extraActionBelowBookNow}</div>
+          ) : null}
         </div>
       </div>
 
