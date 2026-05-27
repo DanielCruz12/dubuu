@@ -450,7 +450,7 @@ export default function RentalBookingForm({
           selected={range}
           onSelect={setRange}
           locale={locale}
-          defaultMonth={minDate}
+          defaultMonth={range?.from || minDate}
           fromDate={minDate}
           toDate={maxNavDate}
           disabled={isDisabledDay}
@@ -458,20 +458,20 @@ export default function RentalBookingForm({
           className="w-full max-w-none p-1 sm:p-2"
         />
       </div>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label className="text-xs flex items-center gap-1.5">
             <Clock className="h-3.5 w-3.5 opacity-70" aria-hidden />
             {t("home.rentalBooking.pickupTime")}
           </Label>
-          <TimePicker value={pickupTime} onChange={setPickupTime} inline={!isDesktop} />
+          <TimePicker value={pickupTime} onChange={setPickupTime} />
         </div>
         <div className="space-y-1.5">
           <Label className="text-xs flex items-center gap-1.5">
             <Clock className="h-3.5 w-3.5 opacity-70" aria-hidden />
             {t("home.rentalBooking.returnTime")}
           </Label>
-          <TimePicker value={returnTime} onChange={setReturnTime} inline={!isDesktop} />
+          <TimePicker value={returnTime} onChange={setReturnTime} />
         </div>
       </div>
       {insufficientHours && (
