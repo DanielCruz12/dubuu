@@ -83,6 +83,9 @@ export function getNamespacesForRoute(pathname: string): string[] {
   if (pathname.includes("/terms")) {
     namespaces.push("terms");
   }
+  if (pathname.includes("/blog")) {
+    namespaces.push("blog");
+  }
   return namespaces.filter((ns, i) => namespaces.indexOf(ns) === i);
 }
 

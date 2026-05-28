@@ -2,83 +2,137 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Sparkles } from "lucide-react";
+import { Compass, Sparkles } from "lucide-react";
+
 import { PostCard } from "@/components/post-card";
 import { TrendingPost } from "@/components/trending-post";
+
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+
 import { useGetBlogPostsQuery } from "@/redux/slices/blog/blog-slice";
 import { formatBlogDate, postToCardProps } from "@/utils/blog-display";
+import { useLanguage } from "@/lib/i18n-context";
 
 export default function BlogPage() {
   const pathname = usePathname();
+  const { t } = useLanguage();
   const { data, isLoading, isError, refetch } = useGetBlogPostsQuery({});
 
   const posts = data?.data ?? [];
-  const visiblePosts =
-    pathname === "/blog" ? posts : posts.slice(0, 1);
-  const sidebarPosts = posts.slice(0, 4);
+
+  const visiblePosts = pathname === "/blog" ? posts : posts.slice(0, 1);
+
+  const sidebarPosts = [...posts]
+    .sort((a, b) => (b.likes_count ?? 0) - (a.likes_count ?? 0))
+    .slice(0, 2);
+
+  const isBlogPage = pathname === "/blog";
 
   return (
-    <div className="min-h-[60vh] bg-gradient-to-b from-muted/30 to-background pb-24 pt-8 md:pt-12">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <header className="mb-10 md:mb-14">
-          <div className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-background/80 px-3 py-1 text-xs font-medium text-muted-foreground shadow-sm backdrop-blur-sm">
-            <Sparkles className="h-3.5 w-3.5 text-amber-500" aria-hidden />
-            Blog Dubuu
-          </div>
-          <h1 className="mt-4 text-3xl font-semibold tracking-tight text-foreground md:text-4xl lg:text-5xl">
-            Artículos recientes
-          </h1>
-          <p className="mt-3 max-w-2xl text-base text-muted-foreground md:text-lg">
-            Historias, consejos y novedades para sacar más partido a tus
-            experiencias de viaje.
-          </p>
-        </header>
+    <div className="min-h-screen overflow-x-hidden bg-black pb-24 pt-8 md:pt-12">
+      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* HEADER */}
+        {isBlogPage && (
+          <header className="mb-10 lg:mb-16">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-1.5 text-xs font-medium text-zinc-400 backdrop-blur-md">
+              <Sparkles className="h-3.5 w-3.5 text-amber-400" aria-hidden />
+              {t("blog.badge")}
+            </div>
 
-        <div className="grid gap-10 lg:grid-cols-[1fr,min(100%,340px)] lg:gap-12">
-          <section aria-label="Lista de artículos">
+            <h3 className=" md:text-3xl font-semibold tracking-tight text-xl">
+              {t("blog.title")}
+            </h3>
+
+            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-zinc-400 sm:text-base lg:text-lg">
+              {t("blog.subtitle")}
+            </p>
+          </header>
+        )}
+
+        {/* CONTENT */}
+        <div className="grid min-w-0 grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-10">
+          {/* POSTS */}
+          <section aria-label={t("blog.title")} className="min-w-0">
+            {/* LOADING */}
             {isLoading && (
-              <div className="grid gap-6 sm:grid-cols-2">
-                {[1, 2, 3, 4].map((i) => (
-                  <Skeleton key={i} className="h-[340px] rounded-2xl" />
+              <div className="grid gap-6">
+                {[1, 2, 3].map((i) => (
+                  <div
+                    key={i}
+                    className="overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-sm"
+                  >
+                    <div className="flex flex-col lg:flex-row">
+                      <Skeleton className="h-[220px] w-full lg:w-[36%]" />
+
+                      <div className="flex flex-1 flex-col p-4 sm:p-5 lg:p-8">
+                        <div className="mb-5 flex items-center gap-3">
+                          <Skeleton className="h-10 w-10 rounded-full" />
+
+                          <div className="space-y-2">
+                            <Skeleton className="h-4 w-28" />
+                            <Skeleton className="h-3 w-20" />
+                          </div>
+                        </div>
+
+                        <Skeleton className="mb-3 h-6 w-full" />
+                        <Skeleton className="mb-2 h-6 w-[85%]" />
+
+                        <div className="mb-6 space-y-2">
+                          <Skeleton className="h-4 w-full" />
+                          <Skeleton className="h-4 w-[92%]" />
+                        </div>
+
+                        <div className="mt-auto flex items-center justify-between border-t border-white/10 pt-5">
+                          <Skeleton className="h-4 w-20" />
+                          <Skeleton className="h-4 w-28" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 ))}
               </div>
             )}
 
+            {/* ERROR */}
             {isError && (
-              <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-8 text-center">
-                <p className="font-medium text-destructive">
-                  No pudimos cargar los artículos.
+              <div className="rounded-3xl border border-red-500/20 bg-red-500/5 p-8 text-center">
+                <p className="font-medium text-red-400">
+                  {t("blog.loadError")}
                 </p>
+
                 <Button
                   variant="secondary"
                   className="mt-4"
                   type="button"
                   onClick={() => refetch()}
                 >
-                  Reintentar
+                  {t("blog.retry")}
                 </Button>
               </div>
             )}
 
+            {/* EMPTY */}
             {!isLoading && !isError && visiblePosts.length === 0 && (
-              <p className="rounded-2xl border border-dashed p-12 text-center text-muted-foreground">
-                Aún no hay publicaciones. Vuelve pronto.
-              </p>
+              <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.02] p-12 text-center">
+                <Compass className="mx-auto mb-4 h-10 w-10 text-zinc-600" />
+
+                <p className="text-lg font-medium text-white">
+                  {t("blog.noPosts")}
+                </p>
+
+                <p className="mt-1 text-zinc-500">{t("blog.noPostsSub")}</p>
+              </div>
             )}
 
+            {/* POSTS */}
             {!isLoading && !isError && visiblePosts.length > 0 && (
-              <div className="grid gap-6 sm:grid-cols-2">
-                {visiblePosts.map((post, index) => (
+              <div className="grid gap-5 sm:gap-6">
+                {visiblePosts.map((post) => (
                   <Link
                     key={post.id}
                     href={`/blog/${post.id}`}
-                    className={
-                      visiblePosts.length === 1 || index === 0
-                        ? "sm:col-span-2"
-                        : ""
-                    }
+                    className="block min-w-0"
                   >
                     <PostCard {...postToCardProps(post)} />
                   </Link>
@@ -87,49 +141,74 @@ export default function BlogPage() {
             )}
           </section>
 
-          <aside className="lg:pt-2">
-            <div className="sticky top-24 rounded-2xl border border-border/70 bg-card/80 p-6 shadow-sm backdrop-blur-md">
-              <h2 className="text-lg font-semibold tracking-tight text-foreground">
-                Destacados
-              </h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Entradas que no te puedes perder
-              </p>
-              <div className="mt-6 space-y-1">
-                {!isLoading && !isError && sidebarPosts.length > 0 ? (
-                  sidebarPosts.map((post) => {
-                    const card = postToCardProps(post);
-                    const updatedRaw = post.updated_at || post.published_at;
-                    const updatedLabel =
-                      updatedRaw && updatedRaw !== post.published_at
-                        ? formatBlogDate(updatedRaw)
-                        : undefined;
-                    return (
-                      <TrendingPost
-                        key={post.id}
-                        title={post.title || "Sin título"}
-                        publishedDate={card.date}
-                        updatedDate={updatedLabel}
-                        image={card.image}
-                        href={`/blog/${post.id}`}
-                      />
-                    );
-                  })
-                ) : isLoading ? (
-                  <div className="space-y-3 pt-2">
-                    <Skeleton className="h-20 w-full rounded-xl" />
-                    <Skeleton className="h-20 w-full rounded-xl" />
-                  </div>
-                ) : null}
+          {/* SIDEBAR */}
+          {isBlogPage && (
+            <aside className="min-w-0 lg:pt-2">
+              <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 backdrop-blur-xl lg:sticky lg:top-24">
+                <h2 className="text-xl font-semibold tracking-tight text-white">
+                  {t("blog.featured")}
+                </h2>
+
+                <p className="mt-2 text-sm text-zinc-500">
+                  {t("blog.featuredSubtitle")}
+                </p>
+
+                <div className="mt-6 space-y-4">
+                  {!isLoading && !isError && sidebarPosts.length > 0 ? (
+                    sidebarPosts.map((post) => {
+                      const card = postToCardProps(post);
+
+                      const updatedRaw = post.updated_at || post.published_at;
+
+                      const updatedLabel =
+                        updatedRaw && updatedRaw !== post.published_at
+                          ? formatBlogDate(updatedRaw)
+                          : undefined;
+
+                      return (
+                        <TrendingPost
+                          key={post.id}
+                          title={post.title || t("blog.untitled")}
+                          publishedDate={card.date}
+                          updatedDate={updatedLabel}
+                          image={card.image}
+                          href={`/blog/${post.id}`}
+                        />
+                      );
+                    })
+                  ) : isLoading ? (
+                    <div className="space-y-4 pt-2">
+                      {[1, 2].map((i) => (
+                        <div
+                          key={i}
+                          className="flex overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]"
+                        >
+                          <Skeleton className="h-[110px] w-[38%] shrink-0 rounded-none" />
+
+                          <div className="flex flex-1 flex-col p-4">
+                            <Skeleton className="h-4 w-full" />
+
+                            <Skeleton className="mt-2 h-3 w-20" />
+
+                            <div className="mt-auto pt-4">
+                              <Skeleton className="h-3 w-12" />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
               </div>
-            </div>
-          </aside>
+            </aside>
+          )}
         </div>
 
+        {/* CTA */}
         {pathname === "/" && (
-          <div className="mt-12 text-center">
+          <div className="mt-14 text-center">
             <Button asChild variant="secondary" size="lg">
-              <Link href="/blog">Ver todos los artículos</Link>
+              <Link href="/blog">{t("blog.viewAll")}</Link>
             </Button>
           </div>
         )}
