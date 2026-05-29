@@ -2,7 +2,17 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Heart, MapPin, Ticket } from "lucide-react";
+import {
+  Armchair,
+  Car,
+  Cog,
+  Droplets,
+  FileText,
+  Heart,
+  MapPin,
+  Palette,
+  Ticket,
+} from "lucide-react";
 import { toast } from "sonner";
 import ImageCollage from "@/components/sections/image-collage";
 import { useParams } from "next/navigation";
@@ -13,14 +23,16 @@ import ReviewSection from "@/components/sections/reviews/reviews-section";
 import CompanyInfo from "@/components/sections/company-info";
 import BookingForm from "@/components/sections/booking-form";
 import RentalBookingForm from "@/components/sections/rental-booking-form";
-import RentalVehicleSpecs from "@/components/sections/rental-vehicle-specs";
-import RentalImportantInfoModal from "@/components/sections/rental-important-info-modal";
+import RentalImportantInfoModal, {
+  SectionCard,
+} from "@/components/sections/rental-important-info-modal";
 import Rating from "@/components/rating";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { SignInButton, useUser } from "@clerk/nextjs";
 import ProductsSkeleton from "@/components/skeletons/product-skeleton";
 import { Badge } from "@/components/ui/badge";
+import { AmenityChip } from "@/components/amenity-chip";
 import type { IProduct } from "@/types/product";
 import type { BookingFormData } from "@/types/booking";
 import ProductDetails from "@/components/sections/product-details";
@@ -113,7 +125,9 @@ export default function ProductBooking() {
   const [unsaveProduct, { isLoading: isUnsaving }] = useUnsaveProductMutation();
 
   const isFavorited =
-    favorites?.some((fav: { productId: string }) => fav.productId === (id as string)) || false;
+    favorites?.some(
+      (fav: { productId: string }) => fav.productId === (id as string),
+    ) || false;
 
   const toggleFavorite = async () => {
     if (!user?.id) {
@@ -122,10 +136,16 @@ export default function ProductBooking() {
     }
     try {
       if (isFavorited) {
-        await unsaveProduct({ productId: id as string, userId: user.id }).unwrap();
+        await unsaveProduct({
+          productId: id as string,
+          userId: user.id,
+        }).unwrap();
         toast.success(t("home.tourCard.removedFromSaved"));
       } else {
-        await saveProduct({ productId: id as string, userId: user.id }).unwrap();
+        await saveProduct({
+          productId: id as string,
+          userId: user.id,
+        }).unwrap();
         toast.success(t("home.tourCard.savedSuccess"));
       }
     } catch {
@@ -143,14 +163,19 @@ export default function ProductBooking() {
   const [showPaymentStep, setShowPaymentStep] = useState(false);
   const [showBookingFormAgain, setShowBookingFormAgain] = useState(false);
   const [bookingFormKey, setBookingFormKey] = useState(0);
-  const [mobileAccordionOpen, setMobileAccordionOpen] = useState<string[]>(["overview"]);
+  const [mobileAccordionOpen, setMobileAccordionOpen] = useState<string[]>([
+    "overview",
+  ]);
   const bookingBoxRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (showPaymentStep) {
       setMobileAccordionOpen([]);
       if (paymentRef.current) {
-        paymentRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+        paymentRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
       }
     } else {
       setMobileAccordionOpen(["overview"]);
@@ -159,7 +184,10 @@ export default function ProductBooking() {
 
   useEffect(() => {
     if (showBookingFormAgain && bookingBoxRef.current) {
-      bookingBoxRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      bookingBoxRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
     }
   }, [showBookingFormAgain]);
 
@@ -211,9 +239,7 @@ export default function ProductBooking() {
   const showBookingStatusCard = !!existingBooking && !showBookingFormAgain;
 
   const mobileBookingBottomPad =
-    !!user &&
-    !showPaymentStep &&
-    !showBookingStatusCard;
+    !!user && !showPaymentStep && !showBookingStatusCard;
 
   return (
     <div
@@ -271,7 +297,9 @@ export default function ProductBooking() {
               {convert(displayPrice)}
             </Badge>
             <span className="text-sm font-normal">
-              {isRental ? t("home.bookingForm.perDay") : t("home.bookingForm.perPerson")}
+              {isRental
+                ? t("home.bookingForm.perDay")
+                : t("home.bookingForm.perPerson")}
             </span>
           </div>
         </div>
@@ -290,7 +318,9 @@ export default function ProductBooking() {
                   {product?.address || "—"}
                 </p>
                 {product?.country ? (
-                  <p className="text-xs md:text-sm text-muted-foreground">{product.country}</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">
+                    {product.country}
+                  </p>
                 ) : null}
               </div>
             </div>
@@ -299,14 +329,41 @@ export default function ProductBooking() {
         <ScrollArea type="always" className="w-full">
           <div className="flex flex-wrap gap-2 md:gap-4 mt-3">
             {product.amenities?.map((service, index) => (
-              <Badge
-                key={index}
-                variant="outline"
-                className="text-sm md:text-[1rem] rounded-lg p-2 mt-2"
-              >
-                {service.name}
-              </Badge>
+              <AmenityChip
+                key={service.id ?? index}
+                name={service.name}
+                iconName={service.icon}
+              />
             ))}
+            {isRental && "rental" in product && product.rental
+              ? (() => {
+                  const r = product.rental;
+                  const colorKey = `home.rentalSpecs.colors.${r.color}`;
+                  const color = t(colorKey);
+                  const displayColor = color === colorKey ? r.color : color;
+
+                  return (
+                    <>
+                      <AmenityChip
+                        name={`${r.seating_capacity} ${t("home.rental.cardSeats")}`}
+                        Icon={Armchair}
+                      />
+                      <AmenityChip
+                        name={t(
+                          `home.rentalSpecs.transmissionKind.${r.transmission}`,
+                        )}
+                        Icon={Cog}
+                      />
+                      <AmenityChip
+                        name={t(`home.rentalSpecs.fuel.${r.fuel_type}`)}
+                        Icon={Droplets}
+                      />
+                      <AmenityChip name={displayColor} Icon={Palette} />
+                      <AmenityChip name={r.engine} Icon={Car} />
+                    </>
+                  );
+                })()
+              : null}
           </div>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
@@ -326,14 +383,26 @@ export default function ProductBooking() {
             />
           </div>
         ) : (
-          <div
-            className={clsx(
-              "w-full lg:w-2/3 min-w-0",
-              hasRentalDetail && "flex flex-col gap-6",
-            )}
-          >
-            {hasRentalDetail ? <RentalVehicleSpecs product={product} /> : null}
+          <div className="w-full lg:w-2/3 min-w-0">
             <ProductDetails product={product} />
+            {isRental ? (
+              <div className="mt-6">
+                <Accordion type="single" collapsible defaultValue="rental-agreement">
+                  <AccordionItem value="rental-agreement">
+                    <AccordionTrigger className="text-base md:text-xl font-semibold">
+                      {t("home.rentalImportant.contractTitle")}
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <SectionCard icon={FileText} color="blue">
+                        <p className="text-muted-foreground leading-relaxed">
+                          {t("home.rentalImportant.contractBody")}
+                        </p>
+                      </SectionCard>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </div>
+            ) : null}
             {!isRental ? (
               <div className="hidden md:block w-full min-w-0">
                 <LocationMap
@@ -369,7 +438,9 @@ export default function ProductBooking() {
               ref={bookingBoxRef}
               className={clsx(
                 "rounded-lg mb-0 md:mb-6",
-                showBookingStatusCard ? "p-0 " : "border px-3 py-2 sm:px-4 sm:py-2.5 md:px-4 md:py-3",
+                showBookingStatusCard
+                  ? "p-0 "
+                  : "border px-3 py-2 sm:px-4 sm:py-2.5 md:px-4 md:py-3",
               )}
             >
               {user ? (
@@ -427,7 +498,8 @@ export default function ProductBooking() {
                             setShowPaymentStep={() => setShowPaymentStep(true)}
                             extraActionBelowBookNow={
                               <div className="space-y-2">
-                                {hasAnyProductBooking && showBookingFormAgain ? (
+                                {hasAnyProductBooking &&
+                                showBookingFormAgain ? (
                                   <Button
                                     type="button"
                                     variant="secondary"
@@ -541,7 +613,9 @@ export default function ProductBooking() {
                                     type="button"
                                     variant="secondary"
                                     className="w-full"
-                                    onClick={() => router.push("/account/bookings")}
+                                    onClick={() =>
+                                      router.push("/account/bookings")
+                                    }
                                   >
                                     <Ticket className="h-4 w-4 mr-2" />
                                     {t("home.bookingStatus.viewMyTickets")}
@@ -562,10 +636,13 @@ export default function ProductBooking() {
                                   product={product}
                                   setBookingData={handleSetBookingData}
                                   showPaymentStep={showPaymentStep}
-                                  setShowPaymentStep={() => setShowPaymentStep(true)}
+                                  setShowPaymentStep={() =>
+                                    setShowPaymentStep(true)
+                                  }
                                   extraActionBelowBookNow={
                                     <div className="space-y-2">
-                                      {hasAnyProductBooking && showBookingFormAgain ? (
+                                      {hasAnyProductBooking &&
+                                      showBookingFormAgain ? (
                                         <Button
                                           type="button"
                                           variant="secondary"
@@ -579,22 +656,26 @@ export default function ProductBooking() {
                                           }}
                                         >
                                           <Ticket className="h-4 w-4 mr-2" />
-                                          {t("home.bookingStatus.viewMyTickets")}
+                                          {t(
+                                            "home.bookingStatus.viewMyTickets",
+                                          )}
                                         </Button>
                                       ) : null}
                                       <RentalImportantInfoModal
-                                  trigger="button"
-                                  hasDeposit={
-                                    isRentalProduct(product)
-                                      ? (product.rental?.has_deposit ?? false)
-                                      : false
-                                  }
-                                  depositAmount={
-                                    isRentalProduct(product)
-                                      ? (product.rental?.deposit_amount ?? null)
-                                      : null
-                                  }
-                                />
+                                        trigger="button"
+                                        hasDeposit={
+                                          isRentalProduct(product)
+                                            ? (product.rental?.has_deposit ??
+                                              false)
+                                            : false
+                                        }
+                                        depositAmount={
+                                          isRentalProduct(product)
+                                            ? (product.rental?.deposit_amount ??
+                                              null)
+                                            : null
+                                        }
+                                      />
                                     </div>
                                   }
                                 />
@@ -612,7 +693,8 @@ export default function ProductBooking() {
                                   }
                                   product={product}
                                   extraActionBelowBookNow={
-                                    hasAnyProductBooking && showBookingFormAgain ? (
+                                    hasAnyProductBooking &&
+                                    showBookingFormAgain ? (
                                       <Button
                                         type="button"
                                         variant="secondary"

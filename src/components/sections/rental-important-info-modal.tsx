@@ -4,10 +4,8 @@ import { useState, type MouseEvent } from "react";
 import {
   Info,
   IdCard,
-  FileCheck,
   CreditCard,
   CircleDollarSign,
-  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,7 +27,7 @@ type RentalImportantInfoModalProps = {
   depositAmount?: string | null;
 };
 
-function SectionCard({
+export function SectionCard({
   icon: Icon,
   color,
   children,
@@ -149,15 +147,12 @@ export default function RentalImportantInfoModal({
                 </h3>
                 <ul className="space-y-2 text-muted-foreground">
                   <li className="flex items-center gap-2.5">
-                    <FileCheck className="h-4 w-4 shrink-0 text-blue-500" />
                     <span>{t("home.rentalImportant.docsItem1")}</span>
                   </li>
                   <li className="flex items-center gap-2.5">
-                    <IdCard className="h-4 w-4 shrink-0 text-blue-500" />
                     <span>{t("home.rentalImportant.docsItem2")}</span>
                   </li>
                   <li className="flex items-center gap-2.5">
-                    <CreditCard className="h-4 w-4 shrink-0 text-blue-500" />
                     <span>{t("home.rentalImportant.docsItem3")}</span>
                   </li>
                 </ul>
@@ -173,37 +168,28 @@ export default function RentalImportantInfoModal({
                     ${amount}
                   </p>
                   <p className="text-muted-foreground leading-relaxed">
-                    {t("home.rentalImportant.depositBody").replace("{amount}", `$${amount}`)}
+                    {t("home.rentalImportant.depositBody").replace(
+                      "{amount}",
+                      `$${amount}`,
+                    )}
                   </p>
                 </SectionCard>
               )}
 
-              {/* 3. Contrato */}
-              <SectionCard icon={FileText} color="purple">
-                <h3 className="text-sm font-semibold text-foreground">
-                  {t("home.rentalImportant.contractTitle")}
-                </h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  {t("home.rentalImportant.contractBody")}
-                </p>
-              </SectionCard>
-
-              {/* 4. Tarjetas aceptadas */}
+              {/* 3. Tarjetas aceptadas */}
               <SectionCard icon={CreditCard} color="green">
                 <h3 className="text-sm font-semibold text-foreground">
                   {t("home.rentalImportant.cardsTitle")}
                 </h3>
                 <div className="flex flex-wrap gap-2 max-h-24 overflow-y-auto">
-                  {["MasterCard", "Visa", "American Express", "Diners Club"].map(
-                    (card) => (
-                      <span
-                        key={card}
-                        className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground/80"
-                      >
-                        {card}
-                      </span>
-                    ),
-                  )}
+                  {["MasterCard", "Visa", "Bitcoin Lightning"].map((card) => (
+                    <span
+                      key={card}
+                      className="inline-flex items-center rounded-full border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground/80"
+                    >
+                      {card}
+                    </span>
+                  ))}
                 </div>
               </SectionCard>
             </div>

@@ -19,6 +19,7 @@ export interface IProductAmenity {
   id: string;
   name: string;
   description: string;
+  icon?: string;
   // La API a veces devuelve `category_id` como string (id),
   // y en otros casos como objeto (id + name).
   category_id: string | { id: string; name: string };
@@ -54,7 +55,7 @@ export interface IProductBase<T extends string = string> {
   total_reviews: number;
   product_category: { id: string; name: string };
   target_audience?: { id: string; name: string };
-  amenities?: { id: string; name: string }[];
+  amenities?: { id: string; name: string; icon?: string }[];
   user?: { id: string; username: string; email?: string } | { id: string; username: string; email?: string }[];
   product_type: { id?: string; name: T };
   created_at: string;
