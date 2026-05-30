@@ -1,7 +1,11 @@
 "use client";
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { IContract, IContractChecklist, CreateChecklistPayload } from "@/types/contract";
+import type {
+  IContract,
+  IContractChecklist,
+  CreateChecklistPayload,
+} from "@/types/contract";
 import { urlWithLocale } from "@/redux/url-with-locale";
 
 export const contractsApiSlice = createApi({
@@ -9,6 +13,7 @@ export const contractsApiSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "/backend",
     prepareHeaders: async (headers, { getState }) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const token = (getState() as any).auth?.token;
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
@@ -47,9 +52,7 @@ export const contractsApiSlice = createApi({
         body: { status },
       }),
       invalidatesTags: (result) =>
-        result
-          ? [{ type: "Contracts", id: result.booking_id }]
-          : ["Contracts"],
+        result ? [{ type: "Contracts", id: result.booking_id }] : ["Contracts"],
     }),
 
     createChecklist: builder.mutation<

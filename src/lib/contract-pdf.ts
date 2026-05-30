@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { IContract } from "@/types/contract";
 
 type Lang = "es" | "en";
@@ -25,6 +26,7 @@ const FIELD_LABELS: Record<string, Record<Lang, string>> = {
 function t(lang: Lang) {
   const labels: Record<string, Record<Lang, string>> = {
     title: { es: "CONTRATO DE RENTA", en: "RENTAL CONTRACT" },
+    watermark: { es: "CONTRATO", en: "CONTRACT" },
     subtitle: { es: "Dubuu — Contrato Digital", en: "Dubuu — Digital Contract" },
     contractId: { es: "Contrato", en: "Contract" },
     bookingId: { es: "Reserva", en: "Booking" },
@@ -117,9 +119,7 @@ function drawPage1(
   logoDataUrl: string | null,
 ) {
   const _ = t(lang);
-  const primaryColor = [26, 26, 26];
   const grayColor = [85, 85, 85];
-  const lightGrayColor = [243, 244, 246];
   const veryLightGray = [245, 245, 245];
   const blueColor = [37, 99, 235];
 
@@ -134,7 +134,7 @@ function drawPage1(
   // Watermark
   doc.setTextColor(245, 245, 245);
   doc.setFontSize(50);
-  doc.text(_("title").replace(" DE RENTA", ""), 105, 150, { align: "center" });
+  doc.text(_("watermark"), 105, 150, { align: "center" });
 
   // Logo
   let companyInfoStartY: number;
@@ -361,7 +361,6 @@ function drawPage2(
 ) {
   const _ = t(lang);
   const blueColor = [37, 99, 235];
-  const grayColor = [85, 85, 85];
 
   const outChecklist = contract.checklists?.find((cl) => cl.type === "OUT");
   const inChecklist = contract.checklists?.find((cl) => cl.type === "IN");
