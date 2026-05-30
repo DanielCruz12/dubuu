@@ -312,6 +312,28 @@
     "dropoffLocation": "Dropoff location",
     "days": "days"
   },
+  "clientDetails": {
+    "title": "Client Details",
+    "description": "Client information and booking documents",
+    "close": "Close",
+    "clientInfo": "Client Information",
+    "name": "Name",
+    "email": "Email",
+    "rentalDetails": "Rental Details",
+    "pickupDate": "Pickup date",
+    "dropoffDate": "Dropoff date",
+    "pickupLocation": "Pickup location",
+    "dropoffLocation": "Dropoff location",
+    "pickupNotes": "Pickup notes",
+    "dropoffNotes": "Dropoff notes",
+    "noNotes": "No notes",
+    "documents": "Documents",
+    "duiFront": "DUI - Front",
+    "duiBack": "DUI - Back",
+    "licenseFront": "License - Front",
+    "licenseBack": "License - Back",
+    "noDocuments": "No documents available"
+  },
   "bookingsPage": {
     "heading": "Bookings",
     "description": "Manage your bookings",
@@ -478,7 +500,8 @@
       "bookingDate": "Booking date",
       "pickupDate": "Pickup date",
       "dropoffDate": "Dropoff date",
-      "pickupLocation": "Pickup location"
+      "pickupLocation": "Pickup location",
+      "details": "Details"
     },
     "status": {
       "pending": "Pending",

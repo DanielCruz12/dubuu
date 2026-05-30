@@ -36,6 +36,7 @@ import { getBookingsColumns } from "../(columns)/columns";
 import type { HostBooking } from "@/types/booking";
 import type { ChecklistType } from "@/types/contract";
 import { ContractChecklistDrawer } from "../../(components)/contract-checklist-drawer";
+import { BookingDetailsModal } from "../../(components)/booking-details-modal";
 import moment from "moment";
 import "moment/locale/es";
 import { DataTableSkeleton } from "@/components/skeletons/datatable-skeleton";
@@ -69,6 +70,10 @@ export function BookingsDataTable() {
   const [drawerContractId, setDrawerContractId] = useState("");
   const [drawerType, setDrawerType] = useState<ChecklistType>("OUT");
 
+  // Details modal state
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [detailsBooking, setDetailsBooking] = useState<HostBooking | null>(null);
+
   const handleOpenChecklist = useCallback(
     (_bookingId: string, contractId: string, type: ChecklistType) => {
       setDrawerContractId(contractId);
@@ -78,10 +83,15 @@ export function BookingsDataTable() {
     [],
   );
 
+  const handleOpenDetails = useCallback((booking: HostBooking) => {
+    setDetailsBooking(booking);
+    setDetailsOpen(true);
+  }, []);
+
   const { t, language } = useLanguage();
   const columns = useMemo(
-    () => getBookingsColumns(t, language, tableKind, handleOpenChecklist),
-    [t, language, tableKind, handleOpenChecklist],
+    () => getBookingsColumns(t, language, tableKind, handleOpenChecklist, handleOpenDetails),
+    [t, language, tableKind, handleOpenChecklist, handleOpenDetails],
   );
 
   // Fetch products for the user
@@ -362,6 +372,12 @@ export function BookingsDataTable() {
         onOpenChange={setDrawerOpen}
         contractId={drawerContractId}
         type={drawerType}
+      />
+
+      <BookingDetailsModal
+        booking={detailsBooking}
+        open={detailsOpen}
+        onClose={() => setDetailsOpen(false)}
       />
     </div>
   );

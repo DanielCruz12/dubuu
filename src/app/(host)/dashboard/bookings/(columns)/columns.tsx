@@ -1,7 +1,7 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { HostBooking } from "@/types/booking";
 import type { ChecklistType } from "@/types/contract";
@@ -15,6 +15,7 @@ export function getBookingsColumns(
   language: string,
   tableKind: "tours" | "rental",
   onOpenChecklist?: (bookingId: string, contractId: string, type: ChecklistType) => void,
+  onOpenDetails?: (booking: HostBooking) => void,
 ): ColumnDef<HostBooking>[] {
   const locale = language === "en" ? "en" : "es";
   const dateFormat = language === "es" ? "DD/MM/YYYY h:mm A" : "MM/DD/YYYY h:mm A";
@@ -202,6 +203,26 @@ export function getBookingsColumns(
       );
     },
   });
+
+  if (tableKind === "rental" && onOpenDetails) {
+    columns.push({
+      id: "details",
+      size: 90,
+      header: () => <div className="text-center">{t("dashboard.bookings.table.details")}</div>,
+      cell: ({ row }) => (
+        <div className="text-center">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onOpenDetails(row.original)}
+          >
+            <Eye className="mr-1 h-4 w-4" />
+            {t("dashboard.bookings.table.details")}
+          </Button>
+        </div>
+      ),
+    });
+  }
 
   if (tableKind === "rental" && onOpenChecklist) {
     columns.push({

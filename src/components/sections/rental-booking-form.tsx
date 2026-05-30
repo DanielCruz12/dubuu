@@ -375,29 +375,36 @@ export default function RentalBookingForm({
 
     setIsUploading(true);
 
-    let documentUrls: string[] = [];
-    const allDocFiles = [...duiFiles, ...licenseFiles].filter(
-      Boolean,
-    ) as File[];
+    // Upload documents individually to track which URL corresponds to which doc
+    const uploadFile = async (file: File | null): Promise<string | undefined> => {
+      if (!file) return undefined;
+      const formData = new FormData();
+      formData.append("files", file);
+      const res = await fetch("/backend/api/v1/files/upload", {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) throw new Error("Upload failed");
+      const result = await res.json();
+      return (result.files?.[0] as { s3Location: string })?.s3Location;
+    };
 
-    if (allDocFiles.length > 0) {
-      const uploadFormData = new FormData();
-      allDocFiles.forEach((file) => uploadFormData.append("files", file));
-      try {
-        const res = await fetch("/backend/api/v1/files/upload", {
-          method: "POST",
-          body: uploadFormData,
-        });
-        if (!res.ok) throw new Error("Upload failed");
-        const result = await res.json();
-        documentUrls = (result.files ?? []).map(
-          (f: { s3Location: string }) => f.s3Location,
-        );
-      } catch {
-        toast.error(t("home.rentalBooking.uploadError"));
-        setIsUploading(false);
-        return;
-      }
+    let duiFront: string | undefined;
+    let duiBack: string | undefined;
+    let licenseFront: string | undefined;
+    let licenseBack: string | undefined;
+
+    try {
+      [duiFront, duiBack, licenseFront, licenseBack] = await Promise.all([
+        uploadFile(duiFiles[0] ?? null),
+        uploadFile(duiFiles[1] ?? null),
+        uploadFile(licenseFiles[0] ?? null),
+        uploadFile(licenseFiles[1] ?? null),
+      ]);
+    } catch {
+      toast.error(t("home.rentalBooking.uploadError"));
+      setIsUploading(false);
+      return;
     }
 
     const pickupDt = pickup ? new Date(pickup) : new Date();
@@ -426,7 +433,10 @@ export default function RentalBookingForm({
       total: estimatedTotal,
       user_id: user.id,
       product_id: product.id,
-      documents: documentUrls.length > 0 ? documentUrls : undefined,
+      dui_front: duiFront,
+      dui_back: duiBack,
+      license_front: licenseFront,
+      license_back: licenseBack,
       start_date_display: format(pickupDt, displayFmt, { locale }),
       end_date_display: format(dropoffDt, displayFmt, { locale }),
       maps_link: googleMapsLink(finalPickupLocation),

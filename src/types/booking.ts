@@ -78,7 +78,10 @@ export type RentalBookingData = {
   total: number;
   user_id: string;
   product_id: string;
-  documents?: string[];
+  dui_front?: string;
+  dui_back?: string;
+  license_front?: string;
+  license_back?: string;
   /** Formatted local date string for notifications (e.g. "27 may 2026 a las 10:00 AM") */
   start_date_display?: string;
   /** Formatted local date string for notifications */
@@ -110,6 +113,12 @@ export interface HostBooking {
   dropoff_time: string | null;
   pickup_location: string | null;
   dropoff_location: string | null;
+  pickup_notes?: string | null;
+  dropoff_notes?: string | null;
+  dui_front?: string | null;
+  dui_back?: string | null;
+  license_front?: string | null;
+  license_back?: string | null;
   createdAt: string;
   updatedAt: string;
 }

@@ -312,6 +312,28 @@
     "dropoffLocation": "Lugar de entrega",
     "days": "días"
   },
+  "clientDetails": {
+    "title": "Detalles del Cliente",
+    "description": "Información del cliente y documentos de reserva",
+    "close": "Cerrar",
+    "clientInfo": "Información del Cliente",
+    "name": "Nombre",
+    "email": "Correo",
+    "rentalDetails": "Detalles de la Renta",
+    "pickupDate": "Fecha de recogida",
+    "dropoffDate": "Fecha de entrega",
+    "pickupLocation": "Lugar de recogida",
+    "dropoffLocation": "Lugar de entrega",
+    "pickupNotes": "Notas de recogida",
+    "dropoffNotes": "Notas de entrega",
+    "noNotes": "Sin notas",
+    "documents": "Documentos",
+    "duiFront": "DUI - Frente",
+    "duiBack": "DUI - Reverso",
+    "licenseFront": "Licencia - Frente",
+    "licenseBack": "Licencia - Reverso",
+    "noDocuments": "No hay documentos disponibles"
+  },
   "bookingsPage": {
     "heading": "Reservas",
     "description": "Gestiona tus reservas",
@@ -478,7 +500,8 @@
       "bookingDate": "Fecha de reserva",
       "pickupDate": "Fecha de recogida",
       "dropoffDate": "Fecha de entrega",
-      "pickupLocation": "Lugar de recogida"
+      "pickupLocation": "Lugar de recogida",
+      "details": "Detalles"
     },
     "status": {
       "pending": "Pendiente",
