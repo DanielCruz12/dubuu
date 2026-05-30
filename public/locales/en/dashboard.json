@@ -480,6 +480,15 @@
       "dropoffDate": "Dropoff date",
       "pickupLocation": "Pickup location"
     },
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "active": "Active",
+      "disputed": "Disputed",
+      "pending_delivery": "Pending Delivery"
+    },
     "exportSheetName": "Bookings"
   },
   "payments": {
@@ -785,6 +794,59 @@
       "updateSuccessDescription": "Your changes were saved successfully.",
       "updateError": "Error updating tour",
       "updateErrorDescription": "Could not save changes. Check the data and try again."
+    }
+  },
+  "contractChecklist": {
+    "outTitle": "Check-Out Details",
+    "inTitle": "Check-In Details",
+    "outDescription": "Review and confirm the vehicle condition upon delivery.",
+    "inDescription": "Review and confirm the vehicle condition upon return.",
+    "markAllOk": "Mark all as OK",
+    "fuelLevel": "Fuel level",
+    "addObservation": "Add observation",
+    "continue": "Continue",
+    "cancel": "Cancel",
+    "inspectorSignature": "Inspector Signature",
+    "inspectorSignatureDesc": "Draw the inspector's signature in the designated area.",
+    "driverSignature": "Customer Signature",
+    "driverSignatureDesc": "The customer must draw their signature in the designated area.",
+    "loading": "Loading…",
+    "clear": "Clear",
+    "save": "Save",
+    "saveAndFinish": "Save & Finish",
+    "saving": "Saving…",
+    "observation": "Observation",
+    "observationFor": "Observation: {{field}}",
+    "observationDesc": "Write an observation for this checklist item.",
+    "observationPlaceholder": "Enter the details of this observation…",
+    "fuelPending": "Fuel pending",
+    "fuelPendingDesc": "Select the fuel level before continuing.",
+    "signaturePending": "Signature pending",
+    "inspectorSignatureRequired": "The inspector's signature is required.",
+    "driverSignatureRequired": "The customer's signature is required.",
+    "checklistSaved": "Checklist saved",
+    "contractActive": "The contract is now ACTIVE.",
+    "contractCompleted": "The contract has been COMPLETED.",
+    "saveError": "Error",
+    "saveErrorDesc": "Could not save the checklist.",
+    "fields": {
+      "good_condition_tires": "Tires in good condition",
+      "spare_tire": "Spare tire",
+      "car_jack": "Car jack",
+      "safety_cone": "Safety cone",
+      "fire_extinguisher": "Fire extinguisher",
+      "mirrors_and_rearview": "Mirrors & rearview",
+      "seat_stains": "Seat stains",
+      "headlights_and_stops": "Headlights & stops",
+      "carplay_screen_and_speakers": "CarPlay screen & speakers",
+      "good_condition_windows": "Windows in good condition",
+      "diesel_caps": "Diesel caps",
+      "dashboard_lights": "Dashboard lights",
+      "air_conditioning": "Air conditioning",
+      "safety_hubs": "Safety hubs",
+      "original_registration_card": "Original registration card",
+      "mud_flaps": "Mud flaps",
+      "roof_racks_and_ladder": "Roof racks & ladder"
     }
   }
 }

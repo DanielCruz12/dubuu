@@ -214,6 +214,59 @@ export default function PDFButton({
       doc.line(10, yPos + 5, 200, yPos + 5);
       yPos += 10;
 
+      // Vehicle info (for rental receipts)
+      if (receiptData.vehicle) {
+        const v = receiptData.vehicle;
+        doc.setFontSize(10);
+        doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
+        doc.text("VEHÍCULO", 10, yPos);
+        yPos += 6;
+
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(10);
+
+        const leftFields = [
+          ["Marca", v.brand],
+          ["Modelo", v.model],
+          ["Año", String(v.year)],
+          ["Color", v.color],
+        ];
+        const leftX = 10;
+        let rowY = yPos;
+        for (const [label, value] of leftFields) {
+          doc.setFontSize(9);
+          doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
+          doc.text(`${label}:`, leftX, rowY);
+          doc.setTextColor(0, 0, 0);
+          doc.setFontSize(10);
+          doc.text(value, leftX + 22, rowY);
+          rowY += 6;
+        }
+
+        const rightFields = [
+          ["Placa", v.plate || "—"],
+          ["VIN", v.vin || "—"],
+          ["Combustible", v.fuel_type],
+          ["Transmisión", v.transmission],
+          ["Motor", v.engine],
+        ];
+        const rightX = 110;
+        rowY = yPos;
+        for (const [label, value] of rightFields) {
+          doc.setFontSize(9);
+          doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
+          doc.text(`${label}:`, rightX, rowY);
+          doc.setTextColor(0, 0, 0);
+          doc.setFontSize(10);
+          doc.text(value, rightX + 26, rowY);
+          rowY += 6;
+        }
+
+        yPos = rowY + 5;
+        doc.line(10, yPos, 200, yPos);
+        yPos += 8;
+      }
+
       // Tabla de productos/servicios
       const tableColumn = ["Descripción", "Cantidad", "Precio", "Total"];
       const tableRows = receiptData.items.map((item) => [

@@ -28,6 +28,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -229,6 +230,9 @@ export default function PaymentMethodForm() {
                           <DialogTitle>
                             {t("home.checkout.payment.paymentMethodSheetTitle")}
                           </DialogTitle>
+                          <DialogDescription className="sr-only">
+                            {t("home.checkout.payment.paymentMethodSheetTitle")}
+                          </DialogDescription>
                         </DialogHeader>
                         <div className="max-h-[min(70vh,420px)] overflow-y-auto px-6 pb-6">
                           <PaymentMethodRadioList

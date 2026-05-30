@@ -480,6 +480,15 @@
       "dropoffDate": "Fecha de entrega",
       "pickupLocation": "Lugar de recogida"
     },
+    "status": {
+      "pending": "Pendiente",
+      "confirmed": "Confirmado",
+      "completed": "Completado",
+      "cancelled": "Cancelado",
+      "active": "Activo",
+      "disputed": "En Disputa",
+      "pending_delivery": "Pendiente de Entrega"
+    },
     "exportSheetName": "Reservas"
   },
   "payments": {
@@ -785,6 +794,59 @@
       "updateSuccessDescription": "Los cambios se guardaron correctamente.",
       "updateError": "Error al actualizar el tour",
       "updateErrorDescription": "No se pudieron guardar los cambios. Revisa los datos e inténtalo de nuevo."
+    }
+  },
+  "contractChecklist": {
+    "outTitle": "Detalles de Salida",
+    "inTitle": "Detalles de Devolución",
+    "outDescription": "Revisa y confirma el estado del vehículo al entregarlo.",
+    "inDescription": "Revisa y confirma el estado del vehículo al devolverlo.",
+    "markAllOk": "Marcar todo como OK",
+    "fuelLevel": "Nivel de combustible",
+    "addObservation": "Añadir observación",
+    "continue": "Continuar",
+    "cancel": "Cancelar",
+    "inspectorSignature": "Firma del Encargado",
+    "inspectorSignatureDesc": "Dibuje la firma del encargado en el área designada.",
+    "driverSignature": "Firma del Cliente",
+    "driverSignatureDesc": "El cliente debe dibujar su firma en el área designada.",
+    "loading": "Cargando…",
+    "clear": "Limpiar",
+    "save": "Guardar",
+    "saveAndFinish": "Guardar y Finalizar",
+    "saving": "Guardando…",
+    "observation": "Observación",
+    "observationFor": "Observación: {{field}}",
+    "observationDesc": "Escriba una observación para este item del checklist.",
+    "observationPlaceholder": "Escribe aquí los detalles de esta observación…",
+    "fuelPending": "Combustible pendiente",
+    "fuelPendingDesc": "Selecciona el nivel de combustible antes de continuar.",
+    "signaturePending": "Firma pendiente",
+    "inspectorSignatureRequired": "Se requiere la firma del encargado.",
+    "driverSignatureRequired": "Se requiere la firma del cliente.",
+    "checklistSaved": "Checklist guardado",
+    "contractActive": "El contrato ahora está ACTIVO.",
+    "contractCompleted": "El contrato ha sido COMPLETADO.",
+    "saveError": "Error",
+    "saveErrorDesc": "No se pudo guardar el checklist.",
+    "fields": {
+      "good_condition_tires": "Llantas en buen estado",
+      "spare_tire": "Llanta de repuesto",
+      "car_jack": "Gato hidráulico",
+      "safety_cone": "Cono de seguridad",
+      "fire_extinguisher": "Extintor",
+      "mirrors_and_rearview": "Espejos y retrovisores",
+      "seat_stains": "Manchas en asientos",
+      "headlights_and_stops": "Luces delanteras y stops",
+      "carplay_screen_and_speakers": "Pantalla CarPlay y bocinas",
+      "good_condition_windows": "Ventanas en buen estado",
+      "diesel_caps": "Tapones de diésel",
+      "dashboard_lights": "Luces del tablero",
+      "air_conditioning": "Aire acondicionado",
+      "safety_hubs": "Seguros de ejes (hubs)",
+      "original_registration_card": "Tarjeta de registro original",
+      "mud_flaps": "Guardabarros",
+      "roof_racks_and_ladder": "Racks de techo y escalera"
     }
   }
 }

@@ -42,6 +42,17 @@ type BookingStatusProps = {
   onViewDetails?: () => void;
   extraFooterAction?: ReactNode;
   className?: string;
+  vehicle?: {
+    brand: string;
+    model: string;
+    year: number;
+    color: string;
+    plate?: string | null;
+    vin?: string | null;
+    fuel_type: string;
+    transmission: string;
+    engine: string;
+  };
 };
 
 export function BookingStatus({
@@ -64,6 +75,7 @@ export function BookingStatus({
   onViewDetails,
   extraFooterAction,
   className,
+  vehicle,
 }: BookingStatusProps) {
   const { t, language } = useLanguage();
   const isRental = bookingKind === "rental";
@@ -133,6 +145,7 @@ export function BookingStatus({
     qrValue: `https://www.dubuu.com/booking/${id.slice(0, 13)}`,
     paymentMethod: paymentMethodLabel,
     paymentStatus: "Completado",
+    vehicle,
   };
 
   const baseConfig = statusConfig[status];

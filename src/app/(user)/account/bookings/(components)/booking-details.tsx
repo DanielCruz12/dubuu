@@ -20,6 +20,8 @@ import { statusColors, statusTextTranslations } from "@/utils/data";
 import { useLanguage } from "@/lib/i18n-context";
 import PDFButton from "@/components/pdf/pdf-button";
 import type { ReceiptProps } from "@/types/pdf";
+import { useGetProductQuery } from "@/redux/slices/product/product-slice";
+import { isRentalProduct } from "@/utils/product-helpers";
 
 interface BookingDetailsProps {
   booking: IBookingUser;
@@ -36,6 +38,23 @@ export function BookingDetails({
   const statusText = statusTextTranslations[language];
   const bookingIdShort = booking.id.split("-").pop() ?? "";
   const isRental = booking.booking_kind === "rental";
+  const { data: product } = useGetProductQuery(booking.product_id, {
+    skip: !isRental,
+  });
+  const vehicle =
+    product && isRentalProduct(product)
+      ? {
+          brand: product.rental.brand,
+          model: product.rental.model,
+          year: product.rental.year,
+          color: product.rental.color,
+          plate: product.rental.plate,
+          vin: product.rental.vin,
+          fuel_type: product.rental.fuel_type,
+          transmission: product.rental.transmission,
+          engine: product.rental.engine,
+        }
+      : undefined;
   const ticketsCount = isRental ? 1 : (Number(booking.tickets) || 1);
   const totalNumber =
     typeof booking.total === "number" ? booking.total : Number(booking.total);
@@ -85,6 +104,7 @@ export function BookingDetails({
     qrValue: "",
     paymentMethod: "",
     paymentStatus: "Completado",
+    vehicle,
   };
 
   // Map API status to UI status

@@ -4,7 +4,9 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { HostBooking } from "@/types/booking";
+import type { ChecklistType } from "@/types/contract";
 import { Badge } from "@/components/ui/badge";
+import { ContractCell } from "../(components)/contract-cell";
 import moment from "moment";
 import "moment/locale/es";
 
@@ -12,6 +14,7 @@ export function getBookingsColumns(
   t: (key: string) => string,
   language: string,
   tableKind: "tours" | "rental",
+  onOpenChecklist?: (bookingId: string, contractId: string, type: ChecklistType) => void,
 ): ColumnDef<HostBooking>[] {
   const locale = language === "en" ? "en" : "es";
   const dateFormat = language === "es" ? "DD/MM/YYYY h:mm A" : "MM/DD/YYYY h:mm A";
@@ -19,6 +22,7 @@ export function getBookingsColumns(
   const columns: ColumnDef<HostBooking>[] = [
     {
       accessorKey: "user",
+      size: 150,
       header: ({ column }) => {
         return (
           <Button
@@ -36,7 +40,7 @@ export function getBookingsColumns(
           user?.first_name && user?.last_name
             ? `${user.first_name} ${user.last_name}`.trim()
             : user?.username ?? "";
-        return <div className="font-medium">{displayName || "—"}</div>;
+        return <div className="font-medium max-w-[140px] truncate" title={displayName}>{displayName || "—"}</div>;
       },
     },
   ];
@@ -44,6 +48,7 @@ export function getBookingsColumns(
   if (tableKind === "tours") {
     columns.push({
       accessorKey: "tickets",
+      size: 80,
       header: ({ column }) => {
         return (
           <div className="text-end">
@@ -58,14 +63,15 @@ export function getBookingsColumns(
         );
       },
       cell: ({ row }) => {
-        const tickets = row.getValue("tickets") as number;
-        return <div className="text-center">{tickets}</div>;
+        const tickets = row.getValue("tickets") as number | null;
+        return <div className="text-center">{tickets ?? "—"}</div>;
       },
     });
   }
 
   columns.push({
     accessorKey: "total",
+    size: 90,
     header: ({ column }) => {
       return (
         <div className="text-center">
@@ -93,6 +99,7 @@ export function getBookingsColumns(
   if (tableKind === "tours") {
     columns.push({
       accessorKey: "tourDate",
+      size: 200,
       header: ({ column }) => {
         return (
           <Button
@@ -119,6 +126,7 @@ export function getBookingsColumns(
     columns.push(
       {
         accessorKey: "pickup_time",
+        size: 155,
         header: ({ column }) => {
           return (
             <Button
@@ -139,6 +147,7 @@ export function getBookingsColumns(
       },
       {
         accessorKey: "dropoff_time",
+        size: 155,
         header: ({ column }) => {
           return (
             <Button
@@ -159,6 +168,7 @@ export function getBookingsColumns(
       },
       {
         accessorKey: "pickup_location",
+        size: 160,
         header: t("dashboard.bookings.table.pickupLocation"),
         cell: ({ row }) => {
           const loc = row.getValue("pickup_location") as string;
@@ -170,9 +180,12 @@ export function getBookingsColumns(
 
   columns.push({
     accessorKey: "status",
+    size: 120,
     header: t("dashboard.bookings.table.status"),
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
+      const label = t(`dashboard.bookings.status.${status}`);
+      const display = label.startsWith("dashboard.") ? status : label;
       return (
         <Badge
           variant={
@@ -184,11 +197,26 @@ export function getBookingsColumns(
           }
           className="capitalize"
         >
-          {status}
+          {display}
         </Badge>
       );
     },
   });
+
+  if (tableKind === "rental" && onOpenChecklist) {
+    columns.push({
+      id: "contract",
+      size: 185,
+      header: () => <div className="text-center">Contrato</div>,
+      meta: { stickyRight: true },
+      cell: ({ row }) => (
+        <ContractCell
+          booking={row.original}
+          onOpenChecklist={onOpenChecklist}
+        />
+      ),
+    });
+  }
 
   return columns;
 }

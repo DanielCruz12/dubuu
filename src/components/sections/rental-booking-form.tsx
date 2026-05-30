@@ -1,6 +1,6 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import Image from "next/image";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -31,6 +31,7 @@ import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -593,12 +594,10 @@ export default function RentalBookingForm({
               </Label>
               {file && previews[i] ? (
                 <div className="relative rounded-xl border border-border/60 overflow-hidden bg-muted/10">
-                  <Image
-                    src={previews[i]}
+                  <img
+                    src={previews[i]!}
                     alt={i === 0 ? "Front" : "Back"}
                     className="w-full h-28 object-contain"
-                    width={400}
-                    height={112}
                   />
                   <Button
                     type="button"
@@ -762,6 +761,9 @@ export default function RentalBookingForm({
                     <DialogTitle>
                       {t("home.rentalBooking.rangePickerTitle")}
                     </DialogTitle>
+                    <DialogDescription className="sr-only">
+                      {t("home.rentalBooking.rangePickerTitle")}
+                    </DialogDescription>
                   </DialogHeader>
                   <div className="w-full min-w-0 px-6 pb-5 sm:pb-6">
                     {rangePickerBody}
@@ -829,9 +831,9 @@ export default function RentalBookingForm({
                     <DialogTitle>
                       {t("home.rentalBooking.locationModalTitle")}
                     </DialogTitle>
-                    <p className="text-xs text-muted-foreground">
+                    <DialogDescription className="text-xs text-muted-foreground">
                       {t("home.rentalBooking.locationModalDescription")}
-                    </p>
+                    </DialogDescription>
                   </DialogHeader>
                   <div className="w-full min-w-0 px-5 pb-4 sm:pb-5">
                     {locationModalBody}
@@ -922,6 +924,9 @@ export default function RentalBookingForm({
                 <FileText className="h-5 w-5 text-muted-foreground" />
                 {t("home.rentalBooking.documentsModalTitle")}
               </DialogTitle>
+              <DialogDescription className="sr-only">
+                {t("home.rentalBooking.documentsModalTitle")}
+              </DialogDescription>
             </DialogHeader>
             {docsModalBody}
           </DialogContent>
@@ -957,6 +962,11 @@ export default function RentalBookingForm({
                 ? t("home.rentalBooking.selectDropoffLocation")
                 : t("home.rentalBooking.selectPickupLocation")}
             </DialogTitle>
+            <DialogDescription className="sr-only">
+              {activeMapMode === "dropoff"
+                ? t("home.rentalBooking.selectDropoffLocation")
+                : t("home.rentalBooking.selectPickupLocation")}
+            </DialogDescription>
           </DialogHeader>
           <LocationPicker
             quickLocations={[

@@ -193,6 +193,21 @@ export default function ProductBooking() {
 
   const product = data as IProduct;
 
+  const vehicle =
+    product && isRentalProduct(product)
+      ? {
+          brand: product.rental.brand,
+          model: product.rental.model,
+          year: product.rental.year,
+          color: product.rental.color,
+          plate: product.rental.plate,
+          vin: product.rental.vin,
+          fuel_type: product.rental.fuel_type,
+          transmission: product.rental.transmission,
+          engine: product.rental.engine,
+        }
+      : undefined;
+
   const [headerHeight, setHeaderHeight] = useState(0);
 
   useEffect(() => {
@@ -487,6 +502,7 @@ export default function ProductBooking() {
                           setShowBookingFormAgain(true);
                           setBookingFormKey((k) => k + 1);
                         }}
+                        vehicle={vehicle}
                       />
                     ) : (
                       <div className="space-y-2">
@@ -628,6 +644,7 @@ export default function ProductBooking() {
                                 setShowBookingFormAgain(true);
                                 setBookingFormKey((k) => k + 1);
                               }}
+                              vehicle={vehicle}
                             />
                           ) : (
                             <div className="space-y-2">

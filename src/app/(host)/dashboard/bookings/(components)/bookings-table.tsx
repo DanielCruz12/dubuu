@@ -34,6 +34,8 @@ import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getBookingsColumns } from "../(columns)/columns";
 import type { HostBooking } from "@/types/booking";
+import type { ChecklistType } from "@/types/contract";
+import { ContractChecklistDrawer } from "../../(components)/contract-checklist-drawer";
 import moment from "moment";
 import "moment/locale/es";
 import { DataTableSkeleton } from "@/components/skeletons/datatable-skeleton";
@@ -61,10 +63,25 @@ export function BookingsDataTable() {
   const [bookingsData, setBookingsData] = useState<HostBooking[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+
+  // Checklist drawer state
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerContractId, setDrawerContractId] = useState("");
+  const [drawerType, setDrawerType] = useState<ChecklistType>("OUT");
+
+  const handleOpenChecklist = useCallback(
+    (_bookingId: string, contractId: string, type: ChecklistType) => {
+      setDrawerContractId(contractId);
+      setDrawerType(type);
+      setDrawerOpen(true);
+    },
+    [],
+  );
+
   const { t, language } = useLanguage();
   const columns = useMemo(
-    () => getBookingsColumns(t, language, tableKind),
-    [t, language, tableKind]
+    () => getBookingsColumns(t, language, tableKind, handleOpenChecklist),
+    [t, language, tableKind, handleOpenChecklist],
   );
 
   // Fetch products for the user
@@ -339,6 +356,13 @@ export function BookingsDataTable() {
           )}
         </CardContent>
       </Card>
+
+      <ContractChecklistDrawer
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+        contractId={drawerContractId}
+        type={drawerType}
+      />
     </div>
   );
 }
