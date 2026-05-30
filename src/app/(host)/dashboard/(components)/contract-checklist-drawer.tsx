@@ -85,26 +85,6 @@ const CHECKLIST_FIELDS: ChecklistFieldMeta[] = [
   { key: SEAT_STAINS_KEY, label: "" },
 ];
 
-const FIELD_LABELS_ES: Record<ChecklistFieldMeta["key"], string> = {
-  good_condition_tires: "Llantas en buen estado",
-  spare_tire: "Llanta de repuesto",
-  car_jack: "Gato hidráulico",
-  safety_cone: "Cono de seguridad",
-  fire_extinguisher: "Extintor",
-  mirrors_and_rearview: "Espejos y retrovisores",
-  seat_stains: "Manchas en asientos",
-  headlights_and_stops: "Luces delanteras y stops",
-  carplay_screen_and_speakers: "Pantalla CarPlay y bocinas",
-  good_condition_windows: "Ventanas en buen estado",
-  diesel_caps: "Tapones de diésel",
-  dashboard_lights: "Luces del tablero",
-  air_conditioning: "Aire acondicionado",
-  safety_hubs: "Seguros de ejes (hubs)",
-  original_registration_card: "Tarjeta de registro original",
-  mud_flaps: "Guardabarros",
-  roof_racks_and_ladder: "Racks de techo y escalera",
-};
-
 const FUEL_OPTIONS = ["Vacío", "1/4", "1/2", "3/4", "Full"] as const;
 
 /* ------------------------------------------------------------------ */
