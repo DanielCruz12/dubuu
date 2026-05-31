@@ -151,9 +151,8 @@ export function ContractChecklistDrawer({
   );
   const [obsDraft, setObsDraft] = useState("");
 
-  /* ---- signature dialog state ---- */
-  const [inspectorDialogOpen, setInspectorDialogOpen] = useState(false);
-  const [driverDialogOpen, setDriverDialogOpen] = useState(false);
+  /* ---- signature step: only one dialog rendered at a time ---- */
+  const [signatureStep, setSignatureStep] = useState<"inspector" | "driver" | null>(null);
 
   /* ---- signature refs ---- */
   const inspectorRef = useRef<SignatureCanvas>(null);
@@ -170,6 +169,7 @@ export function ContractChecklistDrawer({
     setObservations({});
     setInspectorSignature(null);
     setDriverSignature(null);
+    setSignatureStep(null);
   }, []);
 
   /* ---- mark all OK ---- */
@@ -199,7 +199,7 @@ export function ContractChecklistDrawer({
     setObsOpen(false);
   };
 
-  /* ---- step 1 → step 2: open inspector signature modal ---- */
+  /* ---- step 1 → step 2: open inspector signature ---- */
   const handleContinue = () => {
     if (!fuelPercentage) {
       toast(t("dashboard.contractChecklist.fuelPending"), {
@@ -207,10 +207,10 @@ export function ContractChecklistDrawer({
       });
       return;
     }
-    setInspectorDialogOpen(true);
+    setSignatureStep("inspector");
   };
 
-  /* ---- step 2 → step 3: save inspector signature, open driver modal ---- */
+  /* ---- step 2 → step 3: save inspector signature, switch to driver ---- */
   const handleSaveInspector = () => {
     if (!inspectorSignature) {
       toast(t("dashboard.contractChecklist.signaturePending"), {
@@ -218,8 +218,7 @@ export function ContractChecklistDrawer({
       });
       return;
     }
-    setInspectorDialogOpen(false);
-    setDriverDialogOpen(true);
+    setSignatureStep("driver");
   };
 
   /* ---- step 3 → final: save driver signature and submit ---- */
@@ -250,7 +249,6 @@ export function ContractChecklistDrawer({
             : t("dashboard.contractChecklist.contractCompleted"),
       });
       resetForm();
-      setDriverDialogOpen(false);
       onOpenChange(false);
     } catch {
       toast(t("dashboard.contractChecklist.saveError"), {
@@ -569,7 +567,7 @@ export function ContractChecklistDrawer({
       {/* ============================================================== */}
       {/*  STEP 2 – Inspector Signature                                   */}
       {/* ============================================================== */}
-      <Dialog open={inspectorDialogOpen} onOpenChange={setInspectorDialogOpen}>
+      <Dialog open={signatureStep === "inspector"} onOpenChange={(open) => { if (!open) setSignatureStep(null); }} modal={false}>
         <DialogContent className="sm:max-w-md p-6">
           <DialogHeader>
             <DialogTitle>{t("dashboard.contractChecklist.inspectorSignature")}</DialogTitle>
@@ -614,7 +612,7 @@ export function ContractChecklistDrawer({
       {/* ============================================================== */}
       {/*  STEP 3 – Driver Signature                                      */}
       {/* ============================================================== */}
-      <Dialog open={driverDialogOpen} onOpenChange={setDriverDialogOpen}>
+      <Dialog open={signatureStep === "driver"} onOpenChange={(open) => { if (!open) setSignatureStep(null); }} modal={false}>
         <DialogContent className="sm:max-w-md p-6">
           <DialogHeader>
             <DialogTitle>{t("dashboard.contractChecklist.driverSignature")}</DialogTitle>
@@ -661,7 +659,7 @@ export function ContractChecklistDrawer({
       {/* ============================================================== */}
       {/*  Observation Modal                                              */}
       {/* ============================================================== */}
-      <Dialog open={obsOpen} onOpenChange={setObsOpen}>
+      <Dialog open={obsOpen} onOpenChange={setObsOpen} modal={false}>
         <DialogContent className="sm:max-w-md p-6">
           <DialogHeader>
             <DialogTitle className="text-base">
