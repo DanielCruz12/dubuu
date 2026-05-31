@@ -242,9 +242,13 @@ export function ContractChecklistDrawer({
             ? t("dashboard.contractChecklist.contractActive")
             : t("dashboard.contractChecklist.contractCompleted"),
       });
-      // Close dialog first, then drawer — both in one batch, React handles it
-      resetForm();
-      onOpenChange(false);
+      // Close the signature Dialog first, then the Drawer/Sheet one
+      // frame later — simultaneous overlay teardown freezes the UI.
+      setView("checklist");
+      requestAnimationFrame(() => {
+        resetForm();
+        onOpenChange(false);
+      });
     } catch {
       toast(t("dashboard.contractChecklist.saveError"), {
         description: t("dashboard.contractChecklist.saveErrorDesc"),
