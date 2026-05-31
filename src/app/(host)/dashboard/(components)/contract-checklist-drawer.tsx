@@ -192,6 +192,19 @@ export function ContractChecklistDrawer({
     }
   }, [sigStep, pendingOpenDrawer, onOpenChange]);
 
+  // Robust safety cleanup for pointer-events after both modals finish closing transitions
+  useEffect(() => {
+    if (!open && sigStep === null) {
+      const timer = setTimeout(() => {
+        if (document.body.style.pointerEvents === "none") {
+          console.log("Forcing pointer-events cleanup");
+          document.body.style.pointerEvents = "";
+        }
+      }, 350);
+      return () => clearTimeout(timer);
+    }
+  }, [open, sigStep]);
+
   /* ---- when entering a signature step, reset the canvas ---- */
   useEffect(() => {
     if (sigStep !== null) {
@@ -233,26 +246,36 @@ export function ContractChecklistDrawer({
   };
 
   const handleSaveInspector = () => {
+    console.time("saveInspector");
     const sig = readSignature();
     if (!sig) {
       toast(t("dashboard.contractChecklist.signaturePending"), {
         description: t("dashboard.contractChecklist.inspectorSignatureRequired"),
       });
+      console.timeEnd("saveInspector");
       return;
     }
     setInspectorSignature(sig);
     setSigStep("driver");
+    console.timeEnd("saveInspector");
   };
 
   const handleSaveDriver = async () => {
+    console.time("saveDriver-total");
+    
+    console.time("saveDriver-readSignature");
     const sig = readSignature();
+    console.timeEnd("saveDriver-readSignature");
+
     if (!sig) {
       toast(t("dashboard.contractChecklist.signaturePending"), {
         description: t("dashboard.contractChecklist.driverSignatureRequired"),
       });
+      console.timeEnd("saveDriver-total");
       return;
     }
 
+    console.time("saveDriver-payloadCreation");
     const payload: CreateChecklistPayload = {
       contract_id: contractId,
       type,
@@ -262,22 +285,32 @@ export function ContractChecklistDrawer({
       inspector_signature: inspectorSignature!,
       driver_signature: sig,
     };
+    console.timeEnd("saveDriver-payloadCreation");
 
     try {
+      console.time("saveDriver-apiMutation");
       await createChecklist(payload).unwrap();
+      console.timeEnd("saveDriver-apiMutation");
+
       toast(t("dashboard.contractChecklist.checklistSaved"), {
         description:
           type === "OUT"
             ? t("dashboard.contractChecklist.contractActive")
             : t("dashboard.contractChecklist.contractCompleted"),
       });
+
+      console.time("saveDriver-closures");
       resetForm();
       onOpenChange(false);
-    } catch {
+      console.timeEnd("saveDriver-closures");
+    } catch (error) {
+      console.error("Error saving checklist:", error);
       toast(t("dashboard.contractChecklist.saveError"), {
         description: t("dashboard.contractChecklist.saveErrorDesc"),
       });
     }
+
+    console.timeEnd("saveDriver-total");
   };
 
   /* ---- observation ---- */
@@ -526,13 +559,17 @@ export function ContractChecklistDrawer({
           <SheetContent
             side="right"
             className="flex w-[90vw] max-w-lg flex-col sm:max-w-lg p-0 gap-0"
+            onCloseAutoFocus={(e) => e.preventDefault()}
           >
             {currentView}
           </SheetContent>
         </Sheet>
       ) : (
         <Drawer open={open} onOpenChange={onOpenChange} shouldScaleBackground>
-          <DrawerContent className="max-h-[92dvh] flex flex-col">
+          <DrawerContent
+            className="max-h-[92dvh] flex flex-col"
+            onCloseAutoFocus={(e) => e.preventDefault()}
+          >
             {currentView}
           </DrawerContent>
         </Drawer>
@@ -557,6 +594,7 @@ export function ContractChecklistDrawer({
         <DialogContent
           className="sm:max-w-md p-6"
           onInteractOutside={(e) => e.preventDefault()}
+          onCloseAutoFocus={(e) => e.preventDefault()}
         >
           <DialogHeader>
             <DialogTitle>{sigTitle}</DialogTitle>
