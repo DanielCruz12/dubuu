@@ -569,184 +569,94 @@ export function ContractChecklistDrawer({
       {/* ============================================================== */}
       {/*  STEP 2 – Inspector Signature                                   */}
       {/* ============================================================== */}
-      {isDesktop ? (
-        <Dialog open={inspectorDialogOpen} onOpenChange={setInspectorDialogOpen}>
-          <DialogContent className="sm:max-w-md p-6">
-            <DialogHeader>
-              <DialogTitle>{t("dashboard.contractChecklist.inspectorSignature")}</DialogTitle>
-              <DialogDescription className="sr-only">
-                {t("dashboard.contractChecklist.inspectorSignatureDesc")}
-              </DialogDescription>
-            </DialogHeader>
-            <div className="overflow-hidden rounded-lg border bg-white" style={{ touchAction: "none" }}>
-              <SignatureCanvas
-                ref={inspectorRef}
-                penColor="black"
-                canvasProps={{
-                  className: "w-full",
-                  style: { height: "150px", width: "100%" },
-                }}
-                onEnd={() => {
-                  const d = inspectorRef.current?.toDataURL("image/png");
-                  if (d) setInspectorSignature(d);
-                }}
-              />
-            </div>
-            <DialogFooter className="flex-row justify-between sm:justify-between">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => clearSignature("inspector")}
-              >
-                <Eraser className="mr-1.5 h-3.5 w-3.5" />
-                {t("dashboard.contractChecklist.clear")}
-              </Button>
-              <Button
-                onClick={handleSaveInspector}
-                disabled={!inspectorSignature}
-              >
-                <Save className="mr-2 h-4 w-4" />
-                {t("dashboard.contractChecklist.save")}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      ) : (
-        <Sheet open={inspectorDialogOpen} onOpenChange={setInspectorDialogOpen}>
-          <SheetContent
-            side="bottom"
-            className="rounded-t-[1.25rem] max-h-[min(92dvh,480px)] w-full px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4"
-          >
-            <SheetHeader className="pb-3 text-left space-y-1">
-              <SheetTitle>{t("dashboard.contractChecklist.inspectorSignature")}</SheetTitle>
-            </SheetHeader>
-            <div className="overflow-hidden rounded-lg border bg-white" style={{ touchAction: "none" }}>
-              <SignatureCanvas
-                ref={inspectorRef}
-                penColor="black"
-                canvasProps={{
-                  className: "w-full",
-                  style: { height: "150px", width: "100%" },
-                }}
-                onEnd={() => {
-                  const d = inspectorRef.current?.toDataURL("image/png");
-                  if (d) setInspectorSignature(d);
-                }}
-              />
-            </div>
-            <div className="mt-4 flex items-center justify-between gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => clearSignature("inspector")}
-              >
-                <Eraser className="mr-1.5 h-3.5 w-3.5" />
-                {t("dashboard.contractChecklist.clear")}
-              </Button>
-              <Button
-                onClick={handleSaveInspector}
-                disabled={!inspectorSignature}
-              >
-                <Save className="mr-2 h-4 w-4" />
-                {t("dashboard.contractChecklist.save")}
-              </Button>
-            </div>
-          </SheetContent>
-        </Sheet>
-      )}
+      <Dialog open={inspectorDialogOpen} onOpenChange={setInspectorDialogOpen}>
+        <DialogContent className="sm:max-w-md p-6">
+          <DialogHeader>
+            <DialogTitle>{t("dashboard.contractChecklist.inspectorSignature")}</DialogTitle>
+            <DialogDescription className="sr-only">
+              {t("dashboard.contractChecklist.inspectorSignatureDesc")}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="overflow-hidden rounded-lg border bg-white" style={{ touchAction: "none" }}>
+            <SignatureCanvas
+              ref={inspectorRef}
+              penColor="black"
+              canvasProps={{
+                className: "w-full",
+                style: { height: "150px", width: "100%" },
+              }}
+              onEnd={() => {
+                const d = inspectorRef.current?.toDataURL("image/png");
+                if (d) setInspectorSignature(d);
+              }}
+            />
+          </div>
+          <DialogFooter className="flex-row justify-between sm:justify-between">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => clearSignature("inspector")}
+            >
+              <Eraser className="mr-1.5 h-3.5 w-3.5" />
+              {t("dashboard.contractChecklist.clear")}
+            </Button>
+            <Button
+              onClick={handleSaveInspector}
+              disabled={!inspectorSignature}
+            >
+              <Save className="mr-2 h-4 w-4" />
+              {t("dashboard.contractChecklist.save")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* ============================================================== */}
       {/*  STEP 3 – Driver Signature                                      */}
       {/* ============================================================== */}
-      {isDesktop ? (
-        <Dialog open={driverDialogOpen} onOpenChange={setDriverDialogOpen}>
-          <DialogContent className="sm:max-w-md p-6">
-            <DialogHeader>
-              <DialogTitle>{t("dashboard.contractChecklist.driverSignature")}</DialogTitle>
-              <DialogDescription className="sr-only">
-                {t("dashboard.contractChecklist.driverSignatureDesc")}
-              </DialogDescription>
-            </DialogHeader>
-            <div className="overflow-hidden rounded-lg border bg-white" style={{ touchAction: "none" }}>
-              <SignatureCanvas
-                ref={driverRef}
-                penColor="black"
-                canvasProps={{
-                  className: "w-full",
-                  style: { height: "150px", width: "100%" },
-                }}
-                onEnd={() => {
-                  const d = driverRef.current?.toDataURL("image/png");
-                  if (d) setDriverSignature(d);
-                }}
-              />
-            </div>
-            <DialogFooter className="flex-row justify-between sm:justify-between">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => clearSignature("driver")}
-              >
-                <Eraser className="mr-1.5 h-3.5 w-3.5" />
-                {t("dashboard.contractChecklist.clear")}
-              </Button>
-              <Button
-                onClick={handleSaveDriver}
-                disabled={!driverSignature || isSaving}
-              >
-                <Save className="mr-2 h-4 w-4" />
-                {isSaving
-                  ? t("dashboard.contractChecklist.saving")
-                  : t("dashboard.contractChecklist.saveAndFinish")}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      ) : (
-        <Sheet open={driverDialogOpen} onOpenChange={setDriverDialogOpen}>
-          <SheetContent
-            side="bottom"
-            className="rounded-t-[1.25rem] max-h-[min(92dvh,480px)] w-full px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4"
-          >
-            <SheetHeader className="pb-3 text-left space-y-1">
-              <SheetTitle>{t("dashboard.contractChecklist.driverSignature")}</SheetTitle>
-            </SheetHeader>
-            <div className="overflow-hidden rounded-lg border bg-white" style={{ touchAction: "none" }}>
-              <SignatureCanvas
-                ref={driverRef}
-                penColor="black"
-                canvasProps={{
-                  className: "w-full",
-                  style: { height: "150px", width: "100%" },
-                }}
-                onEnd={() => {
-                  const d = driverRef.current?.toDataURL("image/png");
-                  if (d) setDriverSignature(d);
-                }}
-              />
-            </div>
-            <div className="mt-4 flex items-center justify-between gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => clearSignature("driver")}
-              >
-                <Eraser className="mr-1.5 h-3.5 w-3.5" />
-                {t("dashboard.contractChecklist.clear")}
-              </Button>
-              <Button
-                onClick={handleSaveDriver}
-                disabled={!driverSignature || isSaving}
-              >
-                <Save className="mr-2 h-4 w-4" />
-                {isSaving
-                  ? t("dashboard.contractChecklist.saving")
-                  : t("dashboard.contractChecklist.saveAndFinish")}
-              </Button>
-            </div>
-          </SheetContent>
-        </Sheet>
-      )}
+      <Dialog open={driverDialogOpen} onOpenChange={setDriverDialogOpen}>
+        <DialogContent className="sm:max-w-md p-6">
+          <DialogHeader>
+            <DialogTitle>{t("dashboard.contractChecklist.driverSignature")}</DialogTitle>
+            <DialogDescription className="sr-only">
+              {t("dashboard.contractChecklist.driverSignatureDesc")}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="overflow-hidden rounded-lg border bg-white" style={{ touchAction: "none" }}>
+            <SignatureCanvas
+              ref={driverRef}
+              penColor="black"
+              canvasProps={{
+                className: "w-full",
+                style: { height: "150px", width: "100%" },
+              }}
+              onEnd={() => {
+                const d = driverRef.current?.toDataURL("image/png");
+                if (d) setDriverSignature(d);
+              }}
+            />
+          </div>
+          <DialogFooter className="flex-row justify-between sm:justify-between">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => clearSignature("driver")}
+            >
+              <Eraser className="mr-1.5 h-3.5 w-3.5" />
+              {t("dashboard.contractChecklist.clear")}
+            </Button>
+            <Button
+              onClick={handleSaveDriver}
+              disabled={!driverSignature || isSaving}
+            >
+              <Save className="mr-2 h-4 w-4" />
+              {isSaving
+                ? t("dashboard.contractChecklist.saving")
+                : t("dashboard.contractChecklist.saveAndFinish")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* ============================================================== */}
       {/*  Observation Modal                                              */}
