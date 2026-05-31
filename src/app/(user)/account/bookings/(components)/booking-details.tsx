@@ -19,6 +19,7 @@ import "moment/locale/es";
 import { statusColors, statusTextTranslations } from "@/utils/data";
 import { useLanguage } from "@/lib/i18n-context";
 import PDFButton from "@/components/pdf/pdf-button";
+import { useUser } from "@clerk/nextjs";
 import type { ReceiptProps } from "@/types/pdf";
 import { useGetProductQuery } from "@/redux/slices/product/product-slice";
 import { isRentalProduct } from "@/utils/product-helpers";
@@ -35,6 +36,7 @@ export function BookingDetails({
   onClose,
 }: BookingDetailsProps) {
   const { language, t } = useLanguage();
+  const { user } = useUser();
   const statusText = statusTextTranslations[language];
   const bookingIdShort = booking.id.split("-").pop() ?? "";
   const isRental = booking.booking_kind === "rental";
@@ -62,6 +64,18 @@ export function BookingDetails({
     Number.isFinite(totalNumber) && totalNumber > 0 ? totalNumber : 0;
   const unitPrice = isRental ? total : (ticketsCount > 0 ? total / ticketsCount : total);
 
+  const customerName =
+    user?.firstName && user?.lastName
+      ? `${user.firstName} ${user.lastName}`.trim()
+      : user?.fullName ?? "";
+
+  const paymentMethodLabel =
+    booking.paymentMethod === "blink"
+      ? "Bitcoin Lightning (Blink)"
+      : booking.paymentMethod === "credit"
+        ? t("home.checkout.payment.creditCard")
+        : booking.paymentMethod || t("home.bookingStatus.paymentMethod");
+
   const dateLabelFormat =
     language === "es"
       ? "dddd, D [de] MMMM - h:mm A"
@@ -76,14 +90,14 @@ export function BookingDetails({
       : undefined;
 
   const receiptData: ReceiptProps = {
-    receiptNumber: booking.product_id,
+    receiptNumber: booking.id.slice(0, 13),
     date: new Date().toLocaleDateString(language === "es" ? "es-ES" : "en-US", {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
     }),
     reservationDate: reservationDateText || undefined,
-    customerName: "—",
+    customerName,
     items: [
       {
         id: isRental ? "1" : String(ticketsCount),
@@ -94,15 +108,15 @@ export function BookingDetails({
     ],
     subtotal: unitPrice * (isRental ? 1 : ticketsCount),
     total,
-    notes: "",
+    notes: t("home.bookingStatus.receiptNotes"),
     companyName: "Dubuu",
     companyLogo: "/logo.svg",
     companyAddress: "El Salvador, La Libertad",
     companyPhone: "+503 64562432",
     companyEmail: "support@dubuu.com",
     companyWebsite: "https://www.dubuu.com",
-    qrValue: "",
-    paymentMethod: "",
+    qrValue: `https://www.dubuu.com/booking/${booking.id.slice(0, 13)}`,
+    paymentMethod: paymentMethodLabel,
     paymentStatus: "Completado",
     vehicle,
   };
@@ -310,8 +324,8 @@ export function BookingDetails({
                 <PDFButton
                   receiptData={receiptData}
                   buttonVariant="default"
-                  buttonText={t("dashboard.bookingDetails.downloadTicket")}
-                  fileName={`Ticket-${booking.product_name?.slice(0, 18) || "Dubuu"}-${booking.product_id.slice(0, 8)}.pdf`}
+                  buttonText={t("home.bookingStatus.downloadReceipt")}
+                  fileName={`Recibo-${booking.product_name?.slice(0, 10)}-${booking.id.slice(0, 8)}`}
                 />
               </div>
             </div>

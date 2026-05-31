@@ -135,6 +135,8 @@ export function ContractChecklistDrawer({
   /* ---- view state ---- */
   const [view, setView] = useState<View>("checklist");
   const [sigStep, setSigStep] = useState<SigStep | null>(null);
+  const [pendingSigStep, setPendingSigStep] = useState<SigStep | null>(null);
+  const [pendingOpenDrawer, setPendingOpenDrawer] = useState(false);
 
   /* ---- observation state ---- */
   const [obsField, setObsField] = useState<ChecklistFieldMeta["key"] | null>(null);
@@ -143,6 +145,7 @@ export function ContractChecklistDrawer({
   /* ---- signature ref ---- */
   const sigRef = useRef<SignatureCanvas>(null);
   const [sigDirty, setSigDirty] = useState(false);
+  const isReturningFromSignature = useRef(false);
 
   /* ---- mutation ---- */
   const [createChecklist, { isLoading: isSaving }] = useCreateChecklistMutation();
@@ -158,29 +161,36 @@ export function ContractChecklistDrawer({
     setObsField(null);
     setObsDraft("");
     setSigDirty(false);
+    setPendingSigStep(null);
+    setPendingOpenDrawer(false);
   }, []);
 
   useEffect(() => {
-    if (open) resetForm();
+    if (open) {
+      if (isReturningFromSignature.current) {
+        isReturningFromSignature.current = false;
+      } else {
+        resetForm();
+      }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, type]);
 
-  /* ---- Fix for Radix UI body lock/freeze when multiple modals close ---- */
+  // Open the signature dialog after the drawer closes
   useEffect(() => {
-    if (!open) {
-      const t = setTimeout(() => {
-        document.body.style.pointerEvents = "";
-      }, 100);
-      return () => clearTimeout(t);
+    if (!open && pendingSigStep !== null) {
+      setSigStep(pendingSigStep);
+      setPendingSigStep(null);
     }
-  }, [open]);
+  }, [open, pendingSigStep]);
 
+  // Re-open the drawer after the signature dialog closes
   useEffect(() => {
-    return () => {
-      // Ensure pointer-events is cleaned up when component unmounts
-      document.body.style.pointerEvents = "";
-    };
-  }, []);
+    if (sigStep === null && pendingOpenDrawer) {
+      onOpenChange(true);
+      setPendingOpenDrawer(false);
+    }
+  }, [sigStep, pendingOpenDrawer, onOpenChange]);
 
   /* ---- when entering a signature step, reset the canvas ---- */
   useEffect(() => {
@@ -217,7 +227,9 @@ export function ContractChecklistDrawer({
       });
       return;
     }
-    setSigStep("inspector");
+    isReturningFromSignature.current = true;
+    onOpenChange(false);
+    setPendingSigStep("inspector");
   };
 
   const handleSaveInspector = () => {
@@ -533,8 +545,12 @@ export function ContractChecklistDrawer({
         open={sigDialogOpen}
         onOpenChange={(v) => {
           if (!v) {
-            if (sigStep === "inspector") setSigStep(null);
-            else if (sigStep === "driver") setSigStep("inspector");
+            if (sigStep === "inspector") {
+              setSigStep(null);
+              setPendingOpenDrawer(true);
+            } else if (sigStep === "driver") {
+              setSigStep("inspector");
+            }
           }
         }}
       >

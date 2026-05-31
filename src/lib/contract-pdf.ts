@@ -139,7 +139,7 @@ function drawPage1(
   // Logo
   let companyInfoStartY: number;
   if (logoDataUrl) {
-    doc.addImage(logoDataUrl, "PNG", 10, 12, 42, 20);
+    doc.addImage(logoDataUrl, "PNG", 10, 12, 42, 16);
     companyInfoStartY = 35;
   } else {
     doc.setFontSize(16);
