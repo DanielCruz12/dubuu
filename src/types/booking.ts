@@ -106,6 +106,7 @@ export interface HostBooking {
     username: string | null;
     last_name: string | null;
     email: string | null;
+    image_url?: string | null;
   };
   status: string;
   name: string;

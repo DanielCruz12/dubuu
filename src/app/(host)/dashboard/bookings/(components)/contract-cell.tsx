@@ -54,7 +54,7 @@ export function ContractCell({ booking, onOpenChecklist }: ContractCellProps) {
       {hasIn ? (
         <Button
           size="sm"
-          className="h-7 px-2 text-xs justify-start bg-green-600 hover:bg-green-700 text-white"
+          className="h-8 px-2 text-xs justify-center bg-green-600 hover:bg-green-700 text-white"
           onClick={handleDownloadPdf}
         >
           <FileDown className="h-3 w-3 mr-1 shrink-0" />
@@ -67,7 +67,7 @@ export function ContractCell({ booking, onOpenChecklist }: ContractCellProps) {
             <>
               <Button
                 size="sm"
-                className="h-7 px-2 text-xs justify-start bg-green-600 hover:bg-green-700 text-white"
+                className="h-8 px-2 text-xs justify-center bg-green-600 hover:bg-green-700 text-white"
                 onClick={handleDownloadPdf}
               >
                 <FileDown className="h-3 w-3 mr-1 shrink-0" />
@@ -76,7 +76,7 @@ export function ContractCell({ booking, onOpenChecklist }: ContractCellProps) {
               {status === "active" && (
                 <Button
                   size="sm"
-                  className="h-7 px-2 text-xs bg-amber-500 hover:bg-amber-600 text-white justify-start"
+                  className="h-8 px-2 text-xs justify-center bg-amber-500 hover:bg-amber-600 text-white"
                   onClick={() => handleChecklist("IN")}
                 >
                   <ClipboardCheck className="h-3 w-3 mr-1 shrink-0" />
@@ -89,7 +89,7 @@ export function ContractCell({ booking, onOpenChecklist }: ContractCellProps) {
             (!status || status === "pending_delivery") && (
               <Button
                 size="sm"
-                className="h-7 px-2 text-xs bg-blue-600 hover:bg-blue-700 text-white justify-start"
+                className="h-8 px-2 text-xs justify-center bg-blue-600 hover:bg-blue-700 text-white"
                 onClick={() => handleChecklist("OUT")}
                 disabled={isCreating}
               >
