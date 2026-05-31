@@ -243,53 +243,72 @@ export default function CheckoutForm({
     }
 
     if (paymentMethod === "blink") {
-      const blinkPayload =
-        bookingData.kind === "rental"
-          ? {
-              total: bookingData.total,
-              user_id: bookingData.user_id,
-              product_id: bookingData.product_id,
-              pickup_time: bookingData.pickup_time,
-              dropoff_time: bookingData.dropoff_time,
-              pickup_location: bookingData.pickup_location,
-              dropoff_location: bookingData.dropoff_location,
-              dui_front: bookingData.dui_front,
-              dui_back: bookingData.dui_back,
-              license_front: bookingData.license_front,
-              license_back: bookingData.license_back,
-              is_live: true,
-              start_date_display: bookingData.start_date_display,
-              end_date_display: bookingData.end_date_display,
-              maps_link: bookingData.maps_link,
-              vehicle_model: bookingData.vehicle_model,
-            }
-          : {
-              total: bookingData.total,
-              user_id: bookingData.user_id,
-              product_id: bookingData.product_id,
-              tickets:
-                bookingData.tickets.adult +
-                (bookingData.tickets.children ?? 0),
-              tour_date_id: bookingData.datetime,
-              is_live: true,
-            };
-      try {
-        const response = await createBlinkPayment(blinkPayload).unwrap();
-        const paymentRequest =
-          (response as { paymentRequest?: string }).paymentRequest ?? "";
-        const idTransaccion =
-          (response as { idTransaccion?: string }).idTransaccion ?? "";
-        const amount =
-          (response as { amount?: number }).amount ?? bookingData.total;
-        const bookingId =
-          (response as { booking?: { id?: string } }).booking?.id ?? "";
-        setBlinkResponse({ paymentRequest, idTransaccion, amount, bookingId });
-        setBlinkModalOpen(true);
-        toast.success(t("home.checkout.toast.blinkReady"));
-      } catch (err: unknown) {
-        toast.error(
-          (err as Error)?.message || t("home.checkout.toast.paymentError"),
-        );
+      if (bookingData.kind === "rental") {
+        const formData = new FormData();
+        formData.append("total", String(bookingData.total));
+        formData.append("user_id", bookingData.user_id);
+        formData.append("product_id", bookingData.product_id);
+        formData.append("pickup_time", bookingData.pickup_time);
+        formData.append("dropoff_time", bookingData.dropoff_time);
+        formData.append("pickup_location", bookingData.pickup_location);
+        formData.append("dropoff_location", bookingData.dropoff_location);
+        formData.append("is_live", "true");
+        if (bookingData.start_date_display) formData.append("start_date_display", bookingData.start_date_display);
+        if (bookingData.end_date_display) formData.append("end_date_display", bookingData.end_date_display);
+        if (bookingData.maps_link) formData.append("maps_link", bookingData.maps_link);
+        if (bookingData.vehicle_model) formData.append("vehicle_model", bookingData.vehicle_model);
+        if (bookingData.duiFrontFile) formData.append("dui_front", bookingData.duiFrontFile);
+        if (bookingData.duiBackFile) formData.append("dui_back", bookingData.duiBackFile);
+        if (bookingData.licenseFrontFile) formData.append("license_front", bookingData.licenseFrontFile);
+        if (bookingData.licenseBackFile) formData.append("license_back", bookingData.licenseBackFile);
+
+        try {
+          const response = await createBlinkPayment(formData).unwrap();
+          const paymentRequest =
+            (response as { paymentRequest?: string }).paymentRequest ?? "";
+          const idTransaccion =
+            (response as { idTransaccion?: string }).idTransaccion ?? "";
+          const amount =
+            (response as { amount?: number }).amount ?? bookingData.total;
+          const bookingId =
+            (response as { booking?: { id?: string } }).booking?.id ?? "";
+          setBlinkResponse({ paymentRequest, idTransaccion, amount, bookingId });
+          setBlinkModalOpen(true);
+          toast.success(t("home.checkout.toast.blinkReady"));
+        } catch (err: unknown) {
+          toast.error(
+            (err as Error)?.message || t("home.checkout.toast.paymentError"),
+          );
+        }
+      } else {
+        const blinkPayload = {
+          total: bookingData.total,
+          user_id: bookingData.user_id,
+          product_id: bookingData.product_id,
+          tickets:
+            bookingData.tickets.adult +
+            (bookingData.tickets.children ?? 0),
+          tour_date_id: bookingData.datetime,
+          is_live: true,
+        };
+        try {
+          const response = await createBlinkPayment(blinkPayload).unwrap();
+          const paymentRequest =
+            (response as { paymentRequest?: string }).paymentRequest ?? "";
+          const idTransaccion =
+            (response as { idTransaccion?: string }).idTransaccion ?? "";
+          const amount =
+            (response as { amount?: number }).amount ?? bookingData.total;
+          const bookingId =
+            (response as { booking?: { id?: string } }).booking?.id ?? "";
+          setBlinkResponse({ paymentRequest, idTransaccion, amount, bookingId });
+          setBlinkModalOpen(true);
+          toast.success(t("home.checkout.toast.blinkReady"));
+        } catch (err: unknown) {
+          toast.error(
+            (err as Error)?.message || t("home.checkout.toast.paymentError"),
+          );
+        }
       }
       return;
     }
@@ -304,42 +323,42 @@ export default function CheckoutForm({
       (async () => {
         const response = await create3DSTransaction(payload).unwrap();
 
-        const bookingPayload =
-          bookingData.kind === "rental"
-            ? {
-                user_id: bookingData.user_id,
-                product_id: bookingData.product_id,
-                is_live: true,
-                total: bookingData.total,
-                pickup_time: bookingData.pickup_time,
-                dropoff_time: bookingData.dropoff_time,
-                pickup_location: bookingData.pickup_location,
-                dropoff_location: bookingData.dropoff_location,
-                dui_front: bookingData.dui_front,
-                dui_back: bookingData.dui_back,
-                license_front: bookingData.license_front,
-                license_back: bookingData.license_back,
-                paymentMethod: values.paymentMethod,
-                idTransaccion: response.idTransaccion ?? "",
-                start_date_display: bookingData.start_date_display,
-                end_date_display: bookingData.end_date_display,
-                maps_link: bookingData.maps_link,
-                vehicle_model: bookingData.vehicle_model,
-              }
-            : {
-                user_id: bookingData.user_id,
-                product_id: bookingData.product_id,
-                is_live: true,
-                tickets:
-                  bookingData.tickets.adult +
-                  (bookingData.tickets.children ?? 0),
-                total: bookingData.total,
-                tour_date_id: [bookingData.datetime],
-                paymentMethod: values.paymentMethod,
-                idTransaccion: response.idTransaccion ?? "",
-              };
+        if (bookingData.kind === "rental") {
+          const formData = new FormData();
+          formData.append("user_id", bookingData.user_id);
+          formData.append("product_id", bookingData.product_id);
+          formData.append("is_live", "true");
+          formData.append("total", String(bookingData.total));
+          formData.append("pickup_time", bookingData.pickup_time);
+          formData.append("dropoff_time", bookingData.dropoff_time);
+          formData.append("pickup_location", bookingData.pickup_location);
+          formData.append("dropoff_location", bookingData.dropoff_location);
+          formData.append("paymentMethod", values.paymentMethod);
+          formData.append("idTransaccion", response.idTransaccion ?? "");
+          if (bookingData.start_date_display) formData.append("start_date_display", bookingData.start_date_display);
+          if (bookingData.end_date_display) formData.append("end_date_display", bookingData.end_date_display);
+          if (bookingData.maps_link) formData.append("maps_link", bookingData.maps_link);
+          if (bookingData.vehicle_model) formData.append("vehicle_model", bookingData.vehicle_model);
+          if (bookingData.duiFrontFile) formData.append("dui_front", bookingData.duiFrontFile);
+          if (bookingData.duiBackFile) formData.append("dui_back", bookingData.duiBackFile);
+          if (bookingData.licenseFrontFile) formData.append("license_front", bookingData.licenseFrontFile);
+          if (bookingData.licenseBackFile) formData.append("license_back", bookingData.licenseBackFile);
 
-        await createBooking(bookingPayload).unwrap();
+          await createBooking(formData).unwrap();
+        } else {
+          await createBooking({
+            user_id: bookingData.user_id,
+            product_id: bookingData.product_id,
+            is_live: true,
+            tickets:
+              bookingData.tickets.adult +
+              (bookingData.tickets.children ?? 0),
+            total: bookingData.total,
+            tour_date_id: [bookingData.datetime],
+            paymentMethod: values.paymentMethod,
+            idTransaccion: response.idTransaccion ?? "",
+          }).unwrap();
+        }
 
         onPaymentSuccess?.();
 

@@ -6,7 +6,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DownloadIcon, SearchIcon } from "lucide-react";
 import { exportToExcel } from "@/lib/excelFn";
-import { DataTable } from "@/components/data-table/datatable";
 import { useGetProductsByUserIdQuery } from "@/redux/slices/product/product-slice";
 import { useGetBookingsByUserIdProductIdQuery } from "@/redux/slices/booking/booking-slice";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -32,14 +31,13 @@ import {
 } from "@/components/ui/select";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { getBookingsColumns } from "../(columns)/columns";
+import { BookingCard } from "./booking-card";
 import type { HostBooking } from "@/types/booking";
 import type { ChecklistType } from "@/types/contract";
 import { ContractChecklistDrawer } from "../../(components)/contract-checklist-drawer";
 import { BookingDetailsModal } from "../../(components)/booking-details-modal";
 import moment from "moment";
 import "moment/locale/es";
-import { DataTableSkeleton } from "@/components/skeletons/datatable-skeleton";
 import { useUser } from "@clerk/nextjs";
 import { useLanguage } from "@/lib/i18n-context";
 import { isProductType } from "@/utils";
@@ -89,10 +87,6 @@ export function BookingsDataTable() {
   }, []);
 
   const { t, language } = useLanguage();
-  const columns = useMemo(
-    () => getBookingsColumns(t, language, tableKind, handleOpenChecklist, handleOpenDetails),
-    [t, language, tableKind, handleOpenChecklist, handleOpenDetails],
-  );
 
   // Fetch products for the user
   const { data: products, isLoading } = useGetProductsByUserIdQuery(userId, {
@@ -235,16 +229,25 @@ export function BookingsDataTable() {
   // Solo mostrar skeleton mientras carga los productos iniciales
   if (isLoading || !products || !user) {
     return (
-      <DataTableSkeleton
-        headers={[
-          t("dashboard.bookings.table.client"),
-          t("dashboard.bookings.table.tickets"),
-          t("dashboard.bookings.table.total"),
-          t("dashboard.bookings.table.date"),
-          t("dashboard.bookings.table.status"),
-          t("dashboard.bookings.table.bookingDate"),
-        ]}
-      />
+      <div className="space-y-4 pt-6">
+        <Card>
+          <CardContent className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Card key={i}>
+                  <CardContent className="p-4 space-y-3">
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-3 w-1/2" />
+                    <Skeleton className="h-6 w-1/3" />
+                    <Skeleton className="h-3 w-full" />
+                    <Skeleton className="h-8 w-full" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
@@ -357,12 +360,41 @@ export function BookingsDataTable() {
           </div>
 
           {isLoadingBookings ? (
-            <div className="space-y-2">
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-20 w-full" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <Card key={i}>
+                  <CardContent className="p-4 space-y-3">
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-3 w-1/2" />
+                    <Skeleton className="h-6 w-1/3" />
+                    <Skeleton className="h-3 w-full" />
+                    <Skeleton className="h-8 w-full" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : bookingsData && bookingsData.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {bookingsData.map((booking) => (
+                <BookingCard
+                  key={booking.bookingId}
+                  booking={booking}
+                  tableKind={tableKind}
+                  t={t}
+                  language={language}
+                  onOpenChecklist={handleOpenChecklist}
+                  onOpenDetails={handleOpenDetails}
+                />
+              ))}
             </div>
           ) : (
-            <DataTable columns={columns} data={bookingsData || []} />
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <p className="text-muted-foreground text-sm">
+                {selectedProductId
+                  ? t("dashboard.dataTable.noResults")
+                  : t("dashboard.bookings.filters.selectProduct")}
+              </p>
+            </div>
           )}
         </CardContent>
       </Card>

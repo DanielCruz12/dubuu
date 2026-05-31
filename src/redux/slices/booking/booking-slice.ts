@@ -7,7 +7,9 @@ import { urlWithLocale } from "@/redux/url-with-locale";
 export type CreateBookingInput = Omit<
   Booking,
   "id" | "created_at" | "updated_at"
->;
+> & {
+  tour_date_id?: string | string[];
+};
 
 // Definimos el API slice sin depender de hooks de React
 export const bookingsApiSlice = createApi({
@@ -63,8 +65,8 @@ export const bookingsApiSlice = createApi({
       providesTags: (result, error, id) => [{ type: "Bookings", id }],
     }),
 
-    // 🔹 Create booking
-    createBooking: builder.mutation<Booking, CreateBookingInput>({
+    // 🔹 Create booking (accepts FormData for rental with files, or JSON object for tours)
+    createBooking: builder.mutation<Booking, CreateBookingInput | FormData>({
       query: (data) => ({
         url: urlWithLocale("/api/v1/bookings/"),
         method: "POST",

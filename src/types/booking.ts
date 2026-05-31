@@ -78,10 +78,11 @@ export type RentalBookingData = {
   total: number;
   user_id: string;
   product_id: string;
-  dui_front?: string;
-  dui_back?: string;
-  license_front?: string;
-  license_back?: string;
+  /** Files to be uploaded during booking creation (single multipart request) */
+  duiFrontFile?: File | null;
+  duiBackFile?: File | null;
+  licenseFrontFile?: File | null;
+  licenseBackFile?: File | null;
   /** Formatted local date string for notifications (e.g. "27 may 2026 a las 10:00 AM") */
   start_date_display?: string;
   /** Formatted local date string for notifications */

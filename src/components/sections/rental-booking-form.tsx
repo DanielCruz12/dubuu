@@ -225,7 +225,7 @@ export default function RentalBookingForm({
   ]);
   const duiInputRef = useRef<HTMLInputElement>(null);
   const licenseInputRef = useRef<HTMLInputElement>(null);
-  const [isUploading, setIsUploading] = useState(false);
+  const [isUploading] = useState(false);
 
   const handleDocUpload = (
     fileList: FileList | null,
@@ -370,42 +370,9 @@ export default function RentalBookingForm({
     ? pickupAddressSummary
     : `${pickupAddressSummary} → ${dropoffAddress}`;
 
-  const handleReserveClick = async () => {
-    if (!canReserve || !user?.id || isUploading) return;
-
-    setIsUploading(true);
-
-    // Upload documents individually to track which URL corresponds to which doc
-    const uploadFile = async (file: File | null): Promise<string | undefined> => {
-      if (!file) return undefined;
-      const formData = new FormData();
-      formData.append("files", file);
-      const res = await fetch("/backend/api/v1/files/upload", {
-        method: "POST",
-        body: formData,
-      });
-      if (!res.ok) throw new Error("Upload failed");
-      const result = await res.json();
-      return (result.files?.[0] as { s3Location: string })?.s3Location;
-    };
-
-    let duiFront: string | undefined;
-    let duiBack: string | undefined;
-    let licenseFront: string | undefined;
-    let licenseBack: string | undefined;
-
-    try {
-      [duiFront, duiBack, licenseFront, licenseBack] = await Promise.all([
-        uploadFile(duiFiles[0] ?? null),
-        uploadFile(duiFiles[1] ?? null),
-        uploadFile(licenseFiles[0] ?? null),
-        uploadFile(licenseFiles[1] ?? null),
-      ]);
-    } catch {
-      toast.error(t("home.rentalBooking.uploadError"));
-      setIsUploading(false);
-      return;
-    }
+  // Pass File objects directly — upload happens during booking creation (single multipart request)
+  const handleReserveClick = () => {
+    if (!canReserve || !user?.id) return;
 
     const pickupDt = pickup ? new Date(pickup) : new Date();
     const [ph, pm] = pickupTime.split(":").map(Number);
@@ -433,17 +400,16 @@ export default function RentalBookingForm({
       total: estimatedTotal,
       user_id: user.id,
       product_id: product.id,
-      dui_front: duiFront,
-      dui_back: duiBack,
-      license_front: licenseFront,
-      license_back: licenseBack,
+      duiFrontFile: duiFiles[0] ?? null,
+      duiBackFile: duiFiles[1] ?? null,
+      licenseFrontFile: licenseFiles[0] ?? null,
+      licenseBackFile: licenseFiles[1] ?? null,
       start_date_display: format(pickupDt, displayFmt, { locale }),
       end_date_display: format(dropoffDt, displayFmt, { locale }),
       maps_link: googleMapsLink(finalPickupLocation),
       vehicle_model: product.name,
     });
 
-    setIsUploading(false);
     setShowDocsModal(false);
     setShowPaymentStep();
   };
