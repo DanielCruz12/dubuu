@@ -10,6 +10,7 @@ import {
 } from "@/redux/slices/contract/contract-slice";
 import { downloadContractPdf } from "@/lib/contract-pdf";
 import { toast } from "sonner";
+import { useLanguage } from "@/lib/i18n-context";
 
 interface ContractCellProps {
   booking: HostBooking;
@@ -17,6 +18,7 @@ interface ContractCellProps {
 }
 
 export function ContractCell({ booking, onOpenChecklist }: ContractCellProps) {
+  const { t } = useLanguage();
   const { data: contract } = useGetContractByBookingIdQuery(booking.bookingId);
   const [createContract, { isLoading: isCreating }] = useCreateContractMutation();
 
@@ -32,7 +34,9 @@ export function ContractCell({ booking, onOpenChecklist }: ContractCellProps) {
         const created = await createContract(booking.bookingId).unwrap();
         contractId = created.id;
       } catch {
-        toast("Error", { description: "No se pudo crear el contrato." });
+        toast(t("dashboard.contractActions.error"), {
+          description: t("dashboard.contractActions.createError"),
+        });
         return;
       }
     } else {
@@ -58,7 +62,7 @@ export function ContractCell({ booking, onOpenChecklist }: ContractCellProps) {
           onClick={handleDownloadPdf}
         >
           <FileDown className="h-3 w-3 mr-1 shrink-0" />
-          Descargar Contrato
+          {t("dashboard.contractActions.downloadFinalShort")}
         </Button>
       ) : (
         <>
@@ -67,11 +71,11 @@ export function ContractCell({ booking, onOpenChecklist }: ContractCellProps) {
             <>
               <Button
                 size="sm"
-                className="h-8 px-2 text-xs justify-center bg-green-600 hover:bg-green-700 text-white"
+                className="h-8 px-2 text-xs justify-center bg-blue-600 hover:bg-blue-700 text-white"
                 onClick={handleDownloadPdf}
               >
                 <FileDown className="h-3 w-3 mr-1 shrink-0" />
-                Descargar Salida
+                {t("dashboard.contractActions.downloadOutShort")}
               </Button>
               {status === "active" && (
                 <Button
@@ -80,7 +84,7 @@ export function ContractCell({ booking, onOpenChecklist }: ContractCellProps) {
                   onClick={() => handleChecklist("IN")}
                 >
                   <ClipboardCheck className="h-3 w-3 mr-1 shrink-0" />
-                  Registrar Devolución
+                  {t("dashboard.contractActions.registerInShort")}
                 </Button>
               )}
             </>
@@ -94,7 +98,9 @@ export function ContractCell({ booking, onOpenChecklist }: ContractCellProps) {
                 disabled={isCreating}
               >
                 <ClipboardCheck className="h-3 w-3 mr-1 shrink-0" />
-                {isCreating ? "Creando..." : "Registrar Salida"}
+                {isCreating
+                  ? t("dashboard.contractActions.creating")
+                  : t("dashboard.contractActions.registerOutShort")}
               </Button>
             )
           )}

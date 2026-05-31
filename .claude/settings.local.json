@@ -26,7 +26,8 @@
       "Bash(npx drizzle-kit *)",
       "Bash(node *)",
       "PowerShell(npx tsc --noEmit --pretty 2>&1 | Select-Object -First 30)",
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 50)"
     ]
   }
 }

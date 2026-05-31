@@ -514,6 +514,27 @@
     },
     "exportSheetName": "Reservas"
   },
+  "contractActions": {
+    "openMenu": "Abrir menú de acciones",
+    "title": "Acciones del Contrato",
+    "registerOut": "Registrar Entrega (Salida)",
+    "registerOutShort": "Registrar Salida",
+    "registerIn": "Registrar Devolución (Entrada)",
+    "registerInShort": "Registrar Devolución",
+    "disputed": "En Disputa",
+    "downloadOut": "Contrato de Salida (PDF)",
+    "downloadOutShort": "Contrato de Salida",
+    "downloadFinal": "Contrato Final (PDF)",
+    "downloadFinalShort": "Contrato Final",
+    "downloadContract": "Descargar Contrato",
+    "copyId": "Copiar ID",
+    "idCopied": "ID Copiado",
+    "idCopiedDesc": "El ID de la reserva ha sido copiado.",
+    "creating": "Creando...",
+    "creatingContract": "Creando contrato...",
+    "error": "Error",
+    "createError": "No se pudo crear el contrato."
+  },
   "payments": {
     "title": "Información de pago",
     "description": "Para recibir pagos, debes decirnos a dónde enviar el dinero.",

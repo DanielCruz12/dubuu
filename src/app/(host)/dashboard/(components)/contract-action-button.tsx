@@ -27,6 +27,7 @@ import {
   useCreateContractMutation,
 } from "@/redux/slices/contract/contract-slice";
 import { downloadContractPdf } from "@/lib/contract-pdf";
+import { useLanguage } from "@/lib/i18n-context";
 
 interface ContractActionButtonProps {
   booking: HostBooking;
@@ -37,6 +38,7 @@ export function ContractActionButton({
   booking,
   onOpenChecklist,
 }: ContractActionButtonProps) {
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
 
   const { data: contract } =
@@ -47,8 +49,8 @@ export function ContractActionButton({
 
   const handleCopyId = () => {
     navigator.clipboard.writeText(booking.bookingId);
-    toast("ID Copiado", {
-      description: "El ID de la reserva ha sido copiado.",
+    toast(t("dashboard.contractActions.idCopied"), {
+      description: t("dashboard.contractActions.idCopiedDesc"),
     });
   };
 
@@ -65,8 +67,8 @@ export function ContractActionButton({
         const created = await createContract(booking.bookingId).unwrap();
         contractId = created.id;
       } catch {
-        toast("Error", {
-          description: "No se pudo crear el contrato.",
+        toast(t("dashboard.contractActions.error"), {
+          description: t("dashboard.contractActions.createError"),
         });
         return;
       }
@@ -89,12 +91,12 @@ export function ContractActionButton({
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
-            <span className="sr-only">Abrir menú de acciones</span>
+            <span className="sr-only">{t("dashboard.contractActions.openMenu")}</span>
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuLabel>Acciones del Contrato</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("dashboard.contractActions.title")}</DropdownMenuLabel>
 
           {(!status || status === "pending_delivery") && (
             <DropdownMenuItem
@@ -102,21 +104,23 @@ export function ContractActionButton({
               disabled={isCreating}
             >
               <ClipboardCheck className="mr-2 h-4 w-4 text-blue-600" />
-              {isCreating ? "Creando contrato..." : "Registrar Entrega (Salida)"}
+              {isCreating
+                ? t("dashboard.contractActions.creatingContract")
+                : t("dashboard.contractActions.registerOut")}
             </DropdownMenuItem>
           )}
 
           {status === "active" && (
             <DropdownMenuItem onClick={() => handleChecklist("IN")}>
               <Flag className="mr-2 h-4 w-4 text-amber-500" />
-              Registrar Devolución (Entrada)
+              {t("dashboard.contractActions.registerIn")}
             </DropdownMenuItem>
           )}
 
           {status === "disputed" && (
             <DropdownMenuItem disabled>
               <AlertTriangle className="mr-2 h-4 w-4 text-amber-600" />
-              En Disputa
+              {t("dashboard.contractActions.disputed")}
             </DropdownMenuItem>
           )}
 
@@ -124,14 +128,14 @@ export function ContractActionButton({
           {hasOut && (
             <DropdownMenuItem onClick={handleDownloadPdf}>
               <FileDown className="mr-2 h-4 w-4 text-blue-600" />
-              Descargar Contrato de Salida (PDF)
+              {t("dashboard.contractActions.downloadOut")}
             </DropdownMenuItem>
           )}
 
           {hasIn && (
             <DropdownMenuItem onClick={handleDownloadPdf}>
               <FileDown className="mr-2 h-4 w-4 text-green-600" />
-              Descargar Contrato Final (PDF)
+              {t("dashboard.contractActions.downloadFinal")}
             </DropdownMenuItem>
           )}
 
@@ -139,7 +143,7 @@ export function ContractActionButton({
 
           <DropdownMenuItem onClick={handleCopyId}>
             <Copy className="mr-2 h-4 w-4" />
-            Copiar ID
+            {t("dashboard.contractActions.copyId")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -154,7 +158,9 @@ export function ContractActionButton({
             disabled={isCreating}
           >
             <Car className="mr-2 h-4 w-4" />
-            {isCreating ? "Creando..." : "Registrar Entrega (Salida)"}
+            {isCreating
+              ? t("dashboard.contractActions.creating")
+              : t("dashboard.contractActions.registerOut")}
           </Button>
         )}
 
@@ -165,7 +171,7 @@ export function ContractActionButton({
             onClick={() => handleChecklist("IN")}
           >
             <Flag className="mr-2 h-4 w-4" />
-            Registrar Devolución (Entrada)
+            {t("dashboard.contractActions.registerIn")}
           </Button>
         )}
 
@@ -177,7 +183,7 @@ export function ContractActionButton({
             disabled
           >
             <AlertTriangle className="mr-2 h-4 w-4" />
-            En Disputa
+            {t("dashboard.contractActions.disputed")}
           </Button>
         )}
 
@@ -189,7 +195,7 @@ export function ContractActionButton({
             onClick={handleDownloadPdf}
           >
             <FileDown className="mr-2 h-3.5 w-3.5" />
-            Descargar Contrato de Salida (PDF)
+            {t("dashboard.contractActions.downloadOut")}
           </Button>
         )}
 
@@ -201,7 +207,7 @@ export function ContractActionButton({
             onClick={handleDownloadPdf}
           >
             <FileDown className="mr-2 h-3.5 w-3.5" />
-            Descargar Contrato Final (PDF)
+            {t("dashboard.contractActions.downloadFinal")}
           </Button>
         )}
       </div>

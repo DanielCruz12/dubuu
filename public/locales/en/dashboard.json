@@ -514,6 +514,27 @@
     },
     "exportSheetName": "Bookings"
   },
+  "contractActions": {
+    "openMenu": "Open actions menu",
+    "title": "Contract Actions",
+    "registerOut": "Register Check-Out (Out)",
+    "registerOutShort": "Register Check-Out",
+    "registerIn": "Register Check-In (In)",
+    "registerInShort": "Register Check-In",
+    "disputed": "Disputed",
+    "downloadOut": "Check-Out Contract (PDF)",
+    "downloadOutShort": "Check-Out Contract",
+    "downloadFinal": "Final Contract (PDF)",
+    "downloadFinalShort": "Final Contract",
+    "downloadContract": "Download Contract",
+    "copyId": "Copy ID",
+    "idCopied": "ID Copied",
+    "idCopiedDesc": "The booking ID has been copied.",
+    "creating": "Creating...",
+    "creatingContract": "Creating contract...",
+    "error": "Error",
+    "createError": "Could not create the contract."
+  },
   "payments": {
     "title": "Payment information",
     "description": "To receive payments, you must tell us where to send the money.",
