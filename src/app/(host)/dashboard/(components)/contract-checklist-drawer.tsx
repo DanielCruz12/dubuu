@@ -21,21 +21,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import {
   MessageCircle,
   Eraser,
   CheckCircle2,
   ArrowRight,
+  ArrowLeft,
   Save,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { ChecklistType, CreateChecklistPayload } from "@/types/contract";
@@ -139,40 +133,63 @@ export function ContractChecklistDrawer({
     useState<Record<ChecklistFieldMeta["key"], boolean>>(getDefaultFields);
   const [fuelPercentage, setFuelPercentage] = useState<string>("Full");
   const [observations, setObservations] = useState<Record<string, string>>({});
-  const [inspectorSignature, setInspectorSignature] = useState<string | null>(
-    null,
-  );
+  const [inspectorSignature, setInspectorSignature] = useState<string | null>(null);
   const [driverSignature, setDriverSignature] = useState<string | null>(null);
+console.log(driverSignature)
+  /* ---- view: "checklist" | "inspector" | "driver" ---- */
+  const [view, setView] = useState<"checklist" | "inspector" | "driver">("checklist");
 
-  /* ---- observation modal state ---- */
-  const [obsOpen, setObsOpen] = useState(false);
-  const [obsField, setObsField] = useState<ChecklistFieldMeta["key"] | null>(
-    null,
-  );
+  /* ---- observation: which field's note is being edited (null = closed) ---- */
+  const [obsField, setObsField] = useState<ChecklistFieldMeta["key"] | null>(null);
   const [obsDraft, setObsDraft] = useState("");
 
-  /* ---- signature step: only one dialog rendered at a time ---- */
-  const [signatureStep, setSignatureStep] = useState<"inspector" | "driver" | null>(null);
-
-  /* ---- signature refs ---- */
-  const inspectorRef = useRef<SignatureCanvas>(null);
-  const driverRef = useRef<SignatureCanvas>(null);
+  /* ---- signature ref (reused for both inspector and driver) ---- */
+  const sigRef = useRef<SignatureCanvas>(null);
+  const [sigDirty, setSigDirty] = useState(false);
 
   /* ---- mutation ---- */
-  const [createChecklist, { isLoading: isSaving }] =
-    useCreateChecklistMutation();
+  const [createChecklist, { isLoading: isSaving }] = useCreateChecklistMutation();
 
-  /* ---- Reset form when drawer opens with new type ---- */
+  /* ---- Reset form ---- */
   const resetForm = useCallback(() => {
     setFields(getDefaultFields());
     setFuelPercentage("Full");
     setObservations({});
     setInspectorSignature(null);
     setDriverSignature(null);
-    setSignatureStep(null);
+    setView("checklist");
+    setObsField(null);
+    setObsDraft("");
+    setSigDirty(false);
   }, []);
 
-  /* ---- mark all OK ---- */
+  /* ---- When drawer opens with new type, reset ---- */
+  useEffect(() => {
+    if (open) resetForm();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, type]);
+
+  /* ---- when entering a signature view, reset the canvas ---- */
+  useEffect(() => {
+    if (view !== "checklist") {
+      setSigDirty(false);
+      // Small delay to ensure canvas is mounted before clearing
+      const t = setTimeout(() => sigRef.current?.clear(), 50);
+      return () => clearTimeout(t);
+    }
+  }, [view]);
+
+  /* ---- helpers ---- */
+  const readSignature = (): string | null => {
+    return sigRef.current?.toDataURL("image/png") ?? null;
+  };
+
+  const clearSig = () => {
+    sigRef.current?.clear();
+    setSigDirty(false);
+  };
+
+  /* ---- checklist actions ---- */
   const handleMarkAllOk = () => {
     const next: Record<string, boolean> = {};
     for (const k of DEFAULT_TRUE_FIELDS) next[k] = true;
@@ -181,25 +198,11 @@ export function ContractChecklistDrawer({
     if (!fuelPercentage) setFuelPercentage("Full");
   };
 
-  /* ---- toggle field ---- */
   const toggleField = (key: ChecklistFieldMeta["key"]) => {
     setFields((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  /* ---- observation ---- */
-  const openObservation = (key: ChecklistFieldMeta["key"]) => {
-    setObsField(key);
-    setObsDraft(observations[key] || "");
-    setObsOpen(true);
-  };
-
-  const saveObservation = () => {
-    if (!obsField) return;
-    setObservations((prev) => ({ ...prev, [obsField]: obsDraft }));
-    setObsOpen(false);
-  };
-
-  /* ---- step 1 → step 2: open inspector signature ---- */
+  /* ---- step transitions ---- */
   const handleContinue = () => {
     if (!fuelPercentage) {
       toast(t("dashboard.contractChecklist.fuelPending"), {
@@ -207,23 +210,24 @@ export function ContractChecklistDrawer({
       });
       return;
     }
-    setSignatureStep("inspector");
+    setView("inspector");
   };
 
-  /* ---- step 2 → step 3: save inspector signature, switch to driver ---- */
   const handleSaveInspector = () => {
-    if (!inspectorSignature) {
+    const sig = readSignature();
+    if (!sig) {
       toast(t("dashboard.contractChecklist.signaturePending"), {
         description: t("dashboard.contractChecklist.inspectorSignatureRequired"),
       });
       return;
     }
-    setSignatureStep("driver");
+    setInspectorSignature(sig);
+    setView("driver");
   };
 
-  /* ---- step 3 → final: save driver signature and submit ---- */
   const handleSaveDriver = async () => {
-    if (!driverSignature) {
+    const sig = readSignature();
+    if (!sig) {
       toast(t("dashboard.contractChecklist.signaturePending"), {
         description: t("dashboard.contractChecklist.driverSignatureRequired"),
       });
@@ -237,7 +241,7 @@ export function ContractChecklistDrawer({
       fuel_percentage: fuelPercentage,
       observations,
       inspector_signature: inspectorSignature!,
-      driver_signature: driverSignature,
+      driver_signature: sig,
     };
 
     try {
@@ -257,20 +261,26 @@ export function ContractChecklistDrawer({
     }
   };
 
-  /* ---- clear signature in modal ---- */
-  const clearSignature = (role: "inspector" | "driver") => {
-    const ref = role === "inspector" ? inspectorRef : driverRef;
-    ref.current?.clear();
-    if (role === "inspector") setInspectorSignature(null);
-    else setDriverSignature(null);
+  /* ---- observation ---- */
+  const openObservation = (key: ChecklistFieldMeta["key"]) => {
+    setObsField(key);
+    setObsDraft(observations[key] || "");
   };
 
-  const title =
+  const saveObservation = () => {
+    if (!obsField) return;
+    setObservations((prev) => ({ ...prev, [obsField]: obsDraft }));
+    setObsField(null);
+    setObsDraft("");
+  };
+
+  /* ---- labels ---- */
+  const titleLabel =
     type === "OUT"
       ? t("dashboard.contractChecklist.outTitle")
       : t("dashboard.contractChecklist.inTitle");
 
-  const description =
+  const descLabel =
     type === "OUT"
       ? t("dashboard.contractChecklist.outDescription")
       : t("dashboard.contractChecklist.inDescription");
@@ -278,416 +288,303 @@ export function ContractChecklistDrawer({
   const fieldLabel = (key: string) =>
     t(`dashboard.contractChecklist.fields.${key}`);
 
-  /* ---- shared cancel button ---- */
-  const cancelButton = isDesktop ? (
+  /* ================================================================ */
+  /*  SUB-VIEWS                                                        */
+  /* ================================================================ */
+
+  const sigTitle =
+    view === "inspector"
+      ? t("dashboard.contractChecklist.inspectorSignature")
+      : t("dashboard.contractChecklist.driverSignature");
+
+  const sigSaveLabel =
+    view === "inspector"
+      ? t("dashboard.contractChecklist.save")
+      : isSaving
+        ? t("dashboard.contractChecklist.saving")
+        : t("dashboard.contractChecklist.saveAndFinish");
+
+  const sigOnSave =
+    view === "inspector" ? handleSaveInspector : handleSaveDriver;
+
+  const sigOnBack =
+    view === "inspector"
+      ? () => setView("checklist")
+      : () => setView("inspector");
+
+  /* ---- cancel button reusable ---- */
+  const cancelBtn = isDesktop ? (
     <SheetClose asChild>
-      <Button variant="outline" className="w-full">
-        {t("dashboard.contractChecklist.cancel")}
-      </Button>
+      <Button variant="outline" className="w-full">{t("dashboard.contractChecklist.cancel")}</Button>
     </SheetClose>
   ) : (
     <DrawerClose asChild>
-      <Button variant="outline" className="w-full">
-        {t("dashboard.contractChecklist.cancel")}
-      </Button>
+      <Button variant="outline" className="w-full">{t("dashboard.contractChecklist.cancel")}</Button>
     </DrawerClose>
   );
+
+  /* ---- header ---- */
+  const headerEl = isDesktop ? (
+    <SheetHeader className="text-left p-3">
+      <SheetTitle>{titleLabel}</SheetTitle>
+      <SheetDescription>{descLabel}</SheetDescription>
+    </SheetHeader>
+  ) : (
+    <DrawerHeader className="text-left p-3">
+      <DrawerTitle>{titleLabel}</DrawerTitle>
+      <DrawerDescription>{descLabel}</DrawerDescription>
+    </DrawerHeader>
+  );
+
+  /* ---- checklist body (shared between desktop & mobile) ---- */
+  const checklistBody = (
+    <div className="space-y-4 pb-6 pt-2">
+      <Button variant="outline" size="sm" className="w-full" onClick={handleMarkAllOk}>
+        <CheckCircle2 className="mr-2 h-4 w-4 text-green-600" />
+        {t("dashboard.contractChecklist.markAllOk")}
+      </Button>
+
+      <Separator />
+
+      <div className="space-y-2">
+        <label className="text-sm font-medium">
+          {t("dashboard.contractChecklist.fuelLevel")}
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {FUEL_OPTIONS.map((opt) => (
+            <button
+              key={opt}
+              type="button"
+              onClick={() => setFuelPercentage(opt)}
+              className={cn(
+                "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+                fuelPercentage === opt
+                  ? "bg-primary text-primary-foreground"
+                  : "border bg-background text-muted-foreground hover:bg-muted",
+              )}
+            >
+              {opt}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <Separator />
+
+      <div className="space-y-1">
+        {CHECKLIST_FIELDS.map(({ key }) => (
+          <div
+            key={key}
+            className="flex items-center gap-2 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted/50"
+          >
+            <button
+              type="button"
+              onClick={() => toggleField(key)}
+              className="flex flex-1 items-center gap-3 text-left"
+            >
+              <span className="text-sm font-medium">{fieldLabel(key)}</span>
+            </button>
+
+            <div className="flex shrink-0 items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setFields((p) => ({ ...p, [key]: true }))}
+                className={cn(
+                  "rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors",
+                  fields[key]
+                    ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400"
+                    : "bg-muted text-muted-foreground",
+                )}
+              >
+                SI
+              </button>
+              <button
+                type="button"
+                onClick={() => setFields((p) => ({ ...p, [key]: false }))}
+                className={cn(
+                  "rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors",
+                  !fields[key]
+                    ? "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400"
+                    : "bg-muted text-muted-foreground",
+                )}
+              >
+                NO
+              </button>
+
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); openObservation(key); }}
+                className={cn(
+                  "ml-1 rounded p-1 transition-colors hover:bg-muted",
+                  observations[key] ? "text-primary" : "text-muted-foreground",
+                )}
+                title={t("dashboard.contractChecklist.addObservation")}
+              >
+                <MessageCircle className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  /* ---- signature view (shared between desktop & mobile) ---- */
+  const signatureView = (
+    <div className="flex flex-col flex-1 min-h-0">
+      <div className="flex items-center gap-2 px-6 py-3 border-b">
+        <Button variant="ghost" size="sm" onClick={sigOnBack}>
+          <ArrowLeft className="h-4 w-4 mr-1" />
+          {t("dashboard.contractChecklist.cancel")}
+        </Button>
+        <span className="text-sm font-medium">{sigTitle}</span>
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-6 py-4">
+        <div
+          className="overflow-hidden rounded-lg border bg-white"
+          style={{ touchAction: "none" }}
+        >
+          <SignatureCanvas
+            ref={sigRef}
+            penColor="black"
+            canvasProps={{
+              className: "w-full",
+              style: { height: "200px", width: "100%" },
+            }}
+            onEnd={() => setSigDirty(true)}
+          />
+        </div>
+      </div>
+
+      <div className="shrink-0 flex items-center justify-between gap-2 border-t p-4">
+        <Button variant="ghost" size="sm" onClick={clearSig}>
+          <Eraser className="mr-1.5 h-3.5 w-3.5" />
+          {t("dashboard.contractChecklist.clear")}
+        </Button>
+        <Button onClick={sigOnSave} disabled={!sigDirty || (view === "driver" && isSaving)}>
+          <Save className="mr-2 h-4 w-4" />
+          {sigSaveLabel}
+        </Button>
+      </div>
+    </div>
+  );
+
+  /* ---- observation overlay ---- */
+  const observationOverlay = obsField ? (
+    <div className="absolute inset-0 z-10 flex flex-col bg-background">
+      <div className="flex items-center gap-2 px-6 py-3 border-b">
+        <Button variant="ghost" size="sm" onClick={() => setObsField(null)}>
+          <X className="h-4 w-4 mr-1" />
+          {t("dashboard.contractChecklist.cancel")}
+        </Button>
+        <span className="text-sm font-medium truncate">
+          {t("dashboard.contractChecklist.observation")}: {fieldLabel(obsField)}
+        </span>
+      </div>
+      <div className="flex-1 overflow-y-auto px-6 py-4">
+        <Textarea
+          placeholder={t("dashboard.contractChecklist.observationPlaceholder")}
+          value={obsDraft}
+          onChange={(e) => setObsDraft(e.target.value)}
+          className="min-h-[120px] resize-none"
+        />
+      </div>
+      <div className="shrink-0 flex justify-end gap-2 border-t p-4">
+        <Button variant="outline" onClick={() => setObsField(null)}>
+          {t("dashboard.contractChecklist.cancel")}
+        </Button>
+        <Button onClick={saveObservation}>
+          {t("dashboard.contractChecklist.save")}
+        </Button>
+      </div>
+    </div>
+  ) : null;
 
   /* ================================================================ */
   /*  RENDER                                                           */
   /* ================================================================ */
 
-  const header = isDesktop ? (
-    <SheetHeader className="text-left p-3">
-      <SheetTitle>{title}</SheetTitle>
-      <SheetDescription>{description}</SheetDescription>
-    </SheetHeader>
-  ) : (
-    <DrawerHeader className="text-left p-3">
-      <DrawerTitle>{title}</DrawerTitle>
-      <DrawerDescription>{description}</DrawerDescription>
-    </DrawerHeader>
-  );
+  /* ---- Determine what to render inside the Drawer/Sheet ---- */
+  const renderBody = () => {
+    // Observation overlay always covers the checklist
+    if (obsField && view === "checklist") {
+      return (
+        <div className="relative flex flex-col flex-1 min-h-0">
+          {headerEl}
+          <div className="flex-1 min-h-0 overflow-y-auto px-6">{checklistBody}</div>
+          <div className="shrink-0 flex flex-col gap-2 border-t p-4">
+            <Button onClick={handleContinue} className="w-full" size="lg">
+              <ArrowRight className="mr-2 h-4 w-4" />
+              {t("dashboard.contractChecklist.continue")}
+            </Button>
+            {cancelBtn}
+          </div>
+          {observationOverlay}
+        </div>
+      );
+    }
+
+    // Signature views
+    if (view === "inspector" || view === "driver") {
+      return (
+        <>
+          {headerEl}
+          {signatureView}
+        </>
+      );
+    }
+
+    // Checklist view
+    if (isDesktop) {
+      return (
+        <>
+          {headerEl}
+          <ScrollArea className="flex-1 px-6">{checklistBody}</ScrollArea>
+          <div className="mt-auto flex flex-col gap-2 border-t p-4">
+            <Button onClick={handleContinue} className="w-full" size="lg">
+              <ArrowRight className="mr-2 h-4 w-4" />
+              {t("dashboard.contractChecklist.continue")}
+            </Button>
+            {cancelBtn}
+          </div>
+        </>
+      );
+    }
+
+    return (
+      <>
+        {headerEl}
+        <div className="flex-1 min-h-0 overflow-y-auto px-6">{checklistBody}</div>
+        <div className="shrink-0 flex flex-col gap-2 border-t p-4">
+          <Button onClick={handleContinue} className="w-full" size="lg">
+            <ArrowRight className="mr-2 h-4 w-4" />
+            {t("dashboard.contractChecklist.continue")}
+          </Button>
+          {cancelBtn}
+        </div>
+      </>
+    );
+  };
+
+  if (isDesktop) {
+    return (
+      <Sheet open={open} onOpenChange={onOpenChange}>
+        <SheetContent
+          side="right"
+          className="flex w-[90vw] max-w-lg flex-col sm:max-w-lg p-0 gap-0"
+        >
+          {renderBody()}
+        </SheetContent>
+      </Sheet>
+    );
+  }
 
   return (
-    <>
-      {/* ============================================================== */}
-      {/*  STEP 1 – Checklist Drawer / Sheet                              */}
-      {/* ============================================================== */}
-      {isDesktop ? (
-        <Sheet open={open} onOpenChange={onOpenChange}>
-          <SheetContent
-            side="right"
-            className="flex w-[90vw] max-w-lg flex-col sm:max-w-lg p-0 gap-0"
-          >
-            {header}
-            <ScrollArea className="flex-1 px-6">
-              <div className="space-y-4 pb-6 pt-2">
-                {/* Mark All OK */}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full"
-                  onClick={handleMarkAllOk}
-                >
-                  <CheckCircle2 className="mr-2 h-4 w-4 text-green-600" />
-                  {t("dashboard.contractChecklist.markAllOk")}
-                </Button>
-
-                <Separator />
-
-                {/* Fuel Selector */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    {t("dashboard.contractChecklist.fuelLevel")}
-                  </label>
-                  <div className="flex flex-wrap gap-2">
-                    {FUEL_OPTIONS.map((opt) => (
-                      <button
-                        key={opt}
-                        type="button"
-                        onClick={() => setFuelPercentage(opt)}
-                        className={cn(
-                          "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
-                          fuelPercentage === opt
-                            ? "bg-primary text-primary-foreground"
-                            : "border bg-background text-muted-foreground hover:bg-muted",
-                        )}
-                      >
-                        {opt}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Checklist Items */}
-                <div className="space-y-1">
-                  {CHECKLIST_FIELDS.map(({ key }) => (
-                    <div
-                      key={key}
-                      className="flex items-center gap-2 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted/50"
-                    >
-                      <button
-                        type="button"
-                        onClick={() => toggleField(key)}
-                        className="flex flex-1 items-center gap-3 text-left"
-                      >
-                        <span className="text-sm font-medium">
-                          {fieldLabel(key)}
-                        </span>
-                      </button>
-
-                      <div className="flex shrink-0 items-center gap-1">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setFields((p) => ({ ...p, [key]: true }))
-                          }
-                          className={cn(
-                            "rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors",
-                            fields[key]
-                              ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400"
-                              : "bg-muted text-muted-foreground",
-                          )}
-                        >
-                          SI
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setFields((p) => ({ ...p, [key]: false }))
-                          }
-                          className={cn(
-                            "rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors",
-                            !fields[key]
-                              ? "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400"
-                              : "bg-muted text-muted-foreground",
-                          )}
-                        >
-                          NO
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openObservation(key);
-                          }}
-                          className={cn(
-                            "ml-1 rounded p-1 transition-colors hover:bg-muted",
-                            observations[key]
-                              ? "text-primary"
-                              : "text-muted-foreground",
-                          )}
-                          title={t("dashboard.contractChecklist.addObservation")}
-                        >
-                          <MessageCircle className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </ScrollArea>
-
-            <div className="mt-auto flex flex-col gap-2 border-t p-4">
-              <Button onClick={handleContinue} className="w-full" size="lg">
-                <ArrowRight className="mr-2 h-4 w-4" />
-                {t("dashboard.contractChecklist.continue")}
-              </Button>
-              {cancelButton}
-            </div>
-          </SheetContent>
-        </Sheet>
-      ) : (
-        <Drawer open={open} onOpenChange={onOpenChange} shouldScaleBackground>
-          <DrawerContent className="max-h-[92dvh] flex flex-col">
-            {header}
-            <div className="flex-1 min-h-0 overflow-y-auto px-6">
-              <div className="space-y-4 pb-6 pt-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full"
-                  onClick={handleMarkAllOk}
-                >
-                  <CheckCircle2 className="mr-2 h-4 w-4 text-green-600" />
-                  {t("dashboard.contractChecklist.markAllOk")}
-                </Button>
-
-                <Separator />
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    {t("dashboard.contractChecklist.fuelLevel")}
-                  </label>
-                  <div className="flex flex-wrap gap-2">
-                    {FUEL_OPTIONS.map((opt) => (
-                      <button
-                        key={opt}
-                        type="button"
-                        onClick={() => setFuelPercentage(opt)}
-                        className={cn(
-                          "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
-                          fuelPercentage === opt
-                            ? "bg-primary text-primary-foreground"
-                            : "border bg-background text-muted-foreground hover:bg-muted",
-                        )}
-                      >
-                        {opt}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div className="space-y-1">
-                  {CHECKLIST_FIELDS.map(({ key }) => (
-                    <div
-                      key={key}
-                      className="flex items-center gap-2 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted/50"
-                    >
-                      <button
-                        type="button"
-                        onClick={() => toggleField(key)}
-                        className="flex flex-1 items-center gap-3 text-left"
-                      >
-                        <span className="text-sm font-medium">
-                          {fieldLabel(key)}
-                        </span>
-                      </button>
-
-                      <div className="flex shrink-0 items-center gap-1">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setFields((p) => ({ ...p, [key]: true }))
-                          }
-                          className={cn(
-                            "rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors",
-                            fields[key]
-                              ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400"
-                              : "bg-muted text-muted-foreground",
-                          )}
-                        >
-                          SI
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setFields((p) => ({ ...p, [key]: false }))
-                          }
-                          className={cn(
-                            "rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors",
-                            !fields[key]
-                              ? "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400"
-                              : "bg-muted text-muted-foreground",
-                          )}
-                        >
-                          NO
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openObservation(key);
-                          }}
-                          className={cn(
-                            "ml-1 rounded p-1 transition-colors hover:bg-muted",
-                            observations[key]
-                              ? "text-primary"
-                              : "text-muted-foreground",
-                          )}
-                          title={t("dashboard.contractChecklist.addObservation")}
-                        >
-                          <MessageCircle className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="shrink-0 flex flex-col gap-2 border-t p-4">
-              <Button onClick={handleContinue} className="w-full" size="lg">
-                <ArrowRight className="mr-2 h-4 w-4" />
-                {t("dashboard.contractChecklist.continue")}
-              </Button>
-              {cancelButton}
-            </div>
-          </DrawerContent>
-        </Drawer>
-      )}
-
-      {/* ============================================================== */}
-      {/*  STEP 2 – Inspector Signature                                   */}
-      {/* ============================================================== */}
-      <Dialog open={signatureStep === "inspector"} onOpenChange={(open) => { if (!open) setSignatureStep(null); }} modal={false}>
-        <DialogContent className="sm:max-w-md p-6">
-          <DialogHeader>
-            <DialogTitle>{t("dashboard.contractChecklist.inspectorSignature")}</DialogTitle>
-            <DialogDescription className="sr-only">
-              {t("dashboard.contractChecklist.inspectorSignatureDesc")}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="overflow-hidden rounded-lg border bg-white" style={{ touchAction: "none" }}>
-            <SignatureCanvas
-              ref={inspectorRef}
-              penColor="black"
-              canvasProps={{
-                className: "w-full",
-                style: { height: "150px", width: "100%" },
-              }}
-              onEnd={() => {
-                const d = inspectorRef.current?.toDataURL("image/png");
-                if (d) setInspectorSignature(d);
-              }}
-            />
-          </div>
-          <DialogFooter className="flex-row justify-between sm:justify-between">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => clearSignature("inspector")}
-            >
-              <Eraser className="mr-1.5 h-3.5 w-3.5" />
-              {t("dashboard.contractChecklist.clear")}
-            </Button>
-            <Button
-              onClick={handleSaveInspector}
-              disabled={!inspectorSignature}
-            >
-              <Save className="mr-2 h-4 w-4" />
-              {t("dashboard.contractChecklist.save")}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* ============================================================== */}
-      {/*  STEP 3 – Driver Signature                                      */}
-      {/* ============================================================== */}
-      <Dialog open={signatureStep === "driver"} onOpenChange={(open) => { if (!open) setSignatureStep(null); }} modal={false}>
-        <DialogContent className="sm:max-w-md p-6">
-          <DialogHeader>
-            <DialogTitle>{t("dashboard.contractChecklist.driverSignature")}</DialogTitle>
-            <DialogDescription className="sr-only">
-              {t("dashboard.contractChecklist.driverSignatureDesc")}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="overflow-hidden rounded-lg border bg-white" style={{ touchAction: "none" }}>
-            <SignatureCanvas
-              ref={driverRef}
-              penColor="black"
-              canvasProps={{
-                className: "w-full",
-                style: { height: "150px", width: "100%" },
-              }}
-              onEnd={() => {
-                const d = driverRef.current?.toDataURL("image/png");
-                if (d) setDriverSignature(d);
-              }}
-            />
-          </div>
-          <DialogFooter className="flex-row justify-between sm:justify-between">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => clearSignature("driver")}
-            >
-              <Eraser className="mr-1.5 h-3.5 w-3.5" />
-              {t("dashboard.contractChecklist.clear")}
-            </Button>
-            <Button
-              onClick={handleSaveDriver}
-              disabled={!driverSignature || isSaving}
-            >
-              <Save className="mr-2 h-4 w-4" />
-              {isSaving
-                ? t("dashboard.contractChecklist.saving")
-                : t("dashboard.contractChecklist.saveAndFinish")}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* ============================================================== */}
-      {/*  Observation Modal                                              */}
-      {/* ============================================================== */}
-      <Dialog open={obsOpen} onOpenChange={setObsOpen} modal={false}>
-        <DialogContent className="sm:max-w-md p-6">
-          <DialogHeader>
-            <DialogTitle className="text-base">
-              {obsField
-                ? `${t("dashboard.contractChecklist.observation")}: ${fieldLabel(obsField)}`
-                : t("dashboard.contractChecklist.observation")}
-            </DialogTitle>
-            <DialogDescription className="sr-only">
-              {t("dashboard.contractChecklist.observationDesc")}
-            </DialogDescription>
-          </DialogHeader>
-          <Textarea
-            placeholder={t("dashboard.contractChecklist.observationPlaceholder")}
-            value={obsDraft}
-            onChange={(e) => setObsDraft(e.target.value)}
-            rows={4}
-            className="resize-none"
-          />
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setObsOpen(false)}>
-              {t("dashboard.contractChecklist.cancel")}
-            </Button>
-            <Button onClick={saveObservation}>
-              {t("dashboard.contractChecklist.save")}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+    <Drawer open={open} onOpenChange={onOpenChange} shouldScaleBackground>
+      <DrawerContent className="max-h-[92dvh] flex flex-col">
+        {renderBody()}
+      </DrawerContent>
+    </Drawer>
   );
 }
