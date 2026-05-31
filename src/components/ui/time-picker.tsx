@@ -142,20 +142,28 @@ export function TimePicker({ value, onChange, inline = false }: TimePickerProps)
 
   if (inline) {
     return (
-      <div className="w-full rounded-lg border border-border/50 bg-muted/15 p-2">
-        <div className="mb-2 flex items-center justify-between">
+      <div className="w-full rounded-lg border border-border/50 bg-muted/15">
+        <button
+          type="button"
+          onClick={() => setOpen(!open)}
+          className="w-full flex items-center justify-between px-3 py-2"
+        >
           <span className="tabular-nums text-sm font-medium">{display}</span>
           <Clock className="h-3.5 w-3.5 shrink-0 opacity-60" />
-        </div>
-        <TimePickerContent
-          hour12={hour12}
-          minutes={minutes}
-          period={period}
-          selectHour={selectHour}
-          selectMinute={selectMinute}
-          setPeriod={setPeriod}
-          t={t}
-        />
+        </button>
+        {open && (
+          <div className="px-2 pb-2 border-t border-border/30 pt-2">
+            <TimePickerContent
+              hour12={hour12}
+              minutes={minutes}
+              period={period}
+              selectHour={selectHour}
+              selectMinute={selectMinute}
+              setPeriod={setPeriod}
+              t={t}
+            />
+          </div>
+        )}
       </div>
     );
   }

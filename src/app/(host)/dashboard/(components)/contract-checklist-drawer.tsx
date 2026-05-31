@@ -133,7 +133,6 @@ export function ContractChecklistDrawer({
   const [fuelPercentage, setFuelPercentage] = useState<string>("Full");
   const [observations, setObservations] = useState<Record<string, string>>({});
   const [inspectorSignature, setInspectorSignature] = useState<string | null>(null);
-  const [driverSignature, setDriverSignature] = useState<string | null>(null);
 
   /* ---- "checklist" | "inspector" | "driver" ---- */
   const [view, setView] = useState<"checklist" | "inspector" | "driver">("checklist");
@@ -155,7 +154,6 @@ export function ContractChecklistDrawer({
     setFuelPercentage("Full");
     setObservations({});
     setInspectorSignature(null);
-    setDriverSignature(null);
     setView("checklist");
     setObsField(null);
     setObsDraft("");
