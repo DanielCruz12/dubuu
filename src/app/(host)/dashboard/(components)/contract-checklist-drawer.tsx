@@ -12,6 +12,13 @@ import {
   SheetContent,
   SheetClose,
 } from "@/components/ui/sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -103,7 +110,8 @@ function useMediaQuery(query: string) {
   return matches;
 }
 
-type View = "checklist" | "observation" | "inspector" | "driver";
+type View = "checklist" | "observation";
+type SigStep = "inspector" | "driver";
 
 /* ================================================================== */
 /*  MAIN COMPONENT                                                     */
@@ -126,6 +134,7 @@ export function ContractChecklistDrawer({
 
   /* ---- view state ---- */
   const [view, setView] = useState<View>("checklist");
+  const [sigStep, setSigStep] = useState<SigStep | null>(null);
 
   /* ---- observation state ---- */
   const [obsField, setObsField] = useState<ChecklistFieldMeta["key"] | null>(null);
@@ -145,6 +154,7 @@ export function ContractChecklistDrawer({
     setObservations({});
     setInspectorSignature(null);
     setView("checklist");
+    setSigStep(null);
     setObsField(null);
     setObsDraft("");
     setSigDirty(false);
@@ -155,14 +165,14 @@ export function ContractChecklistDrawer({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, type]);
 
-  /* ---- when entering a signature view, reset the canvas ---- */
+  /* ---- when entering a signature step, reset the canvas ---- */
   useEffect(() => {
-    if (view === "inspector" || view === "driver") {
+    if (sigStep !== null) {
       setSigDirty(false);
       const t = setTimeout(() => sigRef.current?.clear(), 50);
       return () => clearTimeout(t);
     }
-  }, [view]);
+  }, [sigStep]);
 
   /* ---- helpers ---- */
   const readSignature = (): string | null => {
@@ -190,7 +200,7 @@ export function ContractChecklistDrawer({
       });
       return;
     }
-    setView("inspector");
+    setSigStep("inspector");
   };
 
   const handleSaveInspector = () => {
@@ -202,7 +212,7 @@ export function ContractChecklistDrawer({
       return;
     }
     setInspectorSignature(sig);
-    setView("driver");
+    setSigStep("driver");
   };
 
   const handleSaveDriver = async () => {
@@ -292,198 +302,111 @@ export function ContractChecklistDrawer({
   );
 
   /* ================================================================== */
+  /*  CHECKLIST BODY  (shared)                                           */
+  /* ================================================================== */
+  const checklistBody = (
+    <div className="space-y-4 pb-6 pt-2">
+      <Button variant="outline" size="sm" className="w-full" onClick={handleMarkAllOk}>
+        <CheckCircle2 className="mr-2 h-4 w-4 text-green-600" />
+        {t("dashboard.contractChecklist.markAllOk")}
+      </Button>
+
+      <Separator />
+
+      <div className="space-y-2">
+        <label className="text-sm font-medium">
+          {t("dashboard.contractChecklist.fuelLevel")}
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {FUEL_OPTIONS.map((opt) => (
+            <button
+              key={opt}
+              type="button"
+              onClick={() => setFuelPercentage(opt)}
+              className={cn(
+                "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+                fuelPercentage === opt
+                  ? "bg-primary text-primary-foreground"
+                  : "border bg-background text-muted-foreground hover:bg-muted",
+              )}
+            >
+              {opt}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <Separator />
+
+      <div className="space-y-1">
+        {CHECKLIST_FIELDS.map(({ key }) => (
+          <div
+            key={key}
+            className="flex items-center gap-2 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted/50"
+          >
+            <button
+              type="button"
+              onClick={() => toggleField(key)}
+              className="flex flex-1 items-center gap-3 text-left"
+            >
+              <span className="text-sm font-medium">{fieldLabel(key)}</span>
+            </button>
+
+            <div className="flex shrink-0 items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setFields((p) => ({ ...p, [key]: true }))}
+                className={cn(
+                  "rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors",
+                  fields[key]
+                    ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400"
+                    : "bg-muted text-muted-foreground",
+                )}
+              >
+                SI
+              </button>
+              <button
+                type="button"
+                onClick={() => setFields((p) => ({ ...p, [key]: false }))}
+                className={cn(
+                  "rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors",
+                  !fields[key]
+                    ? "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400"
+                    : "bg-muted text-muted-foreground",
+                )}
+              >
+                NO
+              </button>
+
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); openObservation(key); }}
+                className={cn(
+                  "ml-1 rounded p-1 transition-colors hover:bg-muted",
+                  observations[key] ? "text-primary" : "text-muted-foreground",
+                )}
+                title={t("dashboard.contractChecklist.addObservation")}
+              >
+                <MessageCircle className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  /* ================================================================== */
   /*  CHECKLIST VIEW                                                     */
   /* ================================================================== */
   const checklistView = (
     <>
       {headerEl}
       {isDesktop ? (
-        <ScrollArea className="flex-1 px-6">
-          <div className="space-y-4 pb-6 pt-2">
-            <Button variant="outline" size="sm" className="w-full" onClick={handleMarkAllOk}>
-              <CheckCircle2 className="mr-2 h-4 w-4 text-green-600" />
-              {t("dashboard.contractChecklist.markAllOk")}
-            </Button>
-
-            <Separator />
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                {t("dashboard.contractChecklist.fuelLevel")}
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {FUEL_OPTIONS.map((opt) => (
-                  <button
-                    key={opt}
-                    type="button"
-                    onClick={() => setFuelPercentage(opt)}
-                    className={cn(
-                      "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
-                      fuelPercentage === opt
-                        ? "bg-primary text-primary-foreground"
-                        : "border bg-background text-muted-foreground hover:bg-muted",
-                    )}
-                  >
-                    {opt}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <Separator />
-
-            <div className="space-y-1">
-              {CHECKLIST_FIELDS.map(({ key }) => (
-                <div
-                  key={key}
-                  className="flex items-center gap-2 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted/50"
-                >
-                  <button
-                    type="button"
-                    onClick={() => toggleField(key)}
-                    className="flex flex-1 items-center gap-3 text-left"
-                  >
-                    <span className="text-sm font-medium">{fieldLabel(key)}</span>
-                  </button>
-
-                  <div className="flex shrink-0 items-center gap-1">
-                    <button
-                      type="button"
-                      onClick={() => setFields((p) => ({ ...p, [key]: true }))}
-                      className={cn(
-                        "rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors",
-                        fields[key]
-                          ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400"
-                          : "bg-muted text-muted-foreground",
-                      )}
-                    >
-                      SI
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setFields((p) => ({ ...p, [key]: false }))}
-                      className={cn(
-                        "rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors",
-                        !fields[key]
-                          ? "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400"
-                          : "bg-muted text-muted-foreground",
-                      )}
-                    >
-                      NO
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={(e) => { e.stopPropagation(); openObservation(key); }}
-                      className={cn(
-                        "ml-1 rounded p-1 transition-colors hover:bg-muted",
-                        observations[key] ? "text-primary" : "text-muted-foreground",
-                      )}
-                      title={t("dashboard.contractChecklist.addObservation")}
-                    >
-                      <MessageCircle className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </ScrollArea>
+        <ScrollArea className="flex-1 px-6">{checklistBody}</ScrollArea>
       ) : (
-        <div className="flex-1 min-h-0 overflow-y-auto px-6">
-          <div className="space-y-4 pb-6 pt-2">
-            <Button variant="outline" size="sm" className="w-full" onClick={handleMarkAllOk}>
-              <CheckCircle2 className="mr-2 h-4 w-4 text-green-600" />
-              {t("dashboard.contractChecklist.markAllOk")}
-            </Button>
-
-            <Separator />
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                {t("dashboard.contractChecklist.fuelLevel")}
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {FUEL_OPTIONS.map((opt) => (
-                  <button
-                    key={opt}
-                    type="button"
-                    onClick={() => setFuelPercentage(opt)}
-                    className={cn(
-                      "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
-                      fuelPercentage === opt
-                        ? "bg-primary text-primary-foreground"
-                        : "border bg-background text-muted-foreground hover:bg-muted",
-                    )}
-                  >
-                    {opt}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <Separator />
-
-            <div className="space-y-1">
-              {CHECKLIST_FIELDS.map(({ key }) => (
-                <div
-                  key={key}
-                  className="flex items-center gap-2 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted/50"
-                >
-                  <button
-                    type="button"
-                    onClick={() => toggleField(key)}
-                    className="flex flex-1 items-center gap-3 text-left"
-                  >
-                    <span className="text-sm font-medium">{fieldLabel(key)}</span>
-                  </button>
-
-                  <div className="flex shrink-0 items-center gap-1">
-                    <button
-                      type="button"
-                      onClick={() => setFields((p) => ({ ...p, [key]: true }))}
-                      className={cn(
-                        "rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors",
-                        fields[key]
-                          ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400"
-                          : "bg-muted text-muted-foreground",
-                      )}
-                    >
-                      SI
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setFields((p) => ({ ...p, [key]: false }))}
-                      className={cn(
-                        "rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors",
-                        !fields[key]
-                          ? "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400"
-                          : "bg-muted text-muted-foreground",
-                      )}
-                    >
-                      NO
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={(e) => { e.stopPropagation(); openObservation(key); }}
-                      className={cn(
-                        "ml-1 rounded p-1 transition-colors hover:bg-muted",
-                        observations[key] ? "text-primary" : "text-muted-foreground",
-                      )}
-                      title={t("dashboard.contractChecklist.addObservation")}
-                    >
-                      <MessageCircle className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        <div className="flex-1 min-h-0 overflow-y-auto px-6">{checklistBody}</div>
       )}
-
-      {/* Bottom bar */}
       <div className="shrink-0 flex flex-col gap-2 border-t p-4">
         <Button onClick={handleContinue} className="w-full" size="lg">
           <ArrowRight className="mr-2 h-4 w-4" />
@@ -495,7 +418,7 @@ export function ContractChecklistDrawer({
   );
 
   /* ================================================================== */
-  /*  OBSERVATION VIEW  (inline — no separate Dialog)                    */
+  /*  OBSERVATION VIEW  (inline)                                         */
   /* ================================================================== */
   const observationView = (
     <>
@@ -540,114 +463,109 @@ export function ContractChecklistDrawer({
   );
 
   /* ================================================================== */
-  /*  SIGNATURE VIEW  (inline — no separate Dialog)                       */
+  /*  DRAWER / SHEET CONTENT                                             */
+  /* ================================================================== */
+  const currentView = view === "observation" ? observationView : checklistView;
+
+  /* ================================================================== */
+  /*  SIGNATURE — Dialog  (rendered OUTSIDE Drawer/Sheet)                 */
   /* ================================================================== */
   const sigTitle =
-    view === "inspector"
+    sigStep === "inspector"
       ? t("dashboard.contractChecklist.inspectorSignature")
       : t("dashboard.contractChecklist.driverSignature");
 
   const sigSaveLabel =
-    view === "inspector"
+    sigStep === "inspector"
       ? t("dashboard.contractChecklist.save")
       : isSaving
         ? t("dashboard.contractChecklist.saving")
         : t("dashboard.contractChecklist.saveAndFinish");
 
   const sigOnSave =
-    view === "inspector" ? handleSaveInspector : handleSaveDriver;
+    sigStep === "inspector" ? handleSaveInspector : handleSaveDriver;
 
-  const sigGoBack = () => {
-    if (view === "inspector") setView("checklist");
-    else setView("inspector");
-  };
-
-  const signatureView = (
-    <>
-      <div className="text-left p-3 border-b flex items-center gap-3">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 shrink-0"
-          onClick={sigGoBack}
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <div className="min-w-0">
-          <h2 className="text-base font-semibold">{sigTitle}</h2>
-        </div>
-      </div>
-
-      <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4">
-        <div
-          className="overflow-hidden rounded-lg border bg-white"
-          style={{ touchAction: "none" }}
-        >
-          <SignatureCanvas
-            ref={sigRef}
-            penColor="black"
-            canvasProps={{
-              className: "w-full",
-              style: { height: "200px", width: "100%" },
-            }}
-            onEnd={() => setSigDirty(true)}
-          />
-        </div>
-      </div>
-
-      <div className="shrink-0 flex gap-2 border-t p-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => {
-            sigRef.current?.clear();
-            setSigDirty(false);
-          }}
-        >
-          <Eraser className="mr-1.5 h-3.5 w-3.5" />
-          {t("dashboard.contractChecklist.clear")}
-        </Button>
-        <div className="flex-1" />
-        <Button
-          onClick={sigOnSave}
-          disabled={!sigDirty || (view === "driver" && isSaving)}
-          className="min-w-[120px]"
-        >
-          <Save className="mr-2 h-4 w-4" />
-          {sigSaveLabel}
-        </Button>
-      </div>
-    </>
-  );
-
-  /* ================================================================== */
-  /*  RENDER — single overlay, view-switched content                      */
-  /* ================================================================== */
-  const currentView =
-    view === "observation"
-      ? observationView
-      : view === "inspector" || view === "driver"
-        ? signatureView
-        : checklistView;
-
-  if (isDesktop) {
-    return (
-      <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent
-          side="right"
-          className="flex w-[90vw] max-w-lg flex-col sm:max-w-lg p-0 gap-0"
-        >
-          {currentView}
-        </SheetContent>
-      </Sheet>
-    );
-  }
+  const sigDialogOpen = sigStep !== null;
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange} shouldScaleBackground>
-      <DrawerContent className="max-h-[92dvh] flex flex-col">
-        {currentView}
-      </DrawerContent>
-    </Drawer>
+    <>
+      {/* ================================================================ */}
+      {/*  DRAWER / SHEET  (checklist + observation)                         */}
+      {/* ================================================================ */}
+      {isDesktop ? (
+        <Sheet open={open} onOpenChange={onOpenChange}>
+          <SheetContent
+            side="right"
+            className="flex w-[90vw] max-w-lg flex-col sm:max-w-lg p-0 gap-0"
+          >
+            {currentView}
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <Drawer open={open} onOpenChange={onOpenChange} shouldScaleBackground>
+          <DrawerContent className="max-h-[92dvh] flex flex-col">
+            {currentView}
+          </DrawerContent>
+        </Drawer>
+      )}
+
+      {/* ================================================================ */}
+      {/*  SIGNATURE — Dialog                                               */}
+      {/* ================================================================ */}
+      <Dialog
+        open={sigDialogOpen}
+        onOpenChange={(v) => {
+          if (!v) {
+            if (sigStep === "inspector") setSigStep(null);
+            else if (sigStep === "driver") setSigStep("inspector");
+          }
+        }}
+      >
+        <DialogContent
+          className="sm:max-w-md p-6"
+          onInteractOutside={(e) => e.preventDefault()}
+        >
+          <DialogHeader>
+            <DialogTitle>{sigTitle}</DialogTitle>
+          </DialogHeader>
+
+          <div
+            className="overflow-hidden rounded-lg border bg-white"
+            style={{ touchAction: "none" }}
+          >
+            <SignatureCanvas
+              ref={sigRef}
+              penColor="black"
+              canvasProps={{
+                className: "w-full",
+                style: { height: "200px", width: "100%" },
+              }}
+              onEnd={() => setSigDirty(true)}
+            />
+          </div>
+
+          <DialogFooter className="flex-row justify-between sm:justify-between">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                sigRef.current?.clear();
+                setSigDirty(false);
+              }}
+            >
+              <Eraser className="mr-1.5 h-3.5 w-3.5" />
+              {t("dashboard.contractChecklist.clear")}
+            </Button>
+            <Button
+              onClick={sigOnSave}
+              disabled={!sigDirty || (sigStep === "driver" && isSaving)}
+            >
+              <Save className="mr-2 h-4 w-4" />
+              {sigSaveLabel}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
