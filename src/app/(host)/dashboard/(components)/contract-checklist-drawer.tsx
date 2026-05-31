@@ -165,6 +165,23 @@ export function ContractChecklistDrawer({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, type]);
 
+  /* ---- Fix for Radix UI body lock/freeze when multiple modals close ---- */
+  useEffect(() => {
+    if (!open) {
+      const t = setTimeout(() => {
+        document.body.style.pointerEvents = "";
+      }, 100);
+      return () => clearTimeout(t);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    return () => {
+      // Ensure pointer-events is cleaned up when component unmounts
+      document.body.style.pointerEvents = "";
+    };
+  }, []);
+
   /* ---- when entering a signature step, reset the canvas ---- */
   useEffect(() => {
     if (sigStep !== null) {
