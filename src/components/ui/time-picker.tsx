@@ -183,7 +183,7 @@ export function TimePicker({ value, onChange, inline = false }: TimePickerProps)
       <PopoverContent
         align="start"
         sideOffset={6}
-        className="w-auto p-3 z-[11100]"
+        className="w-auto p-3 z-[99999]"
       >
         <TimePickerContent
           hour12={hour12}

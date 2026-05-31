@@ -441,14 +441,14 @@ export default function RentalBookingForm({
             <Clock className="h-3.5 w-3.5 opacity-70" aria-hidden />
             {t("home.rentalBooking.pickupTime")}
           </Label>
-          <TimePicker value={pickupTime} onChange={setPickupTime} inline={!isDesktop} />
+          <TimePicker value={pickupTime} onChange={setPickupTime} />
         </div>
         <div className="space-y-1.5">
           <Label className="text-xs flex items-center gap-1.5">
             <Clock className="h-3.5 w-3.5 opacity-70" aria-hidden />
             {t("home.rentalBooking.returnTime")}
           </Label>
-          <TimePicker value={returnTime} onChange={setReturnTime} inline={!isDesktop} />
+          <TimePicker value={returnTime} onChange={setReturnTime} />
         </div>
       </div>
       {insufficientHours && (
@@ -747,7 +747,7 @@ export default function RentalBookingForm({
                 </DialogContent>
               </Dialog>
             ) : (
-              <Sheet open={rangePickerOpen} onOpenChange={setRangePickerOpen}>
+              <Sheet open={rangePickerOpen} onOpenChange={setRangePickerOpen} modal={false}>
                 <SheetContent
                   side="bottom"
                   className="rounded-t-[1.25rem] max-h-[min(92dvh,680px)] w-full px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 overflow-y-auto"
@@ -820,6 +820,7 @@ export default function RentalBookingForm({
               <Sheet
                 open={locationModalOpen}
                 onOpenChange={setLocationModalOpen}
+                modal={false}
               >
                 <SheetContent
                   side="bottom"
