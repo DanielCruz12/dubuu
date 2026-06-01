@@ -121,7 +121,7 @@ export function BookingDetailsModal({
       {/* Product info */}
       <div>
         <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-          {t("dashboard.clientDetails.rentalDetails")}
+          {isRental ? t("dashboard.clientDetails.rentalDetails") : t("dashboard.clientDetails.tourDetails")}
         </h3>
         <div className="rounded-lg border bg-muted/20 p-4 space-y-3">
           {/* Status badge */}

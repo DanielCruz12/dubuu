@@ -324,6 +324,7 @@
     "email": "Correo",
     "phone": "Teléfono",
     "rentalDetails": "Detalles de la Renta",
+	    "tourDetails": "Detalles del Viaje",
     "pickupDate": "Fecha de recogida",
     "dropoffDate": "Fecha de entrega",
     "pickupLocation": "Lugar de recogida",

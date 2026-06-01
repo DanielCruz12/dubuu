@@ -324,6 +324,7 @@
     "email": "Email",
     "phone": "Phone",
     "rentalDetails": "Rental Details",
+	    "tourDetails": "Tour Details",
     "pickupDate": "Pickup date",
     "dropoffDate": "Dropoff date",
     "pickupLocation": "Pickup location",
