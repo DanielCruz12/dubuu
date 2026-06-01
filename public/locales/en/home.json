@@ -283,7 +283,8 @@
 		"downloadReceipt": "Download receipt",
 		"receiptNotes": "Thank you for trusting our services. This receipt serves as proof of payment.",
 		"pickupLocation": "Pickup location",
-		"dropoffLocation": "Drop-off location"
+		"dropoffLocation": "Drop-off location",
+		"total": "Total"
 	},
 	"share": {
 		"button": "Share",

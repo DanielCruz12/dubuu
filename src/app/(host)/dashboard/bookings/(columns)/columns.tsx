@@ -7,6 +7,7 @@ import type { HostBooking } from "@/types/booking";
 import type { ChecklistType } from "@/types/contract";
 import { Badge } from "@/components/ui/badge";
 import { ContractCell } from "../(components)/contract-cell";
+import { statusColors } from "@/utils/data";
 import moment from "moment";
 import "moment/locale/es";
 
@@ -187,17 +188,15 @@ export function getBookingsColumns(
       const status = row.getValue("status") as string;
       const label = t(`dashboard.bookings.status.${status}`);
       const display = label.startsWith("dashboard.") ? status : label;
+      const statusKey =
+        status === "completed" ? "completado"
+        : status === "confirmed" ? "confirmado"
+        : status === "cancelled" ? "cancelado"
+        : status === "in-process" ? "pendiente"
+        : "pendiente";
+      const colorClass = statusColors[statusKey as keyof typeof statusColors] ?? "";
       return (
-        <Badge
-          variant={
-            status === "completed"
-              ? "default"
-              : status === "cancelled"
-                ? "destructive"
-                : "outline"
-          }
-          className="capitalize"
-        >
+        <Badge variant="outline" className={`capitalize ${colorClass}`}>
           {display}
         </Badge>
       );

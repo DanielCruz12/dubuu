@@ -401,7 +401,7 @@ export default function ProductBooking() {
           <div className="w-full lg:w-2/3 min-w-0">
             <ProductDetails product={product} />
             {isRental ? (
-              <div className="mt-6">
+              <div className="mt-6 hidden md:block">
                 <Accordion type="single" collapsible defaultValue="rental-agreement">
                   <AccordionItem value="rental-agreement">
                     <AccordionTrigger className="text-base md:text-xl font-semibold">
@@ -599,6 +599,24 @@ export default function ProductBooking() {
                           </div>
                         </AccordionTrigger>
                         <AccordionContent>
+                          {isRental ? (
+                            <div className="mb-4">
+                              <Accordion type="single" collapsible defaultValue="rental-agreement-mobile">
+                                <AccordionItem value="rental-agreement-mobile">
+                                  <AccordionTrigger className="text-base font-semibold">
+                                    {t("home.rentalImportant.contractTitle")}
+                                  </AccordionTrigger>
+                                  <AccordionContent>
+                                    <SectionCard icon={FileText} color="blue">
+                                      <p className="text-muted-foreground leading-relaxed text-sm">
+                                        {t("home.rentalImportant.contractBody")}
+                                      </p>
+                                    </SectionCard>
+                                  </AccordionContent>
+                                </AccordionItem>
+                              </Accordion>
+                            </div>
+                          ) : null}
                           {showBookingStatusCard ? (
                             <BookingStatus
                               id={existingBooking.id}

@@ -140,7 +140,7 @@ export const statusConfig = {
     color: "text-green-500 dark:text-green-200",
     bgColor: "bg-green-50 dark:bg-green-950/20",
     borderColor: "border-green-200 dark:border-green-800",
-    badgeVariant: "success" as const,
+    badgeVariant: "outline" as const,
     badgeText: "Completada",
   },
   "in-process": {
@@ -151,7 +151,7 @@ export const statusConfig = {
     color: "text-amber-500",
     bgColor: "bg-amber-50 dark:bg-amber-950/20",
     borderColor: "border-amber-200 dark:border-amber-800",
-    badgeVariant: "warning" as const,
+    badgeVariant: "outline" as const,
     badgeText: "En Proceso",
   },
   canceled: {
@@ -162,7 +162,7 @@ export const statusConfig = {
     color: "text-red-500",
     bgColor: "bg-red-50 dark:bg-red-950/20",
     borderColor: "border-red-200 dark:border-red-800",
-    badgeVariant: "destructive" as const,
+    badgeVariant: "outline" as const,
     badgeText: "Cancelada",
   },
 };

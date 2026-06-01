@@ -172,7 +172,7 @@ export function BookingStatus({
             <Icon className={cn("h-5 w-5", config.color)} />
             <CardTitle className="text-base">
               <div className="flex items-center">
-                <Badge className="bg-green-100 dark:bg-green-200 text-green-900 flex items-center gap-1 font-normal">
+                <Badge variant={config.badgeVariant} className={cn("flex items-center gap-1 font-normal", config.color, config.borderColor, config.bgColor)}>
                   {config.title}
                 </Badge>
               </div>

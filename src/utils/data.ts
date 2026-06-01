@@ -241,10 +241,10 @@ export const countries: Country[] = [
 ];
 
 export const statusColors = {
-  confirmado: "bg-green-50 text-green-700 border-green-200",
-  pendiente: "bg-amber-50 text-amber-700 border-amber-200",
-  completado: "bg-green-50 text-green-700 border-green-200 dark:bg-green-950/20 dark:text-green-400 dark:border-green-800",
-  cancelado: "bg-red-50 text-red-700 border-red-200",
+  confirmado: "text-green-700 border-green-200 dark:text-green-400 dark:border-green-800",
+  pendiente: "text-amber-700 border-amber-200 dark:text-amber-400 dark:border-amber-800",
+  completado: "text-green-700 border-green-200 dark:text-green-400 dark:border-green-800",
+  cancelado: "text-red-700 border-red-200 dark:text-red-400 dark:border-red-800",
 };
 
 export const statusText = {

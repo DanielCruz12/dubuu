@@ -316,7 +316,7 @@
     "days": "days"
   },
   "clientDetails": {
-    "title": "Client Details",
+    "title": "Details",
     "description": "Client information and booking documents",
     "close": "Close",
     "clientInfo": "Client Information",

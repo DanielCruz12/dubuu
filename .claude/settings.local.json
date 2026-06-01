@@ -27,7 +27,10 @@
       "Bash(node *)",
       "PowerShell(npx tsc --noEmit --pretty 2>&1 | Select-Object -First 30)",
       "mcp__ide__getDiagnostics",
-      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 50)"
+      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 50)",
+      "Bash(Get-Content \"C:\\\\Users\\\\daniel\\\\Desktop\\\\projects\\\\personal_work\\\\projects\\\\dubuu\\\\src\\\\app\\\\\\(host\\)\\\\dashboard\\\\bookings\\\\\\(columns\\)\\\\columns.tsx\" -Raw)",
+      "Bash(Select-String -Pattern \"cell: \\\\\\(\\\\{\" -Context 0,20)",
+      "Bash(Select-Object -First 1)"
     ]
   }
 }

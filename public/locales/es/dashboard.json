@@ -316,7 +316,7 @@
     "days": "días"
   },
   "clientDetails": {
-    "title": "Detalles del Cliente",
+    "title": "Detalles",
     "description": "Información del cliente y documentos de reserva",
     "close": "Cerrar",
     "clientInfo": "Información del Cliente",

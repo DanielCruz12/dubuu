@@ -283,7 +283,8 @@
 		"downloadReceipt": "Descargar Recibo",
 		"receiptNotes": "Gracias por confiar en nuestros servicios. Este recibo sirve como comprobante de pago.",
 		"pickupLocation": "Lugar de recogida",
-		"dropoffLocation": "Lugar de entrega"
+		"dropoffLocation": "Lugar de entrega",
+		"total": "Total"
 	},
 	"share": {
 		"button": "Compartir",

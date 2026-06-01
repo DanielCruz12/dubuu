@@ -118,25 +118,24 @@ export function BookingDetailsModal({
 
   const content = (
     <div className="space-y-6 overflow-y-auto max-h-[min(70vh,520px)] pr-1">
-      {/* Status badge */}
-      <div className="flex items-center gap-2">
-        <Badge variant="outline" className={`capitalize text-xs font-normal ${statusColor}`}>
-          {displayStatus}
-        </Badge>
-        {booking.paymentMethod && (
-          <Badge variant="secondary" className="capitalize text-xs font-normal">
-            <CreditCard className="h-3 w-3 mr-1" />
-            {paymentLabel}
-          </Badge>
-        )}
-      </div>
-
       {/* Product info */}
       <div>
         <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
           {t("dashboard.clientDetails.rentalDetails")}
         </h3>
         <div className="rounded-lg border bg-muted/20 p-4 space-y-3">
+          {/* Status badge */}
+          <div className="flex items-center gap-2 mb-1">
+            <Badge variant="outline" className={`capitalize text-xs font-normal ${statusColor}`}>
+              {displayStatus}
+            </Badge>
+            {booking.paymentMethod && (
+              <Badge variant="secondary" className="capitalize text-xs font-normal">
+                <CreditCard className="h-3 w-3 mr-1" />
+                {paymentLabel}
+              </Badge>
+            )}
+          </div>
           <div>
             <p className="text-xs text-muted-foreground">{t("dashboard.products.filters.product")}</p>
             <p className="text-sm font-medium">{booking.name}</p>
