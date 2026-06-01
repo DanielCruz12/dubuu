@@ -128,6 +128,8 @@
 		"docSizeHint": "Máx. {{max}} MB",
 		"docSizeError": "La imagen no puede superar los {{max}} MB",
 		"removeFile": "Eliminar archivo",
+		"docNotesLabel": "Mensaje (opcional)",
+		"docNotesPlaceholder": "Agrega un mensaje para el anfitrión sobre tu reserva...",
 		"minHoursWarning": "El alquiler debe ser de al menos 24 horas.",
 		"minHoursError": "El período mínimo de alquiler es de 24 horas.",
 		"changeLocation": "Cambiar ubicación",

@@ -75,6 +75,7 @@ export type RentalBookingData = {
   dropoff_time: string;
   pickup_location: string;
   dropoff_location: string;
+  pickup_notes?: string;
   total: number;
   user_id: string;
   product_id: string;
@@ -107,9 +108,12 @@ export interface HostBooking {
     last_name: string | null;
     email: string | null;
     image_url?: string | null;
+    phone_number?: string | null;
   };
   status: string;
   name: string;
+  product_banner?: string | null;
+  paymentMethod?: string | null;
   tourDate: string | null;
   pickup_time: string | null;
   dropoff_time: string | null;

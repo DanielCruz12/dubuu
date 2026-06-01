@@ -223,6 +223,7 @@ export default function RentalBookingForm({
     null,
     null,
   ]);
+  const [docNotes, setDocNotes] = useState("");
   const duiInputRef = useRef<HTMLInputElement>(null);
   const licenseInputRef = useRef<HTMLInputElement>(null);
   const [isUploading] = useState(false);
@@ -408,6 +409,7 @@ export default function RentalBookingForm({
       end_date_display: format(dropoffDt, displayFmt, { locale }),
       maps_link: googleMapsLink(finalPickupLocation),
       vehicle_model: product.name,
+      pickup_notes: docNotes.trim() || undefined,
     });
 
     setShowDocsModal(false);
@@ -657,6 +659,23 @@ export default function RentalBookingForm({
         t("home.rentalBooking.licenseFrontLabel"),
         t("home.rentalBooking.licenseBackLabel"),
       )}
+
+      {/* Optional notes */}
+      <div className="space-y-1.5">
+        <Label className="text-xs font-semibold">
+          {t("home.rentalBooking.docNotesLabel")}
+        </Label>
+        <textarea
+          className="w-full min-h-[80px] rounded-xl border border-border/60 bg-muted/10 px-3 py-2 text-sm resize-none placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40"
+          placeholder={t("home.rentalBooking.docNotesPlaceholder")}
+          value={docNotes}
+          onChange={(e) => setDocNotes(e.target.value)}
+          maxLength={500}
+        />
+        <p className="text-[10px] text-muted-foreground/60 text-right">
+          {docNotes.length}/500
+        </p>
+      </div>
 
       <Button
         type="button"

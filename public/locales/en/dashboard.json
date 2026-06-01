@@ -152,6 +152,9 @@
       "namePlaceholder": "e.g. Toyota Camry 2020 – Comfortable and reliable",
       "description": "Description",
       "descriptionPlaceholder": "Describe the vehicle and what renters should know.",
+      "statusLabel": "Listing status",
+      "statusActive": "Active",
+      "statusInactive": "Inactive",
       "address": "Address",
       "addressPlaceholder": "Street, neighborhood",
       "country": "Country",
@@ -319,6 +322,7 @@
     "clientInfo": "Client Information",
     "name": "Name",
     "email": "Email",
+    "phone": "Phone",
     "rentalDetails": "Rental Details",
     "pickupDate": "Pickup date",
     "dropoffDate": "Dropoff date",
@@ -326,6 +330,7 @@
     "dropoffLocation": "Dropoff location",
     "pickupNotes": "Pickup notes",
     "dropoffNotes": "Dropoff notes",
+    "userNotes": "Client message",
     "noNotes": "No notes",
     "documents": "Documents",
     "duiFront": "DUI - Front",
@@ -501,7 +506,10 @@
       "pickupDate": "Pickup date",
       "dropoffDate": "Dropoff date",
       "pickupLocation": "Pickup location",
-      "details": "Details"
+      "details": "Details",
+      "notes": "Notes",
+      "pickupNotes": "Pickup notes",
+      "dropoffNotes": "Dropoff notes"
     },
     "status": {
       "pending": "Pending",

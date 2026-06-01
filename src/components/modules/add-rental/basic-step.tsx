@@ -14,6 +14,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 import { type RentalBasicFormValues, getRentalBasicSchema } from "./types";
 import { focusFirstStepField, scrollToFirstError } from "../add-tour/utils";
@@ -22,9 +29,10 @@ import { useLanguage } from "@/lib/i18n-context";
 interface RentalBasicStepProps {
   onSubmit: (data: RentalBasicFormValues) => void;
   defaultValues?: Partial<RentalBasicFormValues>;
+  isEditMode?: boolean;
 }
 
-export function RentalBasicStep({ onSubmit, defaultValues }: RentalBasicStepProps) {
+export function RentalBasicStep({ onSubmit, defaultValues, isEditMode }: RentalBasicStepProps) {
   const { t } = useLanguage();
   const formRef = useRef<HTMLFormElement>(null);
   const schema = useMemo(() => getRentalBasicSchema(t), [t]);
@@ -34,6 +42,7 @@ export function RentalBasicStep({ onSubmit, defaultValues }: RentalBasicStepProp
     defaultValues: {
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
+      is_active: defaultValues?.is_active || "active",
     },
   });
 
@@ -80,6 +89,34 @@ export function RentalBasicStep({ onSubmit, defaultValues }: RentalBasicStepProp
               </FormItem>
             )}
           />
+
+          {isEditMode && (
+            <FormField
+              control={form.control}
+              name="is_active"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("dashboard.addRental.basic.statusLabel")}</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="active">
+                        {t("dashboard.addRental.basic.statusActive")}
+                      </SelectItem>
+                      <SelectItem value="inactive">
+                        {t("dashboard.addRental.basic.statusInactive")}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
         </div>
       </form>
     </Form>

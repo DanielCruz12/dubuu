@@ -133,8 +133,13 @@ export function BookingsDataTable() {
       // Si hay un error (como 404), establecemos un array vacío
       setBookingsData([]);
     } else if (bookings) {
-      // Si hay datos, los usamos
-      setBookingsData(bookings);
+      // Sort from most recent to oldest
+      const sorted = [...bookings].sort((a, b) => {
+        const dateA = new Date(a.createdAt).getTime();
+        const dateB = new Date(b.createdAt).getTime();
+        return dateB - dateA;
+      });
+      setBookingsData(sorted);
     }
   }, [bookings, bookingsError]);
 

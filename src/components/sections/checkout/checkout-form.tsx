@@ -261,6 +261,7 @@ export default function CheckoutForm({
         if (bookingData.duiBackFile) formData.append("dui_back", bookingData.duiBackFile);
         if (bookingData.licenseFrontFile) formData.append("license_front", bookingData.licenseFrontFile);
         if (bookingData.licenseBackFile) formData.append("license_back", bookingData.licenseBackFile);
+        if (bookingData.pickup_notes) formData.append("pickup_notes", bookingData.pickup_notes);
 
         try {
           const response = await createBlinkPayment(formData).unwrap();
@@ -343,6 +344,7 @@ export default function CheckoutForm({
           if (bookingData.duiBackFile) formData.append("dui_back", bookingData.duiBackFile);
           if (bookingData.licenseFrontFile) formData.append("license_front", bookingData.licenseFrontFile);
           if (bookingData.licenseBackFile) formData.append("license_back", bookingData.licenseBackFile);
+          if (bookingData.pickup_notes) formData.append("pickup_notes", bookingData.pickup_notes);
 
           await createBooking(formData).unwrap();
         } else {
