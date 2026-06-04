@@ -8,6 +8,17 @@ const API_BASE =
   process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ||
   "http://localhost:3002";
 
+const CDN_BASE =
+  process.env.NEXT_PUBLIC_CDN_BASE_URL?.replace(/\/$/, "")
+  || "https://www.dubuu.com";
+
+function absoluteImageUrl(src: string | null | undefined): string | null {
+  const trimmed = (src ?? "").trim();
+  if (!trimmed) return null;
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `${CDN_BASE}/${trimmed.replace(/^\//, "")}`;
+}
+
 interface SeoProduct {
   name: string;
   description: string;
@@ -61,7 +72,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const imageUrl = product.banner?.trim() || null;
   const fallbackImage = "https://www.dubuu.com/og-image.jpg";
   const cacheBust = product.updated_at
     ? `?v=${encodeURIComponent(product.updated_at)}`
@@ -69,43 +79,71 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   let title = product.name;
   let description = "";
+  let priceAmount: number | null = null;
+  let priceCurrency = "USD";
+  let priceStr = "";
 
   if (isRental(product) && product.rental) {
     const r = product.rental;
     const headerParts = [r.brand, r.model, r.year].filter(Boolean);
     const header = headerParts.length > 0 ? headerParts.join(" ") : product.name;
-    title = header;
 
-    const pricePerDay =
-      Number(r.price_per_day) || Number(product.price) || 0;
-    const priceStr =
-      pricePerDay > 0 ? `Desde $${pricePerDay}/día` : "";
-    const shortDesc = (product.description ?? "").replace(/\s+/g, " ").trim().substring(0, 100);
-    description = [header, priceStr, shortDesc].filter(Boolean).join(" — ");
+    priceAmount = Number(r.price_per_day) || Number(product.price) || 0;
+    if (priceAmount > 0) {
+      priceStr = `Desde $${priceAmount}/día`;
+      title = `${header} — ${priceStr}`;
+    } else {
+      title = header;
+    }
+
+    const shortDesc = (product.description ?? "").replace(/\s+/g, " ").trim().substring(0, 120);
+    description = [priceStr, shortDesc].filter(Boolean).join(" — ");
   } else if (isTour(product) && product.tour) {
     const prices = (product.tour.tour_dates ?? [])
       .map((d) => Number(d?.price))
       .filter((n) => Number.isFinite(n) && n > 0);
-    const minPrice =
+    priceAmount =
       prices.length > 0
         ? Math.min(...prices)
         : Number(product.price) || 0;
-    const priceStr =
-      minPrice > 0 ? `Desde $${minPrice}/persona` : "";
-    const shortDesc = (product.description ?? "").replace(/\s+/g, " ").trim().substring(0, 100);
+
+    if (priceAmount > 0) {
+      priceStr = `Desde $${priceAmount}/persona`;
+      title = `${product.name} — ${priceStr}`;
+    }
+
+    const shortDesc = (product.description ?? "").replace(/\s+/g, " ").trim().substring(0, 120);
     description = [priceStr, shortDesc].filter(Boolean).join(" — ");
   } else {
     description = (product.description ?? "").replace(/\s+/g, " ").trim().substring(0, 160);
   }
 
   const canonicalUrl = `https://www.dubuu.com/home/${params.slug}/${params.id}`;
-  const resolvedImage = imageUrl
-    ? `${imageUrl}${cacheBust}`
-    : fallbackImage;
+  const rawImage = absoluteImageUrl(product.banner) || fallbackImage;
+  const resolvedImage = rawImage.includes("?") ? rawImage : `${rawImage}${cacheBust}`;
+
+  const ogImages = [
+    {
+      url: resolvedImage,
+      width: 1200,
+      height: 630,
+      alt: title,
+    },
+  ];
+
+  const other: Record<string, string> = {};
+  if (priceAmount !== null && priceAmount > 0) {
+    // Open Graph product price (used by Facebook/WhatsApp)
+    other["og:price:amount"] = String(priceAmount);
+    other["og:price:currency"] = priceCurrency;
+    other["product:price.amount"] = String(priceAmount);
+    other["product:price.currency"] = priceCurrency;
+  }
 
   return {
     title,
     description,
+    other: Object.keys(other).length > 0 ? other : undefined,
     openGraph: {
       title,
       description,
@@ -113,14 +151,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       siteName: "Dubuu",
       locale: "es_SV",
       type: "website",
-      images: [
-        {
-          url: resolvedImage,
-          width: 1200,
-          height: 630,
-          alt: title,
-        },
-      ],
+      images: ogImages,
     },
     twitter: {
       card: "summary_large_image",

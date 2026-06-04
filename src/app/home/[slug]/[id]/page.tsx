@@ -263,29 +263,29 @@ export default function ProductBooking() {
       const header = [r.brand, r.model, r.year]
         .filter(Boolean)
         .join(" ");
-      const price =
+      const priceFmt =
         displayPrice > 0
-          ? `${symbol}${convert(displayPrice)}/${t("home.bookingForm.perDay")}`
+          ? `Desde ${symbol}${convert(displayPrice)}/${t("home.bookingForm.perDay")}`
           : "";
+      const titleWithPrice = priceFmt ? `${header || product.name} — ${priceFmt}` : (header || product.name);
       return {
-        title: header || product.name,
+        title: titleWithPrice,
         url,
-        description: [header, price, shortDesc]
-          .filter(Boolean)
-          .join("\n"),
+        description: [priceFmt, shortDesc].filter(Boolean).join(" — "),
         image: withCacheKey(product.banner ?? "", product.updated_at),
       };
     }
 
     if (isTour) {
-      const price =
+      const priceFmt =
         displayPrice > 0
-          ? `${symbol}${convert(displayPrice)}/${t("home.bookingForm.perPerson")}`
+          ? `Desde ${symbol}${convert(displayPrice)}/${t("home.bookingForm.perPerson")}`
           : "";
+      const titleWithPrice = priceFmt ? `${product.name} — ${priceFmt}` : product.name;
       return {
-        title: product.name,
+        title: titleWithPrice,
         url,
-        description: [price, shortDesc].filter(Boolean).join("\n"),
+        description: [priceFmt, shortDesc].filter(Boolean).join(" — "),
         image: withCacheKey(product.banner ?? "", product.updated_at),
       };
     }
