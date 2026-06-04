@@ -335,7 +335,6 @@
     "pickupLocation": "Pickup location",
     "dropoffLocation": "Dropoff location",
     "pickupNotes": "Pickup notes",
-    "dropoffNotes": "Dropoff notes",
     "userNotes": "Client message",
     "noNotes": "No notes",
     "documents": "Documents",
@@ -519,8 +518,7 @@
       "pickupLocation": "Pickup location",
       "details": "Details",
       "notes": "Notes",
-      "pickupNotes": "Pickup notes",
-      "dropoffNotes": "Dropoff notes"
+      "pickupNotes": "Pickup notes"
     },
     "status": {
       "pending": "Pending",

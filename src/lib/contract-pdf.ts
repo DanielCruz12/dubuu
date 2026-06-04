@@ -45,7 +45,7 @@ function t(lang: Lang) {
     fuel: { es: "Combustible", en: "Fuel" },
     transmission: { es: "Transmisión", en: "Transmission" },
     engine: { es: "Motor", en: "Engine" },
-    rentalDetails: { es: "Detalles de la Renta", en: "Rental Details" },
+    rentalDetails: { es: "Detalles del Alquiler", en: "Rental Details" },
     pickup: { es: "Recogida", en: "Pickup" },
     dropoff: { es: "Devolución", en: "Dropoff" },
     pickupLoc: { es: "Lugar de recogida", en: "Pickup location" },

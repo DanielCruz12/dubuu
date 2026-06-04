@@ -1,7 +1,12 @@
-export const metadata = {
-  title: "Términos y Condiciones",
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: {
+    default: "Términos y Condiciones",
+    template: "%s",
+  },
   description:
-    "Estos Términos y Condiciones rigen el uso de Dubuu, incluyendo servicios, registro, seguridad, procesamiento de pagos y más.",
+    "Estos Términos y Condiciones rigen el uso de Dubuu, incluyendo servicios, registro, seguridad, procesamiento de pagos y más. | These Terms and Conditions govern the use of Dubuu, including services, registration, security, payment processing and more.",
 };
 
 export default function TermsLayout({

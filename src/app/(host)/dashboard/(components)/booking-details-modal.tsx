@@ -39,18 +39,67 @@ function useIsDesktopMd(): boolean {
 function DocumentImage({
   src,
   alt,
+  onOpen,
 }: {
   src: string;
   alt: string;
+  onOpen: () => void;
 }) {
   return (
-    <div className="overflow-hidden rounded-lg border bg-muted/30">
+    <button
+      type="button"
+      onClick={onOpen}
+      className="overflow-hidden rounded-lg border bg-muted/30 w-full cursor-pointer hover:opacity-90 transition-opacity"
+    >
       <img
         src={src}
         alt={alt}
         className="h-48 w-full object-contain"
         loading="lazy"
       />
+    </button>
+  );
+}
+
+function ImageLightbox({
+  src,
+  alt,
+  open,
+  onClose,
+}: {
+  src: string;
+  alt: string;
+  open: boolean;
+  onClose: () => void;
+}) {
+  if (!open) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center"
+      onClick={onClose}
+    >
+      <button
+        type="button"
+        onClick={onClose}
+        className="absolute top-2 right-2 z-10 text-white opacity-90 bg-black/40 rounded-full p-1.5 hover:opacity-100 transition-opacity"
+        aria-label="Close"
+      >
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <line x1="5" y1="5" x2="15" y2="15" />
+          <line x1="15" y1="5" x2="5" y2="15" />
+        </svg>
+      </button>
+      <div
+        className="w-full h-full max-h-screen overflow-auto touch-auto flex items-center justify-center"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <img
+          src={src}
+          alt={alt}
+          className="max-w-[95vw] max-h-[95vh] object-contain"
+        />
+      </div>
     </div>
   );
 }
@@ -90,6 +139,7 @@ export function BookingDetailsModal({
 }: BookingDetailsModalProps) {
   const { t, language } = useLanguage();
   const isDesktop = useIsDesktopMd();
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
   const locale = language === "es" ? "es" : "en";
   const dateFormat =
     language === "es" ? "DD/MM/YYYY h:mm A" : "MM/DD/YYYY h:mm A";
@@ -125,8 +175,8 @@ export function BookingDetailsModal({
           {isRental ? t("dashboard.clientDetails.rentalDetails") : t("dashboard.clientDetails.tourDetails")}
         </h3>
         <div className="rounded-lg border bg-muted/20 p-4 space-y-3">
-          {/* Status badge */}
-          <div className="flex items-center gap-2 mb-1">
+          {/* Status + Payment + Total */}
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
             <Badge variant="outline" className={`capitalize text-xs font-normal ${statusColor}`}>
               {displayStatus}
             </Badge>
@@ -136,6 +186,11 @@ export function BookingDetailsModal({
                 {paymentLabel}
               </Badge>
             )}
+            <span className="ml-auto text-base font-bold text-primary tabular-nums">
+              {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
+                Number.parseFloat(booking.total)
+              )}
+            </span>
           </div>
           <div>
             <p className="text-xs text-muted-foreground">{t("dashboard.products.filters.product")}</p>
@@ -196,22 +251,6 @@ export function BookingDetailsModal({
             </>
           )}
 
-          <div className="flex items-start gap-2">
-            <CreditCard className="h-4 w-4 mt-0.5 text-primary shrink-0" />
-            <div>
-              <p className="text-xs text-muted-foreground">{t("home.bookingStatus.paymentMethod")}</p>
-              <p className="text-sm font-medium">{paymentLabel}</p>
-            </div>
-          </div>
-
-          <div>
-            <p className="text-xs text-muted-foreground">{t("home.bookingStatus.total")}</p>
-            <p className="text-lg font-bold text-primary">
-              {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
-                Number.parseFloat(booking.total)
-              )}
-            </p>
-          </div>
         </div>
       </div>
 
@@ -250,10 +289,6 @@ export function BookingDetailsModal({
               <p className="text-xs text-muted-foreground">{t("dashboard.clientDetails.pickupNotes")}</p>
               <p className="text-sm font-medium">{booking.pickup_notes || t("dashboard.clientDetails.noNotes")}</p>
             </div>
-            <div>
-              <p className="text-xs text-muted-foreground">{t("dashboard.clientDetails.dropoffNotes")}</p>
-              <p className="text-sm font-medium">{booking.dropoff_notes || t("dashboard.clientDetails.noNotes")}</p>
-            </div>
           </div>
         </div>
       )}
@@ -269,7 +304,7 @@ export function BookingDetailsModal({
               {documents.map((doc) => (
                 <div key={doc.label}>
                   <p className="text-xs text-muted-foreground mb-1">{doc.label}</p>
-                  <DocumentImage src={doc.src!} alt={doc.label} />
+                  <DocumentImage src={doc.src!} alt={doc.label} onOpen={() => setLightboxSrc(doc.src!)} />
                 </div>
               ))}
             </div>
@@ -285,31 +320,51 @@ export function BookingDetailsModal({
 
   if (isDesktop) {
     return (
-      <Dialog open={open} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-xl gap-0 overflow-hidden p-0 pt-6">
-          <DialogHeader className="px-6 pb-2 text-left">
-            <DialogTitle>{t("dashboard.clientDetails.title")}</DialogTitle>
-            <DialogDescription className="sr-only">
-              {t("dashboard.clientDetails.description")}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="px-6 pb-6">{content}</div>
-        </DialogContent>
-      </Dialog>
+      <>
+        <Dialog open={open} onOpenChange={onClose}>
+          <DialogContent className="sm:max-w-xl gap-0 overflow-hidden p-0 pt-6">
+            <DialogHeader className="px-6 pb-2 text-left">
+              <DialogTitle>{t("dashboard.clientDetails.title")}</DialogTitle>
+              <DialogDescription className="sr-only">
+                {t("dashboard.clientDetails.description")}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="px-6 pb-6">{content}</div>
+          </DialogContent>
+        </Dialog>
+        {lightboxSrc && (
+          <ImageLightbox
+            src={lightboxSrc}
+            alt="Document"
+            open={!!lightboxSrc}
+            onClose={() => setLightboxSrc(null)}
+          />
+        )}
+      </>
     );
   }
 
   return (
-    <Sheet open={open} onOpenChange={onClose}>
-      <SheetContent
-        side="bottom"
-        className="rounded-t-[1.25rem] max-h-[min(88dvh,600px)] w-full px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-6"
-      >
-        <SheetHeader className="pb-4 text-left space-y-1">
-          <SheetTitle className="text-lg">{t("dashboard.clientDetails.title")}</SheetTitle>
-        </SheetHeader>
-        {content}
-      </SheetContent>
-    </Sheet>
+    <>
+      <Sheet open={open} onOpenChange={onClose}>
+        <SheetContent
+          side="bottom"
+          className="rounded-t-[1.25rem] max-h-[min(88dvh,600px)] w-full px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-6"
+        >
+          <SheetHeader className="pb-4 text-left space-y-1">
+            <SheetTitle className="text-lg">{t("dashboard.clientDetails.title")}</SheetTitle>
+          </SheetHeader>
+          {content}
+        </SheetContent>
+      </Sheet>
+      {lightboxSrc && (
+        <ImageLightbox
+          src={lightboxSrc}
+          alt="Document"
+          open={!!lightboxSrc}
+          onClose={() => setLightboxSrc(null)}
+        />
+      )}
+    </>
   );
 }

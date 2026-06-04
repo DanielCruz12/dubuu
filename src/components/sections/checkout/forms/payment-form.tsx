@@ -154,7 +154,7 @@ function PaymentMethodRadioList({
 export default function PaymentMethodForm() {
   const { t } = useLanguage();
   const { control, watch, setValue } = useFormContext<CheckoutFormValues>();
-  const [paymentTab, setPaymentTab] = useState("blink");
+  const [paymentTab, setPaymentTab] = useState("credit");
   const [pickerOpen, setPickerOpen] = useState(false);
   const isDesktop = useIsDesktopMd();
 

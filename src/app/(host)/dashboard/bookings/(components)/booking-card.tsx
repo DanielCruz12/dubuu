@@ -69,8 +69,7 @@ export function BookingCard({
   const displayStatus =
     statusText[uiStatus as keyof typeof statusText] || status;
 
-  const hasNotes =
-    booking.pickup_notes || booking.dropoff_notes;
+  const hasNotes = booking.pickup_notes;
 
   return (
     <Card className="overflow-hidden">
@@ -195,12 +194,6 @@ export function BookingCard({
                   <p>
                     <span className="font-medium">{t("dashboard.bookings.table.pickupNotes")}:</span>{" "}
                     {booking.pickup_notes}
-                  </p>
-                )}
-                {booking.dropoff_notes && (
-                  <p>
-                    <span className="font-medium">{t("dashboard.bookings.table.dropoffNotes")}:</span>{" "}
-                    {booking.dropoff_notes}
                   </p>
                 )}
               </AccordionContent>
