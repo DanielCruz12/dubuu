@@ -5,6 +5,7 @@ type Props = {
 };
 
 const API_BASE =
+  process.env.BACKEND_URL?.replace(/\/$/, "") ||
   process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ||
   "http://localhost:3002";
 
