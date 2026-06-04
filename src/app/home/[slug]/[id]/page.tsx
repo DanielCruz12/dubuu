@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Armchair,
@@ -250,6 +250,62 @@ export default function ProductBooking() {
   const hasRentalDetail = isRentalProductComplete(product);
   const displayPrice = getProductDisplayPrice(product);
 
+  const shareData = useMemo(() => {
+    const url =
+      typeof window !== "undefined" ? window.location.href : "";
+    const shortDesc = (product.description ?? "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .substring(0, 80);
+
+    if (isRental && isRentalProduct(product)) {
+      const r = product.rental;
+      const header = [r.brand, r.model, r.year]
+        .filter(Boolean)
+        .join(" ");
+      const price =
+        displayPrice > 0
+          ? `${symbol}${convert(displayPrice)}/${t("home.bookingForm.perDay")}`
+          : "";
+      return {
+        title: header || product.name,
+        url,
+        description: [header, price, shortDesc]
+          .filter(Boolean)
+          .join("\n"),
+        image: withCacheKey(product.banner ?? "", product.updated_at),
+      };
+    }
+
+    if (isTour) {
+      const price =
+        displayPrice > 0
+          ? `${symbol}${convert(displayPrice)}/${t("home.bookingForm.perPerson")}`
+          : "";
+      return {
+        title: product.name,
+        url,
+        description: [price, shortDesc].filter(Boolean).join("\n"),
+        image: withCacheKey(product.banner ?? "", product.updated_at),
+      };
+    }
+
+    return {
+      title: product.name,
+      url,
+      description: (product.description ?? "").substring(0, 100) + "...",
+      image: withCacheKey(product.banner ?? "", product.updated_at),
+    };
+  }, [
+    product,
+    isRental,
+    isTour,
+    displayPrice,
+    symbol,
+    convert,
+    t,
+  ]);
+
   // Show the latest booking status card (completed or in-process) unless user is rebooking
   const showBookingStatusCard = !!existingBooking && !showBookingFormAgain;
 
@@ -281,10 +337,10 @@ export default function ProductBooking() {
             </h1>
             <div className="flex items-center gap-2 flex-shrink-0">
               <ShareModal
-                title={product?.name}
-                url={typeof window !== "undefined" ? window.location.href : ""}
-                description={product?.description?.substring(0, 100) + "..."}
-                image={withCacheKey(product?.banner ?? "", product?.updated_at)}
+                title={shareData.title}
+                url={shareData.url}
+                description={shareData.description}
+                image={shareData.image}
               />
               <Button
                 variant="ghost"
