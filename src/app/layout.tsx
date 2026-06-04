@@ -48,6 +48,9 @@ export const metadata: Metadata = {
       "es-SV": "https://www.dubuu.com",
     },
   },
+  other: {
+    "fb:app_id": process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || "",
+  },
   openGraph: {
     type: "website",
     locale: "es_SV",
@@ -106,43 +109,7 @@ export default async function RootLayout({
             content="width=device-width, initial-scale=1.0"
           />
           <link rel="icon" href="https://www.dubuu.com/icon.svg" />
-          <meta name="dubuu" content="dubuu" />
-
-          {/* ✅ Meta tags actualizados con imagen JPG */}
-          <meta property="og:type" content="website" />
-          <meta property="og:url" content="https://www.dubuu.com" />
-          <meta
-            property="og:title"
-            content="Dubuu - Experiencias de Viaje Únicas en El Salvador y Centroamérica"
-          />
-          <meta
-            property="og:description"
-            content="Diseñamos experiencias únicas de viaje en El Salvador y Centroamérica. Tours de lujo, alquiler de vehículos premium y propiedades exclusivas para viajeros exigentes."
-          />
-          <meta
-            property="og:image"
-            content="https://www.dubuu.com/og-image.jpg"
-          />
-          <meta property="og:image:width" content="1200" />
-          <meta property="og:image:height" content="630" />
-          <meta property="og:image:type" content="image/jpeg" />
-
-          {/* ✅ Twitter Card habilitado */}
-          <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:site" content="@Dubuu_sv" />
-          <meta name="twitter:creator" content="@Dubuu_sv" />
-          <meta
-            name="twitter:title"
-            content="Dubuu - Experiencias de Viaje Únicas en El Salvador y Centroamérica"
-          />
-          <meta
-            name="twitter:description"
-            content="Diseñamos experiencias únicas de viaje en El Salvador y Centroamérica. Tours de lujo, alquiler de vehículos premium y propiedades exclusivas para viajeros exigentes."
-          />
-          <meta
-            name="twitter:image"
-            content="https://www.dubuu.com/og-image.jpg"
-          />
+          <meta property="fb:app_id" content={process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || ""} />
 
           <Script
             id="metadata"

@@ -33,7 +33,11 @@
       "Bash(Select-Object -First 1)",
       "Bash(Select-Object -Last 10)",
       "Bash(Select-String -Path \"C:\\\\Users\\\\daniel\\\\Desktop\\\\projects\\\\personal_work\\\\projects\\\\dantours-drizzle-nodejs\\\\drizzle\\\\meta\\\\0021_snapshot.json\" -Pattern \"public.products\" -Context 0,5)",
-      "Bash(Select-Object -First 3)"
+      "Bash(Select-Object -First 3)",
+      "Bash(dir /s /b \"C:\\\\Users\\\\daniel\\\\Desktop\\\\projects\\\\personal_work\\\\projects\\\\dubuu\\\\backend*\")",
+      "Bash(dir /s /b \"C:\\\\Users\\\\daniel\\\\Desktop\\\\projects\\\\personal_work\\\\projects\\\\dubuu\\\\server*\")",
+      "Bash(dir C:\\\\Users\\\\daniel\\\\Desktop\\\\projects\\\\personal_work\\\\projects\\\\dubuu *)",
+      "Bash(dir C:\\\\Users\\\\daniel\\\\Desktop\\\\projects\\\\personal_work\\\\projects\\\\dubuu\\\\src\\\\app\\\\home *)"
     ]
   }
 }
