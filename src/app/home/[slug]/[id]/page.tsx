@@ -33,7 +33,7 @@ import { SignInButton, useUser } from "@clerk/nextjs";
 import ProductsSkeleton from "@/components/skeletons/product-skeleton";
 import { Badge } from "@/components/ui/badge";
 import { AmenityChip } from "@/components/amenity-chip";
-import type { IProduct } from "@/types/product";
+import type { IProduct, ITourProduct } from "@/types/product";
 import type { BookingFormData } from "@/types/booking";
 import ProductDetails from "@/components/sections/product-details";
 import CheckoutForm from "@/components/sections/checkout/checkout-form";
@@ -224,9 +224,9 @@ export default function ProductBooking() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const isTour = isProductType(product, "tours");
-  const isRental = isRentalProduct(product);
-  const displayPrice = getProductDisplayPrice(product);
+  const isTour = product ? isProductType(product, "tours") : false;
+  const isRental = product ? isRentalProduct(product) : false;
+  const displayPrice = product ? getProductDisplayPrice(product) : 0;
 
   const shareData = useMemo(() => {
     const url =
@@ -488,8 +488,8 @@ export default function ProductBooking() {
                 <LocationMap
                   title={t("home.landing.productDetail.departurePoint")}
                   product={product}
-                  latitude={isTour ? product.tour.lat : 0}
-                  longitude={isTour ? product.tour.long : 0}
+                  latitude={isTour ? (product as ITourProduct).tour.lat : 0}
+                  longitude={isTour ? (product as ITourProduct).tour.long : 0}
                   zoom={15}
                 />
               </div>
@@ -845,8 +845,8 @@ export default function ProductBooking() {
           <LocationMap
             product={product}
             title={t("home.landing.productDetail.departurePoint")}
-            latitude={isTour ? product.tour.lat : 0}
-            longitude={isTour ? product.tour.long : 0}
+            latitude={isTour ? (product as ITourProduct).tour.lat : 0}
+            longitude={isTour ? (product as ITourProduct).tour.long : 0}
             zoom={15}
           />
         </div>
