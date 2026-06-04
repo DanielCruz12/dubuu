@@ -132,6 +132,8 @@
 		"docNotesPlaceholder": "Add a message for the host about your reservation...",
 		"minHoursWarning": "Rental must be at least 24 hours.",
 		"minHoursError": "The minimum rental period is 24 hours.",
+		"rangeAdjustedWarning": "Your range was adjusted: some dates are already booked.",
+		"bookedBadge": "Booked",
 		"changeLocation": "Change location",
 		"locationLabel": "Addresses",
 		"locationModalTitle": "Pickup & drop-off locations",

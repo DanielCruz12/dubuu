@@ -132,6 +132,8 @@
 		"docNotesPlaceholder": "Agrega un mensaje para el anfitrión sobre tu reserva...",
 		"minHoursWarning": "El alquiler debe ser de al menos 24 horas.",
 		"minHoursError": "El período mínimo de alquiler es de 24 horas.",
+		"rangeAdjustedWarning": "Tu rango fue ajustado: algunas fechas ya están reservadas.",
+		"bookedBadge": "Reservado",
 		"changeLocation": "Cambiar ubicación",
 		"locationLabel": "Direcciones",
 		"locationModalTitle": "Lugares de recogida y entrega",

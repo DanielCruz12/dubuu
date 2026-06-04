@@ -293,7 +293,7 @@ export function ContractChecklistDrawer({
       await createChecklist(payload).unwrap();
       console.timeEnd("saveDriver-apiMutation");
 
-      toast(t("dashboard.contractChecklist.checklistSaved"), {
+      toast.success(t("dashboard.contractChecklist.checklistSaved"), {
         description:
           type === "OUT"
             ? t("dashboard.contractChecklist.contractActive")

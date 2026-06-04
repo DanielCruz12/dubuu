@@ -309,13 +309,61 @@ export default function RentalBookingForm({
 
   const bookedSet = useMemo(() => expandBookedDaysFromRental(r), [r]);
 
-  const isDisabledDay = useCallback(
+  const isBookedDay = useCallback(
     (date: Date) => {
       const d = startOfDay(date);
-      if (d < minDate || d > maxNavDate) return true;
+      if (d < minDate || d > maxNavDate) return false;
       return bookedSet.has(dateKey(d));
     },
     [minDate, maxNavDate, bookedSet],
+  );
+
+  const handleRangeSelect = useCallback(
+    (selected: DateRange | undefined) => {
+      if (!selected) {
+        setRange(undefined);
+        return;
+      }
+      const { from, to } = selected;
+      if (!from) {
+        setRange(undefined);
+        return;
+      }
+      // Don't allow selecting a booked day as start
+      if (bookedSet.has(dateKey(from))) return;
+
+      if (!to) {
+        // First click — set from only
+        setRange({ from, to: undefined });
+        return;
+      }
+
+      // Scan for booked dates between from and to
+      let firstBlocked: Date | null = null;
+      let d = startOfDay(from);
+      const end = startOfDay(to);
+      while (d <= end) {
+        if (bookedSet.has(dateKey(d))) {
+          firstBlocked = d;
+          break;
+        }
+        d = addDays(d, 1);
+      }
+
+      if (firstBlocked) {
+        const snappedTo = addDays(firstBlocked, -1);
+        if (snappedTo <= from) {
+          // The very next day is booked — no valid end date
+          setRange({ from, to: undefined });
+        } else {
+          setRange({ from, to: snappedTo });
+        }
+        toast.warning(t("home.rentalBooking.rangeAdjustedWarning"));
+      } else {
+        setRange({ from, to });
+      }
+    },
+    [bookedSet, t],
   );
 
   const pickup = range?.from;
@@ -441,12 +489,17 @@ export default function RentalBookingForm({
           fullWidth
           mode="range"
           selected={range}
-          onSelect={setRange}
+          onSelect={handleRangeSelect}
           locale={locale}
           defaultMonth={range?.from || minDate}
           fromDate={minDate}
           toDate={maxNavDate}
-          disabled={isDisabledDay}
+          disabled={isBookedDay}
+          modifiers={{ booked: isBookedDay }}
+          modifiersClassNames={{
+            booked:
+              "relative !text-red-500/80 !line-through !opacity-100 dark:!text-red-400/80 after:absolute after:inset-x-0.5 after:top-1/2 after:h-px after:bg-red-400/60 after:rotate-[-12deg] dark:after:bg-red-400/50",
+          }}
           numberOfMonths={1}
           className="w-full max-w-none p-1 sm:p-2"
         />

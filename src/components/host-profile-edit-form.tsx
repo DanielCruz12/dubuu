@@ -224,17 +224,18 @@ const HostProfileEditForm = forwardRef<
             resolve(true);
             return;
           }
-          void form.handleSubmit(
-            async (values) => {
-              try {
-                await persistHostProfile(values);
-                resolve(true);
-              } catch {
-                resolve(false);
-              }
-            },
-            () => resolve(false),
-          )();
+          form.trigger().then(async (isValid) => {
+            if (!isValid) {
+              resolve(false);
+              return;
+            }
+            try {
+              await persistHostProfile(form.getValues());
+              resolve(true);
+            } catch {
+              resolve(false);
+            }
+          });
         }),
     }),
     [form, hasRole, persistHostProfile],
