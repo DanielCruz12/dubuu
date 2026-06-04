@@ -224,6 +224,74 @@ export default function ProductBooking() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const isTour = isProductType(product, "tours");
+  const isRental = isRentalProduct(product);
+  const displayPrice = getProductDisplayPrice(product);
+
+  const shareData = useMemo(() => {
+    const url =
+      typeof window !== "undefined" ? window.location.href : "";
+    if (!product) {
+      return { title: "", url, description: "", image: "" };
+    }
+
+    const shortDesc = (product.description ?? "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .substring(0, 80);
+
+    // Derive values once to avoid TS narrowing product to never
+    const productName = product.name;
+    const productBanner = product.banner;
+    const productUpdatedAt = product.updated_at;
+    const productDescription = product.description;
+    const rental = isRentalProduct(product) ? product.rental : null;
+
+    if (isRental && rental) {
+      const header = [rental.brand, rental.model, rental.year]
+        .filter(Boolean)
+        .join(" ");
+      const priceFmt =
+        displayPrice > 0
+          ? `Desde ${symbol}${convert(displayPrice)}/${t("home.bookingForm.perDay")}`
+          : "";
+      return {
+        title: priceFmt ? `${header || productName} — ${priceFmt}` : (header || productName),
+        url,
+        description: [priceFmt, shortDesc].filter(Boolean).join(" — "),
+        image: withCacheKey(productBanner ?? "", productUpdatedAt),
+      };
+    }
+
+    if (isTour) {
+      const priceFmt =
+        displayPrice > 0
+          ? `Desde ${symbol}${convert(displayPrice)}/${t("home.bookingForm.perPerson")}`
+          : "";
+      return {
+        title: priceFmt ? `${productName} — ${priceFmt}` : productName,
+        url,
+        description: [priceFmt, shortDesc].filter(Boolean).join(" — "),
+        image: withCacheKey(productBanner ?? "", productUpdatedAt),
+      };
+    }
+
+    return {
+      title: productName,
+      url,
+      description: (productDescription ?? "").substring(0, 100) + "...",
+      image: withCacheKey(productBanner ?? "", productUpdatedAt),
+    };
+  }, [
+    product,
+    isRental,
+    isTour,
+    displayPrice,
+    symbol,
+    convert,
+    t,
+  ]);
+
   if (isLoading || isLoadingBooking) return <ProductsSkeleton />;
   if (isError || !product)
     return (
@@ -245,66 +313,7 @@ export default function ProductBooking() {
           return currentDate > latestDate ? current : latest;
         })
       : undefined;
-  const isTour = isProductType(product, "tours");
-  const isRental = isRentalProduct(product);
   const hasRentalDetail = isRentalProductComplete(product);
-  const displayPrice = getProductDisplayPrice(product);
-
-  const shareData = useMemo(() => {
-    const url =
-      typeof window !== "undefined" ? window.location.href : "";
-    const shortDesc = (product.description ?? "")
-      .replace(/\s+/g, " ")
-      .trim()
-      .substring(0, 80);
-
-    if (isRental && isRentalProduct(product)) {
-      const r = product.rental;
-      const header = [r.brand, r.model, r.year]
-        .filter(Boolean)
-        .join(" ");
-      const priceFmt =
-        displayPrice > 0
-          ? `Desde ${symbol}${convert(displayPrice)}/${t("home.bookingForm.perDay")}`
-          : "";
-      const titleWithPrice = priceFmt ? `${header || product.name} — ${priceFmt}` : (header || product.name);
-      return {
-        title: titleWithPrice,
-        url,
-        description: [priceFmt, shortDesc].filter(Boolean).join(" — "),
-        image: withCacheKey(product.banner ?? "", product.updated_at),
-      };
-    }
-
-    if (isTour) {
-      const priceFmt =
-        displayPrice > 0
-          ? `Desde ${symbol}${convert(displayPrice)}/${t("home.bookingForm.perPerson")}`
-          : "";
-      const titleWithPrice = priceFmt ? `${product.name} — ${priceFmt}` : product.name;
-      return {
-        title: titleWithPrice,
-        url,
-        description: [priceFmt, shortDesc].filter(Boolean).join(" — "),
-        image: withCacheKey(product.banner ?? "", product.updated_at),
-      };
-    }
-
-    return {
-      title: product.name,
-      url,
-      description: (product.description ?? "").substring(0, 100) + "...",
-      image: withCacheKey(product.banner ?? "", product.updated_at),
-    };
-  }, [
-    product,
-    isRental,
-    isTour,
-    displayPrice,
-    symbol,
-    convert,
-    t,
-  ]);
 
   // Show the latest booking status card (completed or in-process) unless user is rebooking
   const showBookingStatusCard = !!existingBooking && !showBookingFormAgain;

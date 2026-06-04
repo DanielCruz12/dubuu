@@ -80,7 +80,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   let title = product.name;
   let description = "";
   let priceAmount: number | null = null;
-  let priceCurrency = "USD";
+  const priceCurrency = "USD";
   let priceStr = "";
 
   if (isRental(product) && product.rental) {
