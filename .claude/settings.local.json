@@ -30,7 +30,10 @@
       "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 50)",
       "Bash(Get-Content \"C:\\\\Users\\\\daniel\\\\Desktop\\\\projects\\\\personal_work\\\\projects\\\\dubuu\\\\src\\\\app\\\\\\(host\\)\\\\dashboard\\\\bookings\\\\\\(columns\\)\\\\columns.tsx\" -Raw)",
       "Bash(Select-String -Pattern \"cell: \\\\\\(\\\\{\" -Context 0,20)",
-      "Bash(Select-Object -First 1)"
+      "Bash(Select-Object -First 1)",
+      "Bash(Select-Object -Last 10)",
+      "Bash(Select-String -Path \"C:\\\\Users\\\\daniel\\\\Desktop\\\\projects\\\\personal_work\\\\projects\\\\dantours-drizzle-nodejs\\\\drizzle\\\\meta\\\\0021_snapshot.json\" -Pattern \"public.products\" -Context 0,5)",
+      "Bash(Select-Object -First 3)"
     ]
   }
 }

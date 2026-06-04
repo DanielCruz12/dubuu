@@ -5,6 +5,7 @@ import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { RentalActionCell } from "../(components)/rental-action-cell";
+import { RentalActiveCell } from "../(components)/rental-active-cell";
 import type { IRentalProduct } from "@/types/rental";
 import { cn } from "@/lib/utils";
 
@@ -117,18 +118,31 @@ export function getRentalColumns(
       },
     },
     {
+      id: "is_active",
+      header: t("dashboard.products.rentalTable.active"),
+      cell: ({ row }) => (
+        <div className="flex justify-center">
+          <RentalActiveCell product={row.original} />
+        </div>
+      ),
+    },
+    {
       accessorKey: "is_approved",
       header: t("dashboard.products.table.status"),
       cell: ({ row }) => {
-        const isActive = row.getValue("is_approved") as boolean;
-        const statusLabel = isActive
+        const isApproved = row.getValue("is_approved") as boolean;
+        const statusLabel = isApproved
           ? t("dashboard.products.table.approved")
           : t("dashboard.products.table.pending");
         return (
           <div className={TABLE_CELL_MAX}>
             <Badge
-              variant={isActive ? "default" : "destructive"}
-              className="max-w-full truncate"
+              variant={isApproved ? "outline" : "destructive"}
+              className={cn(
+                "max-w-full truncate",
+                isApproved &&
+                  "text-green-700 border-green-200 dark:text-green-400 dark:border-green-800",
+              )}
               title={statusLabel}
             >
               {statusLabel}

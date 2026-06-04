@@ -126,7 +126,14 @@ export function HostRentalCard({ product, onDeleted }: HostRentalCardProps) {
                   <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />
                   {formattedRating}
                 </span>
-                <Badge variant={product.is_approved ? "default" : "destructive"} className="text-[10px]">
+                <Badge
+                  variant={product.is_approved ? "outline" : "destructive"}
+                  className={
+                    product.is_approved
+                      ? "text-[10px] text-green-700 border-green-200 dark:text-green-400 dark:border-green-800"
+                      : "text-[10px]"
+                  }
+                >
                   {product.is_approved
                     ? t("dashboard.products.table.approved")
                     : t("dashboard.products.table.pending")}

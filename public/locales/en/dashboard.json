@@ -93,7 +93,12 @@
         "pickCategory": "Choose a category",
         "pickType": "Choose a type",
         "pickAtLeastOneLanguage": "Choose at least one language",
-        "loadFailed": "Could not load profile"
+        "loadFailed": "Could not load profile",
+        "min1Specialty": "Select at least 1 specialty",
+        "max3Specialty": "Maximum 3 specialties",
+        "min1ExperienceTypes": "Select at least 1 type",
+        "max3ExperienceTypes": "Maximum 3 types",
+        "required": "This field is required"
       }
     }
   },
@@ -391,7 +396,12 @@
       "year": "Year",
       "pricePerDay": "Price / day",
       "listing": "Listing",
-      "plate": "Plate"
+      "plate": "Plate",
+      "active": "Active",
+      "deactivateTitle": "Deactivate product?",
+      "deactivateDescription": "This product will no longer appear in the listings and users won't be able to make bookings. You can reactivate it at any time.",
+      "deactivate": "Deactivate",
+      "cancel": "Cancel"
     },
     "table": {
       "id": "ID",

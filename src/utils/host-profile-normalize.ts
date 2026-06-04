@@ -118,7 +118,10 @@ export function normalizeHostPublicProfile(raw: unknown): HostPublicProfile {
       if (d.length) return d;
 
       // Nuevo formato backend: campos planos (snake_case).
-      const specialty = str(pick("specialty"), "").trim();
+      const specialtyRaw = pick("specialty");
+      const specialty = Array.isArray(specialtyRaw)
+        ? specialtyRaw.map((x: unknown) => String(x).trim()).filter(Boolean).join(", ")
+        : str(specialtyRaw, "").trim();
       const expSummary = str(pick("experience_summary"), "").trim();
       const hostingStyle = str(pick("hosting_style"), "").trim();
       const out: HostProfileDetail[] = [];

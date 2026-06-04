@@ -93,7 +93,12 @@
         "pickCategory": "Elige una categoría",
         "pickType": "Elige un tipo",
         "pickAtLeastOneLanguage": "Elige al menos un idioma",
-        "loadFailed": "No se pudo cargar el perfil"
+        "loadFailed": "No se pudo cargar el perfil",
+        "min1Specialty": "Selecciona al menos 1 especialidad",
+        "max3Specialty": "Máximo 3 especialidades",
+        "min1ExperienceTypes": "Selecciona al menos 1 tipo",
+        "max3ExperienceTypes": "Máximo 3 tipos",
+        "required": "Este campo es obligatorio"
       }
     }
   },
@@ -391,7 +396,12 @@
       "year": "Año",
       "pricePerDay": "Precio / día",
       "listing": "Publicación",
-      "plate": "Placa"
+      "plate": "Placa",
+      "active": "Activo",
+      "deactivateTitle": "¿Desactivar publicación?",
+      "deactivateDescription": "Este producto ya no aparecerá en las listas y los usuarios no podrán hacer reservas. Puedes reactivarlo en cualquier momento.",
+      "deactivate": "Desactivar",
+      "cancel": "Cancelar"
     },
     "table": {
       "id": "ID",

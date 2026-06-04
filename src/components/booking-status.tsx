@@ -139,7 +139,7 @@ export function BookingStatus({
     companyName: "Dubuu",
     companyLogo: "/logo.svg",
     companyAddress: "El Salvador, La Libertad",
-    companyPhone: "+503 64562432",
+    companyPhone: "+503 6456-2432",
     companyEmail: "support@dubuu.com",
     companyWebsite: "https://www.dubuu.com",
     qrValue: `https://www.dubuu.com/booking/${id.slice(0, 13)}`,

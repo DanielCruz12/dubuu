@@ -112,7 +112,7 @@ export function BookingDetails({
     companyName: "Dubuu",
     companyLogo: "/logo.svg",
     companyAddress: "El Salvador, La Libertad",
-    companyPhone: "+503 64562432",
+    companyPhone: "+503 6456-2432",
     companyEmail: "support@dubuu.com",
     companyWebsite: "https://www.dubuu.com",
     qrValue: `https://www.dubuu.com/booking/${booking.id.slice(0, 13)}`,
@@ -262,7 +262,15 @@ export function BookingDetails({
                         </p>
                         <p className="text-muted-foreground">
                           {booking.pickup_time && booking.dropoff_time
-                            ? moment(booking.dropoff_time).diff(moment(booking.pickup_time), "days") + 1 + " " + t("dashboard.bookingDetails.days")
+                            ? (() => {
+                                const totalHours = moment(booking.dropoff_time).diff(moment(booking.pickup_time), "hours", true);
+                                const fullDays = Math.floor(totalHours / 24);
+                                const extraHours = Math.ceil(totalHours % 24);
+                                const parts = [];
+                                if (fullDays > 0) parts.push(`${fullDays} ${t("dashboard.bookingDetails.days")}`);
+                                if (extraHours > 0) parts.push(`${extraHours}h`);
+                                return parts.length > 0 ? parts.join(" + ") : "—";
+                              })()
                             : "—"}
                         </p>
                       </div>

@@ -47,13 +47,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -67,16 +60,16 @@ function getHostProfileFormSchema(t: (key: string) => string) {
       .url(t("dashboard.profile.hostProfile.errors.validUrl"))
       .optional()
       .or(z.literal("")),
-    intro: z.string(),
-    descripcion: z.string(),
+    intro: z.string().min(1, t("dashboard.profile.hostProfile.errors.required")),
+    descripcion: z.string().min(1, t("dashboard.profile.hostProfile.errors.required")),
     anosExperiencia: z.coerce
       .number()
       .int()
       .min(0, t("dashboard.profile.hostProfile.errors.min0"))
       .max(80, t("dashboard.profile.hostProfile.errors.max80")),
-    especialidad: z.string().max(200).optional().or(z.literal("")),
-    tipoExperiencias: z.string().max(200).optional().or(z.literal("")),
-    estilo: z.string().max(500).optional().or(z.literal("")),
+    especialidad: z.array(z.string()).min(1, t("dashboard.profile.hostProfile.errors.min1Specialty")).max(3, t("dashboard.profile.hostProfile.errors.max3Specialty")),
+    tipoExperiencias: z.array(z.string()).min(1, t("dashboard.profile.hostProfile.errors.min1ExperienceTypes")).max(3, t("dashboard.profile.hostProfile.errors.max3ExperienceTypes")),
+    estilo: z.string().min(1, t("dashboard.profile.hostProfile.errors.required")).max(500),
     idiomas: z.array(z.string()).max(12).default([]),
   });
 }
@@ -102,8 +95,16 @@ function profileToFormValues(
     intro: profile.intro ?? "",
     descripcion: profile.descripcion ?? "",
     anosExperiencia: profile.anosExperiencia ?? 0,
-    especialidad: detailValue(profile, "specialty"),
-    tipoExperiencias: detailValue(profile, "experience_types"),
+    especialidad: detailValue(profile, "specialty")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean),
+    tipoExperiencias: profile.tiposExperiencia?.length
+      ? profile.tiposExperiencia
+      : detailValue(profile, "experience_types")
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean),
     estilo: detailValue(profile, "style"),
     idiomas,
   };
@@ -159,8 +160,8 @@ const HostProfileEditForm = forwardRef<
       intro: "",
       descripcion: "",
       anosExperiencia: 0,
-      especialidad: "",
-      tipoExperiencias: "",
+      especialidad: [],
+      tipoExperiencias: [],
       estilo: "",
       idiomas: ["Español"],
     },
@@ -175,8 +176,8 @@ const HostProfileEditForm = forwardRef<
       }
       const clerkImageUrl =
         userLoaded && user?.imageUrl?.trim() ? user.imageUrl.trim() : undefined;
-      const tipoName = values.tipoExperiencias?.trim();
-      const tiposExperiencia = tipoName ? [tipoName] : [];
+      const specialtyArr = values.especialidad.length ? values.especialidad : undefined;
+      const tipoArr = values.tipoExperiencias.length ? values.tipoExperiencias : undefined;
       const body = {
         locale: language,
         user_id: userId ?? undefined,
@@ -184,10 +185,10 @@ const HostProfileEditForm = forwardRef<
         intro: values.intro.trim() || undefined,
         description: values.descripcion.trim() || undefined,
         years_experience: values.anosExperiencia,
-        specialty: values.especialidad?.trim() || undefined,
-        experience_summary: tipoName || undefined,
+        specialty: specialtyArr,
+        experience_summary: values.tipoExperiencias.join(", ") || undefined,
         hosting_style: values.estilo?.trim() || undefined,
-        experience_tags: tiposExperiencia,
+        experience_tags: tipoArr,
         languages: values.idiomas,
       };
       const patched = await patchProfile({ token, body }).unwrap();
@@ -244,40 +245,46 @@ const HostProfileEditForm = forwardRef<
     void loadProfile();
   }, [authLoaded, userId, hasRole, loadProfile]);
 
-  const orphanCategory = useMemo(() => {
-    if (!loadedProfile) return null;
-    const v = detailValue(loadedProfile, "specialty").trim();
-    if (!v) return null;
-    if (!categories.length) return v;
-    return categoryNames.has(v) ? null : v;
+  const orphanCategories = useMemo(() => {
+    if (!loadedProfile) return [];
+    const raw = detailValue(loadedProfile, "specialty").trim();
+    if (!raw) return [];
+    const items = raw.split(",").map((s) => s.trim()).filter(Boolean);
+    if (!categories.length) return items;
+    return items.filter((item) => !categoryNames.has(item));
   }, [loadedProfile, categories.length, categoryNames]);
 
-  const orphanType = useMemo(() => {
-    if (!loadedProfile) return null;
-    const v = detailValue(loadedProfile, "experience_types").trim();
-    if (!v) return null;
-    if (!productTypes.length) return v;
-    return typeNames.has(v) ? null : v;
+  const orphanTypes = useMemo(() => {
+    if (!loadedProfile) return [];
+    const raw = detailValue(loadedProfile, "experience_types").trim();
+    if (!raw) return [];
+    const items = raw.split(",").map((s) => s.trim()).filter(Boolean);
+    if (!productTypes.length) return items;
+    return items.filter((item) => !typeNames.has(item));
   }, [loadedProfile, productTypes.length, typeNames]);
 
   useEffect(() => {
     if (!loadedProfile) return;
     if (!loadingCategories && categories.length) {
-      const v = form.getValues("especialidad")?.trim();
-      const valid =
-        !!v &&
-        (categoryNames.has(v) ||
-          (orphanCategory !== null && v === orphanCategory));
-      if (!valid && categories[0]) {
-        form.setValue("especialidad", categories[0].name);
+      const arr = form.getValues("especialidad") || [];
+      const valid = arr.filter(
+        (v) => categoryNames.has(v) || orphanCategories.includes(v),
+      );
+      if (valid.length === 0 && categories[0]) {
+        form.setValue("especialidad", [categories[0].name]);
+      } else if (valid.length < arr.length) {
+        form.setValue("especialidad", valid);
       }
     }
     if (!loadingTypes && productTypes.length) {
-      const v = form.getValues("tipoExperiencias")?.trim();
-      const valid =
-        !!v && (typeNames.has(v) || (orphanType !== null && v === orphanType));
-      if (!valid && productTypes[0]) {
-        form.setValue("tipoExperiencias", productTypes[0].name);
+      const arr = form.getValues("tipoExperiencias") || [];
+      const valid = arr.filter(
+        (v) => typeNames.has(v) || orphanTypes.includes(v),
+      );
+      if (valid.length === 0 && productTypes[0]) {
+        form.setValue("tipoExperiencias", [productTypes[0].name]);
+      } else if (valid.length < arr.length) {
+        form.setValue("tipoExperiencias", valid);
       }
     }
   }, [
@@ -288,8 +295,8 @@ const HostProfileEditForm = forwardRef<
     productTypes,
     categoryNames,
     typeNames,
-    orphanCategory,
-    orphanType,
+    orphanCategories,
+    orphanTypes,
     form,
   ]);
 
@@ -477,31 +484,79 @@ const HostProfileEditForm = forwardRef<
               <FormLabel className="text-xs">
                 {t("dashboard.profile.hostProfile.specialtyLabel")}
               </FormLabel>
-              <Select
-                disabled={loadingCategories || !categories.length}
-                value={field.value}
-                onValueChange={field.onChange}
-              >
-                <FormControl>
-                  <SelectTrigger className="text-sm h-9">
-                    <SelectValue
-                      placeholder={t("dashboard.profile.hostProfile.specialtyPlaceholder")}
-                    />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {orphanCategory ? (
-                    <SelectItem value={orphanCategory}>
-                      {orphanCategory}
-                    </SelectItem>
-                  ) : null}
-                  {categories.map((c) => (
-                    <SelectItem key={c.id} value={c.name}>
-                      {c.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={loadingCategories || !categories.length}
+                      className="h-9 w-full justify-between font-normal text-sm px-3"
+                    >
+                      <span className="truncate text-left">
+                        {field.value.length
+                          ? field.value.join(", ")
+                          : t("dashboard.profile.hostProfile.specialtyPlaceholder")}
+                      </span>
+                      <ChevronDown className="h-4 w-4 shrink-0 opacity-60" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="start"
+                  className="w-[min(100%,var(--radix-popover-trigger-width))] p-2"
+                >
+                  <div className="flex flex-col gap-0.5 max-h-60 overflow-y-auto">
+                    {orphanCategories.map((name) => (
+                      <label
+                        key={name}
+                        className="flex cursor-pointer items-center gap-2 rounded-sm px-2 py-2 text-sm hover:bg-accent"
+                      >
+                        <Checkbox
+                          checked={field.value.includes(name)}
+                          onCheckedChange={(c) => {
+                            if (c === true) {
+                              if (field.value.length >= 3) return;
+                              field.onChange([...field.value, name]);
+                            } else {
+                              if (field.value.length <= 1) return;
+                              field.onChange(
+                                field.value.filter((v) => v !== name),
+                              );
+                            }
+                          }}
+                        />
+                        <span>{name}</span>
+                      </label>
+                    ))}
+                    {categories.map((c) => {
+                      const checked = field.value.includes(c.name);
+                      return (
+                        <label
+                          key={c.id}
+                          className="flex cursor-pointer items-center gap-2 rounded-sm px-2 py-2 text-sm hover:bg-accent"
+                        >
+                          <Checkbox
+                            checked={checked}
+                            onCheckedChange={(checked) => {
+                              if (checked === true) {
+                                if (field.value.length >= 3) return;
+                                field.onChange([...field.value, c.name]);
+                              } else {
+                                if (field.value.length <= 1) return;
+                                field.onChange(
+                                  field.value.filter((v) => v !== c.name),
+                                );
+                              }
+                            }}
+                          />
+                          <span>{c.name}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </PopoverContent>
+              </Popover>
               <FormMessage />
             </FormItem>
           )}
@@ -514,31 +569,78 @@ const HostProfileEditForm = forwardRef<
               <FormLabel className="text-xs">
                 {t("dashboard.profile.hostProfile.experienceTypeLabel")}
               </FormLabel>
-              <Select
-                disabled={loadingTypes || !productTypes.length}
-                value={field.value}
-                onValueChange={field.onChange}
-              >
-                <FormControl>
-                  <SelectTrigger className="text-sm h-9">
-                    <SelectValue
-                      placeholder={t(
-                        "dashboard.profile.hostProfile.experienceTypePlaceholder",
-                      )}
-                    />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {orphanType ? (
-                    <SelectItem value={orphanType}>{orphanType}</SelectItem>
-                  ) : null}
-                  {productTypes.map((c) => (
-                    <SelectItem key={c.id} value={c.name}>
-                      {c.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={loadingTypes || !productTypes.length}
+                      className="h-9 w-full justify-between font-normal text-sm px-3"
+                    >
+                      <span className="truncate text-left">
+                        {field.value.length
+                          ? field.value.join(", ")
+                          : t(
+                              "dashboard.profile.hostProfile.experienceTypePlaceholder",
+                            )}
+                      </span>
+                      <ChevronDown className="h-4 w-4 shrink-0 opacity-60" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="start"
+                  className="w-[min(100%,var(--radix-popover-trigger-width))] p-2"
+                >
+                  <div className="flex flex-col gap-0.5 max-h-60 overflow-y-auto">
+                    {orphanTypes.map((name) => (
+                      <label key={name} className="flex cursor-pointer items-center gap-2 rounded-sm px-2 py-2 text-sm hover:bg-accent">
+                        <Checkbox
+                          checked={field.value.includes(name)}
+                          onCheckedChange={(c) => {
+                            if (c === true) {
+                              if (field.value.length >= 3) return;
+                              field.onChange([...field.value, name]);
+                            } else {
+                              if (field.value.length <= 1) return;
+                              field.onChange(
+                                field.value.filter((v) => v !== name),
+                              );
+                            }
+                          }}
+                        />
+                        <span>{name}</span>
+                      </label>
+                    ))}
+                    {productTypes.map((c) => {
+                      const checked = field.value.includes(c.name);
+                      return (
+                        <label
+                          key={c.id}
+                          className="flex cursor-pointer items-center gap-2 rounded-sm px-2 py-2 text-sm hover:bg-accent"
+                        >
+                          <Checkbox
+                            checked={checked}
+                            onCheckedChange={(checked) => {
+                              if (checked === true) {
+                                if (field.value.length >= 3) return;
+                                field.onChange([...field.value, c.name]);
+                              } else {
+                                if (field.value.length <= 1) return;
+                                field.onChange(
+                                  field.value.filter((v) => v !== c.name),
+                                );
+                              }
+                            }}
+                          />
+                          <span>{c.name}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </PopoverContent>
+              </Popover>
               <FormMessage />
             </FormItem>
           )}

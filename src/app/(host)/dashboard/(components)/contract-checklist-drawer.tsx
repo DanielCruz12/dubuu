@@ -20,6 +20,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
@@ -402,57 +403,30 @@ export function ContractChecklistDrawer({
 
       <div className="space-y-1">
         {CHECKLIST_FIELDS.map(({ key }) => (
-          <div
+          <label
             key={key}
-            className="flex items-center gap-2 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted/50"
+            className="flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted/50 cursor-pointer"
           >
+            <Switch
+              checked={fields[key]}
+              onCheckedChange={() => toggleField(key)}
+              className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-red-500"
+            />
+
+            <span className="flex-1 text-sm font-medium">{fieldLabel(key)}</span>
+
             <button
               type="button"
-              onClick={() => toggleField(key)}
-              className="flex flex-1 items-center gap-3 text-left"
+              onClick={(e) => { e.stopPropagation(); openObservation(key); }}
+              className={cn(
+                "rounded p-1 transition-colors hover:bg-muted",
+                observations[key] ? "text-primary" : "text-muted-foreground",
+              )}
+              title={t("dashboard.contractChecklist.addObservation")}
             >
-              <span className="text-sm font-medium">{fieldLabel(key)}</span>
+              <MessageCircle className="h-4 w-4" />
             </button>
-
-            <div className="flex shrink-0 items-center gap-1">
-              <button
-                type="button"
-                onClick={() => setFields((p) => ({ ...p, [key]: true }))}
-                className={cn(
-                  "rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors",
-                  fields[key]
-                    ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400"
-                    : "bg-muted text-muted-foreground",
-                )}
-              >
-                SI
-              </button>
-              <button
-                type="button"
-                onClick={() => setFields((p) => ({ ...p, [key]: false }))}
-                className={cn(
-                  "rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors",
-                  !fields[key]
-                    ? "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400"
-                    : "bg-muted text-muted-foreground",
-                )}
-              >
-                NO
-              </button>
-
-              <button
-                type="button"
-                onClick={(e) => { e.stopPropagation(); openObservation(key); }}
-                className={cn(
-                  "ml-1 rounded p-1 transition-colors hover:bg-muted",
-                  observations[key] ? "text-primary" : "text-muted-foreground",
-                )}
-                title={t("dashboard.contractChecklist.addObservation")}
-              >
-                <MessageCircle className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
+          </label>
         ))}
       </div>
     </div>

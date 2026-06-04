@@ -1,8 +1,24 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { toast } from "sonner";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
 import { Country } from "@/types/payment-types";
 import { countries } from "@/utils/data";
+
+const COMPANY_PHONE = "+503 6456-2432";
+
+export function formatPhoneNumber(phone?: string | null): string {
+  if (!phone) return "—";
+  const parsed = parsePhoneNumberFromString(phone);
+  if (!parsed) return phone;
+  const national = parsed.nationalNumber;
+  const formatted = national.replace(/^(\d{4})(\d+)$/, "$1-$2");
+  return `+${parsed.countryCallingCode} ${formatted}`;
+}
+
+export function getCompanyPhone(): string {
+  return COMPANY_PHONE;
+}
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

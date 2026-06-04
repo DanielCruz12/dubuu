@@ -136,7 +136,7 @@ export function getToursColumns(
         if (ds) {
           const variant =
             ds === "active"
-              ? "default"
+              ? "outline"
               : ds === "cancelled"
                 ? "destructive"
                 : "secondary";
@@ -145,7 +145,11 @@ export function getToursColumns(
             <div className={TABLE_CELL_MAX}>
               <Badge
                 variant={variant}
-                className="max-w-full truncate"
+                className={cn(
+                  "max-w-full truncate",
+                  ds === "active" &&
+                    "text-green-700 border-green-200 dark:text-green-400 dark:border-green-800",
+                )}
                 title={label}
               >
                 {label}
@@ -160,8 +164,12 @@ export function getToursColumns(
         return (
           <div className={TABLE_CELL_MAX}>
             <Badge
-              variant={isActive ? "default" : "destructive"}
-              className="max-w-full truncate"
+              variant={isActive ? "outline" : "destructive"}
+              className={cn(
+                "max-w-full truncate",
+                isActive &&
+                  "text-green-700 border-green-200 dark:text-green-400 dark:border-green-800",
+              )}
               title={visLabel}
             >
               {visLabel}
@@ -174,15 +182,19 @@ export function getToursColumns(
       accessorKey: "is_approved",
       header: t("dashboard.products.table.status"),
       cell: ({ row }) => {
-        const isActive = row.getValue("is_approved") as boolean;
-        const statusLabel = isActive
+        const isApproved = row.getValue("is_approved") as boolean;
+        const statusLabel = isApproved
           ? t("dashboard.products.table.approved")
           : t("dashboard.products.table.pending");
         return (
           <div className={TABLE_CELL_MAX}>
             <Badge
-              variant={isActive ? "default" : "destructive"}
-              className="max-w-full truncate"
+              variant={isApproved ? "outline" : "destructive"}
+              className={cn(
+                "max-w-full truncate",
+                isApproved &&
+                  "text-green-700 border-green-200 dark:text-green-400 dark:border-green-800",
+              )}
               title={statusLabel}
             >
               {statusLabel}

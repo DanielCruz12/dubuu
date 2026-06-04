@@ -153,7 +153,7 @@ function drawPage1(
   let yPos = companyInfoStartY;
   doc.text("El Salvador, La Libertad", 10, yPos);
   yPos += 5;
-  doc.text("Tel: +503 64562432", 10, yPos);
+  doc.text("Tel: +503 6456-2432", 10, yPos);
   yPos += 5;
   doc.text("Email: support@dubuu.com", 10, yPos);
   yPos += 5;

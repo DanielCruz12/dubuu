@@ -42,7 +42,7 @@ export function PostCard({
   return (
     <article
       className={cn(
-        "group flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-white/20 hover:shadow-2xl lg:flex-row",
+        "group flex flex-col overflow-hidden rounded-3xl border border-border/50 bg-card backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:border-primary/20 hover:shadow-2xl lg:flex-row",
         className,
       )}
     >
@@ -64,7 +64,7 @@ export function PostCard({
         {category ? (
           <Badge
             variant="outline"
-            className="absolute left-4 top-4 border-emerald-500/30 bg-emerald-500/10 text-emerald-300 backdrop-blur-md"
+            className="absolute left-4 top-4 border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 backdrop-blur-md"
           >
             {category}
           </Badge>
@@ -75,12 +75,12 @@ export function PostCard({
       <div className="flex min-w-0 flex-1 flex-col p-4 sm:p-5 lg:p-8">
         {/* AUTHOR */}
         <div className="mb-4 flex items-center gap-3">
-          <Avatar className="h-9 w-9 border border-white/10">
+          <Avatar className="h-9 w-9 border border-border/50">
             {author.avatar ? (
               <AvatarImage src={author.avatar} alt={author.name} />
             ) : null}
 
-            <AvatarFallback className="bg-white/10 text-xs font-semibold ">
+            <AvatarFallback className="bg-muted text-xs font-semibold ">
               {initials || "?"}
             </AvatarFallback>
           </Avatar>
@@ -88,18 +88,18 @@ export function PostCard({
           <div className="min-w-0">
             <p className="truncate text-sm font-medium ">{author.name}</p>
 
-            <time className="text-xs text-zinc-500">{date}</time>
+            <time className="text-xs text-muted-foreground">{date}</time>
           </div>
         </div>
 
         {/* TITLE */}
-        <h2 className="mb-3 line-clamp-2 break-words text-base font-semibold leading-snug tracking-tight  transition-colors duration-300 group-hover:text-zinc-100 sm:text-lg lg:text-2xl">
+        <h2 className="mb-3 line-clamp-2 break-words text-base font-semibold leading-snug tracking-tight  transition-colors duration-300 group-hover:text-foreground sm:text-lg lg:text-2xl">
           {title}
         </h2>
 
         {/* EXCERPT */}
         {excerpt ? (
-          <p className="mb-5 line-clamp-3 break-words text-sm leading-relaxed text-zinc-400 sm:text-[15px]">
+          <p className="mb-5 line-clamp-3 break-words text-sm leading-relaxed text-muted-foreground sm:text-[15px]">
             {excerpt}
           </p>
         ) : (
@@ -107,8 +107,8 @@ export function PostCard({
         )}
 
         {/* FOOTER */}
-        <div className="mt-auto flex items-center justify-between gap-3 border-t border-white/10 pt-4">
-          <span className="text-xs text-zinc-500 sm:text-sm">{readTime}</span>
+        <div className="mt-auto flex items-center justify-between gap-3 border-t border-border/50 pt-4">
+          <span className="text-xs text-muted-foreground sm:text-sm">{readTime}</span>
 
           <span className="inline-flex items-center gap-1 text-sm font-medium  transition-transform duration-300 group-hover:translate-x-1">
             {t("blog.readArticle")}

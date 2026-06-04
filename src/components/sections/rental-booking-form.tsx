@@ -6,7 +6,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   addDays,
   addYears,
-  differenceInCalendarDays,
   format,
   parseISO,
   startOfDay,
@@ -114,25 +113,31 @@ function expandBookedDaysFromRental(
   return set;
 }
 
-function rentalDaysInclusive(from: Date, to: Date): number {
-  const a = startOfDay(from);
-  const b = startOfDay(to);
-  return Math.max(1, differenceInCalendarDays(b, a) + 1);
-}
-
-function getRentalHours(
-  pickup: Date,
-  dropoff: Date,
+function calculateRentalPricing(
+  pickupDate: Date,
+  dropoffDate: Date,
   pickupTime: string,
   returnTime: string,
-): number {
+  pricePerDay: number,
+): { fullDays: number; extraHours: number; total: number } {
   const [ph, pm] = pickupTime.split(":").map(Number);
   const [rh, rm] = returnTime.split(":").map(Number);
-  const start = new Date(pickup);
+  const start = new Date(pickupDate);
   start.setHours(ph, pm, 0, 0);
-  const end = new Date(dropoff);
+  const end = new Date(dropoffDate);
   end.setHours(rh, rm, 0, 0);
-  return (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+
+  const totalHours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+  const fullDays = Math.floor(totalHours / 24);
+  const extraHours = Math.ceil(totalHours % 24);
+  const pricePerHour = pricePerDay / 24;
+  const total = fullDays * pricePerDay + extraHours * pricePerHour;
+
+  return {
+    fullDays,
+    extraHours,
+    total: parseFloat(total.toFixed(2)),
+  };
 }
 
 function useIsDesktopMd(): boolean {
@@ -316,17 +321,26 @@ export default function RentalBookingForm({
   const pickup = range?.from;
   const dropoff = range?.to;
 
-  const days = useMemo(() => {
-    if (!pickup || !dropoff) return 0;
-    if (dropoff < pickup) return 0;
-    return rentalDaysInclusive(pickup, dropoff);
-  }, [pickup, dropoff]);
+  const pricing = useMemo(() => {
+    if (!pickup || !dropoff || dropoff < pickup || !validPrice) {
+      return { fullDays: 0, extraHours: 0, total: 0 };
+    }
+    return calculateRentalPricing(pickup, dropoff, pickupTime, returnTime, pricePerDay);
+  }, [pickup, dropoff, pickupTime, returnTime, pricePerDay, validPrice]);
 
-  const estimatedTotal = validPrice && days > 0 ? pricePerDay * days : 0;
+  const days = pricing.fullDays;
+  const extraHours = pricing.extraHours;
+  const estimatedTotal = pricing.total;
 
   const insufficientHours = useMemo(() => {
     if (!pickup || !dropoff) return false;
-    return getRentalHours(pickup, dropoff, pickupTime, returnTime) < 24;
+    const [ph, pm] = pickupTime.split(":").map(Number);
+    const [rh, rm] = returnTime.split(":").map(Number);
+    const start = new Date(pickup);
+    start.setHours(ph, pm, 0, 0);
+    const end = new Date(dropoff);
+    end.setHours(rh, rm, 0, 0);
+    return (end.getTime() - start.getTime()) / (1000 * 60 * 60) < 24;
   }, [pickup, dropoff, pickupTime, returnTime]);
 
   const rangeSummary = useMemo(() => {
@@ -866,7 +880,9 @@ export default function RentalBookingForm({
                 {t("home.rentalBooking.days")}
               </span>
               <span className="font-semibold tabular-nums">
-                {days > 0 ? days : "—"}
+                {pickup && dropoff && dropoff >= pickup
+                  ? `${days}${extraHours > 0 ? ` + ${extraHours}h` : ""}`
+                  : "—"}
               </span>
             </div>
             <div className="pt-3 border-t border-border dark:border-muted">
@@ -1004,7 +1020,7 @@ export default function RentalBookingForm({
                   </span>
                   <span className="truncate text-[11px] text-white/65">
                     {days > 0
-                      ? `${days} ${t("home.rentalBooking.days").toLowerCase()}`
+                      ? `${days} ${t("home.rentalBooking.days").toLowerCase()}${extraHours > 0 ? ` + ${extraHours}h` : ""}`
                       : ""}
                   </span>
                 </div>

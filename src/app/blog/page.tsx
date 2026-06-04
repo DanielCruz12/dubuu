@@ -30,12 +30,12 @@ export default function BlogPage() {
   const isBlogPage = pathname === "/blog";
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-black pb-24 pt-8 md:pt-12">
+    <div className="min-h-screen overflow-x-hidden bg-background pb-24 pt-8 md:pt-12">
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* HEADER */}
         {isBlogPage && (
           <header className="mb-10 lg:mb-16">
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-1.5 text-xs font-medium text-zinc-400 backdrop-blur-md">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-border/50 bg-muted/30 px-4 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur-md">
               <Sparkles className="h-3.5 w-3.5 text-amber-400" aria-hidden />
               {t("blog.badge")}
             </div>
@@ -44,7 +44,7 @@ export default function BlogPage() {
               {t("blog.title")}
             </h3>
 
-            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-zinc-400 sm:text-base lg:text-lg">
+            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base lg:text-lg">
               {t("blog.subtitle")}
             </p>
           </header>
@@ -60,7 +60,7 @@ export default function BlogPage() {
                 {[1, 2, 3].map((i) => (
                   <div
                     key={i}
-                    className="overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-sm"
+                    className="overflow-hidden rounded-3xl border border-border/50 bg-muted/30 backdrop-blur-sm"
                   >
                     <div className="flex flex-col lg:flex-row">
                       <Skeleton className="h-[220px] w-full lg:w-[36%]" />
@@ -83,7 +83,7 @@ export default function BlogPage() {
                           <Skeleton className="h-4 w-[92%]" />
                         </div>
 
-                        <div className="mt-auto flex items-center justify-between border-t border-white/10 pt-5">
+                        <div className="mt-auto flex items-center justify-between border-t border-border/50 pt-5">
                           <Skeleton className="h-4 w-20" />
                           <Skeleton className="h-4 w-28" />
                         </div>
@@ -114,14 +114,14 @@ export default function BlogPage() {
 
             {/* EMPTY */}
             {!isLoading && !isError && visiblePosts.length === 0 && (
-              <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.02] p-12 text-center">
-                <Compass className="mx-auto mb-4 h-10 w-10 text-zinc-600" />
+              <div className="rounded-3xl border border-dashed border-border/50 bg-muted/20 p-12 text-center">
+                <Compass className="mx-auto mb-4 h-10 w-10 text-muted-foreground" />
 
-                <p className="text-lg font-medium text-white">
+                <p className="text-lg font-medium text-foreground">
                   {t("blog.noPosts")}
                 </p>
 
-                <p className="mt-1 text-zinc-500">{t("blog.noPostsSub")}</p>
+                <p className="mt-1 text-muted-foreground">{t("blog.noPostsSub")}</p>
               </div>
             )}
 
@@ -144,12 +144,12 @@ export default function BlogPage() {
           {/* SIDEBAR */}
           {isBlogPage && (
             <aside className="min-w-0 lg:pt-2">
-              <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 backdrop-blur-xl lg:sticky lg:top-24">
-                <h2 className="text-xl font-semibold tracking-tight text-white">
+              <div className="rounded-3xl border border-border/50 bg-muted/30 p-5 backdrop-blur-xl lg:sticky lg:top-24">
+                <h2 className="text-xl font-semibold tracking-tight text-foreground">
                   {t("blog.featured")}
                 </h2>
 
-                <p className="mt-2 text-sm text-zinc-500">
+                <p className="mt-2 text-sm text-muted-foreground">
                   {t("blog.featuredSubtitle")}
                 </p>
 
@@ -181,7 +181,7 @@ export default function BlogPage() {
                       {[1, 2].map((i) => (
                         <div
                           key={i}
-                          className="flex overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]"
+                          className="flex overflow-hidden rounded-2xl border border-border/50 bg-muted/30"
                         >
                           <Skeleton className="h-[110px] w-[38%] shrink-0 rounded-none" />
 

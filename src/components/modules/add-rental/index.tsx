@@ -91,7 +91,6 @@ function mapRentalProductToForm(p: IRentalProduct): {
     basic: {
       name: p.name,
       description: p.description,
-      is_active: p.is_active ? "active" : "inactive",
     },
     vehicle: {
       brand: r.brand,
@@ -234,9 +233,12 @@ function createRentalFormData(
   );
   data.append("available_from", avail.available_from);
   data.append("available_until", avail.available_until);
-  data.append("is_available", String(basic.is_active === "active"));
-  data.append("is_live", String(basic.is_active === "active"));
-  data.append("is_active", String(basic.is_active === "active"));
+
+  if (!opts?.isEditMode) {
+    data.append("is_available", "true");
+    data.append("is_live", "true");
+    data.append("is_active", "true");
+  }
 
   data.append("user_id", userId);
 

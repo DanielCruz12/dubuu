@@ -41,7 +41,7 @@ export interface HostProfilePatchBody {
   intro?: string | null;
   description?: string | null;
   years_experience?: number | null;
-  specialty?: string | null;
+  specialty?: string[] | null;
   experience_summary?: string | null;
   hosting_style?: string | null;
   experience_tags?: string[] | null;

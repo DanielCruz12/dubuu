@@ -13,7 +13,6 @@ export function getRentalBasicSchema(t: TFunction) {
     description: z
       .string()
       .min(20, { message: t("dashboard.addRental.basic.validation.descriptionMin") }),
-    is_active: z.enum(["active", "inactive"]).default("active"),
   });
 }
 

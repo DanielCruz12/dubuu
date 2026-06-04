@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/lib/i18n-context";
+import { formatPhoneNumber } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -233,7 +234,7 @@ export function BookingDetailsModal({
               <Phone className="h-3 w-3 inline mr-1" />
               {t("dashboard.clientDetails.phone")}
             </p>
-            <p className="text-sm font-medium">{booking.user?.phone_number ?? "—"}</p>
+            <p className="text-sm font-medium">{formatPhoneNumber(booking.user?.phone_number)}</p>
           </div>
         </div>
       </div>
