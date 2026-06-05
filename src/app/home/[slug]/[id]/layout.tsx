@@ -4,13 +4,11 @@ type Props = {
   params: { slug: string; id: string };
 };
 
-const SITE_ORIGIN = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "http://localhost:3000";
+const SITE_ORIGIN = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "http://localhost:3000";
 
-// Usamos el mismo proxy /backend que el resto de la app (client-side Redux, etc.)
-// Así no dependemos de que BACKEND_URL esté como env var en runtime
-const API_BASE = `${SITE_ORIGIN}/backend`;
+// BACKEND_URL = https://dubuu-api-node-online.online (configurada en Vercel)
+// En dev local no está definida, usamos el proxy /backend del propio Next.js
+const API_BASE = process.env.BACKEND_URL?.replace(/\/$/, "") || `${SITE_ORIGIN}/backend`;
 
 const CDN_BASE =
   process.env.NEXT_PUBLIC_CDN_BASE_URL?.replace(/\/$/, "")
@@ -52,13 +50,22 @@ interface SeoProduct {
 }
 
 async function fetchProduct(id: string): Promise<SeoProduct | null> {
+  const url = `${API_BASE}/api/v1/products/${id}?locale=es`;
+  console.log("[generateMetadata] fetchProduct URL:", url);
   try {
-    const res = await fetch(`${API_BASE}/api/v1/products/${id}?locale=es`, {
+    const res = await fetch(url, {
       next: { revalidate: 3600 },
     });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
+    console.log("[generateMetadata] fetchProduct status:", res.status, res.statusText);
+    if (!res.ok) {
+      console.warn("[generateMetadata] fetchProduct FAILED — status:", res.status);
+      return null;
+    }
+    const data = await res.json();
+    console.log("[generateMetadata] fetchProduct OK — name:", data?.name, "| banner:", data?.banner);
+    return data;
+  } catch (err) {
+    console.error("[generateMetadata] fetchProduct ERROR:", err);
     return null;
   }
 }
