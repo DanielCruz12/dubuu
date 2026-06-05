@@ -1,89 +1,16 @@
 import type { Metadata } from "next";
+import {
+  getProduct,
+  truncateText,
+  formatProductTitle,
+} from "@/lib/product-data";
 
 type Props = {
   params: { slug: string; id: string };
 };
 
-const SITE_ORIGIN = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "http://localhost:3000";
-
-// BACKEND_URL = https://dubuu-api-node-online.online (configurada en Vercel)
-// En dev local no está definida, usamos el proxy /backend del propio Next.js
-const API_BASE = process.env.BACKEND_URL?.replace(/\/$/, "") || `${SITE_ORIGIN}/backend`;
-
-const CDN_BASE =
-  process.env.NEXT_PUBLIC_CDN_BASE_URL?.replace(/\/$/, "")
-  || "https://www.dubuu.com";
-
-function absoluteImageUrl(src: string | null | undefined): string | null {
-  const trimmed = (src ?? "").trim();
-  if (!trimmed) return null;
-  if (/^https?:\/\//i.test(trimmed)) return trimmed;
-  return `${CDN_BASE}/${trimmed.replace(/^\//, "")}`;
-}
-
-function ogImageProxy(rawUrl: string): string {
-  const params = new URLSearchParams({ url: rawUrl, width: "1200", height: "630" });
-  return `${SITE_ORIGIN}/api/og-image?${params.toString()}`;
-}
-
-function truncateText(text: string, maxLen: number): string {
-  if (text.length <= maxLen) return text;
-  return text.substring(0, maxLen - 1) + "…";
-}
-
-interface SeoProduct {
-  name: string;
-  description: string;
-  banner: string;
-  price: number;
-  updated_at: string;
-  product_type: { name: string };
-  tour?: {
-    tour_dates: { price?: number }[];
-  };
-  rental?: {
-    brand: string;
-    model: string;
-    year: number;
-    price_per_day: string;
-  };
-}
-
-async function fetchProduct(id: string): Promise<SeoProduct | null> {
-  const url = `${API_BASE}/api/v1/products/${id}?locale=es`;
-  console.log("[generateMetadata] fetchProduct URL:", url);
-  try {
-    const res = await fetch(url, {
-      next: { revalidate: 3600 },
-    });
-    console.log("[generateMetadata] fetchProduct status:", res.status, res.statusText);
-    if (!res.ok) {
-      console.warn("[generateMetadata] fetchProduct FAILED — status:", res.status);
-      return null;
-    }
-    const data = await res.json();
-    console.log("[generateMetadata] fetchProduct OK — name:", data?.name, "| banner:", data?.banner);
-    return data;
-  } catch (err) {
-    console.error("[generateMetadata] fetchProduct ERROR:", err);
-    return null;
-  }
-}
-
-function isRental(p: SeoProduct) {
-  const name = p.product_type?.name?.toLowerCase() ?? "";
-  return name.includes("rental") || name.includes("alquiler") || !!p.rental;
-}
-
-function isTour(p: SeoProduct) {
-  const name = p.product_type?.name?.toLowerCase() ?? "";
-  return (
-    name === "tours" || name === "tour" || name === "viajes" || !!p.tour
-  );
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const product = await fetchProduct(params.id);
+  const product = await getProduct(params.id);
 
   if (!product) {
     return {
@@ -93,96 +20,44 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const fallbackImage = "https://www.dubuu.com/og-image.jpg";
-
-  let title = product.name;
-  let description = "";
-  let priceAmount: number | null = null;
+  const { title, priceStr, priceAmount } = formatProductTitle(product);
   const priceCurrency = "USD";
-  let priceStr = "";
 
-  if (isRental(product) && product.rental) {
-    const r = product.rental;
-    const headerParts = [r.brand, r.model, r.year].filter(Boolean);
-    const header = headerParts.length > 0 ? headerParts.join(" ") : product.name;
-
-    priceAmount = Number(r.price_per_day) || Number(product.price) || 0;
-    if (priceAmount > 0) {
-      priceStr = `Desde $${priceAmount}/día`;
-      title = `${header} — ${priceStr}`;
-    } else {
-      title = header;
-    }
-
-    const shortDesc = (product.description ?? "").replace(/\s+/g, " ").trim().substring(0, 120);
-    description = [priceStr, shortDesc].filter(Boolean).join(" — ");
-  } else if (isTour(product) && product.tour) {
-    const prices = (product.tour.tour_dates ?? [])
-      .map((d) => Number(d?.price))
-      .filter((n) => Number.isFinite(n) && n > 0);
-    priceAmount =
-      prices.length > 0
-        ? Math.min(...prices)
-        : Number(product.price) || 0;
-
-    if (priceAmount > 0) {
-      priceStr = `Desde $${priceAmount}/persona`;
-      title = `${product.name} — ${priceStr}`;
-    }
-
-    const shortDesc = (product.description ?? "").replace(/\s+/g, " ").trim().substring(0, 120);
-    description = [priceStr, shortDesc].filter(Boolean).join(" — ");
-  } else {
-    description = (product.description ?? "").replace(/\s+/g, " ").trim().substring(0, 160);
-  }
+  const shortDesc = (product.description ?? "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .substring(0, 120);
+  const description = truncateText(
+    [priceStr, shortDesc].filter(Boolean).join(" — "),
+    155,
+  );
 
   const canonicalUrl = `https://www.dubuu.com/home/${params.slug}/${params.id}`;
-  const rawImage = absoluteImageUrl(product.banner);
-  const resolvedImage = rawImage ? ogImageProxy(rawImage) : fallbackImage;
-
-  title = truncateText(title, 60);
-  description = truncateText(description, 155);
-
-  const ogImages = [
-    {
-      url: resolvedImage,
-      width: 1200,
-      height: 630,
-      alt: title,
-    },
-  ];
-
-  const other: Record<string, string> = {
-    "og:image": resolvedImage,
-    "og:image:width": "1200",
-    "og:image:height": "630",
-    "og:image:alt": title,
-  };
-  if (priceAmount !== null && priceAmount > 0) {
-    other["og:price:amount"] = String(priceAmount);
-    other["og:price:currency"] = priceCurrency;
-    other["product:price.amount"] = String(priceAmount);
-    other["product:price.currency"] = priceCurrency;
-  }
 
   return {
-    title,
+    title: truncateText(title, 60),
     description,
-    other,
+    other: {
+      ...(priceAmount !== null &&
+        priceAmount > 0 && {
+          "og:price:amount": String(priceAmount),
+          "og:price:currency": priceCurrency,
+          "product:price.amount": String(priceAmount),
+          "product:price.currency": priceCurrency,
+        }),
+    },
     openGraph: {
-      title,
+      title: truncateText(title, 60),
       description,
       url: canonicalUrl,
       siteName: "Dubuu",
       locale: "es_SV",
       type: "website",
-      images: ogImages,
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: truncateText(title, 60),
       description,
-      images: [resolvedImage],
       creator: "@Dubuu_sv",
       site: "@Dubuu_sv",
     },
