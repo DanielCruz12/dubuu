@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { cache, Suspense } from "react";
+import { cache } from "react";
 import { ProductBookingContent } from "./product-booking-content";
 
 // ---------------------------------------------------------------------------
@@ -141,17 +140,6 @@ export async function generateMetadata({
 // Page (Server Component)
 // ---------------------------------------------------------------------------
 
-export default async function ProductPage({ params }: PageProps) {
-  const { slug, id } = params;
-
-  const product = await getProduct(id);
-  console.log(slug);
-
-  if (!product) notFound();
-
-  return (
-    <Suspense>
-      <ProductBookingContent />
-    </Suspense>
-  );
+export default function ProductPage() {
+  return <ProductBookingContent />;
 }
