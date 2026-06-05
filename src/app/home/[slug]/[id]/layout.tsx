@@ -4,14 +4,13 @@ type Props = {
   params: { slug: string; id: string };
 };
 
-// En Vercel, usa la URL del propio proyecto; en local, usa localhost:3000
-// Las peticiones pasan por el rewrite /backend -> backend real
-const SITE_ORIGIN =
-  process.env.BACKEND_URL?.replace(/\/$/, "") ||
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-  "http://localhost:3000";
-  
-const API_BASE = SITE_ORIGIN;
+const SITE_ORIGIN = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "http://localhost:3000";
+
+// Usamos el mismo proxy /backend que el resto de la app (client-side Redux, etc.)
+// Así no dependemos de que BACKEND_URL esté como env var en runtime
+const API_BASE = `${SITE_ORIGIN}/backend`;
 
 const CDN_BASE =
   process.env.NEXT_PUBLIC_CDN_BASE_URL?.replace(/\/$/, "")
