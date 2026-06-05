@@ -23,6 +23,16 @@ function absoluteImageUrl(src: string | null | undefined): string | null {
   return `${CDN_BASE}/${trimmed.replace(/^\//, "")}`;
 }
 
+function ogImageProxy(rawUrl: string): string {
+  const params = new URLSearchParams({ url: rawUrl, width: "1200", height: "630" });
+  return `${SITE_ORIGIN}/api/og-image?${params.toString()}`;
+}
+
+function truncateText(text: string, maxLen: number): string {
+  if (text.length <= maxLen) return text;
+  return text.substring(0, maxLen - 1) + "…";
+}
+
 interface SeoProduct {
   name: string;
   description: string;
@@ -120,9 +130,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const canonicalUrl = `https://www.dubuu.com/home/${params.slug}/${params.id}`;
-  const rawImage = absoluteImageUrl(product.banner) || fallbackImage;
-  // No cache-busting on OG image — WhatsApp/Facebook may reject URLs with query params
-  const resolvedImage = rawImage;
+  const rawImage = absoluteImageUrl(product.banner);
+  const resolvedImage = rawImage ? ogImageProxy(rawImage) : fallbackImage;
+
+  title = truncateText(title, 60);
+  description = truncateText(description, 155);
 
   const ogImages = [
     {
@@ -134,7 +146,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   ];
 
   const other: Record<string, string> = {
-    // Explicit og:image as fallback (some scrapers need this)
     "og:image": resolvedImage,
     "og:image:width": "1200",
     "og:image:height": "630",
