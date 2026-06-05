@@ -37,7 +37,9 @@
       "Bash(dir /s /b \"C:\\\\Users\\\\daniel\\\\Desktop\\\\projects\\\\personal_work\\\\projects\\\\dubuu\\\\backend*\")",
       "Bash(dir /s /b \"C:\\\\Users\\\\daniel\\\\Desktop\\\\projects\\\\personal_work\\\\projects\\\\dubuu\\\\server*\")",
       "Bash(dir C:\\\\Users\\\\daniel\\\\Desktop\\\\projects\\\\personal_work\\\\projects\\\\dubuu *)",
-      "Bash(dir C:\\\\Users\\\\daniel\\\\Desktop\\\\projects\\\\personal_work\\\\projects\\\\dubuu\\\\src\\\\app\\\\home *)"
+      "Bash(dir C:\\\\Users\\\\daniel\\\\Desktop\\\\projects\\\\personal_work\\\\projects\\\\dubuu\\\\src\\\\app\\\\home *)",
+      "Bash(Select-Object -ExpandProperty Name)",
+      "Bash(Select-String \"tours\" -Context 1,1)"
     ]
   }
 }
