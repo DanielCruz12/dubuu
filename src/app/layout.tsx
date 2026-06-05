@@ -48,9 +48,6 @@ export const metadata: Metadata = {
       "es-SV": "https://www.dubuu.com",
     },
   },
-  other: {
-    "fb:app_id": process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || "",
-  },
   openGraph: {
     type: "website",
     locale: "es_SV",
@@ -109,7 +106,9 @@ export default async function RootLayout({
             content="width=device-width, initial-scale=1.0"
           />
           <link rel="icon" href="https://www.dubuu.com/icon.svg" />
-          <meta property="fb:app_id" content={process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || ""} />
+          {process.env.NEXT_PUBLIC_FACEBOOK_APP_ID ? (
+            <meta property="fb:app_id" content={process.env.NEXT_PUBLIC_FACEBOOK_APP_ID} />
+          ) : null}
 
           <Script
             id="metadata"

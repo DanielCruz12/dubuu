@@ -74,9 +74,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const fallbackImage = "https://www.dubuu.com/og-image.jpg";
-  const cacheBust = product.updated_at
-    ? `?v=${encodeURIComponent(product.updated_at)}`
-    : "";
 
   let title = product.name;
   let description = "";
@@ -121,7 +118,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const canonicalUrl = `https://www.dubuu.com/home/${params.slug}/${params.id}`;
   const rawImage = absoluteImageUrl(product.banner) || fallbackImage;
-  const resolvedImage = rawImage.includes("?") ? rawImage : `${rawImage}${cacheBust}`;
+  // No cache-busting on OG image — WhatsApp/Facebook may reject URLs with query params
+  const resolvedImage = rawImage;
 
   const ogImages = [
     {
@@ -132,9 +130,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
   ];
 
-  const other: Record<string, string> = {};
+  const other: Record<string, string> = {
+    // Explicit og:image as fallback (some scrapers need this)
+    "og:image": resolvedImage,
+    "og:image:width": "1200",
+    "og:image:height": "630",
+    "og:image:alt": title,
+  };
   if (priceAmount !== null && priceAmount > 0) {
-    // Open Graph product price (used by Facebook/WhatsApp)
     other["og:price:amount"] = String(priceAmount);
     other["og:price:currency"] = priceCurrency;
     other["product:price.amount"] = String(priceAmount);
@@ -144,7 +147,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     description,
-    other: Object.keys(other).length > 0 ? other : undefined,
+    other,
     openGraph: {
       title,
       description,
