@@ -1,9 +1,3 @@
-// app/home/layout.tsx
-export const metadata = {
-  title: "Home - dubuu",
-  description: "Your personalized travel dashboard",
-};
-
 export default function HomeLayout({
   children,
 }: {

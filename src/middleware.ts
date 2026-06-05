@@ -2,28 +2,6 @@ import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { clerkClient } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-// Bots y scrapers que DEBEN ver el HTML público sin ser redirigidos
-const BOT_USER_AGENTS = [
-  "facebookexternalhit",
-  "Facebot",
-  "Twitterbot",
-  "WhatsApp",
-  "TelegramBot",
-  "LinkedInBot",
-  "Discordbot",
-  "Slackbot",
-  "Googlebot",
-  "Bingbot",
-  "DuckDuckBot",
-  "Pinterest",
-];
-
-function isBot(userAgent: string | null): boolean {
-  if (!userAgent) return false;
-  const ua = userAgent.toLowerCase();
-  return BOT_USER_AGENTS.some((bot) => ua.includes(bot.toLowerCase()));
-}
-
 // Rutas públicas — cualquiera puede acceder sin autenticación
 const isPublicRoute = createRouteMatcher([
   "/",
@@ -52,13 +30,6 @@ const isHostRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
-  const userAgent = req.headers.get("user-agent");
-
-  // Los bots/scrapers pasan directo — no tienen cookies ni sesión
-  if (isBot(userAgent)) {
-    return NextResponse.next();
-  }
-
   const { userId } = auth();
 
   // Si la ruta es pública, permitir acceso sin importar auth
