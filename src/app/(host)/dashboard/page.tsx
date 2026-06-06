@@ -1,5 +1,7 @@
 import { DashboardContent } from "./(components)/dashboard-content";
 import { Metadata } from "next";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Panel de Control",
@@ -10,6 +12,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const { sessionClaims } = await auth();
+  const metadata = sessionClaims?.publicMetadata as Record<string, unknown> | undefined;
+  const roles = (metadata?.roles as string[]) ?? [];
+
+  if (roles.includes("admin")) {
+    redirect("/dashboard/catalog");
+  }
+
   return <DashboardContent />;
 }

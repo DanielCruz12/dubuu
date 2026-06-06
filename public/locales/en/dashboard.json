@@ -909,5 +909,91 @@
       "mud_flaps": "Mud flaps",
       "roof_racks_and_ladder": "Roof racks & ladder"
     }
+  },
+  "catalog": {
+    "title": "Catalog",
+    "description": "Manage system resources",
+    "selectLabel": "Catalog",
+    "selectPlaceholder": "Select a catalog...",
+    "tabs": {
+      "productTypes": "Product types",
+      "categories": "Categories",
+      "amenities": "Amenities",
+      "audience": "Target audience"
+    },
+    "table": {
+      "name": "Name",
+      "description": "Description",
+      "actions": "Actions",
+      "productType": "Product type"
+    },
+    "create": "Create",
+    "edit": {
+      "title": "Edit product type",
+      "description": "Modify the product type details"
+    },
+    "createDialog": {
+      "title": "Create product type",
+      "description": "Add a new product type to the catalog"
+    },
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "E.g. Tours, Rental, Experiences...",
+      "description": "Description",
+      "descriptionPlaceholder": "Briefly describe this product type",
+      "productType": "Product type",
+      "productTypePlaceholder": "Select a product type",
+      "category": "Category",
+      "categoryPlaceholder": "Select a category"
+    },
+    "delete": {
+      "title": "Delete product type?",
+      "description": "This action cannot be undone. \"{{name}}\" will be permanently deleted."
+    },
+    "toast": {
+      "created": "Product type created successfully",
+      "updated": "Product type updated successfully",
+      "deleted": "Product type deleted successfully",
+      "error": "An error occurred. Please try again."
+    },
+    "categories": {
+      "create": "Create category",
+      "dialogTitle": "Create category",
+      "dialogDescription": "Add a new product category to the catalog",
+      "delete": {
+        "title": "Delete category?",
+        "description": "This action cannot be undone. \"{{name}}\" will be permanently deleted."
+      },
+      "toast": {
+        "created": "Category created successfully",
+        "deleted": "Category deleted successfully"
+      }
+    },
+    "amenities": {
+      "create": "Create amenity",
+      "dialogTitle": "Create amenity",
+      "dialogDescription": "Add a new amenity to the catalog",
+      "delete": {
+        "title": "Delete amenity?",
+        "description": "This action cannot be undone. \"{{name}}\" will be permanently deleted."
+      },
+      "toast": {
+        "created": "Amenity created successfully",
+        "deleted": "Amenity deleted successfully"
+      }
+    },
+    "audience": {
+      "create": "Create audience",
+      "dialogTitle": "Create target audience",
+      "dialogDescription": "Add a new target audience to the catalog",
+      "delete": {
+        "title": "Delete audience?",
+        "description": "This action cannot be undone. \"{{name}}\" will be permanently deleted."
+      },
+      "toast": {
+        "created": "Audience created successfully",
+        "deleted": "Audience deleted successfully"
+      }
+    }
   }
 }

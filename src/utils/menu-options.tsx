@@ -13,6 +13,7 @@ import {
   Users,
   LayoutDashboardIcon,
   User2,
+  Tags,
 } from "lucide-react";
 import { MenuNavItem, NavItem, RoleNavItem } from "@/types/dashboard-nav";
 
@@ -118,6 +119,11 @@ export const commonDashboardItems: NavItem[] = [
 
 // Admin-only dashboard items
 export const adminDashboardItems: NavItem[] = [
+  {
+    title: "Catálogos",
+    href: "/dashboard/catalog",
+    icon: <Tags className="h-4 w-4 mr-2" />,
+  },
   {
     title: "Usuarios",
     href: "/dashboard/users",

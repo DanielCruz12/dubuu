@@ -22,7 +22,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLanguage } from "@/lib/i18n-context";
 import {
   Select,
@@ -49,6 +49,9 @@ interface DataTableProps<TData, TValue> {
   showPagination?: boolean;
   pageSizeOptions?: number[];
   defaultPageSize?: number;
+  searchClassName?: string;
+  searchValue?: string;
+  onSearchChange?: (value: string) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -60,6 +63,9 @@ export function DataTable<TData, TValue>({
   showPagination = true,
   pageSizeOptions = [5, 10, 25, 50],
   defaultPageSize = 10,
+  searchClassName,
+  searchValue,
+  onSearchChange,
 }: DataTableProps<TData, TValue>) {
   const { t } = useLanguage();
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -93,6 +99,13 @@ export function DataTable<TData, TValue>({
       pagination,
     },
   });
+
+  // Sync external search value to column filter
+  useEffect(() => {
+    if (searchValue !== undefined && searchKey) {
+      table.getColumn(searchKey)?.setFilterValue(searchValue);
+    }
+  }, [searchValue, searchKey, table]);
 
   // Generate pagination items
   const generatePaginationItems = () => {
@@ -169,16 +182,22 @@ export function DataTable<TData, TValue>({
   return (
     <div className="space-y-4">
       {showSearch && searchKey && (
-        <div className="flex items-center py-4">
+        <div className="flex items-center">
           <Input
             placeholder={placeholder}
             value={
-              (table.getColumn(searchKey)?.getFilterValue() as string) ?? ""
+              searchValue !== undefined
+                ? searchValue
+                : (table.getColumn(searchKey)?.getFilterValue() as string) ?? ""
             }
-            onChange={(event) =>
-              table.getColumn(searchKey)?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm"
+            onChange={(event) => {
+              if (onSearchChange) {
+                onSearchChange(event.target.value);
+              } else {
+                table.getColumn(searchKey)?.setFilterValue(event.target.value);
+              }
+            }}
+            className={searchClassName ?? "max-w-sm"}
           />
         </div>
       )}

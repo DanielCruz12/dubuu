@@ -81,11 +81,29 @@ export function CategorizationStep({
     }),
   );
 
-  // Mostrar todos los amenities (sin filtrarlos por categoría)
-  const amenityOptions: ComboboxOption[] = productAmenities.map((amenity) => ({
-    value: amenity.id,
-    label: amenity.name,
-  }));
+  // Filtrar amenities por tipo de producto (via category_id -> product_type.id)
+  const amenityOptions: ComboboxOption[] = useMemo(() => {
+    if (!selectedProductTypeId) return [];
+
+    const categoryIdsForType = new Set(
+      productCategories
+        .filter((cat) => cat.product_type.id === selectedProductTypeId)
+        .map((cat) => cat.id),
+    );
+
+    return productAmenities
+      .filter((amenity) => {
+        const catId =
+          typeof amenity.category_id === "object"
+            ? amenity.category_id.id
+            : amenity.category_id;
+        return catId ? categoryIdsForType.has(catId) : false;
+      })
+      .map((amenity) => ({
+        value: amenity.id,
+        label: amenity.name,
+      }));
+  }, [selectedProductTypeId, productAmenities, productCategories]);
 
   const audienceOptions: ComboboxOption[] = productAudiences.map(
     (audience) => ({

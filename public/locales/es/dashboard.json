@@ -909,5 +909,91 @@
       "mud_flaps": "Guardabarros",
       "roof_racks_and_ladder": "Racks de techo y escalera"
     }
+  },
+  "catalog": {
+    "title": "Catálogos",
+    "description": "Administra los recursos del sistema",
+    "selectLabel": "Catálogo",
+    "selectPlaceholder": "Selecciona un catálogo...",
+    "tabs": {
+      "productTypes": "Tipos de producto",
+      "categories": "Categorías",
+      "amenities": "Amenidades",
+      "audience": "Audiencia objetivo"
+    },
+    "table": {
+      "name": "Nombre",
+      "description": "Descripción",
+      "actions": "Acciones",
+      "productType": "Tipo de producto"
+    },
+    "create": "Crear",
+    "edit": {
+      "title": "Editar tipo de producto",
+      "description": "Modifica los detalles del tipo de producto"
+    },
+    "createDialog": {
+      "title": "Crear tipo de producto",
+      "description": "Agrega un nuevo tipo de producto al catálogo"
+    },
+    "form": {
+      "name": "Nombre",
+      "namePlaceholder": "Ej. Tours, Alquiler, Experiencias...",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Describe brevemente este tipo de producto",
+      "productType": "Tipo de producto",
+      "productTypePlaceholder": "Selecciona un tipo de producto",
+      "category": "Categoría",
+      "categoryPlaceholder": "Selecciona una categoría"
+    },
+    "delete": {
+      "title": "¿Eliminar tipo de producto?",
+      "description": "Esta acción no se puede deshacer. Se eliminará \"{{name}}\" permanentemente."
+    },
+    "toast": {
+      "created": "Tipo de producto creado correctamente",
+      "updated": "Tipo de producto actualizado correctamente",
+      "deleted": "Tipo de producto eliminado correctamente",
+      "error": "Ocurrió un error. Inténtalo de nuevo."
+    },
+    "categories": {
+      "create": "Crear categoría",
+      "dialogTitle": "Crear categoría",
+      "dialogDescription": "Agrega una nueva categoría de producto al catálogo",
+      "delete": {
+        "title": "¿Eliminar categoría?",
+        "description": "Esta acción no se puede deshacer. Se eliminará \"{{name}}\" permanentemente."
+      },
+      "toast": {
+        "created": "Categoría creada correctamente",
+        "deleted": "Categoría eliminada correctamente"
+      }
+    },
+    "amenities": {
+      "create": "Crear amenidad",
+      "dialogTitle": "Crear amenidad",
+      "dialogDescription": "Agrega una nueva amenidad al catálogo",
+      "delete": {
+        "title": "¿Eliminar amenidad?",
+        "description": "Esta acción no se puede deshacer. Se eliminará \"{{name}}\" permanentemente."
+      },
+      "toast": {
+        "created": "Amenidad creada correctamente",
+        "deleted": "Amenidad eliminada correctamente"
+      }
+    },
+    "audience": {
+      "create": "Crear audiencia",
+      "dialogTitle": "Crear audiencia objetivo",
+      "dialogDescription": "Agrega una nueva audiencia objetivo al catálogo",
+      "delete": {
+        "title": "¿Eliminar audiencia?",
+        "description": "Esta acción no se puede deshacer. Se eliminará \"{{name}}\" permanentemente."
+      },
+      "toast": {
+        "created": "Audiencia creada correctamente",
+        "deleted": "Audiencia eliminada correctamente"
+      }
+    }
   }
 }

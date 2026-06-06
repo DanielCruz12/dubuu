@@ -43,7 +43,10 @@
       "Bash(git log *)",
       "Bash(git show *)",
       "Bash(npx next *)",
-      "Bash(Select-Object -Last 30)"
+      "Bash(Select-Object -Last 30)",
+      "Bash(pnpm tsc *)",
+      "PowerShell(pnpm tsc *)",
+      "PowerShell(pnpm next *)"
     ]
   }
 }
