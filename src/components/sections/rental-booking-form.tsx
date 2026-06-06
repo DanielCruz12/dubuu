@@ -177,25 +177,7 @@ export default function RentalBookingForm({
     setMounted(true);
   }, []);
 
-  const [range, setRange] = useState<DateRange | undefined>(() => {
-    const tomorrowStart = startOfDay(addDays(new Date(), 1));
-    const booked = expandBookedDaysFromRental(product.rental);
-
-    const findNextFree = (d: Date): Date => {
-      let cur = startOfDay(d);
-      for (let i = 0; i < 365; i++) {
-        if (!booked.has(dateKey(cur))) return cur;
-        cur = addDays(cur, 1);
-      }
-      return d;
-    };
-
-    const from = findNextFree(tomorrowStart);
-    let to = findNextFree(addDays(from, 1));
-    if (dateKey(to) === dateKey(from)) to = addDays(from, 1);
-
-    return { from, to };
-  });
+  const [range, setRange] = useState<DateRange | undefined>(undefined);
   const [pickupTime, setPickupTime] = useState("10:00");
   const [returnTime, setReturnTime] = useState("10:00");
   const [rangePickerOpen, setRangePickerOpen] = useState(false);
@@ -212,6 +194,8 @@ export default function RentalBookingForm({
 
   // Document upload modal
   const [showDocsModal, setShowDocsModal] = useState(false);
+  // Sequential reserve flow: dates → location → docs
+  const [reserveFlowActive, setReserveFlowActive] = useState(false);
 
   // Document upload state
   const MAX_DOC_MB = 5;
@@ -369,6 +353,38 @@ export default function RentalBookingForm({
   const pickup = range?.from;
   const dropoff = range?.to;
 
+  // Sequential reserve flow: dates → location → docs
+  const openReserveFlow = useCallback(() => {
+    if (!pickup || !dropoff || dropoff < pickup) {
+      setRangePickerOpen(true);
+      setReserveFlowActive(true);
+      return;
+    }
+    setLocationModalOpen(true);
+    setReserveFlowActive(true);
+  }, [pickup, dropoff]);
+
+  const handleRangePickerOpenChange = useCallback(
+    (open: boolean) => {
+      setRangePickerOpen(open);
+      if (!open && reserveFlowActive && pickup && dropoff && dropoff >= pickup) {
+        setLocationModalOpen(true);
+      }
+    },
+    [reserveFlowActive, pickup, dropoff],
+  );
+
+  const handleLocationModalOpenChange = useCallback(
+    (open: boolean) => {
+      setLocationModalOpen(open);
+      if (!open && reserveFlowActive && pickup && dropoff && dropoff >= pickup) {
+        setReserveFlowActive(false);
+        setShowDocsModal(true);
+      }
+    },
+    [reserveFlowActive, pickup, dropoff],
+  );
+
   const pricing = useMemo(() => {
     if (!pickup || !dropoff || dropoff < pickup || !validPrice) {
       return { fullDays: 0, extraHours: 0, total: 0 };
@@ -413,15 +429,13 @@ export default function RentalBookingForm({
 
   const canReserve = useMemo(() => {
     if (!user) return false;
-    if (!pickup || !dropoff || dropoff < pickup) return false;
     return true;
-  }, [user, pickup, dropoff]);
+  }, [user]);
 
   const reserveBlockedReason = useMemo(() => {
     if (!user) return "login";
-    if (!pickup || !dropoff || dropoff < pickup) return "range";
     return null;
-  }, [user, pickup, dropoff]);
+  }, [user]);
 
   const hasAllDocs = duiFiles.some(Boolean) && licenseFiles.some(Boolean);
 
@@ -528,7 +542,7 @@ export default function RentalBookingForm({
       <Button
         type="button"
         className="w-full rounded-full"
-        onClick={() => setRangePickerOpen(false)}
+        onClick={() => handleRangePickerOpenChange(false)}
       >
         {t("home.rentalBooking.rangePickerDone")}
       </Button>
@@ -610,7 +624,7 @@ export default function RentalBookingForm({
       <Button
         type="button"
         className="w-full rounded-full"
-        onClick={() => setLocationModalOpen(false)}
+        onClick={() => handleLocationModalOpenChange(false)}
       >
         {t("home.rentalBooking.rangePickerDone")}
       </Button>
@@ -815,7 +829,7 @@ export default function RentalBookingForm({
             {isDesktop ? (
               <Dialog
                 open={rangePickerOpen}
-                onOpenChange={setRangePickerOpen}
+                onOpenChange={handleRangePickerOpenChange}
                 modal={false}
               >
                 <DialogContent className="w-full min-w-0 max-w-[calc(100vw-1.5rem)] gap-0 overflow-visible p-0 pt-5 sm:max-w-lg sm:pt-6">
@@ -833,7 +847,7 @@ export default function RentalBookingForm({
                 </DialogContent>
               </Dialog>
             ) : (
-              <Sheet open={rangePickerOpen} onOpenChange={setRangePickerOpen} modal={false}>
+              <Sheet open={rangePickerOpen} onOpenChange={handleRangePickerOpenChange} modal={false}>
                 <SheetContent
                   side="bottom"
                   className="rounded-t-[1.25rem] max-h-[min(92dvh,680px)] w-full px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 overflow-y-auto"
@@ -885,7 +899,7 @@ export default function RentalBookingForm({
             {isDesktop ? (
               <Dialog
                 open={locationModalOpen}
-                onOpenChange={setLocationModalOpen}
+                onOpenChange={handleLocationModalOpenChange}
                 modal={false}
               >
                 <DialogContent className="w-full min-w-0 max-w-[calc(100vw-1.5rem)] gap-0 overflow-visible p-0 pt-4 sm:max-w-lg sm:pt-5">
@@ -905,7 +919,7 @@ export default function RentalBookingForm({
             ) : (
               <Sheet
                 open={locationModalOpen}
-                onOpenChange={setLocationModalOpen}
+                onOpenChange={handleLocationModalOpenChange}
                 modal={false}
               >
                 <SheetContent
@@ -957,7 +971,7 @@ export default function RentalBookingForm({
               <Button
                 type="button"
                 className="w-full gap-2 rounded-full"
-                onClick={() => setShowDocsModal(true)}
+                onClick={openReserveFlow}
                 disabled={!canReserve}
               >
                 <CalendarCheck className="h-4 w-4" />
@@ -967,8 +981,6 @@ export default function RentalBookingForm({
                 <p className="text-[11px] text-muted-foreground text-center">
                   {reserveBlockedReason === "login" &&
                     t("home.bookingForm.toast.loginRequired")}
-                  {reserveBlockedReason === "range" &&
-                    t("home.rentalBooking.selectRangeError")}
                 </p>
               )}
             </div>
@@ -1069,18 +1081,18 @@ export default function RentalBookingForm({
                   </span>
                   <span className="text-xl font-bold tabular-nums leading-none tracking-tight text-white">
                     {symbol}
-                    {estimatedTotal > 0 ? convert(estimatedTotal) : "—"}
+                    {estimatedTotal > 0 ? convert(estimatedTotal) : validPrice ? convert(pricePerDay) : "—"}
                   </span>
                   <span className="truncate text-[11px] text-white/65">
                     {days > 0
-                      ? `${days} ${t("home.rentalBooking.days").toLowerCase()}${extraHours > 0 ? ` + ${extraHours}h` : ""}`
-                      : ""}
+                      ? `${days} ${days === 1 ? t("home.rentalBooking.dayLower") : t("home.rentalBooking.daysLower")}${extraHours > 0 ? ` + ${extraHours}h` : ""}`
+                      : `1 ${t("home.rentalBooking.dayLower")}`}
                   </span>
                 </div>
                 <Button
                   type="button"
                   variant="default"
-                  onClick={() => setShowDocsModal(true)}
+                  onClick={openReserveFlow}
                   disabled={!canReserve}
                   className="h-auto min-h-[3.25rem] min-w-0 shrink-0 rounded-xl !bg-white !text-gray-900 shadow-md transition-transform hover:!bg-white/90 active:scale-[0.98] sm:px-5 [&_svg]:!text-gray-900"
                 >

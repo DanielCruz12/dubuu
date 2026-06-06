@@ -82,9 +82,13 @@ export default function ImageCollage({
           {allImages.map((image, index) => (
             <div
               key={index}
-              className={`absolute inset-0 transition-opacity duration-300 ${
+              className={`absolute inset-0 transition-opacity duration-300 cursor-pointer ${
                 index === currentImageIndex ? "opacity-100" : "opacity-0 pointer-events-none"
               }`}
+              onClick={() => {
+                setCurrentIndex(currentImageIndex)
+                setOpen(true)
+              }}
             >
               <Image
                 src={withCacheKey(image, cacheKey) || "/logo.svg"}
