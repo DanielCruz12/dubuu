@@ -46,7 +46,8 @@
       "Bash(Select-Object -Last 30)",
       "Bash(pnpm tsc *)",
       "PowerShell(pnpm tsc *)",
-      "PowerShell(pnpm next *)"
+      "PowerShell(pnpm next *)",
+      "PowerShell(npx tsc --noEmit --pretty)"
     ]
   }
 }

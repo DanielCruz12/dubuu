@@ -196,7 +196,7 @@ export default function RentalBookingForm({
   const [showDocsModal, setShowDocsModal] = useState(false);
   // Sequential reserve flow: dates → location → docs
   const [reserveFlowActive, setReserveFlowActive] = useState(false);
-  const mapTriggeredFromLocationRef = useRef(false);
+  const mapLocationSelectedRef = useRef(false);
 
   // Document upload state
   const MAX_DOC_MB = 5;
@@ -375,20 +375,17 @@ export default function RentalBookingForm({
     [reserveFlowActive, pickup, dropoff],
   );
 
-  const handleLocationModalOpenChange = useCallback(
-    (open: boolean) => {
-      setLocationModalOpen(open);
-      if (!open && reserveFlowActive && pickup && dropoff && dropoff >= pickup) {
-        // Don't advance if the map picker was opened from this modal
-        if (mapTriggeredFromLocationRef.current) {
-          return;
-        }
-        setReserveFlowActive(false);
-        setShowDocsModal(true);
-      }
-    },
-    [reserveFlowActive, pickup, dropoff],
-  );
+  const handleLocationModalOpenChange = useCallback((open: boolean) => {
+    setLocationModalOpen(open);
+  }, []);
+
+  const handleLocationDoneClick = useCallback(() => {
+    setLocationModalOpen(false);
+    if (reserveFlowActive && pickup && dropoff && dropoff >= pickup) {
+      setReserveFlowActive(false);
+      setShowDocsModal(true);
+    }
+  }, [reserveFlowActive, pickup, dropoff]);
 
   const pricing = useMemo(() => {
     if (!pickup || !dropoff || dropoff < pickup || !validPrice) {
@@ -499,11 +496,11 @@ export default function RentalBookingForm({
 
   // === DATE RANGE PICKER BODY ===
   const rangePickerBody = (
-    <div className="w-full min-w-0 space-y-3">
+    <div className="w-full min-w-0 space-y-2.5">
       <p className="text-xs text-muted-foreground leading-snug">
         {t("home.rentalBooking.rangeHint")}
       </p>
-      <div className="w-full min-w-0 rounded-lg border border-border/50 bg-muted/15 p-2">
+      <div className="w-full min-w-0 rounded-lg border border-border/50 bg-muted/15 p-1.5">
         <Calendar
           fullWidth
           mode="range"
@@ -520,10 +517,17 @@ export default function RentalBookingForm({
               "relative !text-red-500/80 !line-through !opacity-100 dark:!text-red-400/80 after:absolute after:inset-x-0.5 after:top-1/2 after:h-px after:bg-red-400/60 after:rotate-[-12deg] dark:after:bg-red-400/50",
           }}
           numberOfMonths={1}
-          className="w-full max-w-none p-1 sm:p-2"
+          className="w-full max-w-none p-1"
+          classNames={{
+            month: "space-y-1.5 w-full min-w-0",
+            row: "flex w-full mt-0.5",
+            day: "p-0 font-normal aria-selected:opacity-100 mx-auto h-7 w-full max-w-[2.25rem] rounded-md sm:h-8 sm:max-w-[2.5rem]",
+            head_cell:
+              "text-muted-foreground rounded-md font-normal text-[0.7rem] flex-1 min-w-0 basis-0 py-0.5 text-center",
+          }}
         />
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2.5">
         <div className="space-y-1.5">
           <Label className="text-xs flex items-center gap-1.5">
             <Clock className="h-3.5 w-3.5 opacity-70" aria-hidden />
@@ -576,10 +580,7 @@ export default function RentalBookingForm({
               variant="ghost"
               size="sm"
               className="shrink-0 h-8 text-xs text-muted-foreground hover:text-foreground"
-              onClick={() => {
-                mapTriggeredFromLocationRef.current = true;
-                setActiveMapMode("pickup");
-              }}
+              onClick={() => setActiveMapMode("pickup")}
             >
               {t("home.rentalBooking.changeLocation")}
             </Button>
@@ -613,10 +614,7 @@ export default function RentalBookingForm({
             <button
               type="button"
               className="w-full flex items-center gap-2.5 rounded-xl border p-2.5 text-left hover:bg-muted/20 transition-colors"
-              onClick={() => {
-                mapTriggeredFromLocationRef.current = true;
-                setActiveMapMode("dropoff");
-              }}
+              onClick={() => setActiveMapMode("dropoff")}
             >
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted/60">
                 <MapPin className="h-4 w-4 text-muted-foreground" />
@@ -635,7 +633,7 @@ export default function RentalBookingForm({
       <Button
         type="button"
         className="w-full rounded-full"
-        onClick={() => handleLocationModalOpenChange(false)}
+        onClick={handleLocationDoneClick}
       >
         {t("home.rentalBooking.rangePickerDone")}
       </Button>
@@ -653,21 +651,21 @@ export default function RentalBookingForm({
     frontLabel: string,
     backLabel: string,
   ) => (
-    <div className="space-y-2.5">
+    <div className="space-y-1.5">
       <Label className="text-xs font-semibold">{label}</Label>
       {files.some(Boolean) ? (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-2">
           {files.map((file, i) => (
-            <div key={i} className="space-y-1.5">
-              <Label className="text-[11px] font-medium text-muted-foreground">
+            <div key={i} className="space-y-1">
+              <Label className="text-[10px] font-medium text-muted-foreground">
                 {i === 0 ? frontLabel : backLabel}
               </Label>
               {file && previews[i] ? (
-                <div className="relative rounded-xl border border-border/60 overflow-hidden bg-muted/10">
+                <div className="relative rounded-lg border border-border/60 overflow-hidden bg-muted/10">
                   <img
                     src={previews[i]!}
                     alt={i === 0 ? "Front" : "Back"}
-                    className="w-full h-28 object-contain"
+                    className="w-full h-20 object-contain"
                   />
                   <Button
                     type="button"
@@ -676,17 +674,17 @@ export default function RentalBookingForm({
                     onClick={() =>
                       removeDoc(i, setFiles, setPreviews, inputRef)
                     }
-                    className="absolute top-1.5 right-1.5 h-6 w-6 p-0 rounded-full shadow-sm"
+                    className="absolute top-1 right-1 h-5 w-5 p-0 rounded-full shadow-sm"
                   >
-                    <X className="h-3 w-3" />
+                    <X className="h-2.5 w-2.5" />
                     <span className="sr-only">
                       {t("home.rentalBooking.removeFile")}
                     </span>
                   </Button>
                 </div>
               ) : (
-                <div className="border-2 border-dashed border-border/40 rounded-xl h-28 flex items-center justify-center bg-muted/5">
-                  <span className="text-[10px] text-muted-foreground/50">
+                <div className="border-2 border-dashed border-border/40 rounded-lg h-20 flex items-center justify-center bg-muted/5">
+                  <span className="text-[9px] text-muted-foreground/50">
                     {t("home.rentalBooking.docClick")}
                   </span>
                 </div>
@@ -696,10 +694,10 @@ export default function RentalBookingForm({
         </div>
       ) : (
         <div
-          className="border-2 border-dashed border-border/60 rounded-xl p-4 text-center cursor-pointer hover:bg-muted/20 hover:border-primary/40 transition-all"
+          className="border-2 border-dashed border-border/60 rounded-lg p-2.5 text-center cursor-pointer hover:bg-muted/20 hover:border-primary/40 transition-all"
           onClick={() => inputRef.current?.click()}
         >
-          <Upload className="h-6 w-6 mx-auto mb-1.5 text-muted-foreground" />
+          <Upload className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
           <p className="text-xs font-medium text-muted-foreground">
             {t("home.rentalBooking.docClick")}
           </p>
@@ -725,8 +723,8 @@ export default function RentalBookingForm({
   );
 
   const docsModalBody = (
-    <div className="space-y-5">
-      <p className="text-sm text-muted-foreground leading-relaxed">
+    <div className="space-y-3">
+      <p className="text-xs text-muted-foreground leading-relaxed">
         {t("home.rentalBooking.documentsModalDescription")}
       </p>
 
@@ -753,12 +751,12 @@ export default function RentalBookingForm({
       )}
 
       {/* Optional notes */}
-      <div className="space-y-1.5">
+      <div className="space-y-1">
         <Label className="text-xs font-semibold">
           {t("home.rentalBooking.docNotesLabel")}
         </Label>
         <textarea
-          className="w-full min-h-[80px] rounded-xl border border-border/60 bg-muted/10 px-3 py-2 text-sm resize-none placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40"
+          className="w-full min-h-[48px] rounded-lg border border-border/60 bg-muted/10 px-2.5 py-1.5 text-sm resize-none placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40"
           placeholder={t("home.rentalBooking.docNotesPlaceholder")}
           value={docNotes}
           onChange={(e) => setDocNotes(e.target.value)}
@@ -769,12 +767,13 @@ export default function RentalBookingForm({
         </p>
       </div>
 
-      <Button
-        type="button"
-        className="w-full gap-2 rounded-full"
-        onClick={handleReserveClick}
-        disabled={!hasAllDocs || isUploading}
-      >
+      <div className="sticky bottom-0 pt-2 pb-1 -mb-1 bg-background">
+        <Button
+          type="button"
+          className="w-full gap-2 rounded-full"
+          onClick={handleReserveClick}
+          disabled={!hasAllDocs || isUploading}
+        >
         {isUploading ? (
           t("home.rentalBooking.uploading")
         ) : (
@@ -784,6 +783,7 @@ export default function RentalBookingForm({
           </>
         )}
       </Button>
+      </div>
 
       {/*  {!hasAllDocs && (
         <p className="text-[11px] text-muted-foreground text-center">
@@ -841,9 +841,8 @@ export default function RentalBookingForm({
               <Dialog
                 open={rangePickerOpen}
                 onOpenChange={handleRangePickerOpenChange}
-                modal={false}
               >
-                <DialogContent className="w-full min-w-0 max-w-[calc(100vw-1.5rem)] gap-0 overflow-visible p-0 pt-5 sm:max-w-lg sm:pt-6 backdrop-blur-xl bg-white/85 dark:bg-gray-900/85 border-white/20 dark:border-white/10 shadow-2xl">
+                <DialogContent className="w-full min-w-0 max-w-[calc(100vw-1.5rem)] max-h-[90dvh] gap-0 overflow-y-auto p-0 pt-5 sm:max-w-lg sm:pt-6">
                   <DialogHeader className="px-6 pb-1.5 text-left">
                     <DialogTitle>
                       {t("home.rentalBooking.rangePickerTitle")}
@@ -858,7 +857,7 @@ export default function RentalBookingForm({
                 </DialogContent>
               </Dialog>
             ) : (
-              <Sheet open={rangePickerOpen} onOpenChange={handleRangePickerOpenChange} modal={false}>
+              <Sheet open={rangePickerOpen} onOpenChange={handleRangePickerOpenChange}>
                 <SheetContent
                   side="bottom"
                   className="rounded-t-[1.25rem] max-h-[min(92dvh,680px)] w-full px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 overflow-y-auto"
@@ -911,9 +910,8 @@ export default function RentalBookingForm({
               <Dialog
                 open={locationModalOpen}
                 onOpenChange={handleLocationModalOpenChange}
-                modal={false}
               >
-                <DialogContent className="w-full min-w-0 max-w-[calc(100vw-1.5rem)] gap-0 overflow-visible p-0 pt-4 sm:max-w-lg sm:pt-5 backdrop-blur-xl bg-white/85 dark:bg-gray-900/85 border-white/20 dark:border-white/10 shadow-2xl">
+                <DialogContent className="w-full min-w-0 max-w-[calc(100vw-1.5rem)] gap-0 overflow-visible p-0 pt-4 sm:max-w-lg sm:pt-5">
                   <DialogHeader className="px-5 pb-1 text-left space-y-1">
                     <DialogTitle>
                       {t("home.rentalBooking.locationModalTitle")}
@@ -931,7 +929,6 @@ export default function RentalBookingForm({
               <Sheet
                 open={locationModalOpen}
                 onOpenChange={handleLocationModalOpenChange}
-                modal={false}
               >
                 <SheetContent
                   side="bottom"
@@ -1006,7 +1003,7 @@ export default function RentalBookingForm({
       {/* DOCUMENTS MODAL */}
       {isDesktop ? (
         <Dialog open={showDocsModal} onOpenChange={setShowDocsModal}>
-          <DialogContent className="sm:max-w-md max-h-[90dvh] overflow-y-auto backdrop-blur-xl bg-white/85 dark:bg-gray-900/85 border-white/20 dark:border-white/10 shadow-2xl">
+          <DialogContent className="sm:max-w-md max-h-[90dvh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-muted-foreground" />
@@ -1042,14 +1039,19 @@ export default function RentalBookingForm({
         onOpenChange={(open) => {
           if (!open) {
             setActiveMapMode(null);
-            if (mapTriggeredFromLocationRef.current) {
-              mapTriggeredFromLocationRef.current = false;
+            if (mapLocationSelectedRef.current) {
+              mapLocationSelectedRef.current = false;
+              if (reserveFlowActive && pickup && dropoff && dropoff >= pickup) {
+                setReserveFlowActive(false);
+                setShowDocsModal(true);
+              }
+            } else {
               setLocationModalOpen(true);
             }
           }
         }}
       >
-        <DialogContent className="sm:max-w-lg max-h-[90dvh] overflow-y-auto backdrop-blur-xl bg-white/85 dark:bg-gray-900/85 border-white/20 dark:border-white/10 shadow-2xl">
+        <DialogContent className="sm:max-w-lg max-h-[90dvh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {activeMapMode === "dropoff"
@@ -1078,6 +1080,7 @@ export default function RentalBookingForm({
                 setPickupAddress(loc.address);
                 setUseDefaultPickup(false);
               }
+              mapLocationSelectedRef.current = true;
               setActiveMapMode(null);
             }}
           />
