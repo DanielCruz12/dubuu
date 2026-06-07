@@ -196,6 +196,7 @@ export default function RentalBookingForm({
   const [showDocsModal, setShowDocsModal] = useState(false);
   // Sequential reserve flow: dates → location → docs
   const [reserveFlowActive, setReserveFlowActive] = useState(false);
+  const mapTriggeredFromLocationRef = useRef(false);
 
   // Document upload state
   const MAX_DOC_MB = 5;
@@ -378,6 +379,10 @@ export default function RentalBookingForm({
     (open: boolean) => {
       setLocationModalOpen(open);
       if (!open && reserveFlowActive && pickup && dropoff && dropoff >= pickup) {
+        // Don't advance if the map picker was opened from this modal
+        if (mapTriggeredFromLocationRef.current) {
+          return;
+        }
         setReserveFlowActive(false);
         setShowDocsModal(true);
       }
@@ -571,7 +576,10 @@ export default function RentalBookingForm({
               variant="ghost"
               size="sm"
               className="shrink-0 h-8 text-xs text-muted-foreground hover:text-foreground"
-              onClick={() => setActiveMapMode("pickup")}
+              onClick={() => {
+                mapTriggeredFromLocationRef.current = true;
+                setActiveMapMode("pickup");
+              }}
             >
               {t("home.rentalBooking.changeLocation")}
             </Button>
@@ -605,7 +613,10 @@ export default function RentalBookingForm({
             <button
               type="button"
               className="w-full flex items-center gap-2.5 rounded-xl border p-2.5 text-left hover:bg-muted/20 transition-colors"
-              onClick={() => setActiveMapMode("dropoff")}
+              onClick={() => {
+                mapTriggeredFromLocationRef.current = true;
+                setActiveMapMode("dropoff");
+              }}
             >
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted/60">
                 <MapPin className="h-4 w-4 text-muted-foreground" />
@@ -832,7 +843,7 @@ export default function RentalBookingForm({
                 onOpenChange={handleRangePickerOpenChange}
                 modal={false}
               >
-                <DialogContent className="w-full min-w-0 max-w-[calc(100vw-1.5rem)] gap-0 overflow-visible p-0 pt-5 sm:max-w-lg sm:pt-6">
+                <DialogContent className="w-full min-w-0 max-w-[calc(100vw-1.5rem)] gap-0 overflow-visible p-0 pt-5 sm:max-w-lg sm:pt-6 backdrop-blur-xl bg-white/85 dark:bg-gray-900/85 border-white/20 dark:border-white/10 shadow-2xl">
                   <DialogHeader className="px-6 pb-1.5 text-left">
                     <DialogTitle>
                       {t("home.rentalBooking.rangePickerTitle")}
@@ -902,7 +913,7 @@ export default function RentalBookingForm({
                 onOpenChange={handleLocationModalOpenChange}
                 modal={false}
               >
-                <DialogContent className="w-full min-w-0 max-w-[calc(100vw-1.5rem)] gap-0 overflow-visible p-0 pt-4 sm:max-w-lg sm:pt-5">
+                <DialogContent className="w-full min-w-0 max-w-[calc(100vw-1.5rem)] gap-0 overflow-visible p-0 pt-4 sm:max-w-lg sm:pt-5 backdrop-blur-xl bg-white/85 dark:bg-gray-900/85 border-white/20 dark:border-white/10 shadow-2xl">
                   <DialogHeader className="px-5 pb-1 text-left space-y-1">
                     <DialogTitle>
                       {t("home.rentalBooking.locationModalTitle")}
@@ -995,7 +1006,7 @@ export default function RentalBookingForm({
       {/* DOCUMENTS MODAL */}
       {isDesktop ? (
         <Dialog open={showDocsModal} onOpenChange={setShowDocsModal}>
-          <DialogContent className="sm:max-w-md max-h-[90dvh] overflow-y-auto">
+          <DialogContent className="sm:max-w-md max-h-[90dvh] overflow-y-auto backdrop-blur-xl bg-white/85 dark:bg-gray-900/85 border-white/20 dark:border-white/10 shadow-2xl">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-muted-foreground" />
@@ -1029,10 +1040,16 @@ export default function RentalBookingForm({
       <Dialog
         open={activeMapMode !== null}
         onOpenChange={(open) => {
-          if (!open) setActiveMapMode(null);
+          if (!open) {
+            setActiveMapMode(null);
+            if (mapTriggeredFromLocationRef.current) {
+              mapTriggeredFromLocationRef.current = false;
+              setLocationModalOpen(true);
+            }
+          }
         }}
       >
-        <DialogContent className="sm:max-w-lg max-h-[90dvh] overflow-y-auto">
+        <DialogContent className="sm:max-w-lg max-h-[90dvh] overflow-y-auto backdrop-blur-xl bg-white/85 dark:bg-gray-900/85 border-white/20 dark:border-white/10 shadow-2xl">
           <DialogHeader>
             <DialogTitle>
               {activeMapMode === "dropoff"
