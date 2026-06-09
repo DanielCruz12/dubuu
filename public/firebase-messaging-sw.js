@@ -37,7 +37,8 @@ messaging.onBackgroundMessage((payload) => {
   const options = {
     body: payload?.notification?.body || payload?.data?.body || "",
     data: payload?.data || {},
-    icon: "/logo.svg",
+    icon: "/icon.svg",
+    badge: "/icon.svg",
   };
 
   // Muestra notificación incluso si el backend solo manda data.
