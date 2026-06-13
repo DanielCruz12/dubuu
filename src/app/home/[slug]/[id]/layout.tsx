@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import type { IProduct, ITourProduct } from "@/types/product";
 import type { IRentalProduct } from "@/types/rental";
+import { headers } from "next/headers";
 
 type Props = {
   params: { slug: string; id: string };
 };
 
 function getPrice(product: IProduct): number {
-  // Rental
   if (product.product_type?.name === "rental") {
     const rental = (product as IRentalProduct).rental;
     if (rental) {
@@ -15,10 +15,8 @@ function getPrice(product: IProduct): number {
       if (Number.isFinite(perDay) && perDay > 0) return perDay;
     }
   }
-  // Direct price
   const direct = Number(product.price);
   if (Number.isFinite(direct) && direct > 0) return direct;
-  // Tour dates (cheapest)
   if (product.product_type?.name === "tours") {
     const prices = ((product as ITourProduct).tour?.tour_dates ?? [])
       .map((d) => Number(d?.price))
@@ -34,13 +32,19 @@ function clean(s: string) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id, slug } = params;
+
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL || "https://www.dubuu.com";
-  const apiUrl =
-    process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002";
 
   try {
-    const res = await fetch(`${apiUrl}/api/v1/products/${id}`, {
+    // Usar el propio Next.js como proxy en vez de NEXT_PUBLIC_API_URL
+    // así funciona tanto en dev como en prod sin variables extra
+    const headersList = headers();
+    const host = headersList.get("host") || "localhost:3000";
+    const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
+    const baseUrl = `${protocol}://${host}`;
+
+    const res = await fetch(`${baseUrl}/backend/api/v1/products/${id}`, {
       next: { revalidate: 3600 },
     });
 
@@ -104,7 +108,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         site: "@Dubuu_sv",
       },
     };
-  } catch {
+  } catch (err) {
+    console.error("[generateMetadata] fetch failed:", err);
     return {
       title: "Producto | Dubuu",
       description:

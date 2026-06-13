@@ -90,6 +90,9 @@ export const metadata: Metadata = {
   },
   category: "travel",
   applicationName: "Dubuu",
+  other: {
+    "fb:app_id": process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || "1536881601422455",
+  },
 };
 
 export default async function RootLayout({
