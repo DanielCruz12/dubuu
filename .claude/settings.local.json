@@ -48,7 +48,8 @@
       "PowerShell(pnpm tsc *)",
       "PowerShell(pnpm next *)",
       "PowerShell(npx tsc --noEmit --pretty)",
-      "Bash(Select-Object Mode, Name)"
+      "Bash(Select-Object Mode, Name)",
+      "Bash(Select-Object Name)"
     ]
   }
 }
