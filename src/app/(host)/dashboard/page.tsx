@@ -18,7 +18,7 @@ export default async function DashboardPage() {
   const roles = (metadata?.roles as string[]) ?? [];
 
   if (roles.includes("admin")) {
-    redirect("/dashboard/catalog");
+    redirect("/dashboard/payouts");
   }
 
   return <DashboardContent />;

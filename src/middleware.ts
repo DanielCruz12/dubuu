@@ -21,6 +21,7 @@ const isDashboardRoute = createRouteMatcher(["/dashboard(.*)"]);
 const isAdminRoute = createRouteMatcher([
   "/dashboard/users(.*)",
   "/dashboard/settings(.*)",
+  "/dashboard/payouts(.*)",
   "/admin(.*)",
 ]);
 const isHostRoute = createRouteMatcher([

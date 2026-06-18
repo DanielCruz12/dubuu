@@ -44,6 +44,7 @@ import authReducer from "./slices/auth/auth-slice";
 import { panelApiSlice } from "./slices/panel/panel-slice";
 import { blogsApiSlice } from "./slices/blog/blog-slice";
 import { contractsApiSlice } from "./slices/contract/contract-slice";
+import { payoutApiSlice } from "./slices/payout/payout-slice";
 
 // Función para crear un almacenamiento "inerte" en entornos sin window (server-side)
 const createNoopStorage = () => {
@@ -107,6 +108,7 @@ const rootReducer = combineReducers({
   [hostProfileApiSlice.reducerPath]: hostProfileApiSlice.reducer,
   [blogsApiSlice.reducerPath]: blogsApiSlice.reducer,
   [contractsApiSlice.reducerPath]: contractsApiSlice.reducer,
+  [payoutApiSlice.reducerPath]: payoutApiSlice.reducer,
   auth: authReducer,
   search: searchReducer,
 });
@@ -139,6 +141,7 @@ export const makeStore = () =>
         hostProfileApiSlice.middleware,
         blogsApiSlice.middleware,
         contractsApiSlice.middleware,
+        payoutApiSlice.middleware,
       ),
   });
 
@@ -169,6 +172,7 @@ export function invalidateApiCacheOnLocaleChange() {
       hostProfileApiSlice,
       blogsApiSlice,
       contractsApiSlice,
+      payoutApiSlice,
     ].forEach((slice) => {
       dispatch(slice.util.resetApiState());
     });

@@ -49,7 +49,16 @@
       "PowerShell(pnpm next *)",
       "PowerShell(npx tsc --noEmit --pretty)",
       "Bash(Select-Object Mode, Name)",
-      "Bash(Select-Object Name)"
+      "Bash(Select-Object Name)",
+      "Bash(Select-Object FullName)",
+      "Bash(Format-Table -AutoSize)",
+      "Bash(ls C:\\\\Users\\\\daniel\\\\Desktop\\\\projects\\\\personal_work\\\\projects\\\\dubuu\\\\src\\\\app\\\\\\(host\\)\\\\dashboard\\\\\\\\\\(components\\) *)",
+      "Bash(Select-Object -Last 5)",
+      "Bash(curl -s \"http://localhost:3002/api/v1/admin/payouts/summary?dateFrom=2026-06-01T06:00:00.000Z&dateTo=2026-06-17T05:59:59.999Z\")",
+      "Bash(curl *)",
+      "PowerShell(npm *)",
+      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 40)",
+      "PowerShell(npx tsc --noEmit 2>&1)"
     ]
   }
 }

@@ -9,11 +9,10 @@ import {
   CreditCard,
   List,
   Bookmark,
-  Settings,
-  Users,
   LayoutDashboardIcon,
   User2,
   Tags,
+  Wallet,
 } from "lucide-react";
 import { MenuNavItem, NavItem, RoleNavItem } from "@/types/dashboard-nav";
 
@@ -125,14 +124,9 @@ export const adminDashboardItems: NavItem[] = [
     icon: <Tags className="h-4 w-4 mr-2" />,
   },
   {
-    title: "Usuarios",
-    href: "/dashboard/users",
-    icon: <Users className="h-4 w-4 mr-2" />,
-  },
-  {
-    title: "Configuración",
-    href: "/dashboard/settings",
-    icon: <Settings className="h-4 w-4 mr-2" />,
+    title: "Pagos",
+    href: "/dashboard/payouts",
+    icon: <Wallet className="h-4 w-4 mr-2" />,
   },
 ];
 

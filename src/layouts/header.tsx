@@ -56,7 +56,12 @@ export function Header() {
 
   if (user) {
     if (role === "admin" || role === "host") {
-      menuToRender = authenticatedHostOrAdminMenuItems;
+      menuToRender = authenticatedHostOrAdminMenuItems.map((item) => {
+        if (item.label === "Panel" && role === "admin") {
+          return { ...item, href: "/dashboard/payouts" };
+        }
+        return item;
+      });
     } else {
       menuToRender = authenticatedUserMenuItems;
     }

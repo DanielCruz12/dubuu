@@ -1,0 +1,103 @@
+{
+  "title": "Pagos y Ganancias",
+  "description": "Administra los pagos a hosts y monitorea tus ganancias por comisión",
+  "cards": {
+    "collected": {
+      "label": "Total Recaudado",
+      "short": "Todo el dinero recibido por las reservas.",
+      "long": "Es la suma de todo lo que pagaron los huéspedes por sus reservas durante el período seleccionado."
+    },
+    "commission": {
+      "label": "Comisión (12%)",
+      "short": "Lo que gana la plataforma por cada reserva.",
+      "long": "Es el porcentaje que la plataforma cobra por cada reserva realizada. Este monto representa tus ganancias como plataforma."
+    },
+    "payable": {
+      "label": "Pagable a Hosts",
+      "short": "Dinero que les corresponde recibir a los hosts.",
+      "long": "Es el dinero que debes pagar a los hosts por las reservas completadas, después de descontar la comisión de la plataforma."
+    },
+    "paid": {
+      "label": "Pagado",
+      "short": "Dinero que ya fue enviado a los hosts.",
+      "long": "Es el total de pagos que ya realizaste a los hosts. Estas reservas ya fueron liquidadas."
+    },
+    "outstanding": {
+      "label": "Saldo Pendiente",
+      "short": "Dinero que aún falta pagar a los hosts.",
+      "long": "Es el monto que todavía está pendiente de enviar a los hosts. Cuando proceses el pago, pasará automáticamente a \"Pagado\"."
+    }
+  },
+  "trend": {
+    "vsLastMonth": "{{trend}} vs mes anterior",
+    "bookings": "{{count}} reservas"
+  },
+  "filters": {
+    "period": {
+      "week": "Esta semana",
+      "month": "Este mes",
+      "year": "Este año",
+      "custom": "Personalizado"
+    },
+    "dateRange": "Rango de fechas",
+    "allHosts": "Todos los hosts",
+    "searchHost": "Buscar host...",
+    "noHostsFound": "No encontrado",
+    "export": "Exportar"
+  },
+  "tabs": {
+    "pending": "Pendientes",
+    "history": "Historial"
+  },
+  "table": {
+    "host": "Host",
+    "product": "Producto",
+    "total": "Total",
+    "commission": "Comisión",
+    "hostEarnings": "Ganancia Host",
+    "status": "Estado",
+    "action": "Acción",
+    "pay": "Pagar",
+    "date": "Fecha",
+    "amountPaid": "Monto Pagado",
+    "method": "Método",
+    "notes": "Notas",
+    "booking": "Reserva",
+    "selected": "{{count}} seleccionados",
+    "markAsPaid": "Marcar como Pagado",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "pageOf": "{{page}} de {{total}}",
+    "status_pending": "Pendiente",
+    "status_paid": "Pagado"
+  },
+  "empty": {
+    "pendingTitle": "No hay pagos pendientes",
+    "pendingDesc": "Cuando existan reservas finalizadas, aparecerán aquí para que puedas procesar los pagos a los hosts.",
+    "historyTitle": "No hay historial de pagos",
+    "historyDesc": "Los pagos que realices a los hosts aparecerán registrados aquí junto con su método de pago y comprobante.",
+    "viewHistory": "Ver historial de pagos"
+  },
+  "confirmDialog": {
+    "title": "Confirmar pago",
+    "descriptionSingle": "¿Marcar esta reserva como pagada al host?",
+    "descriptionBatch": "¿Marcar {{count}} reservas como pagadas?",
+    "paymentMethod": "Método de pago",
+    "paymentMethodPlaceholder": "Efectivo, transferencia, etc.",
+    "notes": "Notas",
+    "notesPlaceholder": "Número de referencia, comprobante u otra información...",
+    "attachment": "Comprobante (opcional)",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "uploading": "Subiendo..."
+  },
+  "toast": {
+    "markedAsPaid": "Marcado como pagado",
+    "batchMarkedAsPaid": "{{count}} reservas marcadas como pagadas",
+    "errorMarking": "Error al marcar como pagado"
+  },
+  "error": {
+    "title": "Error",
+    "description": "No se pudieron cargar los datos. Intenta recargar la página."
+  }
+}

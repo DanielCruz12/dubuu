@@ -1,0 +1,103 @@
+{
+  "title": "Payouts & Earnings",
+  "description": "Manage host payouts and track your commission earnings",
+  "cards": {
+    "collected": {
+      "label": "Total Collected",
+      "short": "All money received from bookings.",
+      "long": "The sum of everything guests paid for their bookings during the selected period."
+    },
+    "commission": {
+      "label": "Commission (12%)",
+      "short": "What the platform earns per booking.",
+      "long": "The percentage the platform charges for each completed booking. This amount represents your earnings as a platform."
+    },
+    "payable": {
+      "label": "Payable to Hosts",
+      "short": "Money owed to hosts.",
+      "long": "The amount you must pay hosts for completed bookings, after deducting the platform commission."
+    },
+    "paid": {
+      "label": "Paid Out",
+      "short": "Money already sent to hosts.",
+      "long": "The total payments you've already made to hosts. These bookings have been settled."
+    },
+    "outstanding": {
+      "label": "Outstanding Balance",
+      "short": "Money still owed to hosts.",
+      "long": "The amount still pending to be sent to hosts. Once you process the payment, it will automatically move to \"Paid Out\"."
+    }
+  },
+  "trend": {
+    "vsLastMonth": "{{trend}} vs last month",
+    "bookings": "{{count}} bookings"
+  },
+  "filters": {
+    "period": {
+      "week": "This week",
+      "month": "This month",
+      "year": "This year",
+      "custom": "Custom"
+    },
+    "dateRange": "Date range",
+    "allHosts": "All hosts",
+    "searchHost": "Search host...",
+    "noHostsFound": "Not found",
+    "export": "Export"
+  },
+  "tabs": {
+    "pending": "Pending",
+    "history": "History"
+  },
+  "table": {
+    "host": "Host",
+    "product": "Product",
+    "total": "Total",
+    "commission": "Commission",
+    "hostEarnings": "Host Earnings",
+    "status": "Status",
+    "action": "Action",
+    "pay": "Pay",
+    "date": "Date",
+    "amountPaid": "Amount Paid",
+    "method": "Method",
+    "notes": "Notes",
+    "booking": "Booking",
+    "selected": "{{count}} selected",
+    "markAsPaid": "Mark as Paid",
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "{{page}} of {{total}}",
+    "status_pending": "Pending",
+    "status_paid": "Paid"
+  },
+  "empty": {
+    "pendingTitle": "No pending payouts",
+    "pendingDesc": "Once bookings are completed, they will appear here for you to process host payments.",
+    "historyTitle": "No payment history",
+    "historyDesc": "Payments you make to hosts will be recorded here along with their method and receipt.",
+    "viewHistory": "View payment history"
+  },
+  "confirmDialog": {
+    "title": "Confirm payment",
+    "descriptionSingle": "Mark this booking as paid to the host?",
+    "descriptionBatch": "Mark {{count}} bookings as paid?",
+    "paymentMethod": "Payment method",
+    "paymentMethodPlaceholder": "Cash, bank transfer, etc.",
+    "notes": "Notes",
+    "notesPlaceholder": "Reference number, receipt, or other info...",
+    "attachment": "Receipt (optional)",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "uploading": "Uploading..."
+  },
+  "toast": {
+    "markedAsPaid": "Marked as paid",
+    "batchMarkedAsPaid": "{{count}} bookings marked as paid",
+    "errorMarking": "Error marking as paid"
+  },
+  "error": {
+    "title": "Error",
+    "description": "Could not load data. Try reloading the page."
+  }
+}
