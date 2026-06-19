@@ -34,8 +34,7 @@ function clean(s: string) {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id, slug } = params;
 
-  const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://www.dubuu.com";
+  const siteUrl = "https://www.dubuu.com";
 
   const pageUrl = `${siteUrl}/home/${slug}/${id}`;
 
