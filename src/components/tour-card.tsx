@@ -44,7 +44,6 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
     images,
     average_rating,
     total_reviews,
-    address,
     product_category,
     product_type,
   } = props;
@@ -54,7 +53,6 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
   const [touchEnd, setTouchEnd] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
-  console.log(address);
   const router = useRouter();
   const { user } = useUser();
   const convert = formatUsd;

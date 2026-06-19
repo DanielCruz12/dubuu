@@ -6,8 +6,10 @@ type Props = {
   params: { slug: string; id: string };
 };
 
+const RENTAL_TYPE_NAMES = new Set(["rental", "renta de autos"]);
+
 function getPrice(product: IProduct): number {
-  if (product.product_type?.name === "rental") {
+  if (product.product_type?.name && RENTAL_TYPE_NAMES.has(product.product_type.name)) {
     const rental = (product as IRentalProduct).rental;
     if (rental) {
       const perDay = Number.parseFloat(String(rental.price_per_day ?? ""));
@@ -62,6 +64,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const apiBase = (process.env.BACKEND_URL || "").replace(/\/$/, "");
     const res = await fetch(`${apiBase}/api/v1/products/${id}?locale=es`, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; Dubuu/1.0)",
+        Accept: "application/json",
+        "Accept-Language": "es-SV,es;q=0.9",
+      },
       next: { revalidate: 3600 },
     });
 
@@ -70,7 +77,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const product: IProduct = await res.json();
     const banner = product.banner?.trim() || "";
     const price = getPrice(product);
-    const isRental = product.product_type?.name === "rental";
+    const isRental = product.product_type?.name
+      ? RENTAL_TYPE_NAMES.has(product.product_type.name)
+      : false;
     const unit = isRental ? "día" : "persona";
     const priceStr =
       price > 0 ? `Desde $${price.toFixed(2)}/${unit}` : "";

@@ -64,7 +64,10 @@
       "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\daniel\\\\Desktop\\\\projects\\\\personal_work\\\\projects\\\\dubuu\\\\src\\\\app\\\\rental\" -Recurse | ForEach-Object { $_.FullName })",
       "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\daniel\\\\Desktop\\\\projects\\\\personal_work\\\\projects\\\\dubuu\\\\src\\\\app\\\\home\" -Recurse | ForEach-Object { $_.FullName })",
       "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\daniel\\\\Desktop\\\\projects\\\\personal_work\\\\projects\" -Directory | ForEach-Object { $_.Name })",
-      "WebFetch(domain:www.dubuu.com)"
+      "WebFetch(domain:www.dubuu.com)",
+      "Bash(nslookup dubuu-api-node-online.online)",
+      "Bash(nslookup \"dubuu-api-node-online.up.railway.app\")",
+      "Bash(nslookup www.dubuu.com)"
     ]
   }
 }
