@@ -62,7 +62,8 @@
       "Bash(Select-Object -ExpandProperty FullName)",
       "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\daniel\\\\Desktop\\\\projects\\\\personal_work\\\\projects\\\\dubuu\\\\src\\\\app\" -Recurse -Directory | ForEach-Object { $_.FullName })",
       "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\daniel\\\\Desktop\\\\projects\\\\personal_work\\\\projects\\\\dubuu\\\\src\\\\app\\\\rental\" -Recurse | ForEach-Object { $_.FullName })",
-      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\daniel\\\\Desktop\\\\projects\\\\personal_work\\\\projects\\\\dubuu\\\\src\\\\app\\\\home\" -Recurse | ForEach-Object { $_.FullName })"
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\daniel\\\\Desktop\\\\projects\\\\personal_work\\\\projects\\\\dubuu\\\\src\\\\app\\\\home\" -Recurse | ForEach-Object { $_.FullName })",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\daniel\\\\Desktop\\\\projects\\\\personal_work\\\\projects\" -Directory | ForEach-Object { $_.Name })"
     ]
   }
 }

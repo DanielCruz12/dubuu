@@ -1,9 +1,7 @@
 "use client"
 
 import type React from "react"
-
-import Image from "next/image"
-import { useState } from "react"
+import { useCallback, useState } from "react"
 import Lightbox from "yet-another-react-lightbox"
 import { useLanguage } from "@/lib/i18n-context"
 import Captions from "yet-another-react-lightbox/plugins/captions"
@@ -15,6 +13,34 @@ import Share from "yet-another-react-lightbox/plugins/share"
 import { Button } from "../ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
+const FALLBACK_IMG = "/logo.svg"
+
+function ImgWithFallback({
+  src,
+  alt,
+  className = "",
+  eager,
+}: {
+  src: string
+  alt: string
+  className?: string
+  eager?: boolean
+}) {
+  const [didError, setDidError] = useState(false)
+  const onError = useCallback(() => setDidError(true), [])
+
+  return (
+    <img
+      src={didError ? FALLBACK_IMG : src}
+      alt={alt}
+      crossOrigin="anonymous"
+      loading={eager ? "eager" : "lazy"}
+      onError={onError}
+      className={`absolute inset-0 w-full h-full ${className}`}
+    />
+  )
+}
+
 export default function ImageCollage({
   images,
   banner,
@@ -22,7 +48,6 @@ export default function ImageCollage({
 }: {
   images: string[]
   banner: string
-  /** Cambia cuando el contenido cambia (p.ej. product.updated_at) para bustear caché. */
   cacheKey?: string
 }) {
   const { t } = useLanguage()
@@ -33,13 +58,11 @@ export default function ImageCollage({
     const trimmed = (src ?? "").trim()
     if (!trimmed) return trimmed
     if (!key?.trim()) return trimmed
-    // Solo para URLs remotas: así evitamos ensuciar rutas locales.
     if (!/^https?:\/\//i.test(trimmed)) return trimmed
     const v = encodeURIComponent(key)
     return trimmed.includes("?") ? `${trimmed}&v=${v}` : `${trimmed}?v=${v}`
   }
 
-  // Create a new array with the banner as the first image, followed by the rest (deduped)
   const allImages = (() => {
     const candidates = [banner, ...(images || [])].filter(
       (src): src is string => typeof src === "string" && src.trim().length > 0,
@@ -52,13 +75,11 @@ export default function ImageCollage({
     })
   })()
 
-  // Format all images for the lightbox
   const formattedImages = allImages.map((src, index) => ({
     src: withCacheKey(src, cacheKey),
     alt: `${t("home.imageCollage.image")} ${index + 1}`,
   }))
 
-  // Maximum number of images to show in the grid before "see more" button
   const MAX_VISIBLE_IMAGES = 5
   const hasMoreImages = allImages.length > MAX_VISIBLE_IMAGES
 
@@ -73,6 +94,8 @@ export default function ImageCollage({
     e.stopPropagation()
     setCurrentImageIndex((prev) => (prev === 0 ? allImages.length - 1 : prev - 1))
   }
+
+  const imgSrc = (src: string) => withCacheKey(src, cacheKey) || FALLBACK_IMG
 
   return (
     <section className="w-full">
@@ -90,12 +113,10 @@ export default function ImageCollage({
                 setOpen(true)
               }}
             >
-              <Image
-                src={withCacheKey(image, cacheKey) || "/logo.svg"}
+              <ImgWithFallback
+                src={imgSrc(image)}
                 alt={`${t("home.imageCollage.image")} ${index + 1}`}
-                fill
                 className="object-cover"
-                sizes="(max-width: 768px) 100vw"
               />
             </div>
           ))}
@@ -145,13 +166,11 @@ export default function ImageCollage({
             setOpen(true)
           }}
         >
-          <Image
-            src={withCacheKey(banner, cacheKey) || "/logo.svg"}
+          <ImgWithFallback
+            src={imgSrc(banner)}
             alt={t("home.imageCollage.bannerAlt")}
-            fill
             className="object-cover transition-transform duration-500 hover:scale-105"
-            sizes="(max-width: 768px) 100vw, 50vw"
-            priority
+            eager
           />
         </div>
 
@@ -165,12 +184,10 @@ export default function ImageCollage({
               setOpen(true)
             }}
           >
-            <Image
-              src={withCacheKey(image, cacheKey) || "/logo.svg"}
+            <ImgWithFallback
+              src={imgSrc(image)}
               alt={`${t("home.imageCollage.image")} ${index + 2}`}
-              fill
               className="object-cover transition-transform duration-500 hover:scale-105"
-              sizes="25vw"
             />
           </div>
         ))}
@@ -185,12 +202,10 @@ export default function ImageCollage({
               setOpen(true)
             }}
           >
-            <Image
-              src={withCacheKey(image, cacheKey) || "/logo.svg"}
+            <ImgWithFallback
+              src={imgSrc(image)}
               alt={`${t("home.imageCollage.image")} ${index + 4}`}
-              fill
               className="object-cover transition-transform duration-500 hover:scale-105"
-              sizes="25vw"
             />
 
             {/* Show "See more" overlay on the last visible image */}
