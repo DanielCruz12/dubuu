@@ -29,15 +29,6 @@ function clean(s: string) {
   return (s ?? "").replace(/\s+/g, " ").trim();
 }
 
-function getApiUrl(): string {
-  // Misma lógica que next.config.mjs para los rewrites
-  const backendUrl =
-    process.env.BACKEND_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    "https://dubuu-back-development.up.railway.app";
-  return backendUrl.replace(/\/$/, "");
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id, slug } = params;
 
@@ -51,12 +42,28 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description:
       "Diseñamos experiencias únicas de viaje en El Salvador y Centroamérica.",
     alternates: { canonical: pageUrl },
+    openGraph: {
+      title: "Dubuu - Experiencias de Viaje Únicas",
+      description:
+        "Diseñamos experiencias únicas de viaje en El Salvador y Centroamérica.",
+      url: pageUrl,
+      siteName: "Dubuu",
+      locale: "es_SV",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Dubuu - Experiencias de Viaje Únicas",
+      description:
+        "Diseñamos experiencias únicas de viaje en El Salvador y Centroamérica.",
+    },
   };
 
   try {
-    const apiUrl = getApiUrl();
-    const res = await fetch(`${apiUrl}/api/v1/products/${id}`, {
+    // URL relativa: Next.js la resuelve internamente usando el rewrite /backend → BACKEND_URL
+    const res = await fetch(`/backend/api/v1/products/${id}`, {
       next: { revalidate: 3600 },
+      headers: { "Accept-Language": "es" },
     });
 
     if (!res.ok) return defaultMetadata;
