@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client"
 
 import type React from "react"
@@ -33,7 +34,6 @@ function ImgWithFallback({
     <img
       src={didError ? FALLBACK_IMG : src}
       alt={alt}
-      crossOrigin="anonymous"
       loading={eager ? "eager" : "lazy"}
       onError={onError}
       className={`absolute inset-0 w-full h-full ${className}`}
