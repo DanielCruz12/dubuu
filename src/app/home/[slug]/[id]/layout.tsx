@@ -62,15 +62,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 
   try {
-    const apiBase = (process.env.BACKEND_URL || "").replace(/\/$/, "");
-    const res = await fetch(`${apiBase}/api/v1/products/${id}?locale=es`, {
-      headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; Dubuu/1.0)",
-        Accept: "application/json",
-        "Accept-Language": "es-SV,es;q=0.9",
+    const res = await fetch(
+      `${siteUrl}/backend/api/v1/products/${id}?locale=es`,
+      {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (compatible; Dubuu/1.0)",
+          Accept: "application/json",
+          "Accept-Language": "es-SV,es;q=0.9",
+        },
+        next: { revalidate: 3600 },
       },
-      next: { revalidate: 3600 },
-    });
+    );
 
     if (!res.ok) return defaultMetadata;
 
