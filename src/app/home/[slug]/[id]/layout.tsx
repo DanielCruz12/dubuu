@@ -44,64 +44,75 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL || "https://www.dubuu.com";
 
-  const apiUrl = getApiUrl();
-  const res = await fetch(`${apiUrl}/api/v1/products/${id}`, {
-    next: { revalidate: 3600 },
-  });
-
-  if (!res.ok) throw new Error(`API ${res.status}`);
-
-  const product: IProduct = await res.json();
-  const banner = product.banner?.trim() || "";
-  const price = getPrice(product);
-  const isRental = product.product_type?.name === "rental";
-  const unit = isRental ? "día" : "persona";
-  const priceStr =
-    price > 0 ? `Desde $${price.toFixed(2)}/${unit}` : "";
-
-  const title = priceStr
-    ? `${product.name} — ${priceStr}`
-    : product.name;
-
-  const desc = clean(product.description ?? "");
-  const shortDesc = desc.length > 160 ? desc.substring(0, 157) + "..." : desc;
-  const ogDescription = priceStr
-    ? `${priceStr}. ${shortDesc}`
-    : shortDesc;
-
   const pageUrl = `${siteUrl}/home/${slug}/${id}`;
 
-  return {
-    title,
-    description: ogDescription,
+  const defaultMetadata: Metadata = {
+    title: "Dubuu - Experiencias de Viaje Únicas",
+    description:
+      "Diseñamos experiencias únicas de viaje en El Salvador y Centroamérica.",
     alternates: { canonical: pageUrl },
-    openGraph: {
-      type: "website",
-      locale: "es_SV",
-      url: pageUrl,
-      siteName: "Dubuu",
-      title,
-      description: ogDescription,
-      ...(banner && {
-        images: [
-          {
-            url: banner,
-            width: 1200,
-            height: 630,
-            alt: product.name,
-          },
-        ],
-      }),
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description: ogDescription,
-      ...(banner && { images: [banner] }),
-      creator: "@Dubuu_sv",
-      site: "@Dubuu_sv",
-    },
   };
+
+  try {
+    const apiUrl = getApiUrl();
+    const res = await fetch(`${apiUrl}/api/v1/products/${id}`, {
+      next: { revalidate: 3600 },
+    });
+
+    if (!res.ok) return defaultMetadata;
+
+    const product: IProduct = await res.json();
+    const banner = product.banner?.trim() || "";
+    const price = getPrice(product);
+    const isRental = product.product_type?.name === "rental";
+    const unit = isRental ? "día" : "persona";
+    const priceStr =
+      price > 0 ? `Desde $${price.toFixed(2)}/${unit}` : "";
+
+    const title = priceStr
+      ? `${product.name} — ${priceStr}`
+      : product.name;
+
+    const desc = clean(product.description ?? "");
+    const shortDesc = desc.length > 160 ? desc.substring(0, 157) + "..." : desc;
+    const ogDescription = priceStr
+      ? `${priceStr}. ${shortDesc}`
+      : shortDesc;
+
+    return {
+      title,
+      description: ogDescription,
+      alternates: { canonical: pageUrl },
+      openGraph: {
+        type: "website",
+        locale: "es_SV",
+        url: pageUrl,
+        siteName: "Dubuu",
+        title,
+        description: ogDescription,
+        ...(banner && {
+          images: [
+            {
+              url: banner,
+              width: 1200,
+              height: 630,
+              alt: product.name,
+            },
+          ],
+        }),
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description: ogDescription,
+        ...(banner && { images: [banner] }),
+        creator: "@Dubuu_sv",
+        site: "@Dubuu_sv",
+      },
+    };
+  } catch {
+    return defaultMetadata;
+  }
 }
 
 export default function ProductDetailLayout({

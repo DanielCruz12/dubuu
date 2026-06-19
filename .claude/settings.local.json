@@ -58,7 +58,11 @@
       "Bash(curl *)",
       "PowerShell(npm *)",
       "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 40)",
-      "PowerShell(npx tsc --noEmit 2>&1)"
+      "PowerShell(npx tsc --noEmit 2>&1)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\daniel\\\\Desktop\\\\projects\\\\personal_work\\\\projects\\\\dubuu\\\\src\\\\app\" -Recurse -Directory | ForEach-Object { $_.FullName })",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\daniel\\\\Desktop\\\\projects\\\\personal_work\\\\projects\\\\dubuu\\\\src\\\\app\\\\rental\" -Recurse | ForEach-Object { $_.FullName })",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\daniel\\\\Desktop\\\\projects\\\\personal_work\\\\projects\\\\dubuu\\\\src\\\\app\\\\home\" -Recurse | ForEach-Object { $_.FullName })"
     ]
   }
 }
