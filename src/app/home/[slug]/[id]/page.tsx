@@ -349,7 +349,6 @@ export default function ProductPage() {
                 title={shareData.title}
                 url={shareData.url}
                 description={shareData.description}
-                image={shareData.image}
               />
               <Button
                 variant="ghost"

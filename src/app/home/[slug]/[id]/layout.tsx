@@ -60,10 +60,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 
   try {
-    // URL relativa: Next.js la resuelve internamente usando el rewrite /backend → BACKEND_URL
-    const res = await fetch(`/backend/api/v1/products/${id}`, {
+    const apiBase = (process.env.BACKEND_URL || "").replace(/\/$/, "");
+    const res = await fetch(`${apiBase}/api/v1/products/${id}?locale=es`, {
       next: { revalidate: 3600 },
-      headers: { "Accept-Language": "es" },
     });
 
     if (!res.ok) return defaultMetadata;
