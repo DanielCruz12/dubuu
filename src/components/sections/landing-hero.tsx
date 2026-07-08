@@ -2,9 +2,25 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import { motion, AnimatePresence, animate } from "framer-motion";
 import { useLanguage } from "@/lib/i18n-context";
+import { Button } from "@/components/ui/button";
 import LandingSearchWidget from "@/components/sections/landing-search-widget";
+
+const HEADER_OFFSET_PX = 80;
+
+function smoothScrollToId(id: string) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const targetY =
+    el.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET_PX;
+  animate(window.scrollY, targetY, {
+    duration: 1.1,
+    ease: [0.22, 1, 0.36, 1],
+    onUpdate: (value) => window.scrollTo(0, value),
+  });
+}
 
 const HERO_SLIDES = [
   {
@@ -35,10 +51,8 @@ export default function LandingHero() {
   }, []);
 
   return (
-    <section className="relative flex min-h-[100svh] w-full flex-col">
-      {/* Fondo: el crossfade y el zoom viven en su propio contenedor con
-          overflow-hidden para no recortar el buscador flotante ni el texto. */}
-      <div className="absolute inset-0 overflow-hidden">
+    <section className="relative w-full bg-zinc-950">
+      <div className="absolute inset-0 h-[85vh] min-h-[560px] overflow-hidden">
         <AnimatePresence mode="sync">
           <motion.div
             key={activeIndex}
@@ -63,60 +77,61 @@ export default function LandingHero() {
                 fill
                 priority={activeIndex === 0}
                 sizes="100vw"
-                className="object-cover"
+                className="object-cover opacity-60"
               />
             </motion.div>
           </motion.div>
         </AnimatePresence>
-        <div className="absolute inset-0 bg-gradient-to-b from-coast-900/75 via-coast-900/30 to-coast-900/85" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-b from-zinc-950/40 via-zinc-950/70 to-zinc-950" />
       </div>
 
-      <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 pb-28 pt-32 text-center text-white sm:pb-24">
-        <motion.p
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          className="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-sand-300"
-        >
-          El Salvador · Centroamérica
-        </motion.p>
+      <div className="relative z-10 mx-auto flex max-w-4xl flex-col items-center px-4 pb-16 pt-40 text-center sm:pt-48">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.15 }}
-          className="max-w-3xl"
+          transition={{ duration: 0.8 }}
         >
-          <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold leading-[1.08] tracking-tight text-balance">
-            Vive El Salvador.
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold leading-[1.05] tracking-tight text-white text-balance">
+            {t("landing.hero.title")}
           </h1>
-          <p className="mt-2 font-serif italic text-lg sm:text-2xl md:text-3xl text-sand-200 text-balance">
-            Feel the destination.
-          </p>
-          <p className="mt-6 text-base sm:text-lg text-white/85 max-w-xl mx-auto text-balance">
+          <p className="mx-auto mt-4 max-w-2xl text-lg sm:text-xl text-zinc-400 text-balance">
             {t("landing.hero.subtitle")}
           </p>
         </motion.div>
-      </div>
 
-      <div className="relative z-20 px-4">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.45 }}
-          className="mx-auto w-full max-w-3xl translate-y-1/2"
+          transition={{ duration: 0.7, delay: 0.15 }}
+          className="mt-8 flex flex-col items-center gap-4 sm:flex-row"
+        >
+          <Button
+            asChild
+            size="lg"
+            className="rounded-full bg-white px-8 text-zinc-950 hover:bg-zinc-200"
+          >
+            <Link href="/home">{t("landing.hero.primaryCta")}</Link>
+          </Button>
+          <a
+            href="#testimonios"
+            onClick={(e) => {
+              e.preventDefault();
+              smoothScrollToId("testimonios");
+            }}
+            className="text-sm font-medium text-zinc-300 underline underline-offset-4 hover:text-white cursor-pointer"
+          >
+            {t("landing.hero.secondaryCta")}
+          </a>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.3 }}
+          className="mt-14 w-full"
         >
           <LandingSearchWidget />
         </motion.div>
-      </div>
-
-      <div
-        className="absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-1 text-white/70 sm:flex motion-safe:animate-bounce"
-        aria-hidden="true"
-      >
-        <span className="text-[10px] uppercase tracking-[0.2em]">
-          {t("landing.hero.scroll")}
-        </span>
       </div>
     </section>
   );

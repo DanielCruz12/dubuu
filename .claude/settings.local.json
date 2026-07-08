@@ -70,7 +70,9 @@
       "Bash(nslookup www.dubuu.com)",
       "Bash(xargs -n1 basename)",
       "Bash(echo \"EXIT_CODE=$?\")",
-      "Skill(run)"
+      "Skill(run)",
+      "WebFetch(domain:ponder.ai)",
+      "Bash(echo \"TSC_EXIT=$?\")"
     ]
   }
 }

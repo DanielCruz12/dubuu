@@ -3,8 +3,11 @@ import Script from "next/script";
 import UpTop from "@/components/up-top";
 import LandingHero from "@/components/sections/landing-hero";
 import FeaturedExperiences from "@/components/sections/featured-experiences";
+import QuoteHighlightSection from "@/components/sections/quote-highlight-section";
 import VerticalsSection from "@/components/sections/verticals-section";
+import HowItWorksSection from "@/components/sections/how-it-works-section";
 import TrustSection from "@/components/sections/trust-section";
+import FaqSection from "@/components/sections/faq-section";
 import FinalCta from "@/components/sections/final-cta";
 
 export const metadata: Metadata = {
@@ -63,7 +66,7 @@ const jsonLd = {
 
 export default function LandingPage() {
   return (
-    <div className="w-full overflow-x-hidden">
+    <div className="w-full overflow-x-hidden bg-zinc-950">
       <UpTop />
       <Script
         id="landing-schema"
@@ -73,8 +76,11 @@ export default function LandingPage() {
 
       <LandingHero />
       <FeaturedExperiences />
+      <QuoteHighlightSection />
       <VerticalsSection />
+      <HowItWorksSection />
       <TrustSection />
+      <FaqSection />
       <FinalCta />
     </div>
   );

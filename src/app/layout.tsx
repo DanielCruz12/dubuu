@@ -1,5 +1,5 @@
 import type React from "react";
-import { Inter, Fraunces } from "next/font/google";
+import { Hanken_Grotesk } from "next/font/google";
 import GlobalProviders from "../components/providers/global-providers";
 import type { Metadata } from "next";
 import Script from "next/script";
@@ -8,17 +8,11 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
-const inter = Inter({
+const hankenGrotesk = Hanken_Grotesk({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
-});
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  variable: "--font-serif",
-  display: "swap",
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -171,7 +165,7 @@ export default async function RootLayout({
           </Script>
         </head>
         <body
-          className={`${inter.variable} ${fraunces.variable} ${inter.className} flex min-h-screen flex-col`}
+          className={`${hankenGrotesk.variable} ${hankenGrotesk.className} flex min-h-screen flex-col`}
         >
           <SpeedInsights />
           <Analytics />

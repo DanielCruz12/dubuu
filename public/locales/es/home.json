@@ -159,7 +159,10 @@
 	"landing": {
 		"hero": {
 			"subtitle": "Tours privados, autos premium y propiedades exclusivas diseñados a tu medida en El Salvador y Centroamérica.",
-			"scroll": "Descubre más"
+			"scroll": "Descubre más",
+			"primaryCta": "Explorar experiencias",
+			"secondaryCta": "Ver testimonios",
+			"title": "Vive El Salvador."
 		},
 		"search": {
 			"ariaLabel": "Buscar experiencias en Dubuu",
@@ -238,7 +241,68 @@
 			"title": "Tu próxima aventura en El Salvador empieza aquí",
 			"subtitle": "Reserva tours privados, vehículos premium o contáctanos para planear algo a tu medida.",
 			"primaryCta": "Explorar experiencias",
-			"secondaryCta": "Hablar con nosotros"
+			"secondaryCta": "Hablar con nosotros",
+			"newsletterTitle": "Recibe ideas de viaje antes que nadie",
+			"newsletterSubtitle": "Sin spam. Solo lo bueno.",
+			"newsletterPlaceholder": "Tu correo electrónico",
+			"newsletterCta": "Suscribirme",
+			"newsletterSuccess": "¡Gracias! Ya estás suscrito.",
+			"newsletterError": "Algo salió mal. Intenta de nuevo.",
+			"newsletterInvalid": "Ingresa un correo electrónico válido"
+		},
+		"howItWorks": {
+			"eyebrow": "Cómo funciona",
+			"title": "De la búsqueda a vivir la experiencia",
+			"step1": {
+				"title": "Explora",
+				"description": "Descubre tours privados, vehículos premium y próximamente propiedades exclusivas en todo El Salvador."
+			},
+			"step2": {
+				"title": "Elige tus fechas",
+				"description": "Selecciona destino, fechas y tipo de experiencia. Disponibilidad real, sin sorpresas."
+			},
+			"step3": {
+				"title": "Reserva y paga seguro",
+				"description": "Pagos protegidos con cifrado de extremo a extremo. Tarjeta, Google Pay o cripto."
+			},
+			"step4": {
+				"title": "Vive la experiencia",
+				"description": "Anfitriones locales verificados te reciben. Solo queda disfrutar El Salvador."
+			}
+		},
+		"faq": {
+			"eyebrow": "Preguntas frecuentes",
+			"title": "Respuestas rápidas para viajeros",
+			"fallback": "¿No encontraste lo que buscabas? Escríbenos y te respondemos directamente.",
+			"writeToUs": "Escríbenos",
+			"q1": {
+				"question": "¿Cómo reservo un tour o vehículo?",
+				"answer": "Busca por destino y fechas desde la página principal, elige la experiencia y reserva en minutos. Recibirás confirmación al instante."
+			},
+			"q2": {
+				"question": "¿Los pagos son seguros?",
+				"answer": "Sí. Todos los pagos se procesan con cifrado de extremo a extremo y aceptamos tarjeta, Google Pay y Bitcoin."
+			},
+			"q3": {
+				"question": "¿Puedo cancelar o cambiar mi reserva?",
+				"answer": "Cada tour o alquiler tiene su propia política de cancelación, visible antes de reservar y en tu confirmación."
+			},
+			"q4": {
+				"question": "¿Los anfitriones están verificados?",
+				"answer": "Sí, todos los tours y vehículos pasan por un proceso de aprobación antes de publicarse en Dubuu."
+			},
+			"q5": {
+				"question": "¿Cuándo estarán disponibles las propiedades?",
+				"answer": "Estamos preparando el lanzamiento de propiedades exclusivas. Puedes dejar tu correo para que te avisemos primero."
+			},
+			"q6": {
+				"question": "¿En qué idiomas puedo reservar?",
+				"answer": "Dubuu está disponible en español e inglés, y muchos de nuestros anfitriones hablan ambos idiomas."
+			}
+		},
+		"quoteHighlight": {
+			"text": "Dubuu es reconocer lo mejor que El Salvador tiene para ofrecer: el detalle, la calidez y los anfitriones que hacen de cada viaje algo inolvidable.",
+			"name": "Daniel Cruz"
 		}
 	},
 	"productDetails": {

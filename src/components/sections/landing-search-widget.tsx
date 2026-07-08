@@ -54,19 +54,18 @@ export default function LandingSearchWidget() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full max-w-3xl mx-auto rounded-2xl md:rounded-full bg-white/95 backdrop-blur-md shadow-2xl border border-white/60 p-2 md:p-2 flex flex-col md:flex-row md:items-center gap-1.5 md:gap-0"
+      className="w-full max-w-3xl mx-auto rounded-2xl md:rounded-full bg-white/[0.06] backdrop-blur-xl shadow-2xl border border-white/10 p-2 md:p-2 flex flex-col md:flex-row md:items-center gap-1.5 md:gap-0"
       role="search"
       aria-label={t("landing.search.ariaLabel")}
     >
-      <div className="flex-1 min-w-0 flex items-center gap-2 px-4 py-2.5 md:py-2 rounded-xl md:rounded-full hover:bg-coast-50/70 transition-colors">
-        <MapPin
-          className="h-4 w-4 text-coast-600 shrink-0"
-          aria-hidden="true"
-        />
+      <div className="flex-1 min-w-0 flex items-center gap-3 px-4 py-2.5 md:py-2 rounded-xl md:rounded-full hover:bg-white/5 transition-colors">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/[0.04]">
+          <MapPin className="h-4 w-4 text-zinc-300" aria-hidden="true" />
+        </span>
         <div className="flex-1 min-w-0 text-left">
           <label
             htmlFor="landing-destination"
-            className="block text-[11px] font-semibold uppercase tracking-wide text-coast-700"
+            className="block text-[11px] font-semibold uppercase tracking-wide text-zinc-400"
           >
             {t("landing.search.destinationLabel")}
           </label>
@@ -77,13 +76,13 @@ export default function LandingSearchWidget() {
             value={destination}
             onChange={(e) => setDestination(e.target.value)}
             placeholder={t("landing.search.destinationPlaceholder")}
-            className="h-auto border-none p-0 shadow-none text-sm text-gray-900 placeholder:text-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 autofill:shadow-[inset_0_0_0px_1000px_white] autofill:[-webkit-text-fill-color:theme(colors.gray.900)]"
+            className="h-auto border-none bg-transparent p-0 shadow-none text-sm text-white placeholder:text-zinc-500 focus-visible:ring-0 focus-visible:ring-offset-0 autofill:shadow-[inset_0_0_0px_1000px_theme(colors.zinc.900)] autofill:[-webkit-text-fill-color:white]"
           />
         </div>
       </div>
 
       <div
-        className="hidden md:block h-8 w-px bg-border/60 shrink-0"
+        className="hidden md:block h-8 w-px bg-white/10 shrink-0"
         aria-hidden="true"
       />
 
@@ -91,23 +90,25 @@ export default function LandingSearchWidget() {
         <PopoverTrigger asChild>
           <button
             type="button"
-            className="flex-1 min-w-0 flex items-center gap-2 px-4 py-2.5 md:py-2 rounded-xl md:rounded-full hover:bg-coast-50/70 transition-colors text-left"
+            className="flex-1 min-w-0 flex items-center gap-3 px-4 py-2.5 md:py-2 rounded-xl md:rounded-full hover:bg-white/5 transition-colors text-left"
           >
-            <CalendarDays
-              className="h-4 w-4 text-coast-600 shrink-0"
-              aria-hidden="true"
-            />
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/[0.04]">
+              <CalendarDays className="h-4 w-4 text-zinc-300" aria-hidden="true" />
+            </span>
             <div className="min-w-0">
-              <span className="block text-[11px] font-semibold uppercase tracking-wide text-coast-700">
+              <span className="block text-[11px] font-semibold uppercase tracking-wide text-zinc-400">
                 {t("landing.search.datesLabel")}
               </span>
-              <span className="block truncate text-sm text-gray-900">
+              <span className="block truncate text-sm text-white">
                 {dateLabel}
               </span>
             </div>
           </button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-2" align="start">
+        <PopoverContent
+          className="w-auto border-white/10 bg-zinc-900 p-2 text-white"
+          align="start"
+        >
           <Calendar
             mode="range"
             selected={range}
@@ -115,42 +116,51 @@ export default function LandingSearchWidget() {
             numberOfMonths={1}
             fromDate={new Date()}
             initialFocus
+            className="text-white"
           />
         </PopoverContent>
       </Popover>
 
       <div
-        className="hidden md:block h-8 w-px bg-border/60 shrink-0"
+        className="hidden md:block h-8 w-px bg-white/10 shrink-0"
         aria-hidden="true"
       />
 
-      <div className="flex-1 min-w-0 flex items-center gap-2 px-4 py-2.5 md:py-2 rounded-xl md:rounded-full hover:bg-coast-50/70 transition-colors">
-        <Compass
-          className="h-4 w-4 text-coast-600 shrink-0"
-          aria-hidden="true"
-        />
+      <div className="flex-1 min-w-0 flex items-center gap-3 px-4 py-2.5 md:py-2 rounded-xl md:rounded-full hover:bg-white/5 transition-colors">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/[0.04]">
+          <Compass className="h-4 w-4 text-zinc-300" aria-hidden="true" />
+        </span>
         <div className="flex-1 min-w-0 text-left">
           <label
             htmlFor="landing-experience-type"
-            className="block text-[11px] font-semibold uppercase tracking-wide text-coast-700"
+            className="block text-[11px] font-semibold uppercase tracking-wide text-zinc-400"
           >
             {t("landing.search.typeLabel")}
           </label>
           <Select value={experienceType} onValueChange={setExperienceType}>
             <SelectTrigger
               id="landing-experience-type"
-              className="h-auto border-none p-0 shadow-none text-sm text-gray-900 focus:ring-0 [&>svg]:hidden"
+              className="h-auto border-none bg-transparent p-0 shadow-none text-sm text-white focus:ring-0 [&>svg]:hidden"
             >
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">
+            <SelectContent className="border-white/10 bg-zinc-900 text-white">
+              <SelectItem
+                value="all"
+                className="focus:bg-white/10 focus:text-white"
+              >
                 {t("landing.search.typeAll")}
               </SelectItem>
-              <SelectItem value="tours">
+              <SelectItem
+                value="tours"
+                className="focus:bg-white/10 focus:text-white"
+              >
                 {t("landing.search.typeTours")}
               </SelectItem>
-              <SelectItem value="rental">
+              <SelectItem
+                value="rental"
+                className="focus:bg-white/10 focus:text-white"
+              >
                 {t("landing.search.typeRental")}
               </SelectItem>
             </SelectContent>
@@ -161,7 +171,7 @@ export default function LandingSearchWidget() {
       <Button
         type="submit"
         size="lg"
-        className="w-full md:w-auto rounded-xl md:rounded-full bg-coast-600 hover:bg-coast-700 text-white gap-2 shrink-0"
+        className="w-full md:w-auto rounded-xl md:rounded-full bg-white text-zinc-950 hover:bg-zinc-200 gap-2 shrink-0"
       >
         <Search className="h-4 w-4" aria-hidden="true" />
         {t("landing.search.cta")}

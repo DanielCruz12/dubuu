@@ -12,6 +12,7 @@ export default function VerticalsSection() {
   const verticals = [
     {
       key: "tours",
+      number: "01",
       href: "/home?type=tours",
       image: "/homepage/banner1.webp",
       alt: t("landing.verticalsSection.tours.alt"),
@@ -22,6 +23,7 @@ export default function VerticalsSection() {
     },
     {
       key: "rental",
+      number: "02",
       href: "/home?type=rental",
       image: "/homepage/banner3.webp",
       alt: t("landing.verticalsSection.rental.alt"),
@@ -32,6 +34,7 @@ export default function VerticalsSection() {
     },
     {
       key: "properties",
+      number: "03",
       href: "/contact",
       image: "/homepage/6.webp",
       alt: t("landing.verticalsSection.properties.alt"),
@@ -43,7 +46,7 @@ export default function VerticalsSection() {
   ];
 
   return (
-    <section className="py-20 md:py-28 px-4 md:px-20 bg-coast-900 text-white">
+    <section className="py-20 md:py-28 px-4 md:px-20 bg-zinc-900">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -51,10 +54,10 @@ export default function VerticalsSection() {
         transition={{ duration: 0.6 }}
         className="max-w-2xl mb-12"
       >
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sand-300">
+        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-zinc-400">
           {t("landing.verticalsSection.eyebrow")}
         </p>
-        <h2 className="mt-3 font-serif text-3xl md:text-5xl font-semibold tracking-tight text-balance">
+        <h2 className="mt-3 text-3xl md:text-5xl font-extrabold tracking-tight text-white text-balance">
           {t("landing.verticalsSection.title")}
         </h2>
       </motion.div>
@@ -75,16 +78,21 @@ export default function VerticalsSection() {
                     vertical.active ? "group-hover:scale-110" : "grayscale-[40%]"
                   }`}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                <span className="absolute left-4 top-4 font-mono text-xs font-semibold text-white/50">
+                  {vertical.number}
+                </span>
                 {!vertical.active && (
-                  <span className="absolute right-3 top-3 rounded-full bg-sand-400 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-coast-900">
+                  <span className="absolute right-3 top-3 rounded-full bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-zinc-950">
                     {t("landing.verticalsSection.comingSoon")}
                   </span>
                 )}
                 <div className="absolute inset-x-0 bottom-0 flex items-center justify-between p-5">
-                  <div className="flex items-center gap-2">
-                    <Icon className="h-5 w-5 text-sand-300" aria-hidden="true" />
-                    <h3 className="font-serif text-xl font-semibold">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white/[0.08] backdrop-blur">
+                      <Icon className="h-4 w-4 text-white" aria-hidden="true" />
+                    </span>
+                    <h3 className="text-xl font-bold text-white">
                       {vertical.title}
                     </h3>
                   </div>
@@ -93,17 +101,9 @@ export default function VerticalsSection() {
                   )}
                 </div>
               </div>
-              <p className="mt-4 text-sm text-white/70">
+              <p className="mt-4 text-sm text-zinc-400">
                 {vertical.description}
               </p>
-              {!vertical.active && (
-                <Link
-                  href={vertical.href}
-                  className="mt-2 inline-block text-sm font-medium text-sand-300 underline underline-offset-4 hover:text-sand-200"
-                >
-                  {t("landing.verticalsSection.notifyMe")}
-                </Link>
-              )}
             </>
           );
 

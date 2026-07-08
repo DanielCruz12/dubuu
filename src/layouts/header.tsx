@@ -212,7 +212,7 @@ export function Header() {
           ? `fixed top-0 inset-x-0 z-50 w-full transition-colors duration-300 ${
               landingTransparent
                 ? "bg-transparent border-b border-transparent"
-                : "bg-background/95 backdrop-blur-md border-b border-border/60"
+                : "bg-zinc-950/90 backdrop-blur-md border-b border-white/10"
             }`
           : "top-0 z-50 w-full"
       }
@@ -226,22 +226,24 @@ export function Header() {
               alt="Dubuu Logo"
               width={100}
               height={40}
-              className={
-                landingTransparent
-                  ? "brightness-0 invert transition-[filter] duration-300"
-                  : "transition-[filter] duration-300"
-              }
+              className={isLanding ? "brightness-0 invert" : ""}
             />
           </Link>
         </div>
 
         <div
           className={`ml-auto flex items-center gap-4 ${
-            landingTransparent ? "text-white [&_svg]:text-white" : ""
+            isLanding ? "text-white [&_svg]:text-white" : ""
           }`}
         >
           <ModeToggle />
-          <LanguageSelector />
+          <LanguageSelector
+            triggerClassName={
+              isLanding
+                ? "bg-white/5 border-white/15 text-white hover:bg-white/10 hover:text-white"
+                : undefined
+            }
+          />
           {/* <CurrencySelectorDrawer /> */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
