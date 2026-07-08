@@ -67,7 +67,10 @@
       "WebFetch(domain:www.dubuu.com)",
       "Bash(nslookup dubuu-api-node-online.online)",
       "Bash(nslookup \"dubuu-api-node-online.up.railway.app\")",
-      "Bash(nslookup www.dubuu.com)"
+      "Bash(nslookup www.dubuu.com)",
+      "Bash(xargs -n1 basename)",
+      "Bash(echo \"EXIT_CODE=$?\")",
+      "Skill(run)"
     ]
   }
 }

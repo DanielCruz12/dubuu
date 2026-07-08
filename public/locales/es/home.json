@@ -96,10 +96,10 @@
 		"selectDate": "Seleccionar",
 		"selectRangeError": "Selecciona un rango de fechas válido.",
 		"pricePerDay": "Precio por día",
-					"days": "Días",
-			"day": "Día",
-			"dayLower": "día",
-			"daysLower": "días",
+		"days": "Días",
+		"day": "Día",
+		"dayLower": "día",
+		"daysLower": "días",
 		"estimatedTotal": "Total estimado",
 		"disclaimer": "El total es orientativo; el anfitrión confirmará precio final y disponibilidad.",
 		"documentsTitle": "Documentos",
@@ -157,55 +157,88 @@
 		"activities": "Actividades"
 	},
 	"landing": {
-		"slide1": {
-			"title": "Reservas que simplifican tu viaje",
-			"subtitle": "Haz reservas de tours y alquiler de autos en un solo lugar. Dubuu es la plataforma para viajeros y empresas.",
-			"cta": "Descubrir"
+		"hero": {
+			"subtitle": "Tours privados, autos premium y propiedades exclusivas diseñados a tu medida en El Salvador y Centroamérica.",
+			"scroll": "Descubre más"
 		},
-		"slide2": {
-			"title": "¿Tienes una empresa de tours?",
-			"subtitle": "Lista tus experiencias y tours en Dubuu. Gestiona reservas, disponibilidad y clientes desde un solo panel.",
-			"cta": "Ver cómo funciona"
+		"search": {
+			"ariaLabel": "Buscar experiencias en Dubuu",
+			"destinationLabel": "Destino",
+			"destinationPlaceholder": "¿A dónde vas?",
+			"datesLabel": "Fechas",
+			"datesPlaceholder": "Elige tus fechas",
+			"typeLabel": "Experiencia",
+			"typeAll": "Todas",
+			"typeTours": "Tours",
+			"typeRental": "Vehículos",
+			"cta": "Buscar"
 		},
-		"slide3": {
-			"title": "Alquiler de autos",
-			"subtitle": "Si ofreces vehículos en alquiler, también puedes listarlos aquí. Tours y autos en la misma plataforma.",
-			"cta": "Descubrir"
-		},
-		"slide4": {
-			"title": "Tu viaje y tu negocio, mejor organizados",
-			"subtitle": "Reserva experiencias y coches con pocos clics, o gestiona tu oferta si eres empresa. Todo en Dubuu.",
-			"cta": "Empezar"
-		},
-		"slide5": {
-			"title": "Experiencias que inspiran",
-			"subtitle": "Alojamientos y experiencias diseñados para que tu viaje sea único. Reserva con confianza en Dubuu.",
-			"cta": "Descubrir"
-		},
-		"about": {
-			"titleBold": "EXPERIENCIAS",
-			"titlePrefix": "DISEÑAMOS ",
-			"titleSuffix": " ÚNICAS",
-			"paragraph1": "En Dubuu, entendemos que cada viajero es único. Por eso, cada experiencia que creamos está meticulosamente diseñada para superar expectativas y crear recuerdos inolvidables.",
-			"paragraph2": "Nuestro equipo de expertos en viajes de lujo trabaja con los mejores proveedores del mundo para ofrecerte acceso exclusivo a destinos y experiencias extraordinarias.",
-			"cta": "Ver experiencias",
-			"testimonial": "Una experiencia transformadora. Dubuu nos mostró la verdadera esencia de una reserva con un nivel de servicio excepcional.",
-			"imageAlt": "Experiencia de lujo"
-		},
-		"tours": {
-			"titleBold": "privados",
-			"titlePrefix": "Viajes ",
-			"titleSuffix": "",
-			"subtitle": "Experiencias guiadas con acceso exclusivo y atención personalizada",
-			"cta": "Ver todos los viajes"
-		},
-		"productDetail": {
-			"notFound": "Producto no encontrado",
-			"departurePoint": "Punto de salida",
-			"pickupLocation": "Ubicación y mapa",
-			"loginRequiredTitle": "Necesitas iniciar sesión para realizar la reserva",
-			"loginRequiredDescription": "Inicia sesión o crea una cuenta para poder reservar y disfrutar de nuestras promociones exclusivas.",
+		"featured": {
+			"eyebrow": "Selección Dubuu",
+			"title": "Experiencias destacadas",
+			"subtitle": "Una curaduría de tours privados y vehículos premium, listos para reservar.",
+			"durationHours": "{n}h",
+			"perDay": "Por día",
+			"from": "Desde",
+			"book": "Reservar",
 			"viewDetails": "Ver detalles"
+		},
+		"verticals": {
+			"tours": "Tours",
+			"rental": "Alquiler"
+		},
+		"verticalsSection": {
+			"eyebrow": "Todo en un solo lugar",
+			"title": "Tours, vehículos y propiedades",
+			"comingSoon": "Próximamente",
+			"notifyMe": "Quiero que me avisen",
+			"tours": {
+				"alt": "Turista en tirolesa atravesando el bosque tropical de El Salvador",
+				"title": "Tours privados",
+				"description": "Experiencias guiadas con acceso exclusivo: volcanes, playas de surf y cultura local."
+			},
+			"rental": {
+				"alt": "Entrega de llaves de un vehículo de alquiler premium",
+				"title": "Vehículos premium",
+				"description": "Autos y camionetas de alquiler para explorar el país a tu propio ritmo."
+			},
+			"properties": {
+				"alt": "Villas frente al mar entre palmeras en la costa salvadoreña",
+				"title": "Propiedades exclusivas",
+				"description": "Alojamientos únicos frente al mar y en la montaña. Muy pronto en Dubuu."
+			}
+		},
+		"trust": {
+			"eyebrow": "Confianza",
+			"title": "Viajeros que ya vivieron El Salvador con nosotros",
+			"stat1Value": "500+",
+			"stat1Label": "Tours completados",
+			"stat2Value": "4.9/5",
+			"stat2Label": "Calificación promedio",
+			"stat3Value": "100%",
+			"stat3Label": "Pagos seguros y verificados",
+			"securePayment": "Pagos protegidos con cifrado de extremo a extremo",
+			"testimonial1": {
+				"text": "Dubuu nos mostró un El Salvador que no esperábamos: volcanes, playas de surf y anfitriones increíbles. Todo reservado en minutos.",
+				"name": "Maria G.",
+				"tours": "3 tours reservados"
+			},
+			"testimonial2": {
+				"text": "El auto que rentamos estaba impecable y la entrega fue puntual. La mejor forma de recorrer Centroamérica.",
+				"name": "Lukas W.",
+				"tours": "2 alquileres"
+			},
+			"testimonial3": {
+				"text": "Como viajera frecuente, valoro la atención al detalle. Dubuu se siente premium de principio a fin.",
+				"name": "Sofía R.",
+				"tours": "5 tours reservados"
+			}
+		},
+		"finalCta": {
+			"title": "Tu próxima aventura en El Salvador empieza aquí",
+			"subtitle": "Reserva tours privados, vehículos premium o contáctanos para planear algo a tu medida.",
+			"primaryCta": "Explorar experiencias",
+			"secondaryCta": "Hablar con nosotros"
 		}
 	},
 	"productDetails": {

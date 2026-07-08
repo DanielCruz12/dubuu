@@ -1,5 +1,5 @@
 import type React from "react";
-import { Raleway } from "next/font/google";
+import { Inter, Fraunces } from "next/font/google";
 import GlobalProviders from "../components/providers/global-providers";
 import type { Metadata } from "next";
 import Script from "next/script";
@@ -8,7 +8,18 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
-const raleway = Raleway({ weight: "400", subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-serif",
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.dubuu.com"),
@@ -159,7 +170,9 @@ export default async function RootLayout({
             `}
           </Script>
         </head>
-        <body className={`${raleway.className} flex min-h-screen flex-col`}>
+        <body
+          className={`${inter.variable} ${fraunces.variable} ${inter.className} flex min-h-screen flex-col`}
+        >
           <SpeedInsights />
           <Analytics />
           <GlobalProviders>

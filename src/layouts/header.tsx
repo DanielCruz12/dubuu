@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogOut } from "lucide-react";
@@ -43,6 +43,19 @@ export function Header() {
   const { user, signOut } = useClerk();
   const { role, hasRole } = useClerkToken();
   const { t } = useLanguage();
+
+  // Home/landing (marketing) usa un header transparente que se superpone al hero
+  // full-bleed y pasa a sólido al hacer scroll.
+  const isLanding = pathname === "/";
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    if (!isLanding) return;
+    const onScroll = () => setIsScrolled(window.scrollY > 40);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [isLanding]);
 
   // Fix: Check exact path for /account as well as paths that start with /account/ or /dashboard/
   const isDashboard =
@@ -190,8 +203,20 @@ export function Header() {
   }
 
   // Rest of the component remains the same...
+  const landingTransparent = isLanding && !isScrolled;
+
   return (
-    <header className="top-0 z-50 w-full">
+    <header
+      className={
+        isLanding
+          ? `fixed top-0 inset-x-0 z-50 w-full transition-colors duration-300 ${
+              landingTransparent
+                ? "bg-transparent border-b border-transparent"
+                : "bg-background/95 backdrop-blur-md border-b border-border/60"
+            }`
+          : "top-0 z-50 w-full"
+      }
+    >
       <div className="flex h-16 items-center md:px-20 px-4">
         <div className="flex items-center gap-2">
           <Link href={"/home"} className="flex items-center gap-1">
@@ -201,11 +226,20 @@ export function Header() {
               alt="Dubuu Logo"
               width={100}
               height={40}
+              className={
+                landingTransparent
+                  ? "brightness-0 invert transition-[filter] duration-300"
+                  : "transition-[filter] duration-300"
+              }
             />
           </Link>
         </div>
 
-        <div className="ml-auto flex items-center gap-4">
+        <div
+          className={`ml-auto flex items-center gap-4 ${
+            landingTransparent ? "text-white [&_svg]:text-white" : ""
+          }`}
+        >
           <ModeToggle />
           <LanguageSelector />
           {/* <CurrencySelectorDrawer /> */}

@@ -96,10 +96,10 @@
 		"selectDate": "Select",
 		"selectRangeError": "Please select a valid date range.",
 		"pricePerDay": "Price per day",
-					"days": "Days",
-			"day": "Day",
-			"dayLower": "day",
-			"daysLower": "days",
+		"days": "Days",
+		"day": "Day",
+		"dayLower": "day",
+		"daysLower": "days",
 		"estimatedTotal": "Estimated total",
 		"disclaimer": "This total is indicative; the host will confirm final price and availability.",
 		"documentsTitle": "Documents",
@@ -157,55 +157,88 @@
 		"activities": "Activities"
 	},
 	"landing": {
-		"slide1": {
-			"title": "Bookings that simplify your trip",
-			"subtitle": "Book tours and car rentals in one place. Dubuu is the platform for travelers and businesses.",
-			"cta": "Discover"
+		"hero": {
+			"subtitle": "Private tours, premium cars and exclusive properties tailored for you across El Salvador and Central America.",
+			"scroll": "Discover more"
 		},
-		"slide2": {
-			"title": "Do you have a tour company?",
-			"subtitle": "List your experiences and tours on Dubuu. Manage bookings, availability and customers from one dashboard.",
-			"cta": "See how it works"
+		"search": {
+			"ariaLabel": "Search experiences on Dubuu",
+			"destinationLabel": "Destination",
+			"destinationPlaceholder": "Where are you going?",
+			"datesLabel": "Dates",
+			"datesPlaceholder": "Pick your dates",
+			"typeLabel": "Experience",
+			"typeAll": "All",
+			"typeTours": "Tours",
+			"typeRental": "Vehicles",
+			"cta": "Search"
 		},
-		"slide3": {
-			"title": "Car rental",
-			"subtitle": "If you offer vehicles for rent, you can list them here too. Tours and cars on the same platform.",
-			"cta": "Discover"
-		},
-		"slide4": {
-			"title": "Your trip and your business, better organized",
-			"subtitle": "Book experiences and cars in a few clicks, or manage your offer if you're a business. All on Dubuu.",
-			"cta": "Get started"
-		},
-		"slide5": {
-			"title": "Experiences that inspire",
-			"subtitle": "Accommodations and experiences designed to make your trip unique. Book with confidence on Dubuu.",
-			"cta": "Discover"
-		},
-		"about": {
-			"titleBold": "UNIQUE",
-			"titlePrefix": "WE DESIGN ",
-			"titleSuffix": " EXPERIENCES",
-			"paragraph1": "At Dubuu, we understand that every traveler is unique. That's why every experience we create is meticulously designed to exceed expectations and create unforgettable memories.",
-			"paragraph2": "Our team of luxury travel experts works with the world's best providers to give you exclusive access to extraordinary destinations and experiences.",
-			"cta": "View experiences",
-			"testimonial": "A transformative experience. Dubuu showed us the true essence of booking with an exceptional level of service.",
-			"imageAlt": "Luxury experience"
-		},
-		"tours": {
-			"titleBold": "trips",
-			"titlePrefix": "Private ",
-			"titleSuffix": "",
-			"subtitle": "Guided experiences with exclusive access and personalized attention",
-			"cta": "View all trips"
-		},
-		"productDetail": {
-			"notFound": "Product not found",
-			"departurePoint": "Departure point",
-			"pickupLocation": "Location & map",
-			"loginRequiredTitle": "You need to sign in to make a booking",
-			"loginRequiredDescription": "Sign in or create an account to book and enjoy our exclusive promotions.",
+		"featured": {
+			"eyebrow": "Dubuu selection",
+			"title": "Featured experiences",
+			"subtitle": "A curated selection of private tours and premium vehicles, ready to book.",
+			"durationHours": "{n}h",
+			"perDay": "Per day",
+			"from": "From",
+			"book": "Book now",
 			"viewDetails": "View details"
+		},
+		"verticals": {
+			"tours": "Tours",
+			"rental": "Rental"
+		},
+		"verticalsSection": {
+			"eyebrow": "Everything in one place",
+			"title": "Tours, vehicles and properties",
+			"comingSoon": "Coming soon",
+			"notifyMe": "Notify me",
+			"tours": {
+				"alt": "Tourist zip-lining through El Salvador's tropical forest",
+				"title": "Private tours",
+				"description": "Guided experiences with exclusive access: volcanoes, surf beaches and local culture."
+			},
+			"rental": {
+				"alt": "Handing over the keys of a premium rental vehicle",
+				"title": "Premium vehicles",
+				"description": "Rental cars and SUVs to explore the country at your own pace."
+			},
+			"properties": {
+				"alt": "Beachfront villas among palm trees on the Salvadoran coast",
+				"title": "Exclusive properties",
+				"description": "Unique stays by the sea and in the mountains. Coming soon to Dubuu."
+			}
+		},
+		"trust": {
+			"eyebrow": "Trust",
+			"title": "Travelers who already lived El Salvador with us",
+			"stat1Value": "500+",
+			"stat1Label": "Tours completed",
+			"stat2Value": "4.9/5",
+			"stat2Label": "Average rating",
+			"stat3Value": "100%",
+			"stat3Label": "Secure, verified payments",
+			"securePayment": "Payments protected with end-to-end encryption",
+			"testimonial1": {
+				"text": "Dubuu showed us a side of El Salvador we didn't expect: volcanoes, surf beaches and incredible hosts. Everything booked in minutes.",
+				"name": "Maria G.",
+				"tours": "3 tours booked"
+			},
+			"testimonial2": {
+				"text": "The rental car was spotless and delivered right on time. The best way to get around Central America.",
+				"name": "Lukas W.",
+				"tours": "2 rentals"
+			},
+			"testimonial3": {
+				"text": "As a frequent traveler, I value attention to detail. Dubuu feels premium from start to finish.",
+				"name": "Sofia R.",
+				"tours": "5 tours booked"
+			}
+		},
+		"finalCta": {
+			"title": "Your next El Salvador adventure starts here",
+			"subtitle": "Book private tours, premium vehicles, or reach out to plan something tailor-made.",
+			"primaryCta": "Explore experiences",
+			"secondaryCta": "Talk to us"
 		}
 	},
 	"productDetails": {
