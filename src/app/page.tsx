@@ -4,11 +4,14 @@ import UpTop from "@/components/up-top";
 import LandingHero from "@/components/sections/landing-hero";
 import FeaturedExperiences from "@/components/sections/featured-experiences";
 import QuoteHighlightSection from "@/components/sections/quote-highlight-section";
-import VerticalsSection from "@/components/sections/verticals-section";
+import PromoBentoFeatures from "@/components/sections/promo-bento-features";
+import PromoCard from "@/components/sections/promo-card";
+import ResponsiveScaleBox from "@/components/sections/responsive-scale-box";
 import HowItWorksSection from "@/components/sections/how-it-works-section";
+import PromoSplit from "@/components/sections/promo-split";
 import TrustSection from "@/components/sections/trust-section";
 import FaqSection from "@/components/sections/faq-section";
-import FinalCta from "@/components/sections/final-cta";
+import SiteFooter from "@/components/sections/site-footer";
 
 export const metadata: Metadata = {
   alternates: {
@@ -77,11 +80,21 @@ export default function LandingPage() {
       <LandingHero />
       <FeaturedExperiences />
       <QuoteHighlightSection />
-      <VerticalsSection />
+      <PromoBentoFeatures />
       <HowItWorksSection />
+      <div className="bg-zinc-950 px-6 pb-20 sm:px-10 md:pb-28">
+        <ResponsiveScaleBox
+          width={1024}
+          height={576}
+          className="w-full rounded-2xl"
+        >
+          <PromoCard />
+        </ResponsiveScaleBox>
+      </div>
+      <PromoSplit />
       <TrustSection />
       <FaqSection />
-      <FinalCta />
+      <SiteFooter />
     </div>
   );
 }

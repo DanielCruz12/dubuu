@@ -292,7 +292,7 @@ export const FilterDialog: React.FC<FilterDialogProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px] max-w-[95%] md:max-w-[85%] lg:max-w-[75%] xl:max-w-[55%] p-0 overflow-hidden rounded-xl border-none shadow-xl">
-        <div className="bg-gradient-to-r dark:from-black dark:to-primary/5 border-none px-4 md:px-0">
+        <div className="bg-gradient-to-r dark:from-black dark:to-primary/5 border-none px-4 md:px-8">
           <DialogHeader>
             <DialogTitle className="text-center pt-6">
               {t("filters.dialog.title")}

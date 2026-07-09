@@ -1,6 +1,6 @@
 "use client";
 
-import { TourCard } from "@/components/tour-card";
+import ExperienceCard from "@/components/experience-card";
 import { TourCardSkeleton } from "../skeletons/tour-card-skeleton";
 import type { IProduct } from "@/types/product";
 import { Button } from "../ui/button";
@@ -34,7 +34,7 @@ export default function TourSection({
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {products.map((tour) => (
           <div key={tour.id} className="tour-card-container">
-            <TourCard {...tour} />
+            <ExperienceCard product={tour} />
           </div>
         ))}
       </div>

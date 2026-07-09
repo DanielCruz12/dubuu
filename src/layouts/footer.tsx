@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import {
   Instagram,
@@ -37,6 +38,11 @@ const footerNavigation = {
 
 export default function Footer() {
   const { t } = useLanguage();
+  const pathname = usePathname();
+
+  // La landing ("/") trae su propio footer (SiteFooter, dentro de page.tsx)
+  // con un estilo distinto — evitamos duplicar footers ahí.
+  if (pathname === "/") return null;
 
   return (
     <footer className="border-t py-8">
@@ -56,7 +62,7 @@ export default function Footer() {
               <Link
                 key={item.key}
                 href={item.href}
-                className="text-zinc-400 hover transition-colors"
+                className="text-zinc-400 hover:text-foreground transition-colors"
               >
                 <span className="sr-only">{t(`footer.social.${item.key}`)}</span>
                 <item.icon className="h-5 w-5" />
@@ -96,7 +102,7 @@ export default function Footer() {
                   <li key={item.key}>
                     <Link
                       href={item.href}
-                      className="text-sm hover transition-colors"
+                      className="text-sm hover:text-foreground/70 transition-colors"
                     >
                       {t(`footer.nav.${item.key}`)}
                     </Link>
@@ -114,7 +120,7 @@ export default function Footer() {
                   <li key={item.key}>
                     <Link
                       href={item.href}
-                      className="text-sm hover transition-colors"
+                      className="text-sm hover:text-foreground/70 transition-colors"
                     >
                       {t(`footer.nav.${item.key}`)}
                     </Link>
@@ -125,7 +131,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <Separator className="" />
+        <Separator />
 
         <div className="mb-4 flex flex-col md:flex-row justify-between items-center text-xs">
           <p className="py-4">
@@ -136,7 +142,7 @@ export default function Footer() {
               <Link
                 key={item.key}
                 href={item.href}
-                className="hover transition-colors"
+                className="hover:text-foreground/70 transition-colors"
               >
                 {t(`footer.nav.${item.key}`)}
               </Link>

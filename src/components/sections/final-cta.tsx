@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/lib/i18n-context";
+import DotGridBackground from "@/components/sections/dot-grid-background";
 
 export default function FinalCta() {
   const { t } = useLanguage();
@@ -35,6 +36,7 @@ export default function FinalCta() {
 
   return (
     <section className="relative overflow-hidden bg-zinc-950 py-24 md:py-32 px-4">
+      <DotGridBackground />
       <div
         className="pointer-events-none absolute left-1/2 top-0 h-[500px] w-[900px] -translate-x-1/2 -translate-y-1/3 rounded-full bg-coast-600/20 blur-[120px]"
         aria-hidden="true"
@@ -51,8 +53,12 @@ export default function FinalCta() {
         transition={{ duration: 0.6 }}
         className="relative z-10 mx-auto max-w-2xl text-center"
       >
-        <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight text-white text-balance">
-          {t("landing.finalCta.title")}
+        <h2 className="font-display text-3xl md:text-5xl font-normal tracking-tight text-white text-balance">
+          {t("landing.finalCta.titlePrefix")}
+          <em className="italic text-zinc-400">
+            {t("landing.finalCta.titleEmphasis")}
+          </em>
+          {t("landing.finalCta.titleSuffix")}
         </h2>
         <p className="mt-4 text-base md:text-lg text-zinc-400 text-balance">
           {t("landing.finalCta.subtitle")}

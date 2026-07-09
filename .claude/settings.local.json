@@ -72,7 +72,13 @@
       "Bash(echo \"EXIT_CODE=$?\")",
       "Skill(run)",
       "WebFetch(domain:ponder.ai)",
-      "Bash(echo \"TSC_EXIT=$?\")"
+      "Bash(echo \"TSC_EXIT=$?\")",
+      "WebFetch(domain:www.alike.page)",
+      "Bash(npm ls *)",
+      "Bash(mkdir -p 'C:\\\\Users\\\\daniel\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-daniel-Desktop-projects-personal-work-projects-dubuu\\\\691703de-41fc-4adb-a1a5-0111e13d4488\\\\scratchpad/pw')",
+      "Bash(npm init *)",
+      "Bash(npm install *)",
+      "Bash(npx playwright *)"
     ]
   }
 }

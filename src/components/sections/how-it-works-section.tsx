@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Search, CalendarCheck, ShieldCheck, PartyPopper } from "lucide-react";
 import { useLanguage } from "@/lib/i18n-context";
+import DotGridBackground from "@/components/sections/dot-grid-background";
 
 const STEPS = [
   { key: "step1", icon: Search },
@@ -15,23 +16,28 @@ export default function HowItWorksSection() {
   const { t } = useLanguage();
 
   return (
-    <section className="py-20 md:py-28 px-4 md:px-20 bg-zinc-900">
+    <section className="relative py-20 md:py-28 px-4 md:px-20 bg-zinc-950">
+      <DotGridBackground />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="max-w-2xl mb-14"
+        className="relative max-w-2xl mb-14"
       >
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-zinc-400">
+        <p className="font-label text-lg tracking-[2px] text-zinc-400">
           {t("landing.howItWorks.eyebrow")}
         </p>
-        <h2 className="mt-3 text-3xl md:text-5xl font-extrabold tracking-tight text-white text-balance">
-          {t("landing.howItWorks.title")}
+        <h2 className="mt-3 font-display text-3xl md:text-5xl font-normal tracking-tight text-white text-balance">
+          {t("landing.howItWorks.titlePrefix")}
+          <em className="italic text-zinc-500">
+            {t("landing.howItWorks.titleEmphasis")}
+          </em>
+          {t("landing.howItWorks.titleSuffix")}
         </h2>
       </motion.div>
 
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-4 md:gap-6">
+      <div className="relative grid grid-cols-1 gap-8 md:grid-cols-4 md:gap-6">
         {STEPS.map((step, i) => {
           const Icon = step.icon;
           return (

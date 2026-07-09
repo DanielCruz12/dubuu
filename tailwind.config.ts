@@ -11,6 +11,8 @@ const config: Config = {
   	extend: {
   		fontFamily: {
   			sans: ['var(--font-sans)'],
+  			display: ['var(--font-display)'],
+  			label: ['var(--font-label)'],
   		},
   		colors: {
   			coast: {

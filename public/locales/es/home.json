@@ -143,7 +143,8 @@
 		"locationModalDescription": "Aquí podrás seleccionar el lugar de recogida y el lugar de entrega."
 	},
 	"hero": {
-		"subtitle": "Descubra los tesoros del mundo"
+		"subtitle": "Descubra los tesoros del mundo",
+		"eyebrow": "Dubuu"
 	},
 	"search": {
 		"placeholder": "Buscar destinos, viajes, experiencias...",
@@ -162,7 +163,9 @@
 			"scroll": "Descubre más",
 			"primaryCta": "Explorar experiencias",
 			"secondaryCta": "Ver testimonios",
-			"title": "Vive El Salvador."
+			"titlePrefix": "Vive ",
+			"titleEmphasis": "El Salvador",
+			"titleSuffix": ""
 		},
 		"search": {
 			"ariaLabel": "Buscar experiencias en Dubuu",
@@ -178,13 +181,15 @@
 		},
 		"featured": {
 			"eyebrow": "Selección Dubuu",
-			"title": "Experiencias destacadas",
 			"subtitle": "Una curaduría de tours privados y vehículos premium, listos para reservar.",
 			"durationHours": "{n}h",
 			"perDay": "Por día",
 			"from": "Desde",
 			"book": "Reservar",
-			"viewDetails": "Ver detalles"
+			"viewDetails": "Ver detalles",
+			"titlePrefix": "Experiencias ",
+			"titleEmphasis": "destacadas",
+			"titleSuffix": ""
 		},
 		"verticals": {
 			"tours": "Tours",
@@ -192,7 +197,6 @@
 		},
 		"verticalsSection": {
 			"eyebrow": "Todo en un solo lugar",
-			"title": "Tours, vehículos y propiedades",
 			"comingSoon": "Próximamente",
 			"notifyMe": "Quiero que me avisen",
 			"tours": {
@@ -209,11 +213,13 @@
 				"alt": "Villas frente al mar entre palmeras en la costa salvadoreña",
 				"title": "Propiedades exclusivas",
 				"description": "Alojamientos únicos frente al mar y en la montaña. Muy pronto en Dubuu."
-			}
+			},
+			"titlePrefix": "Tours, vehículos y ",
+			"titleEmphasis": "propiedades",
+			"titleSuffix": ""
 		},
 		"trust": {
 			"eyebrow": "Confianza",
-			"title": "Viajeros que ya vivieron El Salvador con nosotros",
 			"stat1Value": "500+",
 			"stat1Label": "Tours completados",
 			"stat2Value": "4.9/5",
@@ -223,22 +229,49 @@
 			"securePayment": "Pagos protegidos con cifrado de extremo a extremo",
 			"testimonial1": {
 				"text": "Dubuu nos mostró un El Salvador que no esperábamos: volcanes, playas de surf y anfitriones increíbles. Todo reservado en minutos.",
-				"name": "Maria G.",
+				"name": "María González",
 				"tours": "3 tours reservados"
 			},
 			"testimonial2": {
 				"text": "El auto que rentamos estaba impecable y la entrega fue puntual. La mejor forma de recorrer Centroamérica.",
-				"name": "Lukas W.",
+				"name": "Lukas Weber",
 				"tours": "2 alquileres"
 			},
 			"testimonial3": {
 				"text": "Como viajera frecuente, valoro la atención al detalle. Dubuu se siente premium de principio a fin.",
-				"name": "Sofía R.",
+				"name": "Sofía Ramírez",
 				"tours": "5 tours reservados"
+			},
+			"titlePrefix": "Viajeros que ya vivieron ",
+			"titleEmphasis": "El Salvador",
+			"titleSuffix": " con nosotros",
+			"testimonial4": {
+				"text": "Reservamos un tour de surf el mismo día que llegamos. Todo salió perfecto.",
+				"name": "James Keller",
+				"tours": "1 tour reservado"
+			},
+			"testimonial5": {
+				"text": "Lo que más me sorprendió fue la atención personalizada: el anfitrión ajustó el itinerario del tour de volcanes según el clima, sin cobrar nada extra, y terminamos viendo un atardecer que no estaba en el plan original.",
+				"name": "Elena Pineda",
+				"tours": "4 tours reservados"
+			},
+			"testimonial6": {
+				"text": "Alquilamos una camioneta para toda la familia, sin complicaciones.",
+				"name": "Tomás Bonilla",
+				"tours": "1 alquiler"
+			},
+			"testimonial7": {
+				"text": "Reservamos un tour por una finca de café en las montañas y el conocimiento de nuestro guía sobre la región lo hizo inolvidable. Todo, desde el pickup hasta el almuerzo, estuvo perfecto.",
+				"name": "Carlos Martínez",
+				"tours": "2 tours reservados"
+			},
+			"testimonial8": {
+				"text": "Necesitábamos un auto para un road trip por la costa y todo el proceso tomó minutos en línea.",
+				"name": "Ana Portillo",
+				"tours": "3 alquileres"
 			}
 		},
 		"finalCta": {
-			"title": "Tu próxima aventura en El Salvador empieza aquí",
 			"subtitle": "Reserva tours privados, vehículos premium o contáctanos para planear algo a tu medida.",
 			"primaryCta": "Explorar experiencias",
 			"secondaryCta": "Hablar con nosotros",
@@ -248,11 +281,13 @@
 			"newsletterCta": "Suscribirme",
 			"newsletterSuccess": "¡Gracias! Ya estás suscrito.",
 			"newsletterError": "Algo salió mal. Intenta de nuevo.",
-			"newsletterInvalid": "Ingresa un correo electrónico válido"
+			"newsletterInvalid": "Ingresa un correo electrónico válido",
+			"titlePrefix": "Tu próxima aventura en ",
+			"titleEmphasis": "El Salvador",
+			"titleSuffix": " empieza aquí"
 		},
 		"howItWorks": {
 			"eyebrow": "Cómo funciona",
-			"title": "De la búsqueda a vivir la experiencia",
 			"step1": {
 				"title": "Explora",
 				"description": "Descubre tours privados, vehículos premium y próximamente propiedades exclusivas en todo El Salvador."
@@ -268,11 +303,13 @@
 			"step4": {
 				"title": "Vive la experiencia",
 				"description": "Anfitriones locales verificados te reciben. Solo queda disfrutar El Salvador."
-			}
+			},
+			"titlePrefix": "De la búsqueda a ",
+			"titleEmphasis": "vivir la experiencia",
+			"titleSuffix": ""
 		},
 		"faq": {
 			"eyebrow": "Preguntas frecuentes",
-			"title": "Respuestas rápidas para viajeros",
 			"fallback": "¿No encontraste lo que buscabas? Escríbenos y te respondemos directamente.",
 			"writeToUs": "Escríbenos",
 			"q1": {
@@ -298,11 +335,51 @@
 			"q6": {
 				"question": "¿En qué idiomas puedo reservar?",
 				"answer": "Dubuu está disponible en español e inglés, y muchos de nuestros anfitriones hablan ambos idiomas."
-			}
+			},
+			"titlePrefix": "Respuestas rápidas para ",
+			"titleEmphasis": "viajeros",
+			"titleSuffix": ""
 		},
 		"quoteHighlight": {
 			"text": "Dubuu es reconocer lo mejor que El Salvador tiene para ofrecer: el detalle, la calidez y los anfitriones que hacen de cada viaje algo inolvidable.",
 			"name": "Daniel Cruz"
+		},
+		"forHosts": {
+			"eyebrow": "Dubuu",
+			"titlePrefix": "Gestiona tus reservas",
+			"titleEmphasis": "sin fricción",
+			"subtitle": "Panel de control para tu negocio: reservas, pagos y clientes frecuentes en tiempo real.",
+			"cta": "¿Tienes un negocio de turismo?"
+		},
+		"bentoFeatures": {
+			"eyebrow": "Por qué Dubuu",
+			"titlePrefix": "Un panel",
+			"titleEmphasis": "para cada momento",
+			"titleSuffix": "de tu negocio"
+		},
+		"promoCard": {
+			"headlinePrefix": "Tu negocio,",
+			"headlineEmphasis": "bajo control",
+			"subtitle": "Reservas, pagos y clientes en un solo panel · dubuu.com",
+			"navProfile": "Perfil",
+			"navPanel": "Panel",
+			"navBookings": "Reservas",
+			"navProducts": "Productos",
+			"navPayments": "Pagos",
+			"panelWelcome": "Bienvenido a tu panel de control",
+			"statActiveLabel": "Reservas Activas",
+			"statActiveNote": "+12% este mes",
+			"statIncomeLabel": "Ingresos Totales",
+			"statIncomeNote": "+8% este año",
+			"statClientsLabel": "Clientes Frecuentes",
+			"statClientsNote": "Tu grupo habitual",
+			"activityTitle": "Actividad de Reservas"
+		},
+		"siteFooter": {
+			"cta": "Empieza gratis →",
+			"tagline": "Hecho con cariño en El Salvador",
+			"terms": "Términos de servicio",
+			"privacy": "Privacidad"
 		}
 	},
 	"productDetails": {

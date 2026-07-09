@@ -11,6 +11,27 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+const CHART_COLORS = {
+  neutral: "#52525b",
+  volcanic: "#2A7350",
+  sand: "#C9A24B",
+};
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <h3 className="font-label text-base tracking-[1.5px] text-foreground/70 mb-2">
+      {children}
+    </h3>
+  );
+}
+
+function InfoCard({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="rounded-2xl border border-border/70 bg-card p-5 md:p-6">
+      {children}
+    </div>
+  );
+}
 
 export default function PartnerOrInvestPage() {
   const financialData = [
@@ -43,65 +64,74 @@ export default function PartnerOrInvestPage() {
   ];
 
   return (
-    <div className="px-5 md:px-20 pb-8">
-      <h2 className="text-xl md:text-2xl font-semibold mb-4">
-        Sé un Socio o Invierte en Nuestra Plataforma
-      </h2>
+    <div className="px-5 md:px-20 py-10 space-y-12">
+      <div>
+        <p className="font-label text-lg tracking-[2px] text-muted-foreground">
+          Dubuu
+        </p>
+        <h1 className="mt-1 font-display text-3xl md:text-5xl font-normal tracking-tight">
+          Sé un socio o{" "}
+          <em className="italic text-muted-foreground">invierte</em> en
+          nuestra plataforma
+        </h1>
+      </div>
 
-      <div className="pb-3">
-        <h3 className="text-base font-semibold">Objetivo</h3>
-        <p className="text-sm">
+      <InfoCard>
+        <SectionLabel>Objetivo</SectionLabel>
+        <p className="text-sm md:text-base leading-relaxed text-muted-foreground">
           Conectamos negocios locales con clientes nacionales mediante una
           plataforma que facilita la promoción y reserva de servicios
           turísticos, impulsando la economía local y mejorando la experiencia
           del cliente.
         </p>
+      </InfoCard>
+
+      <div>
+        <SectionLabel>Problema detectado</SectionLabel>
+        <ul className="list-disc pl-5 space-y-2 text-sm md:text-base text-muted-foreground marker:text-foreground/50">
+          <li>
+            Negocios locales enfrentan dificultades para promocionarse
+            eficientemente en el mercado digital.
+          </li>
+          <li>
+            Falta de una plataforma integral que concentre servicios
+            turísticos y de ocio locales en un solo lugar.
+          </li>
+          <li>
+            Clientes buscan opciones centralizadas para planificar
+            actividades y obtener servicios.
+          </li>
+          <li>
+            Baja visibilidad de negocios pequeños y medianos en el sector
+            turístico.
+          </li>
+        </ul>
       </div>
 
-      <h3 className="text-sm font-medium mb-1">Problema Detectado</h3>
-      <ul className="list-disc pl-5 space-y-2">
-        <li>
-          Negocios locales enfrentan dificultades para promocionarse
-          eficientemente en el mercado digital.
-        </li>
-        <li>
-          Falta de una plataforma integral que concentre servicios turísticos y
-          de ocio locales en un solo lugar.
-        </li>
-        <li>
-          Clientes buscan opciones centralizadas para planificar actividades y
-          obtener servicios.
-        </li>
-        <li>
-          Baja visibilidad de negocios pequeños y medianos en el sector
-          turístico.
-        </li>
-      </ul>
-
-      <div className="py-3">
-        <h3 className="text-sm font-medium mb-1">Solución Propuesta</h3>
-        <p className="mb-4 text-sm">
-          Una plataforma digital (web y app) donde negocios puedan registrarse y
-          promocionar sus servicios.
+      <div>
+        <SectionLabel>Solución propuesta</SectionLabel>
+        <p className="text-sm md:text-base leading-relaxed text-muted-foreground">
+          Una plataforma digital (web y app) donde negocios puedan
+          registrarse y promocionar sus servicios.
         </p>
       </div>
 
-      <div className="flex flex-col md:flex-row justify-stretch items-center">
-        <div className="text-start md:px-2">
-          <h3 className="text-sm font-medium mb-1">Funciones clave</h3>
-          <ul className="list-disc pl-5 space-y-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+          <SectionLabel>Funciones clave</SectionLabel>
+          <ul className="list-disc pl-5 space-y-2 text-sm md:text-base text-muted-foreground marker:text-foreground/50">
             <li>Registro fácil de negocios con perfiles personalizables</li>
             <li>
-              Opciones para reseñas y calificaciones de clientes para fomentar
-              la confianza
+              Opciones para reseñas y calificaciones de clientes para
+              fomentar la confianza
             </li>
             <li>
               Reservas en línea y pagos integrados para una experiencia sin
               fricciones
             </li>
             <li>
-              Sistema de recomendaciones personalizadas basado en preferencias
-              del usuario
+              Sistema de recomendaciones personalizadas basado en
+              preferencias del usuario
             </li>
             <li>
               Herramientas de análisis para que los negocios comprendan su
@@ -109,94 +139,117 @@ export default function PartnerOrInvestPage() {
             </li>
           </ul>
         </div>
-        <div className="text-start pt-3 md:pt-0">
-          <h3 className="text-sm font-medium mb-1">Modelo de Negocio</h3>
-          <ul className="list-disc pl-5 space-y-2">
+        <div>
+          <SectionLabel>Modelo de negocio</SectionLabel>
+          <ul className="list-disc pl-5 space-y-2 text-sm md:text-base text-muted-foreground marker:text-foreground/50">
             <li>
-              Freemium Registro gratuito para negocios pequeños con funciones
-              básicas
+              <span className="font-semibold text-foreground">Freemium.</span>{" "}
+              Registro gratuito para negocios pequeños con funciones básicas.
             </li>
             <li>
-              Suscripción Premium Negocios pagan tarifas mensuales/anuales para
-              funciones avanzadas
+              <span className="font-semibold text-foreground">
+                Suscripción premium.
+              </span>{" "}
+              Negocios pagan tarifas mensuales/anuales para funciones
+              avanzadas.
             </li>
             <li>
-              Comisiones Ganancia por transacciones realizadas en la plataforma
+              <span className="font-semibold text-foreground">
+                Comisiones.
+              </span>{" "}
+              Ganancia por transacciones realizadas en la plataforma.
             </li>
             <li>
-              Publicidad Espacios de promoción pagados dentro de la plataforma
-              para mayor visibilidad
+              <span className="font-semibold text-foreground">
+                Publicidad.
+              </span>{" "}
+              Espacios de promoción pagados dentro de la plataforma para
+              mayor visibilidad.
             </li>
             <li>
-              Servicios adicionales Oferta de servicios de fotografía, diseño y
-              marketing digital
+              <span className="font-semibold text-foreground">
+                Servicios adicionales.
+              </span>{" "}
+              Oferta de servicios de fotografía, diseño y marketing digital.
             </li>
           </ul>
         </div>
       </div>
 
-      <h3 className="text-sm font-medium mb-1 pt-4 pb-2">
-        Proyecciones Financieras
-      </h3>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={financialData}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="ingresos" fill="#8884d8" />
-          <Bar dataKey="gastos" fill="#82ca9d" />
-          <Bar dataKey="beneficio" fill="#ffc658" />
-        </BarChart>
-      </ResponsiveContainer>
-      <div className="mt-6">
-        <h4 className="font-semibold mb-2">
-          Inversión Inicial: $100,000 - $120,000
-        </h4>
-        <p className="mb-4 text-sm">
-          Incluye desarrollo de la plataforma, infraestructura, marketing
-          inicial y operación por 6 meses.
-        </p>
-        <h4 className="font-semibold mb-2">Retorno de Inversión (ROI):</h4>
-        <ul className="list-disc pl-5 space-y-2">
-          <li>
-            Primera Etapa (1-2 años): Recuperación del 70-100% de la inversión.
-          </li>
-          <li>
-            Segunda Etapa (3 años): Margen de ganancia proyectado del 30-50%
-            anual.
-          </li>
-        </ul>
-      </div>
+      <div>
+        <SectionLabel>Proyecciones financieras</SectionLabel>
+        <InfoCard>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={financialData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="ingresos" fill={CHART_COLORS.neutral} />
+              <Bar dataKey="gastos" fill={CHART_COLORS.sand} />
+              <Bar dataKey="beneficio" fill={CHART_COLORS.volcanic} />
+            </BarChart>
+          </ResponsiveContainer>
+        </InfoCard>
 
-      <h3 className="text-sm font-medium mb-1">Cronograma de Ejecución</h3>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart layout="vertical" data={timelineData}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis type="number" />
-          <YAxis dataKey="name" type="category" />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="value" fill="#8884d8" />
-        </BarChart>
-      </ResponsiveContainer>
-      <div className="mt-6">
-        {timelineData.map((item, index) => (
-          <div key={index} className="mb-2">
-            <span className="font-semibold">{item.name}:</span>{" "}
-            {item.description}
-          </div>
-        ))}
-      </div>
-
-      <div className="flex flex-col md:flex-row justify-center items-center">
-        <div>
-          <h4 className="font-semibold mb-2 pt-3">Mercado Potencial:</h4>
-          <ul className="list-disc pl-5 space-y-2 mb-4">
+        <div className="mt-6">
+          <h4 className="font-semibold mb-2">
+            Inversión inicial: $100,000 – $120,000
+          </h4>
+          <p className="mb-4 text-sm md:text-base text-muted-foreground">
+            Incluye desarrollo de la plataforma, infraestructura, marketing
+            inicial y operación por 6 meses.
+          </p>
+          <h4 className="font-semibold mb-2">Retorno de inversión (ROI)</h4>
+          <ul className="list-disc pl-5 space-y-2 text-sm md:text-base text-muted-foreground marker:text-foreground/50">
             <li>
-              Crecimiento sostenido en el turismo local y la digitalización de
-              negocios.
+              Primera etapa (1-2 años): recuperación del 70-100% de la
+              inversión.
+            </li>
+            <li>
+              Segunda etapa (3 años): margen de ganancia proyectado del
+              30-50% anual.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div>
+        <SectionLabel>Cronograma de ejecución</SectionLabel>
+        <InfoCard>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart layout="vertical" data={timelineData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis type="number" />
+              <YAxis dataKey="name" type="category" />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="value" fill={CHART_COLORS.neutral} />
+            </BarChart>
+          </ResponsiveContainer>
+        </InfoCard>
+        <div className="mt-6 space-y-2">
+          {timelineData.map((item, index) => (
+            <div key={index} className="text-sm md:text-base">
+              <span className="font-semibold text-foreground">
+                {item.name}:
+              </span>{" "}
+              <span className="text-muted-foreground">
+                {item.description}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div>
+          <SectionLabel>Mercado potencial</SectionLabel>
+          <ul className="list-disc pl-5 space-y-2 text-sm md:text-base text-muted-foreground marker:text-foreground/50">
+            <li>
+              Crecimiento sostenido en el turismo local y la digitalización
+              de negocios.
             </li>
             <li>
               Público objetivo amplio: turistas nacionales y extranjeros,
@@ -205,8 +258,8 @@ export default function PartnerOrInvestPage() {
           </ul>
         </div>
         <div>
-          <h4 className="font-semibold mb-2 pt-3">Escalabilidad:</h4>
-          <ul className="list-disc pl-5 space-y-2 mb-4">
+          <SectionLabel>Escalabilidad</SectionLabel>
+          <ul className="list-disc pl-5 space-y-2 text-sm md:text-base text-muted-foreground marker:text-foreground/50">
             <li>Expansión a más países o regiones.</li>
             <li>
               Introducción de nuevas categorías de servicios, como eventos
@@ -215,14 +268,14 @@ export default function PartnerOrInvestPage() {
           </ul>
         </div>
         <div>
-          <h4 className="font-semibold mb-2 pt-3">Ventajas Competitivas:</h4>
-          <ul className="list-disc pl-5 space-y-2">
+          <SectionLabel>Ventajas competitivas</SectionLabel>
+          <ul className="list-disc pl-5 space-y-2 text-sm md:text-base text-muted-foreground marker:text-foreground/50">
             <li>
               Tecnología de punta con IA para recomendaciones personalizadas.
             </li>
             <li>
-              Modelo de negocio flexible que se adapta a diferentes tamaños de
-              empresas.
+              Modelo de negocio flexible que se adapta a diferentes tamaños
+              de empresas.
             </li>
           </ul>
         </div>

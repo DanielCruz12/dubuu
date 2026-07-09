@@ -6,6 +6,7 @@ import Script from "next/script";
 import { Toaster } from "sonner";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
+import { instrumentSerif, cormorantGaramond } from "@/lib/fonts";
 import "./globals.css";
 
 const hankenGrotesk = Hanken_Grotesk({
@@ -165,7 +166,7 @@ export default async function RootLayout({
           </Script>
         </head>
         <body
-          className={`${hankenGrotesk.variable} ${hankenGrotesk.className} flex min-h-screen flex-col`}
+          className={`${hankenGrotesk.variable} ${instrumentSerif.variable} ${cormorantGaramond.variable} ${hankenGrotesk.className} flex min-h-screen flex-col`}
         >
           <SpeedInsights />
           <Analytics />
