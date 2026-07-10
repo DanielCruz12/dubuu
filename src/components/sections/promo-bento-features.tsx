@@ -199,7 +199,7 @@ export function PromoBentoFeatures() {
 
           {/* CTA */}
           <Tile
-            className="col-span-2 row-span-2 flex flex-col justify-between !border-transparent !bg-zinc-100 sm:col-span-2 lg:col-span-3"
+            className="col-span-1 row-span-2 flex flex-col justify-between !border-transparent !bg-zinc-100 sm:col-span-2 lg:col-span-3"
             delay={0.1}
           >
             <div className="text-[11px] font-bold text-zinc-600">

@@ -90,7 +90,9 @@
       "Bash(taskkill //F //PID 37912)",
       "Bash(python3 -c ' *)",
       "Bash(python3 *)",
-      "Bash(grep -n \"absolute top-2 right-2 bg-white/40\\\\|CardContent\\\\|Rating$\\\\|Rating>\" src/components/tour-card.tsx)"
+      "Bash(grep -n \"absolute top-2 right-2 bg-white/40\\\\|CardContent\\\\|Rating$\\\\|Rating>\" src/components/tour-card.tsx)",
+      "Bash(taskkill //F //PID 30840)",
+      "Bash(taskkill //F //PID 40408)"
     ]
   }
 }

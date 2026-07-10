@@ -64,7 +64,7 @@ export function PromoCard() {
             {t("landing.promoCard.headlineEmphasis")}
           </em>
         </h2>
-        <p className="mt-2.5 text-[15px] text-black/50">
+        <p className="mt-2.5 text-4xl sm:text-2xl md:text-base lg:text-[15px] text-black/50">
           {t("landing.promoCard.subtitle")}
         </p>
       </div>

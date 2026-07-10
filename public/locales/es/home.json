@@ -343,6 +343,18 @@
 				"question": "¿En qué idiomas puedo reservar?",
 				"answer": "Dubuu está disponible en español e inglés, y muchos de nuestros anfitriones hablan ambos idiomas."
 			},
+			"q7": {
+				"question": "¿Qué es Dubuu?",
+				"answer": "Dubuu es la plataforma donde los viajeros reservan tours, experiencias y alquiler de vehículos, y donde los negocios turísticos gestionan sus reservas, disponibilidad y clientes desde un mismo panel."
+			},
+			"q8": {
+				"question": "¿Puedo reservar tours y alquiler de autos en el mismo lugar?",
+				"answer": "Sí. En Dubuu reservas tours, experiencias y alquiler de vehículos en la misma plataforma, sin cambiar de sitio: eliges fechas, tour o vehículo, y todo queda registrado en tu cuenta."
+			},
+			"q9": {
+				"question": "¿Dubuu también sirve para negocios de tours o alquiler?",
+				"answer": "Sí. Si tu negocio ofrece tours o alquiler de vehículos, Dubuu te da un panel para publicar tu oferta y gestionar reservas, disponibilidad y pagos, todo desde un mismo lugar."
+			},
 			"titlePrefix": "Respuestas rápidas para ",
 			"titleEmphasis": "viajeros",
 			"titleSuffix": ""
@@ -384,7 +396,10 @@
 		},
 		"siteFooter": {
 			"cta": "Empieza gratis →",
+			"legalName": "Dubuu, S.A.S. de C.V.",
+			"nit": "NIT 0623-240326-125-4",
 			"tagline": "Hecho con cariño en El Salvador",
+			"rightsReserved": "Todos los derechos reservados",
 			"terms": "Términos de servicio",
 			"privacy": "Privacidad"
 		}
@@ -542,7 +557,9 @@
 		"showAllPhotos": "Mostrar todas las fotos"
 	},
 	"location": {
-		"loadingMap": "Cargando mapa..."
+		"loadingMap": "Cargando mapa...",
+		"howToGetThere": "¿Cómo llegar?",
+		"openInGoogleMaps": "Ver en Google Maps"
 	},
 	"checkout": {
 		"title": "Finalizar Compra",

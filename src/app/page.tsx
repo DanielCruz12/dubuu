@@ -82,7 +82,7 @@ export default function LandingPage() {
       <QuoteHighlightSection />
       <PromoBentoFeatures />
       <HowItWorksSection />
-      <div className="bg-zinc-950 px-6 pb-20 sm:px-10 md:pb-28">
+      <div className="bg-zinc-950 px-0 pb-20 sm:px-10 md:pb-28">
         <ResponsiveScaleBox
           width={1024}
           height={576}

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { MapPin } from "lucide-react";
+import { MapPin, Navigation } from "lucide-react";
 import { IProduct } from "@/types/product";
 import { isProductType } from "@/utils";
 import { useLanguage } from "@/lib/i18n-context";
@@ -32,6 +32,7 @@ export default function LocationMap({
 
   // Construir la URL del mapa de Google
   const mapUrl = `https://www.google.com/maps/embed/v1/place?key=${GOOGLE_API}&q=${latitude},${longitude}&zoom=${zoom}`;
+  const googleMapsLink = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
 
   return (
     <motion.div
@@ -41,7 +42,10 @@ export default function LocationMap({
       transition={{ duration: 0.5 }}
       className="w-full min-w-0 mx-auto rounded-2xl overflow-hidden"
     >
-      <h2 className="text-base md:text-lg font-semibold py-3">{mapTitle}</h2>
+      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground pt-3">
+        {t("home.location.howToGetThere")}
+      </p>
+      <h2 className="text-base md:text-lg font-semibold pb-3">{mapTitle}</h2>
 
       <div className="relative w-full min-h-[220px] h-[min(42vh,22rem)] sm:min-h-[260px] sm:h-[min(44vh,24rem)] md:min-h-[360px] md:h-[min(48vh,28rem)] lg:min-h-[400px] lg:h-[30rem]">
         {/* Iframe para el mapa de Google */}
@@ -86,6 +90,18 @@ export default function LocationMap({
         <div>
           <p className="text-sm">{tourData?.departure_point}</p>
         </div>
+      </div>
+
+      <div className="px-4 pb-4">
+        <a
+          href={googleMapsLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-card px-3 py-1.5 text-xs font-medium hover:bg-muted/50 transition-colors"
+        >
+          <Navigation className="h-3.5 w-3.5" aria-hidden />
+          {t("home.location.openInGoogleMaps")}
+        </a>
       </div>
     </motion.div>
   );

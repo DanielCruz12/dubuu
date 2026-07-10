@@ -11,7 +11,7 @@ import {
 import { useLanguage } from "@/lib/i18n-context";
 import DotGridBackground from "@/components/sections/dot-grid-background";
 
-const FAQ_KEYS = ["q1", "q2", "q3", "q4", "q5", "q6"];
+const FAQ_KEYS = ["q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9"];
 
 export default function FaqSection() {
   const { t } = useLanguage();

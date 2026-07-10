@@ -343,6 +343,18 @@
 				"question": "What languages can I book in?",
 				"answer": "Dubuu is available in Spanish and English, and many of our hosts speak both."
 			},
+			"q7": {
+				"question": "What is Dubuu?",
+				"answer": "Dubuu is the platform where travelers book tours, experiences and vehicle rentals, and where tourism businesses manage their bookings, availability and customers from a single panel."
+			},
+			"q8": {
+				"question": "Can I book tours and car rentals in the same place?",
+				"answer": "Yes. On Dubuu you book tours, experiences and vehicle rentals on the same platform, without switching sites: pick dates, a tour or a vehicle, and everything is saved to your account."
+			},
+			"q9": {
+				"question": "Is Dubuu also for tour or rental businesses?",
+				"answer": "Yes. If your business offers tours or vehicle rentals, Dubuu gives you a panel to publish your listings and manage bookings, availability and payments, all in one place."
+			},
 			"titlePrefix": "Quick answers for ",
 			"titleEmphasis": "travelers",
 			"titleSuffix": ""
@@ -384,7 +396,10 @@
 		},
 		"siteFooter": {
 			"cta": "Get started →",
+			"legalName": "Dubuu, S.A.S. de C.V.",
+			"nit": "NIT 0623-240326-125-4",
 			"tagline": "Made with care in El Salvador",
+			"rightsReserved": "All rights reserved",
 			"terms": "Terms of service",
 			"privacy": "Privacy"
 		}
@@ -542,7 +557,9 @@
 		"showAllPhotos": "Show all photos"
 	},
 	"location": {
-		"loadingMap": "Loading map..."
+		"loadingMap": "Loading map...",
+		"howToGetThere": "How to get there?",
+		"openInGoogleMaps": "Open in Google Maps"
 	},
 	"checkout": {
 		"title": "Complete purchase",

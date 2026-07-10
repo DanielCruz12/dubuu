@@ -35,7 +35,7 @@ export function SiteFooter() {
 
       <div className="relative mt-3 flex items-center justify-center overflow-hidden">
         <h2
-          className={`${instrumentSerif.className} select-none whitespace-nowrap text-[22vw] italic leading-[0.9] text-zinc-50 sm:text-[19vw] lg:text-[15vw]`}
+          className={`${instrumentSerif.className} select-none whitespace-nowrap text-[36vw] italic leading-[0.9] text-zinc-50 sm:text-[23vw] lg:text-[19vw]`}
           style={{ letterSpacing: "-0.03em" }}
         >
           dubuu
@@ -43,9 +43,13 @@ export function SiteFooter() {
       </div>
 
       <div className="relative mt-2 flex flex-col items-center gap-3 border-t border-white/10 px-6 py-6 text-xs text-white/45 sm:flex-row sm:justify-between sm:px-12">
-        <p>
-          © {new Date().getFullYear()} Dubuu · {t("landing.siteFooter.tagline")}
-        </p>
+        <div className="text-center sm:text-left">
+          <p>
+            © {new Date().getFullYear()} {t("landing.siteFooter.legalName")} ·{" "}
+            {t("landing.siteFooter.nit")}. {t("landing.siteFooter.rightsReserved")}
+          </p>
+          <p className="mt-0.5 text-white/30">{t("landing.siteFooter.tagline")}</p>
+        </div>
         <div className="flex flex-wrap items-center justify-center gap-5">
           <Link href="/terms" className="hover:text-white/70">
             {t("landing.siteFooter.terms")}

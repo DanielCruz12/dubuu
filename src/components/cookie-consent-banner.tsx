@@ -107,9 +107,9 @@ export default function CookieConsentBanner() {
     <div
       role="dialog"
       aria-label={copy.description}
-      className="fixed inset-x-4 bottom-4 z-[11000] mx-auto flex max-w-md flex-col gap-4 rounded-2xl border border-white/10 bg-zinc-900/50 p-5 shadow-2xl ring-1 ring-white/10 backdrop-blur-xl md:inset-x-auto md:bottom-8 md:left-1/2 md:w-[60%] md:max-w-3xl md:-translate-x-1/2"
+      className="fixed inset-x-3 bottom-3 z-[11000] mx-auto flex max-w-md flex-col gap-2 rounded-2xl border border-white/10 bg-zinc-900/50 p-3 shadow-2xl ring-1 ring-white/10 backdrop-blur-xl md:inset-x-auto md:bottom-8 md:left-1/2 md:w-[60%] md:max-w-3xl md:-translate-x-1/2 md:gap-4 md:p-5"
     >
-      <p className="text-sm text-zinc-100">
+      <p className="text-xs text-zinc-100 line-clamp-2 md:text-sm md:line-clamp-none">
         {copy.description}{" "}
         <Link href="/privacy" className="font-medium text-white underline">
           {copy.privacyLink}
@@ -117,7 +117,7 @@ export default function CookieConsentBanner() {
       </p>
 
       {configuring && (
-        <div className="space-y-3 rounded-xl border border-white/10 bg-white/5 p-4">
+        <div className="space-y-2 rounded-xl border border-white/10 bg-white/5 p-3 md:space-y-3 md:p-4">
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-sm font-medium text-white">

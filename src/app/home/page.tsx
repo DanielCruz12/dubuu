@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import TourSection from "@/components/sections/tour-section";
 import UpTop from "@/components/up-top";
@@ -91,10 +91,18 @@ function HomeContent() {
     setShouldFetchMore(true);
   };
 
-  const handleSearchResults = (results: IProduct[]) => {
-    const validResults = Array.isArray(results) ? results : [];
-    setSearchResults(applyTypeFilter(validResults));
-  };
+  // Memoizado: SearchSection dispara un efecto cada vez que esta referencia
+  // cambia. Sin useCallback, applyTypeFilter generaba un array nuevo en cada
+  // render (por el .filter()), lo que rompía el bail-out de React y producía
+  // un loop infinito de renders cuando había un ?type= activo.
+  const handleSearchResults = useCallback(
+    (results: IProduct[]) => {
+      const validResults = Array.isArray(results) ? results : [];
+      setSearchResults(applyTypeFilter(validResults));
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [typeFilter]
+  );
 
   const handleSearchLoading = (loading: boolean) => {
     setIsSearching(loading);

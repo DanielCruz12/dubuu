@@ -55,8 +55,8 @@ export default function Footer() {
           <Image
             src="/logo.svg"
             alt="Dubuu Logo"
-            width={100}
-            height={40}
+            width={150}
+            height={60}
             priority
           />
           <p className="text-sm">{t("footer.tagline")}</p>
@@ -91,7 +91,10 @@ export default function Footer() {
               </li>
               <li className="flex items-start gap-2 text-sm">
                 <MapPin className="h-4 w-4 flex-shrink-0 mt-0.5" />
-                <span>El Salvador, La Libertad</span>
+                <span>Lourdes, La Libertad, 01512, El Salvador</span>
+              </li>
+              <li className="text-xs text-muted-foreground">
+                NIT: 0623-240326-125-4
               </li>
             </ul>
           </div>
@@ -139,7 +142,8 @@ export default function Footer() {
 
         <div className="mb-4 flex flex-col md:flex-row justify-between items-center text-xs">
           <p className="py-4">
-            © {new Date().getFullYear()} dubuu. {t("footer.copyright")}
+            © {new Date().getFullYear()} Dubuu, Sociedad por Acciones
+            Simplificada de Capital Variable. {t("footer.copyright")}
           </p>
           <div className="flex space-x-6 gap-4">
             {footerNavigation.legal.map((item) => (
