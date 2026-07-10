@@ -1,0 +1,94 @@
+{
+  "hero": {
+    "eyebrow": "Dubuu",
+    "titlePrefix": "Become a partner or ",
+    "titleEmphasis": "invest",
+    "titleSuffix": " in our platform"
+  },
+  "goal": {
+    "label": "Goal",
+    "content": "We connect local businesses with domestic customers through a platform that makes it easy to promote and book tourism services, boosting the local economy and improving the customer experience."
+  },
+  "problem": {
+    "label": "Problem identified",
+    "items": [
+      "Local businesses struggle to promote themselves effectively in the digital market.",
+      "There is no comprehensive platform that brings together local tourism and leisure services in one place.",
+      "Customers look for centralized options to plan activities and book services.",
+      "Low visibility for small and medium tourism businesses."
+    ]
+  },
+  "solution": {
+    "label": "Proposed solution",
+    "content": "A digital platform (web and app) where businesses can register and promote their services."
+  },
+  "features": {
+    "label": "Key features",
+    "items": [
+      "Easy business registration with customizable profiles",
+      "Customer reviews and ratings to build trust",
+      "Online booking and integrated payments for a frictionless experience",
+      "Personalized recommendation system based on user preferences",
+      "Analytics tools so businesses can understand their performance"
+    ]
+  },
+  "businessModel": {
+    "label": "Business model",
+    "items": [
+      { "title": "Freemium.", "text": "Free registration for small businesses with basic features." },
+      { "title": "Premium subscription.", "text": "Businesses pay monthly/annual fees for advanced features." },
+      { "title": "Commissions.", "text": "Revenue from transactions made on the platform." },
+      { "title": "Advertising.", "text": "Paid promotional placements within the platform for greater visibility." },
+      { "title": "Additional services.", "text": "Photography, design and digital marketing services." }
+    ]
+  },
+  "financials": {
+    "label": "Financial projections",
+    "chart": {
+      "years": ["Year 1", "Year 2", "Year 3"],
+      "ingresos": "Revenue",
+      "gastos": "Expenses",
+      "beneficio": "Profit"
+    },
+    "initialInvestmentTitle": "Estimated initial investment: $100,000 – $120,000",
+    "initialInvestmentText": "Includes platform development, infrastructure, initial marketing and 6 months of operations. Figures are estimates for illustrative purposes, based on business plan assumptions.",
+    "roiTitle": "Return projection (not guaranteed)",
+    "roiItems": [
+      "First stage (1-2 years): projected recovery of 70-100% of the investment, based on the financial model's assumptions.",
+      "Second stage (3 years): projected profit margin of 30-50% annually, subject to actual market conditions."
+    ],
+    "riskNoticeTitle": "Risk notice",
+    "riskNoticeText": "The figures above are estimated projections and do not constitute a guarantee of performance or return. All investment carries risk, including possible partial or total loss of invested capital. Past or projected results do not guarantee future results. Evaluate this information together with your own financial and/or legal advisor before making an investment decision."
+  },
+  "timeline": {
+    "label": "Execution timeline",
+    "valueAxisLabel": "Months",
+    "items": [
+      { "name": "Month 1-2", "value": 2, "description": "In-depth research and planning" },
+      { "name": "Month 3-6", "value": 4, "description": "MVP platform development" },
+      { "name": "Month 7-8", "value": 2, "description": "Beta testing with selected businesses" },
+      { "name": "Month 9", "value": 1, "description": "Official launch with marketing campaigns" }
+    ]
+  },
+  "market": {
+    "label": "Market potential",
+    "items": [
+      "Sustained growth in local tourism and business digitalization.",
+      "Broad target audience: domestic and international tourists, families, event organizers."
+    ]
+  },
+  "scalability": {
+    "label": "Scalability",
+    "items": [
+      "Expansion to more countries or regions.",
+      "Introduction of new service categories, such as corporate events or specialized rentals."
+    ]
+  },
+  "advantages": {
+    "label": "Competitive advantages",
+    "items": [
+      "Cutting-edge AI technology for personalized recommendations.",
+      "Flexible business model that adapts to different company sizes."
+    ]
+  }
+}

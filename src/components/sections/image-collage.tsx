@@ -101,7 +101,7 @@ export default function ImageCollage({
     <section className="w-full">
       {/* Mobile view - Carousel */}
       <div className="md:hidden">
-        <div className="relative w-full aspect-[16/9] rounded-lg overflow-hidden">
+        <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden">
           {allImages.map((image, index) => (
             <div
               key={index}
@@ -160,7 +160,7 @@ export default function ImageCollage({
       <div className="hidden md:grid grid-cols-4 gap-2 h-[450px]">
         {/* Banner image - large, spans 2 columns and 2 rows */}
         <div
-          className="col-span-2 row-span-2 relative rounded-l-lg overflow-hidden cursor-pointer"
+          className="col-span-2 row-span-2 relative rounded-l-2xl overflow-hidden cursor-pointer"
           onClick={() => {
             setCurrentIndex(0)
             setOpen(true)
@@ -178,7 +178,7 @@ export default function ImageCollage({
         {allImages.slice(1, 3).map((image, index) => (
           <div
             key={index}
-            className={`relative overflow-hidden cursor-pointer ${index === 1 ? "rounded-tr-lg" : ""}`}
+            className={`relative overflow-hidden cursor-pointer ${index === 1 ? "rounded-tr-2xl" : ""}`}
             onClick={() => {
               setCurrentIndex(index + 1)
               setOpen(true)
@@ -196,7 +196,7 @@ export default function ImageCollage({
         {allImages.slice(3, 5).map((image, index) => (
           <div
             key={index}
-            className={`relative overflow-hidden cursor-pointer ${index === 1 ? "rounded-br-lg" : ""}`}
+            className={`relative overflow-hidden cursor-pointer ${index === 1 ? "rounded-br-2xl" : ""}`}
             onClick={() => {
               setCurrentIndex(index + 3)
               setOpen(true)

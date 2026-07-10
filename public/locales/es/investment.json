@@ -1,0 +1,94 @@
+{
+  "hero": {
+    "eyebrow": "Dubuu",
+    "titlePrefix": "Sé un socio o ",
+    "titleEmphasis": "invierte",
+    "titleSuffix": " en nuestra plataforma"
+  },
+  "goal": {
+    "label": "Objetivo",
+    "content": "Conectamos negocios locales con clientes nacionales mediante una plataforma que facilita la promoción y reserva de servicios turísticos, impulsando la economía local y mejorando la experiencia del cliente."
+  },
+  "problem": {
+    "label": "Problema detectado",
+    "items": [
+      "Negocios locales enfrentan dificultades para promocionarse eficientemente en el mercado digital.",
+      "Falta de una plataforma integral que concentre servicios turísticos y de ocio locales en un solo lugar.",
+      "Clientes buscan opciones centralizadas para planificar actividades y obtener servicios.",
+      "Baja visibilidad de negocios pequeños y medianos en el sector turístico."
+    ]
+  },
+  "solution": {
+    "label": "Solución propuesta",
+    "content": "Una plataforma digital (web y app) donde negocios puedan registrarse y promocionar sus servicios."
+  },
+  "features": {
+    "label": "Funciones clave",
+    "items": [
+      "Registro fácil de negocios con perfiles personalizables",
+      "Opciones para reseñas y calificaciones de clientes para fomentar la confianza",
+      "Reservas en línea y pagos integrados para una experiencia sin fricciones",
+      "Sistema de recomendaciones personalizadas basado en preferencias del usuario",
+      "Herramientas de análisis para que los negocios comprendan su rendimiento"
+    ]
+  },
+  "businessModel": {
+    "label": "Modelo de negocio",
+    "items": [
+      { "title": "Freemium.", "text": "Registro gratuito para negocios pequeños con funciones básicas." },
+      { "title": "Suscripción premium.", "text": "Negocios pagan tarifas mensuales/anuales para funciones avanzadas." },
+      { "title": "Comisiones.", "text": "Ganancia por transacciones realizadas en la plataforma." },
+      { "title": "Publicidad.", "text": "Espacios de promoción pagados dentro de la plataforma para mayor visibilidad." },
+      { "title": "Servicios adicionales.", "text": "Oferta de servicios de fotografía, diseño y marketing digital." }
+    ]
+  },
+  "financials": {
+    "label": "Proyecciones financieras",
+    "chart": {
+      "years": ["Año 1", "Año 2", "Año 3"],
+      "ingresos": "Ingresos",
+      "gastos": "Gastos",
+      "beneficio": "Beneficio"
+    },
+    "initialInvestmentTitle": "Inversión inicial estimada: $100,000 – $120,000",
+    "initialInvestmentText": "Incluye desarrollo de la plataforma, infraestructura, marketing inicial y operación por 6 meses. Cifras estimadas con fines ilustrativos, basadas en supuestos del plan de negocio.",
+    "roiTitle": "Proyección de retorno (no garantizada)",
+    "roiItems": [
+      "Primera etapa (1-2 años): recuperación proyectada del 70-100% de la inversión, según los supuestos del modelo financiero.",
+      "Segunda etapa (3 años): margen de ganancia proyectado del 30-50% anual, sujeto a las condiciones reales del mercado."
+    ],
+    "riskNoticeTitle": "Aviso de riesgo",
+    "riskNoticeText": "Las cifras anteriores son proyecciones estimadas y no constituyen una garantía de rendimiento ni de retorno. Toda inversión conlleva riesgo, incluyendo la posible pérdida parcial o total del capital invertido. Los resultados pasados o proyectados no garantizan resultados futuros. Evalúe esta información junto con su propio asesor financiero y/o legal antes de tomar una decisión de inversión."
+  },
+  "timeline": {
+    "label": "Cronograma de ejecución",
+    "valueAxisLabel": "Meses",
+    "items": [
+      { "name": "Mes 1-2", "value": 2, "description": "Investigación y planeación detallada" },
+      { "name": "Mes 3-6", "value": 4, "description": "Desarrollo de la plataforma MVP" },
+      { "name": "Mes 7-8", "value": 2, "description": "Pruebas beta con negocios seleccionados" },
+      { "name": "Mes 9", "value": 1, "description": "Lanzamiento oficial con campañas de marketing" }
+    ]
+  },
+  "market": {
+    "label": "Mercado potencial",
+    "items": [
+      "Crecimiento sostenido en el turismo local y la digitalización de negocios.",
+      "Público objetivo amplio: turistas nacionales y extranjeros, familias, organizadores de eventos."
+    ]
+  },
+  "scalability": {
+    "label": "Escalabilidad",
+    "items": [
+      "Expansión a más países o regiones.",
+      "Introducción de nuevas categorías de servicios, como eventos corporativos o alquileres especializados."
+    ]
+  },
+  "advantages": {
+    "label": "Ventajas competitivas",
+    "items": [
+      "Tecnología de punta con IA para recomendaciones personalizadas.",
+      "Modelo de negocio flexible que se adapta a diferentes tamaños de empresas."
+    ]
+  }
+}

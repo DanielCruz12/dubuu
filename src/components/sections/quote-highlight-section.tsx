@@ -26,11 +26,17 @@ export default function QuoteHighlightSection() {
           className="mx-auto h-10 w-10 fill-black text-black md:h-12 md:w-12"
           aria-hidden="true"
         />
-        <blockquote className="mt-8 font-display text-3xl sm:text-4xl md:text-5xl font-normal leading-tight tracking-tight text-black text-balance">
+        <blockquote className="mt-8 font-display text-4xl sm:text-5xl md:text-6xl font-normal leading-tight tracking-tight text-black text-balance">
           {t("landing.quoteHighlight.text")}
         </blockquote>
         <div className="mt-10 flex flex-col items-center gap-3">
-          <div className="relative h-14 w-14 overflow-hidden rounded-full">
+          <a
+            href="https://x.com/Daniel_CruzD"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="relative h-14 w-14 overflow-hidden rounded-full"
+            aria-label={t("landing.quoteHighlight.name")}
+          >
             <Image
               src="/ceo.jpg"
               alt={t("landing.quoteHighlight.name")}
@@ -40,7 +46,7 @@ export default function QuoteHighlightSection() {
               className="object-cover grayscale"
               style={{ objectPosition: "50% 38%" }}
             />
-          </div>
+          </a>
           <p className="text-sm font-medium text-zinc-600">
             {t("landing.quoteHighlight.name")}
           </p>

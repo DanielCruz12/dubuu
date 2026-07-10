@@ -47,8 +47,8 @@ export default function FeaturedExperiences() {
       </motion.div>
 
       {isLoading ? (
-        <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {Array.from({ length: 4 }).map((_, i) => (
+        <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+          {Array.from({ length: 5 }).map((_, i) => (
             <div
               key={i}
               className="aspect-[4/5] w-full animate-pulse rounded-3xl bg-white/5"
@@ -56,7 +56,7 @@ export default function FeaturedExperiences() {
           ))}
         </div>
       ) : (
-        <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
           {products.map((product, i) => (
             <ExperienceCard
               key={product.id}

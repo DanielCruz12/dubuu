@@ -15,7 +15,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import type { IProduct } from "@/types/product";
-import Rating from "./rating";
 import { Badge } from "./ui/badge";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
@@ -43,7 +42,6 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
     banner,
     images,
     average_rating,
-    total_reviews,
     product_category,
     product_type,
   } = props;
@@ -209,7 +207,7 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
       >
         <div
           ref={carouselRef}
-          className="relative rounded-t-lg overflow-hidden aspect-square"
+          className="relative rounded-t-lg overflow-hidden aspect-[4/3]"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -245,28 +243,36 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
             </Badge>
           )}
 
-          {/* Botón de favorito */}
-          <button
-            className="absolute top-2 right-2 bg-white/40 hover:bg-white/60 dark:bg-black/40 dark:hover:bg-black/60 z-10 p-1.5 rounded-full transition-colors duration-200"
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleFavorite(id);
-            }}
-            disabled={isSaving || isUnsaving}
-            aria-label={
-              isFavorited
-                ? t("home.tourCard.removeFromFavorites")
-                : t("home.tourCard.addToFavorites")
-            }
-          >
-            <Heart
-              className={`h-4 w-4 ${
+          {/* Calificación + botón de favorito, juntos */}
+          <div className="absolute top-2 right-2 z-10 flex items-center gap-1.5">
+            {Number(average_rating) > 0 && (
+              <span className="flex items-center gap-1 rounded-full bg-white/40 dark:bg-black/40 px-2 py-1 text-[11px] font-medium">
+                <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />
+                {formattedRating}
+              </span>
+            )}
+            <button
+              className="bg-white/40 hover:bg-white/60 dark:bg-black/40 dark:hover:bg-black/60 p-1.5 rounded-full transition-colors duration-200"
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleFavorite(id);
+              }}
+              disabled={isSaving || isUnsaving}
+              aria-label={
                 isFavorited
-                  ? "fill-rose-500 text-rose-500"
-                  : "text-gray-700 dark:text-white stroke-[2.5px] hover:text-rose-400"
-              } ${isSaving || isUnsaving ? "opacity-50" : ""}`}
-            />
-          </button>
+                  ? t("home.tourCard.removeFromFavorites")
+                  : t("home.tourCard.addToFavorites")
+              }
+            >
+              <Heart
+                className={`h-4 w-4 ${
+                  isFavorited
+                    ? "fill-rose-500 text-rose-500"
+                    : "text-gray-700 dark:text-white stroke-[2.5px] hover:text-rose-400"
+                } ${isSaving || isUnsaving ? "opacity-50" : ""}`}
+              />
+            </button>
+          </div>
 
           {/* Indicadores de imagen (solo si hay más de una) */}
           {productImages.length > 1 && (
@@ -281,22 +287,19 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
           )}
         </div>
 
-        <div className="p-2.5 w-full min-w-0">
-          <div className="flex flex-col gap-1.5 w-full min-w-0">
+        <div className="p-2 w-full min-w-0">
+          <div className="flex flex-col gap-1 w-full min-w-0">
             {isRental && rent ? (
               <>
                 <div>
+                  <p className="text-sm font-bold leading-tight line-clamp-1">
+                    {vehicleTitle}
+                  </p>
                   {product_category?.name ? (
                     <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
                       {product_category.name}
                     </p>
                   ) : null}
-                  <p className="text-sm font-bold leading-tight line-clamp-2">
-                    {vehicleTitle}
-                  </p>
-                  <p className="text-[11px] text-muted-foreground">
-                    {rent.year} · {name}
-                  </p>
                 </div>
                 <div className="flex flex-wrap gap-1">
                   <span className="inline-flex items-center gap-1 rounded-md border border-border/60 bg-muted/40 px-1.5 py-0.5 text-[10px] font-medium">
@@ -323,17 +326,19 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
                 </div>
               </>
             ) : (
-              <>
+              <div>
                 <div className="text-xs font-semibold line-clamp-1 w-full">
                   {name}
                 </div>
-                <p className="text-xs line-clamp-2 text-muted-foreground w-full">
-                  {description}
-                </p>
-              </>
+                {product_category?.name ? (
+                  <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                    {product_category.name}
+                  </p>
+                ) : null}
+              </div>
             )}
 
-            <div className="flex items-center justify-between gap-2 text-sm pt-0.5">
+            <div className="flex items-center gap-2 text-sm">
               <span className="font-semibold tabular-nums">
                 {symbol}
                 {convert(displayPrice)}{" "}
@@ -341,10 +346,6 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
                   {priceSuffix}
                 </span>
               </span>
-              <div className="flex items-center gap-1 shrink-0">
-                <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />
-                <span className="text-xs">{formattedRating}</span>
-              </div>
             </div>
           </div>
         </div>
@@ -425,28 +426,36 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
                 {product_category.name}
               </Badge>
             )}
-            <button
-              type="button"
-              className="absolute top-2 right-2 bg-white/45 hover:bg-white/65 dark:bg-black/45 dark:hover:bg-black/65 z-10 p-1.5 rounded-full transition-colors"
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleFavorite(id);
-              }}
-              disabled={isSaving || isUnsaving}
-              aria-label={
-                isFavorited
-                  ? t("home.tourCard.removeFromFavorites")
-                  : t("home.tourCard.addToFavorites")
-              }
-            >
-              <Heart
-                className={`h-4 w-4 ${
+            <div className="absolute top-2 right-2 z-10 flex items-center gap-1.5">
+              {Number(average_rating) > 0 && (
+                <span className="flex items-center gap-1 rounded-full bg-white/45 dark:bg-black/45 px-2 py-1 text-xs font-medium">
+                  <Star className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400" />
+                  {formattedRating}
+                </span>
+              )}
+              <button
+                type="button"
+                className="bg-white/45 hover:bg-white/65 dark:bg-black/45 dark:hover:bg-black/65 p-1.5 rounded-full transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleFavorite(id);
+                }}
+                disabled={isSaving || isUnsaving}
+                aria-label={
                   isFavorited
-                    ? "fill-rose-500 text-rose-500"
-                    : "text-gray-700 dark:text-white stroke-[2.5px] hover:text-rose-400"
-                } ${isSaving || isUnsaving ? "opacity-50" : ""}`}
-              />
-            </button>
+                    ? t("home.tourCard.removeFromFavorites")
+                    : t("home.tourCard.addToFavorites")
+                }
+              >
+                <Heart
+                  className={`h-4 w-4 ${
+                    isFavorited
+                      ? "fill-rose-500 text-rose-500"
+                      : "text-gray-700 dark:text-white stroke-[2.5px] hover:text-rose-400"
+                  } ${isSaving || isUnsaving ? "opacity-50" : ""}`}
+                />
+              </button>
+            </div>
           </div>
 
           <div className="flex flex-1 flex-col justify-between gap-4 p-4 md:p-5 min-w-0 border-t md:border-t-0 md:border-l border-border/60">
@@ -509,13 +518,6 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
                     {priceSuffix}
                   </span>
                 </p>
-                <div className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
-                  <Star className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400" />
-                  <span>{formattedRating}</span>
-                  {total_reviews > 0 ? (
-                    <span className="text-xs">({total_reviews})</span>
-                  ) : null}
-                </div>
               </div>
               <Button
                 variant="default"
@@ -608,48 +610,50 @@ export function TourCard(props: IProduct & { isMobileOptimized?: boolean }) {
           </Badge>
         )}
 
-        <button
-          className="absolute top-2 right-2 bg-white/40 hover:bg-white/60 dark:bg-black/40 dark:hover:bg-black/60 z-10 p-1.5 rounded-full transition-colors duration-200"
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleFavorite(id);
-          }}
-          disabled={isSaving || isUnsaving}
-          aria-label={
-            isFavorited ? "Quitar de favoritos" : "Añadir a favoritos"
-          }
-        >
-          <Heart
-            className={`h-4 w-4 ${
-              isFavorited
-                ? "fill-rose-500 text-rose-500"
-                : "text-gray-700 dark:text-white stroke-[2.5px] hover:text-rose-400"
-            } ${isSaving || isUnsaving ? "opacity-50" : ""}`}
-          />
-        </button>
+        <div className="absolute top-2 right-2 z-10 flex items-center gap-1.5">
+          {Number(average_rating) > 0 && (
+            <span className="flex items-center gap-1 rounded-full bg-white/40 dark:bg-black/40 px-2 py-1 text-xs font-medium">
+              <Star className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400" />
+              {formattedRating}
+            </span>
+          )}
+          <button
+            className="bg-white/40 hover:bg-white/60 dark:bg-black/40 dark:hover:bg-black/60 p-1.5 rounded-full transition-colors duration-200"
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleFavorite(id);
+            }}
+            disabled={isSaving || isUnsaving}
+            aria-label={
+              isFavorited ? "Quitar de favoritos" : "Añadir a favoritos"
+            }
+          >
+            <Heart
+              className={`h-4 w-4 ${
+                isFavorited
+                  ? "fill-rose-500 text-rose-500"
+                  : "text-gray-700 dark:text-white stroke-[2.5px] hover:text-rose-400"
+              } ${isSaving || isUnsaving ? "opacity-50" : ""}`}
+            />
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-col">
         <CardContent className="pt-1">
-          <div className="flex items-center justify-between gap-2 pt-2">
-            <h3 className="text-[0.875rem] md:text-[1rem] font-bold text-wrap line-clamp-1 min-w-0 flex-1">
+          <div className="pt-2">
+            <h3 className="text-[0.875rem] md:text-[1rem] font-bold text-wrap line-clamp-1">
               {name}
             </h3>
-            {total_reviews > 0 && (
-              <Rating
-                averageRating={average_rating}
-                reviewsCount={total_reviews}
-                maxStars={1}
-                hideReviewCount
-                activeStarClassName="text-yellow-400 fill-yellow-400"
-                inactiveStarClassName="text-gray-300"
-                isMobileOptimized
-              />
-            )}
+            {product_category?.name ? (
+              <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                {product_category.name}
+              </p>
+            ) : null}
           </div>
 
           {/* Descripción */}
-          <p className="text-sm text-muted-foreground line-clamp-3 mb-3">
+          <p className="text-sm text-muted-foreground line-clamp-3 mb-3 mt-1">
             {description}
           </p>
         </CardContent>

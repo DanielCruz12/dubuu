@@ -78,7 +78,19 @@
       "Bash(mkdir -p 'C:\\\\Users\\\\daniel\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-daniel-Desktop-projects-personal-work-projects-dubuu\\\\691703de-41fc-4adb-a1a5-0111e13d4488\\\\scratchpad/pw')",
       "Bash(npm init *)",
       "Bash(npm install *)",
-      "Bash(npx playwright *)"
+      "Bash(npx playwright *)",
+      "Bash(npx eslint *)",
+      "Bash(grep -rInE \"\\(api[_-]?key|secret|password|token\\)\\\\s*[:=]\\\\s*[\\\\\"'][A-Za-z0-9_\\\\-]{15,}[\\\\\"']\" src/)",
+      "Bash(npm audit *)",
+      "Bash(npx pnpm *)",
+      "Bash(npm view *)",
+      "Bash(pnpm install *)",
+      "Bash(pnpm list *)",
+      "Bash(netstat -ano)",
+      "Bash(taskkill //F //PID 37912)",
+      "Bash(python3 -c ' *)",
+      "Bash(python3 *)",
+      "Bash(grep -n \"absolute top-2 right-2 bg-white/40\\\\|CardContent\\\\|Rating$\\\\|Rating>\" src/components/tour-card.tsx)"
     ]
   }
 }

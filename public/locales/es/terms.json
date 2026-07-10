@@ -1,49 +1,78 @@
 {
   "title": "Términos y Condiciones",
   "lastUpdate": "Última actualización:",
+  "lastUpdatedDate": "2026-07-09",
   "s1": {
-    "title": "1. Introducción",
-    "content": "Bienvenido a Dubuu. Estos Términos y Condiciones rigen el uso de nuestra plataforma, incluyendo todos los servicios y funcionalidades asociadas. Al acceder o utilizar Dubuu, usted acepta estar sujeto a estos términos. Si no está de acuerdo con alguna parte de estos términos, no podrá acceder o utilizar nuestros servicios."
+    "title": "1. Identidad de la Empresa y Aceptación de los Términos",
+    "content": "[RAZÓN SOCIAL], con Número de Identificación Tributaria (NIT) [NIT], con domicilio en [DOMICILIO FISCAL], El Salvador (en adelante, \"Dubuu\", \"nosotros\" o \"la Plataforma\"), opera la plataforma digital disponible en dubuu.com. Estos Términos y Condiciones (\"Términos\") constituyen un acuerdo legalmente vinculante entre usted (\"Usuario\") y Dubuu. Al crear una cuenta, acceder o utilizar la Plataforma, usted declara haber leído, comprendido y aceptado estos Términos en su totalidad. Si no está de acuerdo con alguna parte de estos Términos, no debe acceder ni utilizar la Plataforma."
   },
   "s2": {
     "title": "2. Definiciones",
-    "content": "Para efectos de estos Términos y Condiciones, se entenderá por: 'Servicio': Todas las funcionalidades, herramientas y contenidos ofrecidos a través de la plataforma Dubuu. 'Usuario': Toda persona que se registre, acceda o utilice el Servicio. 'Cuenta': El registro personal que permite al Usuario acceder a funcionalidades específicas del Servicio. 'Contenido del Usuario': Toda información, datos, textos, fotografías, gráficos, mensajes u otros materiales que los Usuarios envían, publican o muestran en el Servicio. 'Datos Personales': Cualquier información relativa a una persona física identificada o identificable."
+    "content": "Para efectos de estos Términos y Condiciones, se entenderá por: 'Servicio': todas las funcionalidades, herramientas y contenidos ofrecidos a través de la plataforma Dubuu. 'Usuario': toda persona que se registre, acceda o utilice el Servicio. 'Cuenta': el registro personal que permite al Usuario acceder a funcionalidades específicas del Servicio. 'Proveedor' o 'Anfitrión': negocio o persona independiente que publica y ofrece tours, experiencias, alquiler de vehículos u otros servicios turísticos a través de la Plataforma. 'Contenido del Usuario': toda información, datos, textos, fotografías, gráficos, reseñas, calificaciones, mensajes u otros materiales que los Usuarios o Proveedores envían, publican o muestran en el Servicio. 'Datos Personales': cualquier información relativa a una persona física identificada o identificable."
   },
   "s3": {
-    "title": "3. Registro y Seguridad de la Cuenta",
-    "content": "Para utilizar ciertas funcionalidades de nuestra plataforma, es posible que deba registrarse y crear una cuenta. Utilizamos Clerk para la autenticación de usuarios, lo que proporciona un nivel adicional de seguridad. Usted es responsable de mantener la confidencialidad de sus credenciales de acceso y de todas las actividades que ocurran bajo su cuenta. Implementamos medidas de seguridad como el cifrado de datos y certificados SSL para proteger su información."
+    "title": "3. Objeto del Servicio",
+    "content": "Dubuu es una plataforma digital que permite a los Usuarios descubrir, reservar y pagar tours, experiencias, alquiler de vehículos y otros servicios turísticos ofrecidos por Proveedores independientes en El Salvador y Centroamérica. Dubuu facilita el descubrimiento, la reserva y el cobro de dichos servicios, pero no los presta directamente."
   },
   "s4": {
-    "title": "4. Phishing y Seguridad",
-    "content": "El phishing es una práctica fraudulenta donde los estafadores intentan obtener información sensible haciéndose pasar por entidades confiables. Dubuu nunca le solicitará información sensible a través de correos electrónicos no solicitados o mensajes. A pesar de nuestros esfuerzos para mantener la plataforma segura, no nos hacemos responsables por actividades de phishing o robo de datos realizadas por terceros que puedan suplantar nuestra identidad."
+    "title": "4. Elegibilidad y Edad Mínima",
+    "content": "Para crear una cuenta y utilizar la Plataforma, usted declara tener al menos 18 años de edad y contar con capacidad legal para contratar conforme a la legislación de El Salvador. Las personas menores de edad únicamente podrán utilizar la Plataforma bajo la supervisión directa de su madre, padre o tutor legal, quien asumirá la responsabilidad plena por dicho uso y por cualquier reserva realizada."
   },
   "s5": {
-    "title": "5. Procesamiento de Pagos",
+    "title": "5. Registro y Seguridad de la Cuenta",
+    "content": "Para utilizar ciertas funcionalidades de nuestra plataforma, es posible que deba registrarse y crear una cuenta. Utilizamos Clerk para la autenticación de usuarios, lo que proporciona un nivel adicional de seguridad. Usted es responsable de mantener la confidencialidad de sus credenciales de acceso y de todas las actividades que ocurran bajo su cuenta. Implementamos medidas de seguridad como el cifrado de datos y certificados SSL para proteger su información."
+  },
+  "s6": {
+    "title": "6. Rol de Dubuu como Intermediario",
+    "content": "Dubuu actúa exclusivamente como INTERMEDIARIO tecnológico entre los Usuarios y los Proveedores independientes que publican sus servicios en la Plataforma. Dubuu no es, ni debe interpretarse como, el organizador, operador, empleador o garante de los tours, experiencias, alquileres de vehículos u otros servicios ofrecidos por los Proveedores. La relación contractual para la prestación del servicio turístico se establece directamente entre el Usuario y el Proveedor correspondiente. Dubuu no es responsable por la calidad, seguridad, legalidad, veracidad de la información publicada, cumplimiento de horarios, cancelaciones, ni por cualquier daño, lesión, pérdida o perjuicio que resulte de la prestación (o falta de prestación) de dichos servicios por parte de los Proveedores. Se recomienda a los Usuarios verificar directamente con el Proveedor la información, permisos y condiciones del servicio antes de contratarlo."
+  },
+  "s7": {
+    "title": "7. Contenido de Usuario: Reseñas y Perfiles",
+    "content": "Al publicar reseñas, calificaciones, fotografías, comentarios de perfil u otro contenido (\"Contenido de Usuario\") en la Plataforma, usted otorga a Dubuu una licencia mundial, no exclusiva, transferible, sublicenciable y libre de regalías para usar, reproducir, adaptar, publicar, traducir y mostrar dicho contenido con fines de operación, promoción y mejora de la Plataforma. Usted declara y garantiza que el Contenido de Usuario que publica es veraz, no infringe derechos de terceros (incluyendo derechos de autor, marca o privacidad) y no contiene difamación, discurso de odio o información falsa. Dubuu no verifica ni garantiza la veracidad, exactitud o buena fe del Contenido de Usuario publicado por terceros (incluyendo reseñas de otros Usuarios o perfiles de Proveedores) y se deslinda de cualquier responsabilidad derivada de dicho contenido. Queda prohibido publicar contenido que: (a) sea falso, engañoso o difamatorio; (b) infrinja derechos de propiedad intelectual de terceros; (c) contenga amenazas, acoso o discurso de odio; (d) promueva actividades ilegales; o (e) incluya datos personales de terceros sin su consentimiento. Dubuu se reserva el derecho de eliminar, ocultar o editar cualquier Contenido de Usuario que, a su sola discreción, infrinja estos Términos."
+  },
+  "s8": {
+    "title": "8. Notificación y Retirada de Contenido",
+    "content": "Si usted considera que algún contenido publicado en la Plataforma infringe sus derechos de autor, marca u otros derechos de propiedad intelectual, o que constituye contenido ilegal, puede notificarlo escribiendo a [CORREO PARA NOTIFICACIONES LEGALES / TAKEDOWN], incluyendo: (i) identificación del titular del derecho y datos de contacto; (ii) descripción precisa y ubicación (URL) del contenido denunciado; (iii) una declaración de buena fe de que el uso no está autorizado por el titular; y (iv) una declaración de que la información proporcionada es exacta. Dubuu evaluará la notificación y podrá remover o deshabilitar el acceso al contenido denunciado en un plazo razonable, informando cuando corresponda al Usuario que lo publicó. Dubuu se reserva el derecho de rechazar notificaciones manifiestamente infundadas o presentadas de mala fe."
+  },
+  "s9": {
+    "title": "9. Phishing y Seguridad",
+    "content": "El phishing es una práctica fraudulenta donde los estafadores intentan obtener información sensible haciéndose pasar por entidades confiables. Dubuu nunca le solicitará información sensible a través de correos electrónicos no solicitados o mensajes. A pesar de nuestros esfuerzos para mantener la plataforma segura, no nos hacemos responsables por actividades de phishing o robo de datos realizadas por terceros que puedan suplantar nuestra identidad."
+  },
+  "s10": {
+    "title": "10. Procesamiento de Pagos",
     "beforeLink": "Utilizamos Wompi como nuestro procesador de pagos. Al realizar una transacción en nuestra plataforma, usted también está sujeto a los términos y condiciones y políticas de privacidad de Wompi (",
     "afterLink": "). Wompi implementa seguridad 3D para proteger las transacciones. No almacenamos datos de tarjetas de crédito en nuestros servidores, ya que todo el procesamiento de pagos es manejado directamente por Wompi."
   },
-  "s6": {
-    "title": "6. Limitación de Responsabilidad",
-    "content": "En la máxima medida permitida por la ley aplicable, Dubuu no será responsable por daños directos, indirectos, incidentales, especiales, consecuentes o punitivos, incluyendo pero no limitado a, pérdida de beneficios, datos, uso, buena voluntad u otras pérdidas intangibles, resultantes del uso o la imposibilidad de usar la plataforma."
+  "s11": {
+    "title": "11. Limitación de Responsabilidad",
+    "content": "En la máxima medida permitida por la legislación de El Salvador, Dubuu no será responsable por daños directos, indirectos, incidentales, especiales, consecuentes, punitivos o por lucro cesante derivados de: (a) la prestación, cancelación o calidad de los servicios ofrecidos por los Proveedores; (b) el Contenido de Usuario publicado por terceros; (c) interrupciones, errores o fallas técnicas de la Plataforma; o (d) el uso o la imposibilidad de uso de la Plataforma. Salvo en los casos en que la ley aplicable no lo permita, la responsabilidad total de Dubuu frente a cualquier reclamo relacionado con estos Términos no excederá el monto de las comisiones efectivamente percibidas por Dubuu en la transacción específica que dio origen al reclamo."
   },
-  "s7": {
-    "title": "7. Propiedad Intelectual y Prohibición de Copia",
+  "s12": {
+    "title": "12. Indemnización",
+    "content": "Usted acepta indemnizar, defender y mantener libre de responsabilidad a Dubuu, sus directores, empleados y afiliados frente a cualquier reclamo, demanda, daño, pérdida o gasto (incluyendo honorarios legales razonables) que surja de: (a) su incumplimiento de estos Términos; (b) su uso indebido de la Plataforma; (c) el Contenido de Usuario que publique; o (d) su relación contractual directa con cualquier Proveedor."
+  },
+  "s13": {
+    "title": "13. Propiedad Intelectual y Prohibición de Copia",
     "content": "Todo el contenido, características y funcionalidad de la plataforma Dubuu son propiedad de Dubuu o de sus licenciantes y están protegidos por leyes de propiedad intelectual. Queda estrictamente prohibida la copia, reproducción, modificación, distribución o cualquier uso no autorizado. La infracción de estos derechos será perseguida legalmente y podrá resultar en acciones judiciales, incluyendo demandas por daños y perjuicios, multas y otras sanciones según lo establecido por la ley."
   },
-  "s8": {
-    "title": "8. Servicios de Terceros",
+  "s14": {
+    "title": "14. Servicios de Terceros",
     "part1": "Nuestra plataforma utiliza varios servicios de terceros para mejorar la experiencia del usuario y la seguridad: ",
     "part2": " para la protección y optimización del sitio web, ",
     "part3": " para prevenir actividades automatizadas maliciosas, ",
     "part4": " para autenticación de usuarios, y ",
     "part5": " para procesamiento de pagos. El uso de estos servicios está sujeto a sus respectivos términos y condiciones y políticas de privacidad."
   },
-  "s9": {
-    "title": "9. Modificaciones a los Términos",
-    "content": "Nos reservamos el derecho de modificar estos Términos y Condiciones en cualquier momento. Las modificaciones entrarán en vigor inmediatamente después de su publicación en la plataforma. Su uso continuado de la plataforma después de la publicación de los cambios constituirá su aceptación de dichos cambios."
+  "s15": {
+    "title": "15. Ley Aplicable, Jurisdicción y Resolución de Disputas",
+    "content": "Estos Términos se rigen e interpretan de conformidad con las leyes de la República de El Salvador, con exclusión de sus normas de conflicto de leyes. Cualquier controversia, disputa o reclamo que surja de o esté relacionado con estos Términos, o con el uso de la Plataforma, será sometido en primer lugar a un intento de solución amistosa entre las partes. De no alcanzarse un acuerdo dentro de un plazo razonable, la disputa se resolverá mediante arbitraje en derecho ante [CENTRO DE ARBITRAJE, EJ. CÁMARA DE COMERCIO E INDUSTRIA DE EL SALVADOR], conforme a la Ley de Mediación, Conciliación y Arbitraje de El Salvador, con sede en [CIUDAD, EL SALVADOR], o, a elección de la parte demandante, ante los tribunales competentes de la República de El Salvador, renunciando las partes a cualquier otra jurisdicción que pudiera corresponderles."
   },
-  "s10": {
-    "title": "10. Ley Aplicable",
-    "content": "Estos Términos y Condiciones se regirán e interpretarán de acuerdo con las leyes del país donde Dubuu tiene su sede principal, sin tener en cuenta sus disposiciones sobre conflictos de leyes. Cualquier disputa que surja en relación con estos Términos y Condiciones estará sujeta a la jurisdicción exclusiva de los tribunales de dicho país."
+  "s16": {
+    "title": "16. Modificaciones a los Términos",
+    "content": "Nos reservamos el derecho de modificar estos Términos y Condiciones en cualquier momento. Las modificaciones entrarán en vigor inmediatamente después de su publicación en la plataforma, actualizando la fecha de última actualización. Su uso continuado de la plataforma después de la publicación de los cambios constituirá su aceptación de dichos cambios."
+  },
+  "s17": {
+    "title": "17. Contacto",
+    "content": "Para consultas generales sobre estos Términos, puede escribirnos a support@dubuu.com. Para notificaciones legales, de propiedad intelectual o de retirada de contenido, utilice el correo indicado en la sección 8 ([CORREO PARA NOTIFICACIONES LEGALES / TAKEDOWN])."
   }
 }

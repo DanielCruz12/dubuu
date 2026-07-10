@@ -13,11 +13,15 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n-context";
+import { openCookiePreferences } from "@/lib/cookie-consent";
 
 const footerNavigation = {
   experiencias: [
-    { key: "privateTrips", href: "/home" },
-    { key: "rentals", href: "/home" },
+    { key: "privateTrips", href: "/home?type=tours" },
+    { key: "rentals", href: "/home?type=rental" },
+    // TODO: no existe todavía una categoría/listado real de "Propiedades" en el
+    // modelo de datos (solo hay productos de tipo tour y rental). Cuando exista,
+    // enlazar aquí a su filtro real en vez de /home sin filtrar.
     { key: "properties", href: "/home" },
   ],
   empresa: [
@@ -147,6 +151,13 @@ export default function Footer() {
                 {t(`footer.nav.${item.key}`)}
               </Link>
             ))}
+            <button
+              type="button"
+              onClick={openCookiePreferences}
+              className="hover:text-foreground/70 transition-colors"
+            >
+              {t("footer.nav.cookiePreferences")}
+            </button>
           </div>
         </div>
       </div>

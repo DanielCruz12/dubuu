@@ -1,3 +1,6 @@
+"use client";
+
+import { motion } from "framer-motion";
 import {
   Accordion,
   AccordionContent,
@@ -13,7 +16,7 @@ import { useLanguage } from "@/lib/i18n-context";
 const TimelineItem = ({ content }: { content: string }) => (
   <li className="mb-3 ms-4">
     <div className="absolute w-3 h-3 bg-primary/20 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-primary/30"></div>
-    <p className="font-normal md:text-base text-muted-foreground">{content}</p>
+    <p className="font-normal text-sm text-muted-foreground">{content}</p>
   </li>
 );
 
@@ -58,10 +61,16 @@ const ProductDetails = ({ product }: { product: IProduct }) => {
   if (hasHighlight) defaultValues.push("highlight");
 
   return (
-    <div className="mb-4">
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.5 }}
+      className="mb-4"
+    >
       {isTour && tourData?.difficulty && (
         <div className="mb-4">
-          <label className="text-base md:text-xl font-semibold pr-3">{t("home.productDetails.difficultyLevel")} </label>
+          <label className="text-sm md:text-base font-semibold pr-3">{t("home.productDetails.difficultyLevel")} </label>
           <TourDifficultyBadge difficulty={tourData.difficulty} />
         </div>
       )}
@@ -72,12 +81,12 @@ const ProductDetails = ({ product }: { product: IProduct }) => {
         className="space-y-4"
       >
         {hasDescription && (
-          <AccordionItem value="overview">
-            <AccordionTrigger className="text-base md:text-xl font-semibold">
+          <AccordionItem value="overview" className="rounded-2xl border border-border border-b-0 bg-card px-5">
+            <AccordionTrigger className="text-base md:text-lg font-semibold pt-4">
               {t("home.productDetails.overview")}
             </AccordionTrigger>
             <AccordionContent>
-              <div className="space-y-4 font-normal md:text-base text-muted-foreground line-clamp-5">
+              <div className="space-y-4 font-normal text-sm text-muted-foreground line-clamp-5">
                 <p>{product.description}</p>
               </div>
             </AccordionContent>
@@ -85,12 +94,12 @@ const ProductDetails = ({ product }: { product: IProduct }) => {
         )}
 
         {hasHighlight && (
-          <AccordionItem value="highlight">
-            <AccordionTrigger className="text-base md:text-xl font-semibold">
+          <AccordionItem value="highlight" className="rounded-2xl border border-border border-b-0 bg-card px-5">
+            <AccordionTrigger className="text-base md:text-lg font-semibold pt-4">
               {t("home.productDetails.highlight")}
             </AccordionTrigger>
             <AccordionContent>
-              <div className="space-y-4 font-normal md:text-base text-muted-foreground">
+              <div className="space-y-4 font-normal text-sm text-muted-foreground">
                 <p>{tourData?.highlight}</p>
               </div>
             </AccordionContent>
@@ -98,12 +107,12 @@ const ProductDetails = ({ product }: { product: IProduct }) => {
         )}
 
         {hasIncluded && (
-          <AccordionItem value="included">
-            <AccordionTrigger className="text-base md:text-xl font-semibold">
+          <AccordionItem value="included" className="rounded-2xl border border-border border-b-0 bg-card px-5">
+            <AccordionTrigger className="text-base md:text-lg font-semibold pt-4">
               {t("home.productDetails.whatsIncluded")}
             </AccordionTrigger>
             <AccordionContent>
-              <div className="space-y-4 font-normal md:text-base text-muted-foreground">
+              <div className="space-y-4 font-normal text-sm text-muted-foreground">
                 <p>{tourData?.included}</p>
               </div>
             </AccordionContent>
@@ -111,8 +120,8 @@ const ProductDetails = ({ product }: { product: IProduct }) => {
         )}
 
         {hasItinerary && (
-          <AccordionItem value="itinerary">
-            <AccordionTrigger className="text-base md:text-xl font-semibold">
+          <AccordionItem value="itinerary" className="rounded-2xl border border-border border-b-0 bg-card px-5">
+            <AccordionTrigger className="text-base md:text-lg font-semibold pt-4">
               {t("home.productDetails.itinerary")}
             </AccordionTrigger>
             <AccordionContent>
@@ -122,8 +131,8 @@ const ProductDetails = ({ product }: { product: IProduct }) => {
         )}
 
         {hasExpenses && (
-          <AccordionItem value="expenses">
-            <AccordionTrigger className="text-base md:text-xl font-semibold">
+          <AccordionItem value="expenses" className="rounded-2xl border border-border border-b-0 bg-card px-5">
+            <AccordionTrigger className="text-base md:text-lg font-semibold pt-4">
               {t("home.productDetails.additionalExpenses")}
             </AccordionTrigger>
             <AccordionContent>
@@ -133,8 +142,8 @@ const ProductDetails = ({ product }: { product: IProduct }) => {
         )}
 
         {hasPackingList && (
-          <AccordionItem value="packing_list">
-            <AccordionTrigger className="text-base md:text-xl font-semibold">
+          <AccordionItem value="packing_list" className="rounded-2xl border border-border border-b-0 bg-card px-5">
+            <AccordionTrigger className="text-base md:text-lg font-semibold pt-4">
               {t("home.productDetails.whatToBring")}
             </AccordionTrigger>
             <AccordionContent>
@@ -143,7 +152,7 @@ const ProductDetails = ({ product }: { product: IProduct }) => {
           </AccordionItem>
         )}
       </Accordion>
-    </div>
+    </motion.div>
   );
 };
 

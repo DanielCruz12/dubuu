@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Separator } from "@/components/ui/separator";
 import ReviewSummary from "./reviews-summary";
 import ReviewList from "./review-list";
@@ -75,9 +76,15 @@ export default function ReviewSection({
   };
 
   return (
-    <div className="mt-6 space-y-4">
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.5 }}
+      className="mt-6 space-y-4"
+    >
       {reviews.length > 0 && (
-        <h2 className="text-xl md:text-2xl font-semibold">{t("home.reviews.title")}</h2>
+        <h2 className="text-lg md:text-xl font-semibold">{t("home.reviews.title")}</h2>
       )}
 
       <ReviewSummary reviews={reviews} />
@@ -86,7 +93,7 @@ export default function ReviewSection({
 
       {/* Sección de interacción del usuario con reseñas - solo mostrar en casos específicos */}
       {renderUserReviewSection(userState)}
-    </div>
+    </motion.div>
   );
 
   // Función para renderizar la sección de reseñas según el estado del usuario

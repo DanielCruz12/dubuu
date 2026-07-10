@@ -31,7 +31,7 @@ const isHostRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
-  const { userId } = auth();
+  const { userId, redirectToSignIn } = await auth();
 
   // Si la ruta es pública, permitir acceso sin importar auth
   if (isPublicRoute(req)) {
@@ -40,13 +40,14 @@ export default clerkMiddleware(async (auth, req) => {
 
   // Si no está autenticado y quiere entrar a rutas protegidas
   if (!userId && (isAccountRoute(req) || isDashboardRoute(req))) {
-    return auth().redirectToSignIn({ returnBackUrl: req.url });
+    return redirectToSignIn({ returnBackUrl: req.url });
   }
 
   // Usuario autenticado — control de acceso por rol
   if (userId) {
     try {
-      const user = await clerkClient.users.getUser(userId);
+      const client = await clerkClient();
+      const user = await client.users.getUser(userId);
       const roles = (user.publicMetadata.roles as string[]) || ["user"];
 
       if (

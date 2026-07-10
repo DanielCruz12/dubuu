@@ -1,49 +1,78 @@
 {
   "title": "Terms and Conditions",
   "lastUpdate": "Last update:",
+  "lastUpdatedDate": "2026-07-09",
   "s1": {
-    "title": "1. Introduction",
-    "content": "Welcome to Dubuu. These Terms and Conditions govern the use of our platform, including all associated services and features. By accessing or using Dubuu, you agree to be bound by these terms. If you do not agree with any part of these terms, you may not access or use our services."
+    "title": "1. Company Identity and Acceptance of Terms",
+    "content": "[LEGAL COMPANY NAME], with Tax Identification Number (NIT) [NIT], domiciled at [REGISTERED ADDRESS], El Salvador (hereinafter, \"Dubuu\", \"we\" or \"the Platform\"), operates the digital platform available at dubuu.com. These Terms and Conditions (\"Terms\") constitute a legally binding agreement between you (\"User\") and Dubuu. By creating an account, accessing or using the Platform, you represent that you have read, understood and accepted these Terms in full. If you do not agree with any part of these Terms, you must not access or use the Platform."
   },
   "s2": {
     "title": "2. Definitions",
-    "content": "For the purposes of these Terms and Conditions, the following shall mean: 'Service': All functionalities, tools and content offered through the Dubuu platform. 'User': Any person who registers, accesses or uses the Service. 'Account': The personal registration that allows the User to access specific functionalities of the Service. 'User Content': Any information, data, texts, photographs, graphics, messages or other materials that Users send, post or display on the Service. 'Personal Data': Any information relating to an identified or identifiable natural person."
+    "content": "For the purposes of these Terms and Conditions, the following shall mean: 'Service': all functionalities, tools and content offered through the Dubuu platform. 'User': any person who registers, accesses or uses the Service. 'Account': the personal registration that allows the User to access specific functionalities of the Service. 'Provider' or 'Host': an independent business or person who publishes and offers tours, experiences, vehicle rentals or other tourism services through the Platform. 'User Content': any information, data, texts, photographs, graphics, reviews, ratings, messages or other materials that Users or Providers submit, post or display on the Service. 'Personal Data': any information relating to an identified or identifiable natural person."
   },
   "s3": {
-    "title": "3. Account Registration and Security",
-    "content": "To use certain features of our platform, you may need to register and create an account. We use Clerk for user authentication, which provides an additional layer of security. You are responsible for maintaining the confidentiality of your access credentials and for all activities that occur under your account. We implement security measures such as data encryption and SSL certificates to protect your information."
+    "title": "3. Purpose of the Service",
+    "content": "Dubuu is a digital platform that allows Users to discover, book and pay for tours, experiences, vehicle rentals and other tourism services offered by independent Providers in El Salvador and Central America. Dubuu facilitates the discovery, booking and payment collection for such services, but does not provide them directly."
   },
   "s4": {
-    "title": "4. Phishing and Security",
-    "content": "Phishing is a fraudulent practice where scammers attempt to obtain sensitive information by posing as trusted entities. Dubuu will never request sensitive information through unsolicited emails or messages. Despite our efforts to keep the platform secure, we are not responsible for phishing activities or data theft carried out by third parties who may impersonate our identity."
+    "title": "4. Eligibility and Minimum Age",
+    "content": "To create an account and use the Platform, you represent that you are at least 18 years old and have the legal capacity to enter into contracts under the laws of El Salvador. Minors may only use the Platform under the direct supervision of a parent or legal guardian, who will assume full responsibility for such use and for any booking made."
   },
   "s5": {
-    "title": "5. Payment Processing",
+    "title": "5. Account Registration and Security",
+    "content": "To use certain features of our platform, you may need to register and create an account. We use Clerk for user authentication, which provides an additional layer of security. You are responsible for maintaining the confidentiality of your access credentials and for all activities that occur under your account. We implement security measures such as data encryption and SSL certificates to protect your information."
+  },
+  "s6": {
+    "title": "6. Dubuu's Role as an Intermediary",
+    "content": "Dubuu acts exclusively as a technology INTERMEDIARY between Users and the independent Providers who publish their services on the Platform. Dubuu is not, and shall not be construed as, the organizer, operator, employer or guarantor of the tours, experiences, vehicle rentals or other services offered by Providers. The contractual relationship for the provision of the tourism service is established directly between the User and the corresponding Provider. Dubuu is not responsible for the quality, safety, legality, accuracy of the information posted, timeliness, cancellations, or any damage, injury, loss or harm resulting from the provision (or lack thereof) of such services by Providers. Users are encouraged to verify service information, permits and conditions directly with the Provider before booking."
+  },
+  "s7": {
+    "title": "7. User Content: Reviews and Profiles",
+    "content": "By posting reviews, ratings, photographs, profile comments or other content (\"User Content\") on the Platform, you grant Dubuu a worldwide, non-exclusive, transferable, sublicensable, royalty-free license to use, reproduce, adapt, publish, translate and display such content for the purpose of operating, promoting and improving the Platform. You represent and warrant that the User Content you post is truthful, does not infringe third-party rights (including copyright, trademark or privacy rights), and does not contain defamation, hate speech or false information. Dubuu does not verify or guarantee the truthfulness, accuracy or good faith of User Content posted by third parties (including reviews from other Users or Provider profiles) and disclaims any liability arising from such content. It is prohibited to post content that: (a) is false, misleading or defamatory; (b) infringes third-party intellectual property rights; (c) contains threats, harassment or hate speech; (d) promotes illegal activity; or (e) includes personal data of third parties without their consent. Dubuu reserves the right to remove, hide or edit any User Content that, in its sole discretion, violates these Terms."
+  },
+  "s8": {
+    "title": "8. Notice and Takedown",
+    "content": "If you believe that any content posted on the Platform infringes your copyright, trademark or other intellectual property rights, or constitutes illegal content, you may report it by writing to [EMAIL FOR LEGAL NOTICES / TAKEDOWN REQUESTS], including: (i) identification of the rights holder and contact details; (ii) a precise description and location (URL) of the reported content; (iii) a good-faith statement that the use is not authorized by the rights holder; and (iv) a statement that the information provided is accurate. Dubuu will review the notice and may remove or disable access to the reported content within a reasonable time, notifying the User who posted it where applicable. Dubuu reserves the right to reject notices that are manifestly unfounded or submitted in bad faith."
+  },
+  "s9": {
+    "title": "9. Phishing and Security",
+    "content": "Phishing is a fraudulent practice where scammers attempt to obtain sensitive information by posing as trusted entities. Dubuu will never request sensitive information through unsolicited emails or messages. Despite our efforts to keep the platform secure, we are not responsible for phishing activities or data theft carried out by third parties who may impersonate our identity."
+  },
+  "s10": {
+    "title": "10. Payment Processing",
     "beforeLink": "We use Wompi as our payment processor. When you make a transaction on our platform, you are also subject to Wompi's terms and conditions and privacy policy (",
     "afterLink": "). Wompi implements 3D security to protect transactions. We do not store credit card data on our servers, as all payment processing is handled directly by Wompi."
   },
-  "s6": {
-    "title": "6. Limitation of Liability",
-    "content": "To the maximum extent permitted by applicable law, Dubuu shall not be liable for direct, indirect, incidental, special, consequential or punitive damages, including but not limited to loss of profits, data, use, goodwill or other intangible losses, resulting from the use or inability to use the platform."
+  "s11": {
+    "title": "11. Limitation of Liability",
+    "content": "To the maximum extent permitted by the laws of El Salvador, Dubuu shall not be liable for direct, indirect, incidental, special, consequential or punitive damages, or loss of profit, arising from: (a) the provision, cancellation or quality of the services offered by Providers; (b) User Content posted by third parties; (c) interruptions, errors or technical failures of the Platform; or (d) the use or inability to use the Platform. Except where applicable law does not permit it, Dubuu's total liability for any claim related to these Terms shall not exceed the amount of the commissions actually received by Dubuu on the specific transaction that gave rise to the claim."
   },
-  "s7": {
-    "title": "7. Intellectual Property and Prohibition of Copying",
+  "s12": {
+    "title": "12. Indemnification",
+    "content": "You agree to indemnify, defend and hold harmless Dubuu, its directors, employees and affiliates from any claim, demand, damage, loss or expense (including reasonable legal fees) arising from: (a) your breach of these Terms; (b) your misuse of the Platform; (c) the User Content you post; or (d) your direct contractual relationship with any Provider."
+  },
+  "s13": {
+    "title": "13. Intellectual Property and Prohibition of Copying",
     "content": "All content, features and functionality of the Dubuu platform are the property of Dubuu or its licensors and are protected by intellectual property laws. Copying, reproduction, modification, distribution or any unauthorized use is strictly prohibited. Infringement of these rights will be pursued legally and may result in legal action, including claims for damages, fines and other sanctions as provided by law."
   },
-  "s8": {
-    "title": "8. Third-Party Services",
+  "s14": {
+    "title": "14. Third-Party Services",
     "part1": "Our platform uses several third-party services to improve the user experience and security: ",
-    "part2": " for website protection and optimisation, ",
-    "part3": " to prevent malicious automated activities, ",
+    "part2": " for website protection and optimization, ",
+    "part3": " to prevent malicious automated activity, ",
     "part4": " for user authentication, and ",
     "part5": " for payment processing. Use of these services is subject to their respective terms and conditions and privacy policies."
   },
-  "s9": {
-    "title": "9. Modifications to the Terms",
-    "content": "We reserve the right to modify these Terms and Conditions at any time. Modifications will take effect immediately upon their publication on the platform. Your continued use of the platform after the publication of changes will constitute your acceptance of such changes."
+  "s15": {
+    "title": "15. Governing Law, Jurisdiction and Dispute Resolution",
+    "content": "These Terms are governed by and construed in accordance with the laws of the Republic of El Salvador, excluding its conflict-of-law rules. Any controversy, dispute or claim arising out of or related to these Terms, or to the use of the Platform, shall first be submitted to a good-faith attempt at amicable resolution between the parties. If no agreement is reached within a reasonable time, the dispute shall be resolved through binding arbitration before [ARBITRATION CENTER, E.G. CHAMBER OF COMMERCE AND INDUSTRY OF EL SALVADOR], in accordance with the Mediation, Conciliation and Arbitration Law of El Salvador, seated in [CITY, EL SALVADOR], or, at the claimant's election, before the competent courts of the Republic of El Salvador, with the parties waiving any other jurisdiction that might otherwise apply to them."
   },
-  "s10": {
-    "title": "10. Applicable Law",
-    "content": "These Terms and Conditions shall be governed by and construed in accordance with the laws of the country where Dubuu has its principal place of business, without regard to its conflict of law provisions. Any dispute arising in connection with these Terms and Conditions shall be subject to the exclusive jurisdiction of the courts of that country."
+  "s16": {
+    "title": "16. Modifications to the Terms",
+    "content": "We reserve the right to modify these Terms and Conditions at any time. Modifications will take effect immediately upon publication on the platform, updating the last-updated date. Your continued use of the platform after the publication of changes will constitute your acceptance of such changes."
+  },
+  "s17": {
+    "title": "17. Contact",
+    "content": "For general questions about these Terms, you may write to support@dubuu.com. For legal, intellectual property or content takedown notices, use the email listed in Section 8 ([EMAIL FOR LEGAL NOTICES / TAKEDOWN REQUESTS])."
   }
 }

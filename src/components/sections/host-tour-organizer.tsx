@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { motion } from "framer-motion";
 import { Languages, Link2, MapPin, User } from "lucide-react";
 import type { HostProfileDetailKey, HostPublicProfile } from "@/types/host-profile";
 import { useGetHostPublicProfileQuery } from "@/redux/slices/host/host-profile-slice";
@@ -146,8 +147,14 @@ export default function HostTourOrganizer({
           ? String((error as { error?: unknown }).error ?? "")
           : "";
     return (
-      <div className="mt-4 space-y-4">
-        <h2 className="text-base md:text-xl font-semibold py-3">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-80px" }}
+        transition={{ duration: 0.5 }}
+        className="mt-4 space-y-4"
+      >
+        <h2 className="text-base md:text-lg font-semibold py-3">
           {t("home.organizer.title")}
         </h2>
         <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-sm">
@@ -164,7 +171,7 @@ export default function HostTourOrganizer({
             </p>
           ) : null}
         </div>
-      </div>
+      </motion.div>
     );
   }
 
@@ -180,8 +187,14 @@ export default function HostTourOrganizer({
     profile.idiomas?.length ? profile.idiomas.join(", ") : "";
 
   return (
-    <div className="mt-4 space-y-4">
-      <h2 className="text-left text-base md:text-xl font-semibold py-3">
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.5 }}
+      className="mt-4 space-y-4"
+    >
+      <h2 className="text-left text-base md:text-lg font-semibold py-3">
         {t("home.organizer.title")}
       </h2>
 
@@ -314,6 +327,6 @@ export default function HostTourOrganizer({
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

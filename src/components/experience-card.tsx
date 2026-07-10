@@ -129,30 +129,30 @@ export function ExperienceCard({
           </button>
         )}
 
-        <div className="absolute inset-x-0 bottom-0 p-5 text-white">
+        <div className="absolute inset-x-0 bottom-0 p-4 text-white">
           {rating > 0 && (
-            <div className="flex items-center gap-1 text-sm text-zinc-300">
+            <div className="flex items-center gap-1 text-xs text-zinc-300">
               <Star
-                className="h-3.5 w-3.5 fill-sand-400 text-sand-400"
+                className="h-3 w-3 fill-sand-400 text-sand-400"
                 aria-hidden="true"
               />
               {rating.toFixed(1)}
             </div>
           )}
-          <h3 className="mt-1 text-xl font-bold leading-tight text-balance line-clamp-2">
+          <h3 className="mt-1 text-base font-bold leading-tight text-balance line-clamp-2">
             {product.name}
           </h3>
-          <div className="mt-3 flex items-center justify-between gap-3">
-            <p className="text-sm">
+          <div className="mt-2 flex items-center justify-between gap-3">
+            <p className="text-xs">
               <span className="text-white/60">{t("landing.featured.from")}</span>{" "}
-              <span className="text-lg font-bold">
+              <span className="text-sm font-bold">
                 {USD_SYMBOL}
                 {formatUsd(price)}
               </span>
             </p>
             <Button
               size="sm"
-              className="rounded-full bg-white text-zinc-950 hover:bg-zinc-200"
+              className="rounded-full bg-white text-zinc-950 hover:bg-zinc-200 text-xs h-8 px-3"
               onClick={(e) => {
                 e.stopPropagation();
                 goToDetail();

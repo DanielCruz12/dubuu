@@ -179,6 +179,13 @@
 			"typeRental": "Vehículos",
 			"cta": "Buscar"
 		},
+		"productDetail": {
+			"notFound": "No pudimos encontrar este producto.",
+			"departurePoint": "Punto de salida",
+			"viewDetails": "Ver detalles",
+			"loginRequiredTitle": "Inicia sesión para reservar",
+			"loginRequiredDescription": "Necesitas iniciar sesión para completar tu reserva."
+		},
 		"featured": {
 			"eyebrow": "Selección Dubuu",
 			"subtitle": "Una curaduría de tours privados y vehículos premium, listos para reservar.",

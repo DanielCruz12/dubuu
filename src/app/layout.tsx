@@ -6,6 +6,7 @@ import Script from "next/script";
 import { Toaster } from "sonner";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
+import ConditionalAnalytics from "@/components/analytics/conditional-analytics";
 import { instrumentSerif, cormorantGaramond } from "@/lib/fonts";
 import "./globals.css";
 
@@ -96,9 +97,6 @@ export const metadata: Metadata = {
   },
   category: "travel",
   applicationName: "Dubuu",
-  other: {
-    "fb:app_id": process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || "1536881601422455",
-  },
 };
 
 export default async function RootLayout({
@@ -115,9 +113,6 @@ export default async function RootLayout({
             content="width=device-width, initial-scale=1.0"
           />
           <link rel="icon" href="https://www.dubuu.com/icon.svg" />
-          {process.env.NEXT_PUBLIC_FACEBOOK_APP_ID ? (
-            <meta property="fb:app_id" content={process.env.NEXT_PUBLIC_FACEBOOK_APP_ID} />
-          ) : null}
 
           <Script
             id="metadata"
@@ -150,26 +145,13 @@ export default async function RootLayout({
           `,
             }}
           />
-
-          <Script
-            id="google-tag-manager"
-            async
-            src="https://www.googletagmanager.com/gtag/js?id=G-QXFD8S7VK0"
-          />
-          <Script id="google-analytics">
-            {`
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-QXFD8S7VK0'); 
-            `}
-          </Script>
         </head>
         <body
           className={`${hankenGrotesk.variable} ${instrumentSerif.variable} ${cormorantGaramond.variable} ${hankenGrotesk.className} flex min-h-screen flex-col`}
         >
           <SpeedInsights />
           <Analytics />
+          <ConditionalAnalytics />
           <GlobalProviders>
             {children}
             <Toaster richColors style={{ zIndex: 12000 }} />

@@ -179,6 +179,13 @@
 			"typeRental": "Vehicles",
 			"cta": "Search"
 		},
+		"productDetail": {
+			"notFound": "We couldn't find this product.",
+			"departurePoint": "Departure point",
+			"viewDetails": "View details",
+			"loginRequiredTitle": "Sign in to book",
+			"loginRequiredDescription": "You need to sign in to complete your booking."
+		},
 		"featured": {
 			"eyebrow": "Dubuu selection",
 			"subtitle": "A curated selection of private tours and premium vehicles, ready to book.",

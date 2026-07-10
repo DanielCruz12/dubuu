@@ -1,12 +1,20 @@
 "use client";
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import TourSection from "@/components/sections/tour-section";
 import UpTop from "@/components/up-top";
 import { useGetProductsQuery } from "@/redux/slices/product/product-slice";
 import type { IProduct } from "@/types/product";
 import SearchSection from "@/components/sections/search-section";
+import { isProductType } from "@/utils";
 
-export default function Home() {
+function HomeContent() {
+  // Filtro de categoría vía ?type=tours|rental (enlazado desde el footer).
+  // Se aplica en el cliente con el mismo helper isProductType usado en el
+  // resto de la app, en vez de un parámetro del backend sin verificar.
+  const searchParams = useSearchParams();
+  const typeFilter = searchParams.get("type");
+
   const [allProducts, setAllProducts] = useState<IProduct[]>([]);
   const [searchResults, setSearchResults] = useState<IProduct[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
@@ -44,17 +52,21 @@ export default function Home() {
     }
   );
 
+  const applyTypeFilter = (products: IProduct[]) =>
+    typeFilter ? products.filter((p) => isProductType(p, typeFilter)) : products;
+
   useEffect(() => {
     if (initialProductsData && allProducts.length === 0) {
       const validData = Array.isArray(initialProductsData.data)
         ? initialProductsData.data
         : [];
       setAllProducts(validData);
-      setSearchResults(validData);
+      setSearchResults(applyTypeFilter(validData));
       setNextCursor(initialProductsData.pagination.nextCursor);
       setHasMoreProducts(initialProductsData.pagination.hasMore);
     }
-  }, [initialProductsData, allProducts.length]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialProductsData, allProducts.length, typeFilter]);
 
   useEffect(() => {
     if (
@@ -64,12 +76,13 @@ export default function Home() {
       !isFetchingMore
     ) {
       setAllProducts((prev) => [...prev, ...moreProductsData.data]);
-      setSearchResults((prev) => [...prev, ...moreProductsData.data]);
+      setSearchResults((prev) => [...prev, ...applyTypeFilter(moreProductsData.data)]);
       setNextCursor(moreProductsData.pagination.nextCursor);
       setHasMoreProducts(moreProductsData.pagination.hasMore);
       setShouldFetchMore(false);
       setIsLoadingMore(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shouldFetchMore, moreProductsData, isLoadingMoreQuery, isFetchingMore]);
 
   const loadMoreProducts = () => {
@@ -80,7 +93,7 @@ export default function Home() {
 
   const handleSearchResults = (results: IProduct[]) => {
     const validResults = Array.isArray(results) ? results : [];
-    setSearchResults(validResults);
+    setSearchResults(applyTypeFilter(validResults));
   };
 
   const handleSearchLoading = (loading: boolean) => {
@@ -104,5 +117,13 @@ export default function Home() {
       />
       {/* <PopularDestinations /> */}
     </>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={null}>
+      <HomeContent />
+    </Suspense>
   );
 }

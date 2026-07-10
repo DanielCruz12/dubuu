@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { MapPin } from "lucide-react";
 import { IProduct } from "@/types/product";
 import { isProductType } from "@/utils";
@@ -33,8 +34,14 @@ export default function LocationMap({
   const mapUrl = `https://www.google.com/maps/embed/v1/place?key=${GOOGLE_API}&q=${latitude},${longitude}&zoom=${zoom}`;
 
   return (
-    <div className="w-full min-w-0 mx-auto rounded-lg overflow-hidden">
-      <h2 className="text-base md:text-xl font-semibold py-3">{mapTitle}</h2>
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.5 }}
+      className="w-full min-w-0 mx-auto rounded-2xl overflow-hidden"
+    >
+      <h2 className="text-base md:text-lg font-semibold py-3">{mapTitle}</h2>
 
       <div className="relative w-full min-h-[220px] h-[min(42vh,22rem)] sm:min-h-[260px] sm:h-[min(44vh,24rem)] md:min-h-[360px] md:h-[min(48vh,28rem)] lg:min-h-[400px] lg:h-[30rem]">
         {/* Iframe para el mapa de Google */}
@@ -80,6 +87,6 @@ export default function LocationMap({
           <p className="text-sm">{tourData?.departure_point}</p>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

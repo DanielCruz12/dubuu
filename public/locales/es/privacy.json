@@ -1,0 +1,67 @@
+{
+  "title": "Política de Privacidad",
+  "intro": "En Dubuu, valoramos y respetamos su privacidad. Esta Política de Privacidad explica cómo recopilamos, utilizamos, divulgamos y protegemos su información cuando utiliza nuestra plataforma.",
+  "lastUpdate": "Última actualización:",
+  "lastUpdatedDate": "2026-07-09",
+  "s1": {
+    "title": "1. Información que Recopilamos",
+    "content": "Podemos recopilar los siguientes tipos de información: información de registro cuando crea una cuenta a través de Clerk, información de perfil que usted proporciona, información de uso sobre cómo interactúa con nuestra plataforma, información del dispositivo que utiliza para acceder a nuestra plataforma, e información recopilada mediante cookies y tecnologías similares (ver sección 8)."
+  },
+  "s2": {
+    "title": "2. Cómo Utilizamos su Información",
+    "content": "Utilizamos la información recopilada para: proporcionar, mantener y mejorar nuestra plataforma, procesar transacciones y enviar notificaciones relacionadas, personalizar su experiencia, comunicarnos con usted, proteger la seguridad e integridad de nuestra plataforma, prevenir fraude y actividad automatizada maliciosa, y cumplir con obligaciones legales."
+  },
+  "s3": {
+    "title": "3. Base Legal del Tratamiento",
+    "content": "Tratamos sus datos personales conforme a las siguientes bases legales, según corresponda: (a) ejecución de un contrato, cuando el tratamiento es necesario para prestarle el Servicio o gestionar su cuenta y reservas; (b) consentimiento, para el uso de cookies analíticas, que usted puede otorgar o retirar en cualquier momento desde el panel de preferencias de cookies; (c) obligación legal, cuando debamos conservar o entregar información en cumplimiento de la normativa aplicable en El Salvador; y (d) interés legítimo, para prevenir fraude, garantizar la seguridad de la plataforma (por ejemplo, mediante reCAPTCHA) y mejorar nuestros servicios."
+  },
+  "s4": {
+    "title": "4. Plazo de Conservación de Datos",
+    "content": "Conservamos su información personal mientras su cuenta permanezca activa y, posteriormente, durante el plazo necesario para cumplir con obligaciones legales, contables, fiscales o regulatorias aplicables en El Salvador (por ejemplo, información de transacciones y facturación), o durante [PLAZO DE RETENCIÓN A DEFINIR, EJ. 5 AÑOS] después de finalizada su relación con Dubuu, lo que ocurra después. Transcurrido dicho plazo, eliminamos o anonimizamos la información de forma segura, salvo que la ley exija un período de conservación distinto."
+  },
+  "s5": {
+    "title": "5. Seguridad de los Datos",
+    "content": "Implementamos medidas de seguridad técnicas, administrativas y físicas diseñadas para proteger la información que recopilamos. Estas medidas incluyen: encriptación de datos sensibles, uso de certificados SSL para todas las transmisiones de datos, autenticación segura a través de Clerk, y monitoreo regular de nuestros sistemas. Sin embargo, ningún sistema de seguridad es impenetrable."
+  },
+  "s6": {
+    "title": "6. Procesamiento de Pagos",
+    "beforeLink": "Utilizamos Wompi como nuestro procesador de pagos. Cuando realiza una transacción en nuestra plataforma, no almacenamos datos de tarjetas de crédito en nuestros servidores. Toda la información de pago es procesada directamente por Wompi, que implementa seguridad 3D y otras medidas de protección. Para más información, consulte su política de privacidad en ",
+    "afterLink": "."
+  },
+  "s7": {
+    "title": "7. Servicios de Terceros",
+    "part1": "Nuestra plataforma utiliza varios servicios de terceros: ",
+    "part2": " para autenticación de usuarios, ",
+    "part3": " para protección y optimización del sitio web, ",
+    "part4": " para prevenir actividades automatizadas maliciosas, y ",
+    "part5": " para procesamiento de pagos. Estos servicios tienen sus propias políticas de privacidad que rigen cómo manejan su información."
+  },
+  "s8": {
+    "title": "8. Cookies y Tecnologías Similares",
+    "content": "Utilizamos cookies y tecnologías similares, clasificadas así: (a) Necesarias: indispensables para el funcionamiento y la seguridad de la plataforma, incluyendo las cookies de sesión de autenticación de Clerk (por ejemplo, __session, __client_uat) y las cookies de Google reCAPTCHA que previenen actividad automatizada maliciosa. Estas no requieren consentimiento y no pueden desactivarse. (b) Funcionales: recuerdan preferencias como el idioma seleccionado. (c) Analíticas: utilizamos Google Analytics (cookies como _ga, _ga_*, _gid) para entender el uso agregado de la plataforma; estas cookies solo se activan si usted otorga su consentimiento en el panel de preferencias de cookies. También utilizamos Vercel Analytics y Vercel Speed Insights, herramientas de medición de rendimiento que, según su proveedor, no utilizan cookies de identificación persistente. Puede aceptar, rechazar o modificar sus preferencias de cookies en cualquier momento desde el banner de cookies o el enlace \"Preferencias de cookies\" en el pie de página. Si rechaza las cookies analíticas, podrá seguir utilizando la plataforma con normalidad."
+  },
+  "s9": {
+    "title": "9. Sus Derechos",
+    "content": "Dependiendo de su ubicación, puede tener ciertos derechos con respecto a su información personal, incluyendo: acceder a la información personal que tenemos sobre usted, corregir información inexacta, solicitar la eliminación de su información personal, oponerse al procesamiento de su información, solicitar la portabilidad de sus datos, y retirar su consentimiento en cualquier momento. Puede ejercer estos derechos escribiendo a [CORREO DE PRIVACIDAD]."
+  },
+  "s10": {
+    "title": "10. Menores de Edad",
+    "content": "La plataforma no está dirigida a menores de 18 años y no recopilamos intencionalmente información personal de menores de edad sin el consentimiento verificable de su madre, padre o tutor legal. Si tenemos conocimiento de haber recopilado información personal de un menor sin dicho consentimiento, tomaremos medidas para eliminarla. Si usted considera que un menor nos ha proporcionado información personal, contáctenos en [CORREO DE PRIVACIDAD]."
+  },
+  "s11": {
+    "title": "11. Transferencias Internacionales de Datos",
+    "content": "Su información puede ser transferida y procesada en países distintos al suyo, donde nuestros servidores o los de nuestros proveedores de servicios están ubicados. Estos países pueden tener leyes de protección de datos diferentes a las de su país. Al utilizar nuestra plataforma, usted consiente estas transferencias."
+  },
+  "s12": {
+    "title": "12. Responsable del Tratamiento de Datos",
+    "content": "El responsable del tratamiento de sus datos personales es [RAZÓN SOCIAL], con Número de Identificación Tributaria (NIT) [NIT] y domicilio en [DOMICILIO FISCAL], El Salvador. Para ejercer sus derechos de privacidad o realizar consultas sobre el tratamiento de sus datos, puede contactarnos en [CORREO DE PRIVACIDAD]."
+  },
+  "s13": {
+    "title": "13. Cambios a esta Política de Privacidad",
+    "content": "Podemos actualizar esta Política de Privacidad periódicamente para reflejar cambios en nuestras prácticas o por otras razones operativas, legales o regulatorias. Le notificaremos sobre cualquier cambio material publicando la nueva Política de Privacidad en esta página, actualizando la fecha de última actualización y, si es necesario, mediante un aviso en nuestra plataforma."
+  },
+  "s14": {
+    "title": "14. Contacto",
+    "content": "Si tiene alguna pregunta o inquietud sobre esta Política de Privacidad o nuestras prácticas de privacidad, puede escribirnos a [CORREO DE PRIVACIDAD] o a support@dubuu.com para consultas generales."
+  }
+}

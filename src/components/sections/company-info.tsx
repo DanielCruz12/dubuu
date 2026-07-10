@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import type { IProduct } from "@/types/product";
 import HostTourOrganizer from "@/components/sections/host-tour-organizer";
 import { useLanguage } from "@/lib/i18n-context";
@@ -39,14 +40,20 @@ export default function CompanyInfo({ product }: CompanyInfoProps) {
 
   if (!user) {
     return (
-      <div className="mt-4">
-        <h2 className="text-base md:text-xl font-semibold py-3 mb-4">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-80px" }}
+        transition={{ duration: 0.5 }}
+        className="mt-4"
+      >
+        <h2 className="text-base md:text-lg font-semibold py-3 mb-4">
           {t("home.organizer.title")}
         </h2>
         <p className="text-sm text-muted-foreground">
           {t("home.organizer.noHostInfo")}
         </p>
-      </div>
+      </motion.div>
     );
   }
 

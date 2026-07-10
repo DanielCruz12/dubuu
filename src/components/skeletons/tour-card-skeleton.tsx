@@ -9,8 +9,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 export function TourCardSkeleton() {
   return (
     <section className="py-4 sm:py-6">
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {Array.from({ length: 8 }).map((_, i) => (
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+        {Array.from({ length: 5 }).map((_, i) => (
           <div
             key={i}
             className="relative aspect-[4/5] w-full overflow-hidden rounded-3xl"
@@ -25,11 +25,11 @@ export function TourCardSkeleton() {
               <Skeleton className="h-8 w-8 rounded-full" />
             </div>
 
-            <div className="absolute inset-x-0 bottom-0 space-y-3 p-5">
+            <div className="absolute inset-x-0 bottom-0 space-y-2 p-4">
               <Skeleton className="h-3 w-20 rounded" />
-              <Skeleton className="h-5 w-3/4 rounded" />
+              <Skeleton className="h-4 w-3/4 rounded" />
               <div className="flex items-center justify-between gap-3">
-                <Skeleton className="h-5 w-16 rounded" />
+                <Skeleton className="h-4 w-16 rounded" />
                 <Skeleton className="h-8 w-20 rounded-full" />
               </div>
             </div>

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import {
   Armchair,
   Car,
@@ -330,7 +331,13 @@ export default function ProductPage() {
     >
       <UpTop />
       <section className="w-full mb-8">
-        <div className="mb-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="mb-4"
+        >
           <div className="flex flex-col md:flex-row items-start gap-2 text-sm">
             <Rating
               averageRating={Number(product.average_rating)}
@@ -340,8 +347,8 @@ export default function ProductPage() {
               inactiveStarClassName="text-gray-300"
             />
           </div>
-          <div className="flex justify-between items-start mb-2">
-            <h1 className="font-display text-2xl md:text-4xl font-normal flex-1 pr-4 line-clamp-2">
+          <div className="flex justify-between items-start mb-2 mt-1">
+            <h1 className="font-display text-2xl md:text-3xl font-normal tracking-tight flex-1 pr-4 line-clamp-2">
               {product?.name}
             </h1>
             <div className="flex items-center gap-2 flex-shrink-0">
@@ -367,21 +374,18 @@ export default function ProductPage() {
               </Button>
             </div>
           </div>
-          <div className="flex items-center gap-2 md:mt-2">
-            <Badge
-              variant="secondary"
-              className="md:p-2 text-xl md:text-[2rem]"
-            >
+          <div className="flex items-baseline gap-2 md:mt-3">
+            <span className="font-display text-xl md:text-2xl font-normal tracking-tight">
               {symbol}
               {convert(displayPrice)}
-            </Badge>
-            <span className="text-sm font-normal">
+            </span>
+            <span className="text-sm text-muted-foreground">
               {isRental
                 ? t("home.bookingForm.perDay")
                 : t("home.bookingForm.perPerson")}
             </span>
           </div>
-        </div>
+        </motion.div>
 
         <ImageCollage
           banner={product.banner}
@@ -467,8 +471,11 @@ export default function ProductPage() {
             {isRental ? (
               <div className="mt-6 hidden md:block">
                 <Accordion type="single" collapsible defaultValue="rental-agreement">
-                  <AccordionItem value="rental-agreement">
-                    <AccordionTrigger className="text-base md:text-xl font-semibold">
+                  <AccordionItem
+                    value="rental-agreement"
+                    className="rounded-2xl border border-border border-b-0 bg-card px-5"
+                  >
+                    <AccordionTrigger className="text-base md:text-lg font-semibold pt-4">
                       {t("home.rentalImportant.contractTitle")}
                     </AccordionTrigger>
                     <AccordionContent>
@@ -516,10 +523,10 @@ export default function ProductPage() {
             <div
               ref={bookingBoxRef}
               className={clsx(
-                "rounded-lg mb-0 md:mb-6",
+                "rounded-2xl mb-0 md:mb-6 border border-border bg-card shadow-sm",
                 showBookingStatusCard
-                  ? "p-0 "
-                  : "border px-3 py-2 sm:px-4 sm:py-2.5 md:px-4 md:py-3",
+                  ? "p-0 overflow-hidden"
+                  : "px-3 py-2 sm:px-4 sm:py-2.5 md:px-4 md:py-3",
               )}
             >
               {user ? (

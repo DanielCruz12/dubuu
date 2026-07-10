@@ -31,7 +31,7 @@ export default function TourSection({
 
   return (
     <section className="py-4 sm:py-6">
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
         {products.map((tour) => (
           <div key={tour.id} className="tour-card-container">
             <ExperienceCard product={tour} />

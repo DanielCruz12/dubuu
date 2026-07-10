@@ -1,5 +1,12 @@
 import type React from "react";
+import type { Metadata } from "next";
 import { SideNav } from "@/layouts/side-nav";
+
+// Área privada detrás de autenticación: no debe indexarse. Las páginas hijas
+// pueden fijar su propio título/descripción sin perder este noindex.
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default async function DashboardLayout({
   children,
