@@ -104,9 +104,17 @@ function HomeContent() {
     [typeFilter]
   );
 
-  const handleSearchLoading = (loading: boolean) => {
+  // Memoizado por la misma razón que handleSearchResults arriba: use-search-logic
+  // dispara su efecto de "notificar loading" cada vez que esta referencia cambia
+  // (ver use-search-logic.tsx). Sin useCallback, cada render de HomeContent
+  // generaba una función nueva y el efecto se re-ejecutaba de inmediato con
+  // isSearching/isSearchFetching aún en false (la query de RTK Query todavía no
+  // se había disparado), pisando el flag de loading y dejando visible el listado
+  // anterior (p. ej. tours) justo cuando se cambiaba a otro tipo de producto,
+  // hasta que un segundo cambio de filtro volvía a sincronizar el estado.
+  const handleSearchLoading = useCallback((loading: boolean) => {
     setIsSearching(loading);
-  };
+  }, []);
 
   return (
     <>

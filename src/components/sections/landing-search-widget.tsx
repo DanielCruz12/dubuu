@@ -2,16 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { DateRange } from "react-day-picker";
-import { MapPin, CalendarDays, Search, Compass } from "lucide-react";
+import { Search, Compass } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -22,31 +14,14 @@ import {
 import { useLanguage } from "@/lib/i18n-context";
 
 export default function LandingSearchWidget() {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const router = useRouter();
-  const [destination, setDestination] = useState("");
-  const [range, setRange] = useState<DateRange | undefined>(undefined);
   const [experienceType, setExperienceType] = useState<string>("all");
-  const [isDatesOpen, setIsDatesOpen] = useState(false);
-
-  const dateLabel = (() => {
-    if (!range?.from) return t("landing.search.datesPlaceholder");
-    const fmt = (d: Date) =>
-      d.toLocaleDateString(language === "es" ? "es-ES" : "en-US", {
-        day: "2-digit",
-        month: "short",
-      });
-    if (range.to) return `${fmt(range.from)} - ${fmt(range.to)}`;
-    return fmt(range.from);
-  })();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
-    if (destination.trim()) params.set("q", destination.trim());
     if (experienceType !== "all") params.set("type", experienceType);
-    if (range?.from) params.set("from", range.from.toISOString().slice(0, 10));
-    if (range?.to) params.set("to", range.to.toISOString().slice(0, 10));
     const qs = params.toString();
     router.push(qs ? `/home?${qs}` : "/home");
   };
@@ -58,74 +33,6 @@ export default function LandingSearchWidget() {
       role="search"
       aria-label={t("landing.search.ariaLabel")}
     >
-      <div className="flex-1 min-w-0 flex items-center gap-3 px-4 py-2.5 md:py-2 rounded-xl md:rounded-full hover:bg-white/5 transition-colors">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/[0.04]">
-          <MapPin className="h-4 w-4 text-zinc-300" aria-hidden="true" />
-        </span>
-        <div className="flex-1 min-w-0 text-left">
-          <label
-            htmlFor="landing-destination"
-            className="block text-[11px] font-semibold uppercase tracking-wide text-zinc-400"
-          >
-            {t("landing.search.destinationLabel")}
-          </label>
-          <Input
-            id="landing-destination"
-            name="landing-destination"
-            autoComplete="off"
-            value={destination}
-            onChange={(e) => setDestination(e.target.value)}
-            placeholder={t("landing.search.destinationPlaceholder")}
-            className="h-auto border-none bg-transparent p-0 shadow-none text-sm text-white placeholder:text-zinc-500 focus-visible:ring-0 focus-visible:ring-offset-0 autofill:shadow-[inset_0_0_0px_1000px_theme(colors.zinc.900)] autofill:[-webkit-text-fill-color:white]"
-          />
-        </div>
-      </div>
-
-      <div
-        className="hidden md:block h-8 w-px bg-white/10 shrink-0"
-        aria-hidden="true"
-      />
-
-      <Popover open={isDatesOpen} onOpenChange={setIsDatesOpen}>
-        <PopoverTrigger asChild>
-          <button
-            type="button"
-            className="flex-1 min-w-0 flex items-center gap-3 px-4 py-2.5 md:py-2 rounded-xl md:rounded-full hover:bg-white/5 transition-colors text-left"
-          >
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/[0.04]">
-              <CalendarDays className="h-4 w-4 text-zinc-300" aria-hidden="true" />
-            </span>
-            <div className="min-w-0">
-              <span className="block text-[11px] font-semibold uppercase tracking-wide text-zinc-400">
-                {t("landing.search.datesLabel")}
-              </span>
-              <span className="block truncate text-sm text-white">
-                {dateLabel}
-              </span>
-            </div>
-          </button>
-        </PopoverTrigger>
-        <PopoverContent
-          className="w-auto border-white/10 bg-zinc-900 p-2 text-white"
-          align="start"
-        >
-          <Calendar
-            mode="range"
-            selected={range}
-            onSelect={setRange}
-            numberOfMonths={1}
-            fromDate={new Date()}
-            initialFocus
-            className="text-white"
-          />
-        </PopoverContent>
-      </Popover>
-
-      <div
-        className="hidden md:block h-8 w-px bg-white/10 shrink-0"
-        aria-hidden="true"
-      />
-
       <div className="flex-1 min-w-0 flex items-center gap-3 px-4 py-2.5 md:py-2 rounded-xl md:rounded-full hover:bg-white/5 transition-colors">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/[0.04]">
           <Compass className="h-4 w-4 text-zinc-300" aria-hidden="true" />

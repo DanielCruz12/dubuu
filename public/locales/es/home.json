@@ -169,10 +169,6 @@
 		},
 		"search": {
 			"ariaLabel": "Buscar experiencias en Dubuu",
-			"destinationLabel": "Destino",
-			"destinationPlaceholder": "¿A dónde vas?",
-			"datesLabel": "Fechas",
-			"datesPlaceholder": "Elige tus fechas",
 			"typeLabel": "Experiencia",
 			"typeAll": "Todas",
 			"typeTours": "Tours",

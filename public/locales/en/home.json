@@ -169,10 +169,6 @@
 		},
 		"search": {
 			"ariaLabel": "Search experiences on Dubuu",
-			"destinationLabel": "Destination",
-			"destinationPlaceholder": "Where are you going?",
-			"datesLabel": "Dates",
-			"datesPlaceholder": "Pick your dates",
 			"typeLabel": "Experience",
 			"typeAll": "All",
 			"typeTours": "Tours",

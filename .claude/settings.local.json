@@ -92,7 +92,10 @@
       "Bash(python3 *)",
       "Bash(grep -n \"absolute top-2 right-2 bg-white/40\\\\|CardContent\\\\|Rating$\\\\|Rating>\" src/components/tour-card.tsx)",
       "Bash(taskkill //F //PID 30840)",
-      "Bash(taskkill //F //PID 40408)"
+      "Bash(taskkill //F //PID 40408)",
+      "Bash(find . -maxdepth 3 -path \"*/.claude/skills*\")",
+      "Bash(ls .claude)",
+      "Bash(taskkill //F //IM node.exe //FI \"WINDOWTITLE eq npm*\")"
     ]
   }
 }
