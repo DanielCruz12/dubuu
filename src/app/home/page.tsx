@@ -7,13 +7,27 @@ import { useGetProductsQuery } from "@/redux/slices/product/product-slice";
 import type { IProduct } from "@/types/product";
 import SearchSection from "@/components/sections/search-section";
 import { isProductType } from "@/utils";
+import {
+  parseProductTypeParam,
+  productTypeKeyToFormKind,
+} from "@/constants/product-type";
 
 function HomeContent() {
-  // Filtro de categoría vía ?type=tours|rental (enlazado desde el footer).
-  // Se aplica en el cliente con el mismo helper isProductType usado en el
-  // resto de la app, en vez de un parámetro del backend sin verificar.
+  // Filtro de categoría vía ?type=tours|rental (enlazado desde el footer y
+  // el buscador del landing). Se valida contra los alias conocidos y se
+  // envía al backend como `product_type` para que la paginación traiga solo
+  // productos de ese tipo (antes se filtraba solo en el cliente sobre las
+  // primeras 20 filas sin filtrar, lo que podía dar "sin resultados" si esa
+  // página no traía ningún producto del tipo pedido). isProductType se
+  // conserva como filtro de cliente adicional.
   const searchParams = useSearchParams();
   const typeFilter = searchParams.get("type");
+  const validatedProductTypeKey = typeFilter
+    ? parseProductTypeParam(typeFilter)
+    : null;
+  const productTypeParam = validatedProductTypeKey
+    ? productTypeKeyToFormKind(validatedProductTypeKey)
+    : undefined;
 
   const [allProducts, setAllProducts] = useState<IProduct[]>([]);
   const [searchResults, setSearchResults] = useState<IProduct[]>([]);
@@ -25,7 +39,12 @@ function HomeContent() {
 
   const { data: initialProductsData, isLoading: isLoadingInitial } =
     useGetProductsQuery(
-      { limit: 20, is_approved: true, is_active: true },
+      {
+        limit: 20,
+        is_approved: true,
+        is_active: true,
+        product_type: productTypeParam,
+      },
       {
         refetchOnMountOrArgChange: false,
         refetchOnFocus: false,
@@ -43,6 +62,7 @@ function HomeContent() {
       cursor: nextCursor || undefined,
       is_approved: true,
       is_active: true,
+      product_type: productTypeParam,
     },
     {
       skip: !shouldFetchMore || !nextCursor,
