@@ -107,8 +107,14 @@ export default function Footer() {
               <ul className="space-y-2">
                 {footerNavigation.experiencias.map((item) => (
                   <li key={item.key}>
+                    {/* prefetch desactivado: son variantes de /home con distinto
+                        ?type=, y precargarlas dispara useGetProductsQuery de
+                        fondo para el tipo que no se está viendo, contaminando
+                        el caché de RTK Query con datos que pueden llegar
+                        incompletos/vacíos y quedarse pegados al cambiar de pill. */}
                     <Link
                       href={item.href}
+                      prefetch={false}
                       className="text-sm hover:text-foreground/70 transition-colors"
                     >
                       {t(`footer.nav.${item.key}`)}

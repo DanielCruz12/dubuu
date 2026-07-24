@@ -75,7 +75,9 @@ export default function VerticalsSection() {
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.5 }}
         >
-          <Link href={tours.href} className="group block">
+          {/* prefetch desactivado: ver comentario en footer.tsx sobre por qué
+              no precargamos variantes de /home con distinto ?type=. */}
+          <Link href={tours.href} prefetch={false} className="group block">
             <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl sm:aspect-[16/11] md:aspect-auto md:h-[560px]">
               <Image
                 src={tours.image}
@@ -181,7 +183,7 @@ export default function VerticalsSection() {
                 transition={{ duration: 0.5, delay: 0.1 + i * 0.1 }}
               >
                 {vertical.active ? (
-                  <Link href={vertical.href} className="group block">
+                  <Link href={vertical.href} prefetch={false} className="group block">
                     {content}
                   </Link>
                 ) : (

@@ -75,7 +75,18 @@ function HomeContent() {
     setIsLoadingMore(false);
   }, [productTypeParam]);
 
-  const { data: initialProductsData, isLoading: isLoadingInitial } =
+  // OJO: usamos `currentData` (no `data`). Cuando cambian los argumentos de
+  // useGetProductsQuery (p. ej. product_type de "rental" a "tours"), RTK
+  // Query sigue devolviendo en `data` la respuesta del argumento ANTERIOR
+  // durante el render en el que los args ya cambiaron (arma la nueva
+  // suscripción en un efecto interno, un tick después). Si se usa `data`
+  // para poblar `allProducts`, ese primer render puebla la lista con
+  // productos del tipo viejo; applyTypeFilter los descarta (no matchean el
+  // tipo nuevo) y `searchResults` queda en 0 ("no hay resultados"), y como
+  // el guard de la población es `allProducts.length === 0`, la respuesta
+  // correcta que llega después ya no se aplica. `currentData` en cambio es
+  // `undefined` hasta que la respuesta corresponde a los args actuales.
+  const { currentData: initialProductsData, isLoading: isLoadingInitial } =
     useGetProductsQuery(
       {
         limit: 20,
@@ -91,7 +102,7 @@ function HomeContent() {
     );
 
   const {
-    data: moreProductsData,
+    currentData: moreProductsData,
     isLoading: isLoadingMoreQuery,
     isFetching: isFetchingMore,
   } = useGetProductsQuery(
