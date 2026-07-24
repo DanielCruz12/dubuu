@@ -103,10 +103,19 @@ export const useSearchLogic = ({ products, onSearchResults, onSearchLoading }: U
   }, [searchTerm, productType, isLocationEnabled, country, rating, priceRange, user])
 
   // Query para búsqueda en API
+  //
+  // El cambio de productType (pills Tours/Rental) NO entra aquí a propósito:
+  // HomeContent (src/app/home/page.tsx) ya reacciona a ese cambio reseteando
+  // su propia paginación y volviendo a pedir la lista base con el nuevo tipo.
+  // Si aquí también se activaba "modo búsqueda" solo por el tipo, cuando
+  // productType volvía a coincidir con initialFilterState.productType (p. ej.
+  // al seleccionar "Tours", que es el valor por defecto) shouldSearch pasaba
+  // a false y se caía de nuevo en `products` (la lista base, que todavía
+  // podía corresponder al tipo anterior mientras se resincronizaba), dejando
+  // la pill marcada en "Tours" pero mostrando los resultados del tipo previo.
   const searchParams = buildSearchParams()
   const shouldSearch =
     (!!user && searchTerm.length >= 3) ||
-    productType !== initialFilterState.productType ||
     (isLocationEnabled && country && country.code) ||
     (rating !== initialFilterState.rating && rating !== "0") ||
     priceRange[0] > 0 ||

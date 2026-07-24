@@ -11,7 +11,7 @@ import {
   parseProductTypeParam,
   productTypeKeyToFormKind,
 } from "@/constants/product-type";
-import { useAppDispatch } from "@/redux/store";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { setProductType } from "@/redux/slices/product/search/search-slice";
 
 function HomeContent() {
@@ -31,13 +31,21 @@ function HomeContent() {
     ? productTypeKeyToFormKind(validatedProductTypeKey)
     : undefined;
 
-  // La pill de tipo de producto (Tours/Rental) debajo del buscador lee su
-  // estado activo de Redux (search-slice.productType), que por defecto es
-  // "tours" y no se sincroniza solo con el ?type= de la URL. Sin este efecto,
-  // al entrar desde el landing/footer con ?type=rental la lista se filtraba
-  // bien (usa el query param directamente) pero la pill quedaba marcada en
-  // "Tours".
+  // La pill de tipo de producto (Tours/Rental) debajo del buscador lee y
+  // escribe su estado en Redux (search-slice.productType). `activeProductType`
+  // es el tipo que realmente respalda `allProducts`/`searchResults` en este
+  // componente: arranca igual al ?type= de la URL (o al valor ya guardado en
+  // Redux si no hay query param) y luego se resincroniza cada vez que el
+  // usuario cambia la pill o el diálogo de filtros, para que la lista y el
+  // fetch usen siempre el mismo tipo que el que se ve seleccionado.
   const dispatch = useAppDispatch();
+  const selectedProductType = useAppSelector((state) => state.search.productType);
+  const [activeProductType, setActiveProductType] = useState<string | undefined>(
+    () => productTypeParam ?? selectedProductType
+  );
+
+  // Si se llega/navega con un ?type= explícito en la URL, ese valor manda
+  // sobre lo que hubiera guardado en Redux (p. ej. de una sesión anterior).
   useEffect(() => {
     if (productTypeParam) {
       dispatch(setProductType(productTypeParam));
@@ -52,13 +60,32 @@ function HomeContent() {
   const [isSearching, setIsSearching] = useState(false);
   const [hasMoreProducts, setHasMoreProducts] = useState<boolean>(true);
 
+  // Cuando el tipo seleccionado en Redux (pill o diálogo de filtros) deja de
+  // coincidir con el tipo que respalda la lista actual, se resetea la
+  // paginación para volver a traer productos desde cero con el nuevo tipo.
+  useEffect(() => {
+    if (selectedProductType !== activeProductType) {
+      setActiveProductType(selectedProductType);
+      setAllProducts([]);
+      setSearchResults([]);
+      setNextCursor(null);
+      setHasMoreProducts(true);
+      // Cancela cualquier "cargar más" en curso del tipo anterior: si no se
+      // limpian estos flags, al resetear nextCursor a null la query de "más
+      // productos" queda con `skip: true` para siempre y el spinner de
+      // isLoadingMore nunca se apaga.
+      setShouldFetchMore(false);
+      setIsLoadingMore(false);
+    }
+  }, [selectedProductType, activeProductType]);
+
   const { data: initialProductsData, isLoading: isLoadingInitial } =
     useGetProductsQuery(
       {
         limit: 20,
         is_approved: true,
         is_active: true,
-        product_type: productTypeParam,
+        product_type: activeProductType,
       },
       {
         refetchOnMountOrArgChange: false,
@@ -77,7 +104,7 @@ function HomeContent() {
       cursor: nextCursor || undefined,
       is_approved: true,
       is_active: true,
-      product_type: productTypeParam,
+      product_type: activeProductType,
     },
     {
       skip: !shouldFetchMore || !nextCursor,
@@ -88,7 +115,9 @@ function HomeContent() {
   );
 
   const applyTypeFilter = (products: IProduct[]) =>
-    typeFilter ? products.filter((p) => isProductType(p, typeFilter)) : products;
+    activeProductType
+      ? products.filter((p) => isProductType(p, activeProductType))
+      : products;
 
   useEffect(() => {
     if (initialProductsData && allProducts.length === 0) {
@@ -101,7 +130,7 @@ function HomeContent() {
       setHasMoreProducts(initialProductsData.pagination.hasMore);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialProductsData, allProducts.length, typeFilter]);
+  }, [initialProductsData, allProducts.length, activeProductType]);
 
   useEffect(() => {
     if (
@@ -136,7 +165,7 @@ function HomeContent() {
       setSearchResults(applyTypeFilter(validResults));
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [typeFilter]
+    [activeProductType]
   );
 
   // Memoizado por la misma razón que handleSearchResults arriba: use-search-logic
