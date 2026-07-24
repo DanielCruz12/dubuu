@@ -14,6 +14,7 @@ interface SearchSectionProps {
   products: IProduct[];
   onSearchResults?: (products: IProduct[]) => void;
   onSearchLoading?: (loading: boolean) => void;
+  onProductTypeChange?: (productType: string) => void;
 }
 
 function SearchSectionSkeleton() {
@@ -37,6 +38,7 @@ export default function SearchSection({
   products,
   onSearchResults,
   onSearchLoading,
+  onProductTypeChange,
 }: SearchSectionProps) {
   const { t, isReady } = useLanguage();
   const {
@@ -71,7 +73,8 @@ export default function SearchSection({
     handleSearchChange,
     handleSearchFocus,
     handleLocationToggle,
-  } = useSearchLogic({ products, onSearchResults, onSearchLoading });
+    handleProductTypeSelect,
+  } = useSearchLogic({ products, onSearchResults, onSearchLoading, onProductTypeChange });
 
   // Skeletons mientras no está montado o i18n no está listo (evita hidratación y texto crudo)
   if (!isMounted || !isReady) {
@@ -132,6 +135,7 @@ export default function SearchSection({
         isLocationEnabled={isLocationEnabled}
         country={country}
         onLocationToggle={handleLocationToggle}
+        onProductTypeSelect={handleProductTypeSelect}
       />
 
       {/* Diálogos */}

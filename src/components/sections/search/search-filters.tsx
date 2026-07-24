@@ -13,7 +13,6 @@ import {
 import {
   setRating,
   setPriceRange,
-  setProductType,
 } from "@/redux/slices/product/search/search-slice";
 import { useLanguage } from "@/lib/i18n-context";
 
@@ -27,6 +26,7 @@ interface SearchFiltersProps {
   isLocationEnabled: boolean;
   country: { code?: string; name?: string } | null;
   onLocationToggle: () => void;
+  onProductTypeSelect: (name: string) => void;
 }
 
 export const SearchFilters: React.FC<SearchFiltersProps> = ({
@@ -39,6 +39,7 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
   isLocationEnabled,
   country,
   onLocationToggle,
+  onProductTypeSelect,
 }) => {
   const { t, language } = useLanguage();
   const productTypes = productTypesTranslations[language];
@@ -55,7 +56,7 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
                 key={id}
                 variant={productType === name ? "default" : "outline"}
                 size="sm"
-                onClick={() => dispatch(setProductType(name))}
+                onClick={() => onProductTypeSelect(name)}
                 className="rounded-full whitespace-nowrap px-3 py-1 h-9 flex-shrink-0"
               >
                 {description}

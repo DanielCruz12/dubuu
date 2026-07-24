@@ -31,9 +31,19 @@ interface UseSearchLogicProps {
   products: IProduct[]
   onSearchResults?: (products: IProduct[]) => void
   onSearchLoading?: (loading: boolean) => void
+  // Además de guardarse en Redux (para resaltar la pill/badge seleccionada),
+  // todo cambio de tipo de producto se notifica al padre (HomeContent) para
+  // que actualice el ?type= de la URL, que es quien realmente controla qué
+  // se pide/filtra. Ver src/app/home/page.tsx.
+  onProductTypeChange?: (productType: string) => void
 }
 
-export const useSearchLogic = ({ products, onSearchResults, onSearchLoading }: UseSearchLogicProps) => {
+export const useSearchLogic = ({
+  products,
+  onSearchResults,
+  onSearchLoading,
+  onProductTypeChange,
+}: UseSearchLogicProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isDialogFilterOpen, setIsDialogFilterOpen] = useState(false)
   const [activeFiltersCount, setActiveFiltersCount] = useState(0)
@@ -282,7 +292,14 @@ export const useSearchLogic = ({ products, onSearchResults, onSearchLoading }: U
     dispatch(setCategories([]))
     dispatch(setDurations([]))
     dispatch(setPriceRange(tempPriceRange))
+    onProductTypeChange?.(safeProductType)
     setIsDialogFilterOpen(false)
+  }
+
+  // Handler para las pills rápidas (Tours/Rental) debajo del buscador.
+  const handleProductTypeSelect = (name: string) => {
+    dispatch(setProductType(name))
+    onProductTypeChange?.(name)
   }
 
   const handleResetFilters = () => {
@@ -360,6 +377,7 @@ export const useSearchLogic = ({ products, onSearchResults, onSearchLoading }: U
     handleSearchChange,
     handleSearchFocus,
     handleLocationToggle,
+    handleProductTypeSelect,
     // Constants
     initialFilterState,
   }

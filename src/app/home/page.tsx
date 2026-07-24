@@ -11,7 +11,7 @@ import {
   parseProductTypeParam,
   productTypeKeyToFormKind,
 } from "@/constants/product-type";
-import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { useAppDispatch } from "@/redux/store";
 import { setProductType } from "@/redux/slices/product/search/search-slice";
 
 function HomeContent() {
@@ -33,35 +33,27 @@ function HomeContent() {
     ? productTypeKeyToFormKind(validatedProductTypeKey)
     : undefined;
 
-  // La pill de tipo de producto (Tours/Rental) debajo del buscador lee y
-  // escribe su estado en Redux (search-slice.productType). `activeProductType`
-  // es el tipo que realmente respalda `allProducts`/`searchResults` en este
-  // componente: arranca igual al ?type= de la URL (o al valor ya guardado en
-  // Redux si no hay query param) y luego se resincroniza cada vez que el
-  // usuario cambia la pill o el diálogo de filtros, para que la lista y el
-  // fetch usen siempre el mismo tipo que el que se ve seleccionado.
+  // El ?type= de la URL es la única fuente de verdad para qué se pide/filtra
+  // (igual que al entrar desde el landing/footer, que ya funcionaba bien).
+  // Redux solo se usa para resaltar la pill/badge seleccionada:
+  //  - URL -> Redux: al montar o al navegar con un link (footer/landing).
+  //  - Redux -> URL: al hacer clic en la pill o aplicar el diálogo de
+  //    filtros, esos handlers navegan (router.replace) en vez de limitarse a
+  //    despachar a Redux, así el cambio de tipo pasa por el mismo camino que
+  //    ya sabemos que funciona (una navegación real).
   const dispatch = useAppDispatch();
-  const selectedProductType = useAppSelector((state) => state.search.productType);
-  const [activeProductType, setActiveProductType] = useState<string | undefined>(
-    () => productTypeParam ?? selectedProductType
-  );
-
-  // Si se llega/navega con un ?type= explícito en la URL, ese valor manda
-  // sobre lo que hubiera guardado en Redux (p. ej. de una sesión anterior).
   useEffect(() => {
     if (productTypeParam) {
       dispatch(setProductType(productTypeParam));
     }
   }, [productTypeParam, dispatch]);
 
-  // Al revés: cuando el usuario cambia el tipo desde la pill o el diálogo de
-  // filtros (que solo escriben en Redux), se refleja en la URL para que
-  // quede como fuente única de verdad y la página sea compartible/recargable.
-  useEffect(() => {
-    if (selectedProductType && selectedProductType !== typeFilter) {
-      router.replace(`${pathname}?type=${selectedProductType}`, { scroll: false });
-    }
-  }, [selectedProductType, typeFilter, pathname, router]);
+  const handleProductTypeChange = useCallback(
+    (next: string) => {
+      router.replace(`${pathname}?type=${next}`, { scroll: false });
+    },
+    [pathname, router]
+  );
 
   const [allProducts, setAllProducts] = useState<IProduct[]>([]);
   const [searchResults, setSearchResults] = useState<IProduct[]>([]);
@@ -71,24 +63,17 @@ function HomeContent() {
   const [isSearching, setIsSearching] = useState(false);
   const [hasMoreProducts, setHasMoreProducts] = useState<boolean>(true);
 
-  // Cuando el tipo seleccionado en Redux (pill o diálogo de filtros) deja de
-  // coincidir con el tipo que respalda la lista actual, se resetea la
-  // paginación para volver a traer productos desde cero con el nuevo tipo.
+  // Si el tipo de la URL cambia sin que el componente se remonte (navegación
+  // client-side al cambiar la pill), se resetea la paginación para volver a
+  // traer productos desde cero con el nuevo tipo.
   useEffect(() => {
-    if (selectedProductType !== activeProductType) {
-      setActiveProductType(selectedProductType);
-      setAllProducts([]);
-      setSearchResults([]);
-      setNextCursor(null);
-      setHasMoreProducts(true);
-      // Cancela cualquier "cargar más" en curso del tipo anterior: si no se
-      // limpian estos flags, al resetear nextCursor a null la query de "más
-      // productos" queda con `skip: true` para siempre y el spinner de
-      // isLoadingMore nunca se apaga.
-      setShouldFetchMore(false);
-      setIsLoadingMore(false);
-    }
-  }, [selectedProductType, activeProductType]);
+    setAllProducts([]);
+    setSearchResults([]);
+    setNextCursor(null);
+    setHasMoreProducts(true);
+    setShouldFetchMore(false);
+    setIsLoadingMore(false);
+  }, [productTypeParam]);
 
   const { data: initialProductsData, isLoading: isLoadingInitial } =
     useGetProductsQuery(
@@ -96,7 +81,7 @@ function HomeContent() {
         limit: 20,
         is_approved: true,
         is_active: true,
-        product_type: activeProductType,
+        product_type: productTypeParam,
       },
       {
         refetchOnMountOrArgChange: false,
@@ -115,7 +100,7 @@ function HomeContent() {
       cursor: nextCursor || undefined,
       is_approved: true,
       is_active: true,
-      product_type: activeProductType,
+      product_type: productTypeParam,
     },
     {
       skip: !shouldFetchMore || !nextCursor,
@@ -126,9 +111,7 @@ function HomeContent() {
   );
 
   const applyTypeFilter = (products: IProduct[]) =>
-    activeProductType
-      ? products.filter((p) => isProductType(p, activeProductType))
-      : products;
+    typeFilter ? products.filter((p) => isProductType(p, typeFilter)) : products;
 
   useEffect(() => {
     if (initialProductsData && allProducts.length === 0) {
@@ -141,7 +124,7 @@ function HomeContent() {
       setHasMoreProducts(initialProductsData.pagination.hasMore);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialProductsData, allProducts.length, activeProductType]);
+  }, [initialProductsData, allProducts.length, typeFilter]);
 
   useEffect(() => {
     if (
@@ -176,7 +159,7 @@ function HomeContent() {
       setSearchResults(applyTypeFilter(validResults));
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [activeProductType]
+    [typeFilter]
   );
 
   // Memoizado por la misma razón que handleSearchResults arriba: use-search-logic
@@ -198,6 +181,7 @@ function HomeContent() {
         products={allProducts}
         onSearchResults={handleSearchResults}
         onSearchLoading={handleSearchLoading}
+        onProductTypeChange={handleProductTypeChange}
       />
       <TourSection
         products={searchResults}
