@@ -11,6 +11,8 @@ import {
   parseProductTypeParam,
   productTypeKeyToFormKind,
 } from "@/constants/product-type";
+import { useAppDispatch } from "@/redux/store";
+import { setProductType } from "@/redux/slices/product/search/search-slice";
 
 function HomeContent() {
   // Filtro de categoría vía ?type=tours|rental (enlazado desde el footer y
@@ -28,6 +30,19 @@ function HomeContent() {
   const productTypeParam = validatedProductTypeKey
     ? productTypeKeyToFormKind(validatedProductTypeKey)
     : undefined;
+
+  // La pill de tipo de producto (Tours/Rental) debajo del buscador lee su
+  // estado activo de Redux (search-slice.productType), que por defecto es
+  // "tours" y no se sincroniza solo con el ?type= de la URL. Sin este efecto,
+  // al entrar desde el landing/footer con ?type=rental la lista se filtraba
+  // bien (usa el query param directamente) pero la pill quedaba marcada en
+  // "Tours".
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    if (productTypeParam) {
+      dispatch(setProductType(productTypeParam));
+    }
+  }, [productTypeParam, dispatch]);
 
   const [allProducts, setAllProducts] = useState<IProduct[]>([]);
   const [searchResults, setSearchResults] = useState<IProduct[]>([]);
