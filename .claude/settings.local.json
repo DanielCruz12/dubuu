@@ -95,7 +95,8 @@
       "Bash(taskkill //F //PID 40408)",
       "Bash(find . -maxdepth 3 -path \"*/.claude/skills*\")",
       "Bash(ls .claude)",
-      "Bash(taskkill //F //IM node.exe //FI \"WINDOWTITLE eq npm*\")"
+      "Bash(taskkill //F //IM node.exe //FI \"WINDOWTITLE eq npm*\")",
+      "Bash(echo \"EXIT:$?\")"
     ]
   }
 }

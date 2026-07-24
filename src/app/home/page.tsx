@@ -1,6 +1,6 @@
 "use client";
 import { Suspense, useState, useEffect, useCallback } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import TourSection from "@/components/sections/tour-section";
 import UpTop from "@/components/up-top";
 import { useGetProductsQuery } from "@/redux/slices/product/product-slice";
@@ -23,6 +23,8 @@ function HomeContent() {
   // página no traía ningún producto del tipo pedido). isProductType se
   // conserva como filtro de cliente adicional.
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
   const typeFilter = searchParams.get("type");
   const validatedProductTypeKey = typeFilter
     ? parseProductTypeParam(typeFilter)
@@ -51,6 +53,15 @@ function HomeContent() {
       dispatch(setProductType(productTypeParam));
     }
   }, [productTypeParam, dispatch]);
+
+  // Al revés: cuando el usuario cambia el tipo desde la pill o el diálogo de
+  // filtros (que solo escriben en Redux), se refleja en la URL para que
+  // quede como fuente única de verdad y la página sea compartible/recargable.
+  useEffect(() => {
+    if (selectedProductType && selectedProductType !== typeFilter) {
+      router.replace(`${pathname}?type=${selectedProductType}`, { scroll: false });
+    }
+  }, [selectedProductType, typeFilter, pathname, router]);
 
   const [allProducts, setAllProducts] = useState<IProduct[]>([]);
   const [searchResults, setSearchResults] = useState<IProduct[]>([]);
