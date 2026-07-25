@@ -57,6 +57,18 @@ function HomeContent() {
 
   const [allProducts, setAllProducts] = useState<IProduct[]>([]);
   const [searchResults, setSearchResults] = useState<IProduct[]>([]);
+  // Tipo para el que `allProducts`/`searchResults` realmente tienen datos.
+  // Cuando `productTypeParam` cambia (p. ej. rental -> tours) este valor
+  // queda desactualizado por al menos un render: el efecto que resetea el
+  // listado (más abajo) corre antes que RTK Query termine de reflejar
+  // `isLoading: true` para los nuevos argumentos, así que si solo
+  // dependiéramos de `isLoadingInitial` habría un instante con
+  // searchResults=[] e isLoading=false que dispara "sin resultados" antes
+  // de que aparezca el skeleton. Comparándolo contra `productTypeParam`
+  // forzamos el estado de loading inmediatamente, sin esperar ese tick.
+  const [loadedProductType, setLoadedProductType] = useState<
+    string | undefined
+  >(productTypeParam);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [shouldFetchMore, setShouldFetchMore] = useState(false);
@@ -133,6 +145,7 @@ function HomeContent() {
       setSearchResults(applyTypeFilter(validData));
       setNextCursor(initialProductsData.pagination.nextCursor);
       setHasMoreProducts(initialProductsData.pagination.hasMore);
+      setLoadedProductType(productTypeParam);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialProductsData, allProducts.length, typeFilter]);
@@ -196,7 +209,11 @@ function HomeContent() {
       />
       <TourSection
         products={searchResults}
-        isLoading={isLoadingInitial || isSearching}
+        isLoading={
+          isLoadingInitial ||
+          isSearching ||
+          productTypeParam !== loadedProductType
+        }
         onLoadMore={loadMoreProducts}
         hasMore={hasMoreProducts}
         isLoadingMore={isLoadingMore}
