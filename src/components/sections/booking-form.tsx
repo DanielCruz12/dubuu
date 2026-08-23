@@ -417,7 +417,7 @@ export default function BookingForm({
               {t("home.bookingForm.ticketsLabel")}
             </span>
             <span className="font-semibold tabular-nums">
-              {adultTickets} {t("home.bookingForm.adults").toLowerCase()}
+              {adultTickets} {adultTickets === 1 ? t("home.bookingStatus.adult") : t("home.bookingStatus.adults")}
               {childrenTickets > 0 &&
                 ` + ${childrenTickets} ${t("home.bookingForm.children").toLowerCase()}`}
             </span>
@@ -468,7 +468,7 @@ export default function BookingForm({
                   {bookingBreakdown.userPays.toFixed(2)}
                 </span>
                 <span className="truncate text-[11px] text-white/65">
-                  {adultTickets} {t("home.bookingForm.adults").toLowerCase()}
+                  {adultTickets} {adultTickets === 1 ? t("home.bookingStatus.adult") : t("home.bookingStatus.adults")}
                   {childrenTickets > 0 &&
                     ` + ${childrenTickets} ${t("home.bookingForm.children").toLowerCase()}`}
                 </span>
