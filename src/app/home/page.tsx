@@ -8,6 +8,7 @@ import type { IProduct } from "@/types/product";
 import SearchSection from "@/components/sections/search-section";
 import { isProductType } from "@/utils";
 import {
+  DEFAULT_PRODUCT_TYPE_QUERY,
   parseProductTypeParam,
   productTypeKeyToFormKind,
 } from "@/constants/product-type";
@@ -42,10 +43,14 @@ function HomeContent() {
   //    despachar a Redux, así el cambio de tipo pasa por el mismo camino que
   //    ya sabemos que funciona (una navegación real).
   const dispatch = useAppDispatch();
+  // Sin ?type= válido en la URL (p. ej. "TODAS" del landing o links directos a
+  // /home), sincronizamos Redux con el tipo por defecto ("tours"). Antes solo
+  // se despachaba cuando había parámetro, así que el valor persistido en
+  // localStorage (redux-persist) de la última pill visitada —p. ej. "rental"—
+  // dejaba la pill marcada en "Alquiler" mientras el backend devuelve tours
+  // por defecto cuando no recibe product_type.
   useEffect(() => {
-    if (productTypeParam) {
-      dispatch(setProductType(productTypeParam));
-    }
+    dispatch(setProductType(productTypeParam ?? DEFAULT_PRODUCT_TYPE_QUERY));
   }, [productTypeParam, dispatch]);
 
   const handleProductTypeChange = useCallback(
