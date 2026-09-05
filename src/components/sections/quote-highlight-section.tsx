@@ -50,6 +50,9 @@ export default function QuoteHighlightSection() {
           <p className="text-sm font-medium text-zinc-600">
             {t("landing.quoteHighlight.name")}
           </p>
+          <p className="text-lg font-bold text-zinc-600">
+            CEO
+          </p>
         </div>
       </motion.div>
     </section>
