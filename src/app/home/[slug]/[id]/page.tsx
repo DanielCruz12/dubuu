@@ -400,11 +400,6 @@ export default function ProductPage() {
                 <p className="text-sm md:text-base leading-snug">
                   {product?.address || "—"}
                 </p>
-                {product?.country ? (
-                  <p className="text-xs md:text-sm text-muted-foreground">
-                    {product.country}
-                  </p>
-                ) : null}
               </div>
             </div>
           </div>

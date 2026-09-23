@@ -27,10 +27,13 @@ export function ExperienceCard({
   product,
   index = 0,
   showFavorite = true,
+  animate = true,
 }: {
   product: IProduct;
   index?: number;
   showFavorite?: boolean;
+  /** Animación de entrada (fade + slide-up). Con animate=false se renderiza sin ninguna animación. */
+  animate?: boolean;
 }) {
   const { t } = useLanguage();
   const router = useRouter();
@@ -81,10 +84,10 @@ export function ExperienceCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.5, delay: index * 0.08 }}
+      initial={animate ? { opacity: 0, y: 24 } : false}
+      whileInView={animate ? { opacity: 1, y: 0 } : undefined}
+      viewport={animate ? { once: true, margin: "-80px" } : undefined}
+      transition={animate ? { duration: 0.5, delay: index * 0.08 } : undefined}
       className="group cursor-pointer"
       onClick={goToDetail}
       role="link"

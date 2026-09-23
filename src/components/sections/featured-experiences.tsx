@@ -79,6 +79,7 @@ export default function FeaturedExperiences() {
                       product={product}
                       index={i}
                       showFavorite={false}
+                      animate={false}
                     />
                   </CarouselItem>
                 ))}
