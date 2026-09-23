@@ -51,13 +51,12 @@
     "recaptchaRequired": "Please complete the reCAPTCHA"
   },
   "toast": {
-    "loginRequired": "Please sign in to submit your request.",
-    "loginDescription": "You must be signed in to submit the form.",
     "recaptchaError": "reCAPTCHA verification error",
     "recaptchaDescription": "Please complete the reCAPTCHA again.",
     "success": "Request sent successfully!",
     "successDescriptionEmail": "We will contact you via your email shortly.",
     "successDescriptionPhone": "We will contact you via your phone shortly.",
+    "successCreateAccount": "Want to track your request? Create a Dubuu account.",
     "error": "Error sending the form",
     "errorDescription": "Please try again later or contact us directly."
   }

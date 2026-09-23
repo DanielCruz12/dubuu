@@ -43,7 +43,7 @@ export function MenuProfileSheet({
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="pr-0">
+      <SheetContent side="left" className="pr-0 w-[min(280px,85vw)]">
         <SheetTitle></SheetTitle>
         <SheetDescription></SheetDescription>
         <div className="mb-4 flex items-center">

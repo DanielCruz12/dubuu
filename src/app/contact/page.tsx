@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -62,6 +63,7 @@ type FormValues = z.infer<ReturnType<typeof getContactFormSchema>>;
 
 export default function ContactForm() {
   const { t } = useLanguage();
+  const router = useRouter();
   const { user, isSignedIn: isAuthenticated } = useUser();
   const [sendContactMessage, { isLoading: isSending }] =
     useSendContactMessageMutation();
@@ -103,13 +105,6 @@ export default function ContactForm() {
   }, [recaptchaValue, form]);
 
   async function onSubmit(values: FormValues) {
-    if (!isAuthenticated) {
-      toast.error(t("contact.toast.loginRequired"), {
-        description: t("contact.toast.loginDescription"),
-      });
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
@@ -143,12 +138,16 @@ export default function ContactForm() {
       await sendContactMessage(contactMessage).unwrap();
 
       toast.success(t("contact.toast.success"), {
-        description:
-          preferredContact === "email"
+        description: isAuthenticated
+          ? preferredContact === "email"
             ? t("contact.toast.successDescriptionEmail")
-            : t("contact.toast.successDescriptionPhone"),
+            : t("contact.toast.successDescriptionPhone")
+          : t("contact.toast.successCreateAccount"),
         duration: 5000,
       });
+
+      // Sin sesión: invitamos a crear cuenta. Con sesión: al inicio.
+      router.push(isAuthenticated ? "/home" : "/sign-up");
 
       // Resetear formulario
       form.reset();
@@ -185,10 +184,10 @@ export default function ContactForm() {
     <div className="w-full py-12 rounded-xl shadow-sm">
       <div className="px-4 md:px-20 mx-auto">
         <div className="grid lg:grid-cols-5 gap-8">
-          <div className="lg:col-span-3">
+          <div className="order-2 lg:order-1 lg:col-span-3">
             <Card className="border">
               <CardHeader className=" rounded-t-lg">
-                <CardTitle className="text-2xl font-bold">
+                <CardTitle className="text-lg font-bold">
                   {t("contact.title")}
                 </CardTitle>
                 <CardDescription>
@@ -429,7 +428,7 @@ export default function ContactForm() {
                     <Button
                       type="submit"
                       className="w-full bg-black hover:bg-gray-800 text-white"
-                      disabled={isSubmitting || isSending || !isAuthenticated}
+                      disabled={isSubmitting || isSending}
                     >
                       {isSubmitting || isSending
                         ? t("contact.submitting")
@@ -441,7 +440,7 @@ export default function ContactForm() {
             </Card>
           </div>
 
-          <div className="lg:col-span-2">
+          <div className="order-1 lg:order-2 lg:col-span-2">
             <div className="space-y-6">
               <Card className="border p-6">
                 <div className="flex items-start space-x-4">
@@ -467,7 +466,7 @@ export default function ContactForm() {
                         <span>{t("contact.benefits.support")}</span>
                       </li>
                     </ul>
-                    <p className="mt-4 text-sm text-gray-600">
+                    <p className="mt-4 text-sm text-muted-foreground">
                       {t("contact.afterSubmit")}
                     </p>
                   </div>
