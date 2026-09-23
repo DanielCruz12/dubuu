@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef, type RefObject } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import imageCompression from "browser-image-compression";
@@ -95,6 +95,8 @@ interface MultimediaStepProps {
   priceLabelOverride?: string;
   /** Hides the “accepts children” and “children price” fields (e.g. for rentals). */
   hideChildrenSection?: boolean;
+  /** Ref del form que usa el padre para disparar requestSubmit() en Continuar. */
+  formRef?: RefObject<HTMLFormElement>;
 }
 
 export function MultimediaStep({
@@ -104,6 +106,7 @@ export function MultimediaStep({
   existingMedia,
   priceLabelOverride,
   hideChildrenSection = false,
+  formRef: externalFormRef,
 }: MultimediaStepProps) {
   const { t } = useLanguage();
   const multimediaSchema = useMemo(() => getMultimediaSchema(t), [t]);
@@ -135,7 +138,8 @@ export function MultimediaStep({
     },
   });
 
-  const formRef = useRef<HTMLFormElement>(null);
+  const internalFormRef = useRef<HTMLFormElement>(null);
+  const formRef = externalFormRef ?? internalFormRef;
 
   const totalGalleryCount = keptExistingImageUrls.length + imageFiles.length;
 
@@ -152,7 +156,7 @@ export function MultimediaStep({
 
   useEffect(() => {
     focusFirstStepField(formRef.current, { delayMs: 100 });
-  }, [defaultValues?.price, isEditMode]);
+  }, [formRef, defaultValues?.price, isEditMode]);
 
   // Manejar la carga de archivos (banner e imágenes se comprimen a WebP, máx. 1MB)
   const handleBannerUpload = async (

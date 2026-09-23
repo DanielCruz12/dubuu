@@ -103,7 +103,8 @@
       "Bash(tee \"C:\\\\Users\\\\daniel\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-daniel-Desktop-projects-personal-work-projects-dubuu\\\\8b1ec135-a048-465b-9f36-e63f1af26cbd\\\\scratchpad\\\\frontend.log\")",
       "Bash(npx --no-install playwright --version)",
       "Bash(pkill -f \"nodemon\")",
-      "Bash(pkill -f \"ts-node src/index\")"
+      "Bash(pkill -f \"ts-node src/index\")",
+      "Bash(pnpm --version)"
     ]
   }
 }

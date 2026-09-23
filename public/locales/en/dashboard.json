@@ -854,7 +854,20 @@
       "updateSuccess": "Tour updated",
       "updateSuccessDescription": "Your changes were saved successfully.",
       "updateError": "Error updating tour",
-      "updateErrorDescription": "Could not save changes. Check the data and try again."
+      "updateErrorDescription": "Could not save changes. Check the data and try again.",
+      "incompleteData": "Some previous steps are missing data",
+      "incompleteDataDescription": "Review step {{step}} and then continue from here.",
+      "buildDataError": "Could not prepare the tour data",
+      "networkError": "Could not reach the server",
+      "networkErrorDescription": "Check your internet connection and try again.",
+      "serverError": "Server error",
+      "serverErrorDescription": "We're having technical issues. Try again in a few minutes.",
+      "authError": "Your session has expired",
+      "authErrorDescription": "Sign in again and try once more.",
+      "forbiddenError": "You don't have permission for this action",
+      "forbiddenErrorDescription": "Make sure your account has host permissions.",
+      "payloadTooLarge": "The files exceed the allowed size",
+      "payloadTooLargeDescription": "Reduce the size of your images or videos and try again."
     }
   },
   "contractChecklist": {

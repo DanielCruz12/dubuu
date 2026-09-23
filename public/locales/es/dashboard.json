@@ -854,7 +854,20 @@
       "updateSuccess": "Tour actualizado",
       "updateSuccessDescription": "Los cambios se guardaron correctamente.",
       "updateError": "Error al actualizar el tour",
-      "updateErrorDescription": "No se pudieron guardar los cambios. Revisa los datos e inténtalo de nuevo."
+      "updateErrorDescription": "No se pudieron guardar los cambios. Revisa los datos e inténtalo de nuevo.",
+      "incompleteData": "Faltan datos de pasos anteriores",
+      "incompleteDataDescription": "Revisa el paso {{step}} y luego continúa desde aquí.",
+      "buildDataError": "No se pudieron preparar los datos del tour",
+      "networkError": "No se pudo conectar con el servidor",
+      "networkErrorDescription": "Revisa tu conexión a internet e inténtalo de nuevo.",
+      "serverError": "Error en el servidor",
+      "serverErrorDescription": "Estamos teniendo problemas técnicos. Inténtalo de nuevo en unos minutos.",
+      "authError": "Tu sesión ha caducado",
+      "authErrorDescription": "Vuelve a iniciar sesión e inténtalo de nuevo.",
+      "forbiddenError": "No tienes permisos para esta acción",
+      "forbiddenErrorDescription": "Verifica que tu cuenta tiene permisos de anfitrión.",
+      "payloadTooLarge": "Los archivos superan el tamaño permitido",
+      "payloadTooLargeDescription": "Reduce el tamaño de las imágenes o videos e inténtalo de nuevo."
     }
   },
   "contractChecklist": {

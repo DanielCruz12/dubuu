@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { TourDateStatus } from "@/types/product";
 
 export type TFunction = (key: string) => string;
 
@@ -146,6 +147,16 @@ export interface TourData {
   categorization: CategorizationFormValues;
   multimedia: MultimediaFormValues;
   files: TourFiles;
+}
+
+// Fila de fecha/precio/cupo de un tour (en edición trae el id del backend)
+export interface TourDateMetaRow {
+  id: string;
+  date: string;
+  price: number;
+  children_price?: number | null;
+  max_people: number;
+  status: TourDateStatus;
 }
 
 // Tipo para el payload final del API

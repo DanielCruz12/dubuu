@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect, useRef } from "react";
+import { useMemo, useState, useEffect, useRef, type RefObject } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
@@ -34,15 +34,19 @@ interface CategorizationStepProps {
   defaultValues?: Partial<CategorizationFormValues>;
   /** When set, the product type field is hidden and this id is always submitted. */
   fixedProductTypeId?: string;
+  /** Ref del form que usa el padre para disparar requestSubmit() en Continuar. */
+  formRef?: RefObject<HTMLFormElement>;
 }
 
 export function CategorizationStep({
   onSubmit,
   defaultValues,
   fixedProductTypeId,
+  formRef: externalFormRef,
 }: CategorizationStepProps) {
   const { t } = useLanguage();
-  const formRef = useRef<HTMLFormElement>(null);
+  const internalFormRef = useRef<HTMLFormElement>(null);
+  const formRef = externalFormRef ?? internalFormRef;
   const categorizationSchema = useMemo(() => getCategorizationSchema(t), [t]);
 
   const [selectedProductTypeId, setSelectedProductTypeId] = useState<string>(
@@ -169,6 +173,7 @@ export function CategorizationStep({
     }
     focusFirstStepField(formRef.current, { delayMs: 100 });
   }, [
+    formRef,
     isLoadingTypes,
     isLoadingCategories,
     isLoadingAmenities,

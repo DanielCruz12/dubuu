@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect, useRef } from "react";
+import { useMemo, useState, useEffect, useRef, type RefObject } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -69,6 +69,8 @@ interface TimeOption {
 interface DetailsStepProps {
   onSubmit: (data: DetailsFormValues) => void;
   defaultValues?: Partial<DetailsFormValues>;
+  /** Ref del form que usa el padre para disparar requestSubmit() en Continuar. */
+  formRef?: RefObject<HTMLFormElement>;
 }
 
 function SortableItineraryItem({
@@ -140,9 +142,14 @@ function SortableItineraryItem({
   );
 }
 
-export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
+export function DetailsStep({
+  onSubmit,
+  defaultValues,
+  formRef: externalFormRef,
+}: DetailsStepProps) {
   const { t } = useLanguage();
-  const formRef = useRef<HTMLFormElement>(null);
+  const internalFormRef = useRef<HTMLFormElement>(null);
+  const formRef = externalFormRef ?? internalFormRef;
   const detailsSchema = useMemo(() => getDetailsSchema(t), [t]);
 
   const [itineraryItems, setItineraryItems] = useState<string[]>(
@@ -325,7 +332,7 @@ export function DetailsStep({ onSubmit, defaultValues }: DetailsStepProps) {
 
   useEffect(() => {
     focusFirstStepField(formRef.current, { delayMs: 100 });
-  }, [defaultValues?.highlight, defaultValues?.included]);
+  }, [formRef, defaultValues?.highlight, defaultValues?.included]);
 
   return (
     <Form {...form}>

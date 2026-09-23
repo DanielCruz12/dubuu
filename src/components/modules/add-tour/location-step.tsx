@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect, useRef } from "react";
+import { useMemo, useState, useEffect, useRef, type RefObject } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -15,6 +15,8 @@ import { useLanguage } from "@/lib/i18n-context";
 interface LocationStepProps {
   onSubmit: (data: LocationFormValues) => void;
   defaultValues?: Partial<LocationFormValues>;
+  /** Ref del form que usa el padre para disparar requestSubmit() en Continuar. */
+  formRef?: RefObject<HTMLFormElement>;
 }
 
 function toFiniteNumber(value: unknown, fallback = 0): number {
@@ -25,9 +27,14 @@ function toFiniteNumber(value: unknown, fallback = 0): number {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
-export function LocationStep({ onSubmit, defaultValues }: LocationStepProps) {
+export function LocationStep({
+  onSubmit,
+  defaultValues,
+  formRef: externalFormRef,
+}: LocationStepProps) {
   const { t } = useLanguage();
-  const formRef = useRef<HTMLFormElement>(null);
+  const internalFormRef = useRef<HTMLFormElement>(null);
+  const formRef = externalFormRef ?? internalFormRef;
   const locationSchema = useMemo(() => getLocationSchema(t), [t]);
   const initialLat = toFiniteNumber(defaultValues?.lat, 0);
   const initialLng = toFiniteNumber(defaultValues?.lng, 0);
@@ -74,7 +81,7 @@ export function LocationStep({ onSubmit, defaultValues }: LocationStepProps) {
 
   useEffect(() => {
     focusFirstStepField(formRef.current, { delayMs: 100 });
-  }, [defaultValues?.address, defaultValues?.lat, defaultValues?.lng]);
+  }, [formRef, defaultValues?.address, defaultValues?.lat, defaultValues?.lng]);
 
   return (
     <Form {...form}>

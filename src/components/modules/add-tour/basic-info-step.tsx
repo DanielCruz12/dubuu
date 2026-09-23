@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useEffect, useRef } from "react";
+import { useMemo, useEffect, useRef, type RefObject } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -30,11 +30,18 @@ import { getCountrySelectOptions } from "@/lib/country-options";
 interface BasicInfoStepProps {
   onSubmit: (data: BasicInfoFormValues) => void;
   defaultValues?: Partial<BasicInfoFormValues>;
+  /** Ref del form que usa el padre para disparar requestSubmit() en Continuar. */
+  formRef?: RefObject<HTMLFormElement>;
 }
 
-export function BasicInfoStep({ onSubmit, defaultValues }: BasicInfoStepProps) {
+export function BasicInfoStep({
+  onSubmit,
+  defaultValues,
+  formRef: externalFormRef,
+}: BasicInfoStepProps) {
   const { t, language } = useLanguage();
-  const formRef = useRef<HTMLFormElement>(null);
+  const internalFormRef = useRef<HTMLFormElement>(null);
+  const formRef = externalFormRef ?? internalFormRef;
   const basicInfoSchema = useMemo(() => getBasicInfoSchema(t), [t]);
 
   const countryOptions = useMemo(
@@ -57,7 +64,7 @@ export function BasicInfoStep({ onSubmit, defaultValues }: BasicInfoStepProps) {
 
   useEffect(() => {
     focusFirstStepField(formRef.current, { delayMs: 100 });
-  }, [defaultValues?.name, defaultValues?.description]);
+  }, [formRef, defaultValues?.name, defaultValues?.description]);
 
   const handleSubmit = form.handleSubmit(
     (data) => {
