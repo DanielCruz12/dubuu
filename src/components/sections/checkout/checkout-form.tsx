@@ -464,7 +464,7 @@ export default function CheckoutForm({
       </form>
 
       <Dialog open={cancellationModalOpen} onOpenChange={setCancellationModalOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md max-w-[calc(100vw-2rem)]">
           <DialogHeader>
             <DialogTitle>{t("home.bookingForm.cancellationModal.title")}</DialogTitle>
             <DialogDescription className="sr-only">

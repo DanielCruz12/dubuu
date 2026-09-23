@@ -5,6 +5,11 @@ import { useGetProductsQuery } from "@/redux/slices/product/product-slice";
 import { useLanguage } from "@/lib/i18n-context";
 import DotGridBackground from "@/components/sections/dot-grid-background";
 import ExperienceCard from "@/components/experience-card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
 
 export default function FeaturedExperiences() {
   const { t } = useLanguage();
@@ -15,6 +20,9 @@ export default function FeaturedExperiences() {
   });
 
   const products = (Array.isArray(data?.data) ? data.data : []).slice(0, 8);
+  // Mobile: carrusel con máximo 3; desktop: grid con 5.
+  const mobileProducts = products.slice(0, 3);
+  const desktopProducts = products.slice(0, 5);
 
   if (!isLoading && products.length === 0) return null;
 
@@ -47,25 +55,47 @@ export default function FeaturedExperiences() {
       </motion.div>
 
       {isLoading ? (
-        <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div
-              key={i}
-              className="aspect-[4/5] w-full animate-pulse rounded-3xl bg-white/5"
-            />
-          ))}
-        </div>
+        <>
+          <div className="relative lg:hidden">
+            <div className="aspect-[4/5] w-full animate-pulse rounded-3xl bg-white/5" />
+          </div>
+          <div className="relative hidden lg:grid grid-cols-5 gap-6">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div
+                key={i}
+                className="aspect-[4/5] w-full animate-pulse rounded-3xl bg-white/5"
+              />
+            ))}
+          </div>
+        </>
       ) : (
-        <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-          {products.map((product, i) => (
-            <ExperienceCard
-              key={product.id}
-              product={product}
-              index={i}
-              showFavorite={false}
-            />
-          ))}
-        </div>
+        <>
+          <div className="relative lg:hidden">
+            <Carousel opts={{ align: "start" }} className="w-full">
+              <CarouselContent>
+                {mobileProducts.map((product, i) => (
+                  <CarouselItem key={product.id} className="basis-[85%] sm:basis-[55%]">
+                    <ExperienceCard
+                      product={product}
+                      index={i}
+                      showFavorite={false}
+                    />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
+          </div>
+          <div className="relative hidden lg:grid grid-cols-5 gap-6">
+            {desktopProducts.map((product, i) => (
+              <ExperienceCard
+                key={product.id}
+                product={product}
+                index={i}
+                showFavorite={false}
+              />
+            ))}
+          </div>
+        </>
       )}
     </section>
   );
