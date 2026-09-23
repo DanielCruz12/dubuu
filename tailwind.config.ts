@@ -114,18 +114,18 @@ const config: Config = {
   		keyframes: {
   			'accordion-down': {
   				from: {
-  					height: '0'
+  					gridTemplateRows: '0fr'
   				},
   				to: {
-  					height: 'var(--radix-accordion-content-height)'
+  					gridTemplateRows: '1fr'
   				}
   			},
   			'accordion-up': {
   				from: {
-  					height: 'var(--radix-accordion-content-height)'
+  					gridTemplateRows: '1fr'
   				},
   				to: {
-  					height: '0'
+  					gridTemplateRows: '0fr'
   				}
   			}
   		},

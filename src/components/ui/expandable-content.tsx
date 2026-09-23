@@ -1,39 +1,60 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useLanguage } from "@/lib/i18n-context";
 
 interface ExpandableContentProps {
   children: ReactNode;
-  /** Longitud del contenido en caracteres; si supera `maxChars` se muestra el toggle. */
+  /** Longitud del contenido en caracteres (solo como atajo para textos muy cortos). */
   length: number;
-  /** Umbral de caracteres a partir del cual el contenido se colapsa. */
-  maxChars?: number;
+  /** Por debajo de este umbral nunca se muestra el toggle. */
+  minChars?: number;
   /** Clase Tailwind estática de line-clamp al colapsar (p. ej. "line-clamp-2"). */
   clampClass?: string;
 }
 
 /**
- * Contenido colapsable: si el texto es largo, lo recorta a `clampClass`
- * y muestra "Ver más" / "Ver menos". Si es corto, renderiza sin toggle.
+ * Contenido colapsable: mide si el contenido realmente se recorta
+ * (scrollHeight vs clientHeight) y solo entonces muestra "Ver más"/"Ver menos".
+ * Re-mide al cambiar el tamaño, con el resize del contenedor y al cargar las fuentes.
  */
 export function ExpandableContent({
   children,
   length,
-  maxChars = 320,
+  minChars = 120,
   clampClass = "line-clamp-5",
 }: ExpandableContentProps) {
   const { t } = useLanguage();
   const [expanded, setExpanded] = useState(false);
+  const [overflowing, setOverflowing] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
 
-  if (length <= maxChars) {
+  useEffect(() => {
+    if (expanded) return;
+    const el = contentRef.current;
+    if (!el || length < minChars) return;
+    const check = () => setOverflowing(el.scrollHeight > el.clientHeight + 1);
+    check();
+    document.fonts?.ready?.then(check).catch(() => {});
+    const ro = new ResizeObserver(check);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [length, minChars, expanded]);
+
+  if (length < minChars) {
     return <>{children}</>;
+  }
+
+  if (!overflowing && !expanded) {
+    return <div ref={contentRef}>{children}</div>;
   }
 
   return (
     <div>
-      <div className={expanded ? undefined : clampClass}>{children}</div>
+      <div ref={contentRef} className={expanded ? undefined : clampClass}>
+        {children}
+      </div>
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}

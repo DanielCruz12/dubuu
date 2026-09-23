@@ -235,7 +235,6 @@ export default function HostTourOrganizer({
           {profile.intro ? (
             <ExpandableContent
               length={profile.intro.length}
-              maxChars={180}
               clampClass="line-clamp-2"
             >
               <p className="text-left text-sm text-muted-foreground">
@@ -308,7 +307,6 @@ export default function HostTourOrganizer({
             </h4>
             <ExpandableContent
               length={profile.descripcion?.length ?? 0}
-              maxChars={180}
               clampClass="line-clamp-2"
             >
               <p className="text-sm text-muted-foreground leading-relaxed">
