@@ -235,7 +235,7 @@ export default function HostTourOrganizer({
           {profile.intro ? (
             <ExpandableContent
               length={profile.intro.length}
-              clampClass="line-clamp-2"
+              clampClass="line-clamp-3"
             >
               <p className="text-left text-sm text-muted-foreground">
                 {profile.intro}
@@ -307,7 +307,7 @@ export default function HostTourOrganizer({
             </h4>
             <ExpandableContent
               length={profile.descripcion?.length ?? 0}
-              clampClass="line-clamp-2"
+              clampClass="line-clamp-5"
             >
               <p className="text-sm text-muted-foreground leading-relaxed">
                 {profile.descripcion || t("home.organizer.emptyValue")}

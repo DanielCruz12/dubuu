@@ -15,9 +15,10 @@ interface ExpandableContentProps {
 }
 
 /**
- * Contenido colapsable: mide si el contenido realmente se recorta
- * (scrollHeight vs clientHeight) y solo entonces muestra "Ver más"/"Ver menos".
- * Re-mide al cambiar el tamaño, con el resize del contenedor y al cargar las fuentes.
+ * Contenido colapsable: mide si el contenido realmente se recorta con el
+ * clamp aplicado (scrollHeight vs clientHeight) y solo entonces muestra
+ * "Ver más"/"Ver menos". Re-mide al cambiar el tamaño, con el resize del
+ * contenedor y al cargar las fuentes.
  */
 export function ExpandableContent({
   children,
@@ -27,7 +28,8 @@ export function ExpandableContent({
 }: ExpandableContentProps) {
   const { t } = useLanguage();
   const [expanded, setExpanded] = useState(false);
-  const [overflowing, setOverflowing] = useState(false);
+  // null = midiendo: se aplica el clamp por defecto hasta saber si sobra texto.
+  const [overflowing, setOverflowing] = useState<boolean | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -46,30 +48,33 @@ export function ExpandableContent({
     return <>{children}</>;
   }
 
-  if (!overflowing && !expanded) {
-    return <div ref={contentRef}>{children}</div>;
-  }
+  // El clamp se aplica mientras se mide y cuando sobra texto; se quita si cabe entero.
+  const clamped =
+    expanded ? undefined : overflowing === false ? undefined : clampClass;
+  const showToggle = expanded || overflowing === true;
 
   return (
     <div>
-      <div ref={contentRef} className={expanded ? undefined : clampClass}>
+      <div ref={contentRef} className={clamped}>
         {children}
       </div>
-      <button
-        type="button"
-        onClick={() => setExpanded((v) => !v)}
-        aria-expanded={expanded}
-        className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
-      >
-        {expanded
-          ? t("home.productDetails.showLess")
-          : t("home.productDetails.showMore")}
-        {expanded ? (
-          <ChevronUp className="h-4 w-4" aria-hidden />
-        ) : (
-          <ChevronDown className="h-4 w-4" aria-hidden />
-        )}
-      </button>
+      {showToggle && (
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          aria-expanded={expanded}
+          className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+        >
+          {expanded
+            ? t("home.productDetails.showLess")
+            : t("home.productDetails.showMore")}
+          {expanded ? (
+            <ChevronUp className="h-4 w-4" aria-hidden />
+          ) : (
+            <ChevronDown className="h-4 w-4" aria-hidden />
+          )}
+        </button>
+      )}
     </div>
   );
 }
