@@ -49,7 +49,7 @@ export function RentalDeliveryStep({ onSubmit, defaultValues }: RentalDeliverySt
   const form = useForm<RentalDeliveryFormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      country: defaultValues?.country ?? "",
+      country: defaultValues?.country ?? "SV",
       delivery_mode: defaultValues?.delivery_mode ?? "specific_areas",
       specific_areas:
         defaultValues?.specific_areas && defaultValues.specific_areas.length > 0

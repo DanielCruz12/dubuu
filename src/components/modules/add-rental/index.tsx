@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, ArrowLeft, ShieldCheck, Loader2 } from "lucide-react";
 
@@ -43,6 +43,7 @@ import { useRouter } from "next/navigation";
 import { useLanguage } from "@/lib/i18n-context";
 import { isProductType } from "@/utils";
 import type { IRentalProduct, IRentalSpecificArea } from "@/types/rental";
+import { getRentalDraft, setRentalDraft, clearRentalDraft } from "./draft";
 
 function toDateInputValue(isoOrDate: string | undefined): string {
   if (!isoOrDate) return "";
@@ -106,7 +107,7 @@ function mapRentalProductToForm(p: IRentalProduct): {
       vin: r.vin ?? "",
       has_gps: r.has_gps ?? false,
       has_deposit: r.has_deposit ?? false,
-      deposit_amount: r.deposit_amount ?? "0.00",
+      deposit_amount: r.deposit_amount ?? "",
     },
     delivery: {
       country: p.country,
@@ -201,7 +202,7 @@ function createRentalFormData(
   data.append("vin", vehicle.vin ?? "");
   data.append("has_gps", String(Boolean(vehicle.has_gps)));
   data.append("has_deposit", String(Boolean(vehicle.has_deposit)));
-  data.append("deposit_amount", vehicle.deposit_amount ?? "0.00");
+  data.append("deposit_amount", vehicle.deposit_amount || "0.00");
 
   data.append("pickup_location", "");
   // Entrega siempre se ofrece en rentals (UI step 3).
@@ -335,6 +336,55 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
     setEditHydrated(true);
   }, [editProductId, isEditProductError, t]);
 
+  // El borrador se restaura una sola vez, cuando Clerk ya expuso el userId.
+  const draftRestoredRef = useRef(false);
+
+  // Restaurar borrador al montar (solo cliente; no en modo edición).
+  // La clave es por usuario y tipo de producto; espera a que Clerk cargue el userId.
+  useEffect(() => {
+    if (editProductId || draftRestoredRef.current) return;
+    if (!userId) return;
+    // Si el usuario ya avanzó antes de que cargara Clerk, no pisar su progreso.
+    if (step > 1 || basic != null) {
+      draftRestoredRef.current = true;
+      return;
+    }
+    const draft = getRentalDraft(userId, resolvedTypeId);
+    if (!draft) {
+      draftRestoredRef.current = true;
+      return;
+    }
+    setStep(draft.step);
+    setBasic(draft.basic);
+    setVehicle(draft.vehicle);
+    setDelivery(draft.delivery);
+    setCategorization(draft.categorization);
+    setMultimedia(draft.multimedia);
+    draftRestoredRef.current = true;
+  }, [editProductId, userId, resolvedTypeId, step, basic]);
+
+  // Persistir borrador cuando hay progreso (los archivos no se guardan).
+  useEffect(() => {
+    if (editProductId || !userId) return;
+    const hasProgress = step > 1 || basic != null;
+    if (!hasProgress) return;
+    setRentalDraft(
+      { step, basic, vehicle, delivery, categorization, multimedia },
+      userId,
+      resolvedTypeId,
+    );
+  }, [
+    step,
+    basic,
+    vehicle,
+    delivery,
+    categorization,
+    multimedia,
+    editProductId,
+    userId,
+    resolvedTypeId,
+  ]);
+
   const existingRental = useMemo(() => {
     if (
       !editProductId ||
@@ -372,6 +422,7 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
         });
       } else {
         await createProduct(apiFormData).unwrap();
+        clearRentalDraft(userId, resolvedTypeId);
         toast.success(t("dashboard.addRental.toast.success"), {
           description: t("dashboard.addRental.toast.successDescription"),
         });

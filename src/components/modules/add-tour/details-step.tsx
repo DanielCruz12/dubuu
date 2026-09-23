@@ -186,7 +186,7 @@ export function DetailsStep({
       difficulty:
         defaultValues?.difficulty != null && `${defaultValues.difficulty}`.trim() !== ""
           ? normalizeTourDifficultyForForm(defaultValues.difficulty)
-          : undefined,
+          : "easy",
       expenses: defaultValues?.expenses || [],
       packing_list: defaultValues?.packing_list || [],
     },

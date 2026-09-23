@@ -348,7 +348,7 @@ export default function ProductPage() {
             />
           </div>
           <div className="flex justify-between items-start mb-2 mt-1">
-            <h1 className="font-display text-2xl md:text-3xl font-normal tracking-tight flex-1 pr-4 line-clamp-2">
+            <h1 className="text-2xl md:text-3xl font-normal tracking-tight flex-1 pr-4 line-clamp-2">
               {product?.name}
             </h1>
             <div className="flex items-center gap-2 flex-shrink-0">

@@ -51,7 +51,7 @@ export function RentalVehicleStep({ onSubmit, defaultValues }: RentalVehicleStep
       vin: defaultValues?.vin ?? "",
       has_gps: defaultValues?.has_gps ?? false,
       has_deposit: defaultValues?.has_deposit ?? false,
-      deposit_amount: defaultValues?.deposit_amount ?? "0.00",
+      deposit_amount: defaultValues?.deposit_amount ?? "",
     },
   });
 

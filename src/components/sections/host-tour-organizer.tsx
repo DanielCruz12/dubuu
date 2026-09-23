@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLanguage } from "@/lib/i18n-context";
+import { ExpandableContent } from "@/components/ui/expandable-content";
 
 function detailIcon(key: HostProfileDetailKey) {
   switch (key) {
@@ -232,9 +233,15 @@ export default function HostTourOrganizer({
           </div>
 
           {profile.intro ? (
-            <p className="text-left text-sm text-muted-foreground line-clamp-2">
-              {profile.intro}
-            </p>
+            <ExpandableContent
+              length={profile.intro.length}
+              maxChars={180}
+              clampClass="line-clamp-2"
+            >
+              <p className="text-left text-sm text-muted-foreground">
+                {profile.intro}
+              </p>
+            </ExpandableContent>
           ) : null}
 
           {(profile.detalles?.length ?? 0) > 0 ||
@@ -299,9 +306,15 @@ export default function HostTourOrganizer({
             <h4 className="text-sm font-semibold tracking-tight text-foreground lg:text-base mb-2">
               {t("home.organizer.operatorInfoTitle")}
             </h4>
-            <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
-              {profile.descripcion || t("home.organizer.emptyValue")}
-            </p>
+            <ExpandableContent
+              length={profile.descripcion?.length ?? 0}
+              maxChars={180}
+              clampClass="line-clamp-2"
+            >
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {profile.descripcion || t("home.organizer.emptyValue")}
+              </p>
+            </ExpandableContent>
           </div>
           <div className="hidden min-w-0 border-t border-border/80 pt-5 lg:block lg:border-t-0 lg:pt-0">
             <h4 className="text-sm font-semibold tracking-tight text-foreground lg:text-base mb-2">

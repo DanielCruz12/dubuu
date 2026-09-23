@@ -56,9 +56,9 @@ export function BasicInfoStep({
       description: defaultValues?.description || "",
       departure_point: defaultValues?.departure_point || "",
       address: defaultValues?.address || "",
-      country: defaultValues?.country || "",
+      country: defaultValues?.country || "SV",
       max_people: defaultValues?.max_people || undefined,
-      duration: defaultValues?.duration || undefined,
+      duration: defaultValues?.duration ?? 1,
     },
   });
 

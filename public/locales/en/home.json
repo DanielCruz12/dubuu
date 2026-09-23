@@ -407,7 +407,9 @@
 		"whatsIncluded": "What's included",
 		"itinerary": "Itinerary",
 		"additionalExpenses": "Additional expenses",
-		"whatToBring": "What to bring"
+		"whatToBring": "What to bring",
+		"showMore": "Show more",
+		"showLess": "Show less"
 	},
 	"difficulty": {
 		"easy": "Easy",
@@ -429,6 +431,7 @@
 		"subtotal": "Subtotal",
 		"total": "Total",
 		"bookNow": "Book now",
+		"payNow": "Proceed to payment",
 		"cancellationPolicies": "Cancellation policies",
 		"cancellationModal": {
 			"title": "Cancellation policies",

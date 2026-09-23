@@ -148,6 +148,10 @@ export default function BookingForm({
   });
 
   const watchData = watch();
+  const hasSelectedDate = Boolean(watchData.datetime);
+  const bookButtonLabel = hasSelectedDate
+    ? t("home.bookingForm.payNow")
+    : t("home.bookingForm.bookNow");
   const adultTickets = watchData.tickets.adult;
   const childrenTickets = watchData.tickets.children ?? 0;
   const totalTickets = adultTickets + childrenTickets;
@@ -443,7 +447,7 @@ export default function BookingForm({
             onClick={handleReserveClick}
           >
             <CalendarCheck className="h-4 w-4 mr-2" />
-            {t("home.bookingForm.bookNow")}
+            {bookButtonLabel}
           </Button>
         )}
 
@@ -482,7 +486,7 @@ export default function BookingForm({
                 <span className="flex min-w-0 items-center gap-2 px-1 sm:px-0">
                   <CalendarCheck className="h-4 w-4 shrink-0" aria-hidden />
                   <span className="text-left leading-tight whitespace-nowrap">
-                    {t("home.bookingForm.bookNow")}
+                    {bookButtonLabel}
                   </span>
                 </span>
               </Button>

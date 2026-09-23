@@ -11,6 +11,7 @@ import type { IProduct } from "@/types/product";
 import { isProductType } from "@/utils";
 import { TourDifficultyBadge } from "../difficulty-badge";
 import { useLanguage } from "@/lib/i18n-context";
+import { ExpandableContent } from "@/components/ui/expandable-content";
 
 // Timeline item component for reusability
 const TimelineItem = ({ content }: { content: string }) => (
@@ -86,8 +87,10 @@ const ProductDetails = ({ product }: { product: IProduct }) => {
               {t("home.productDetails.overview")}
             </AccordionTrigger>
             <AccordionContent>
-              <div className="space-y-4 font-normal text-sm text-muted-foreground line-clamp-5">
-                <p>{product.description}</p>
+              <div className="space-y-4 font-normal text-sm text-muted-foreground">
+                <ExpandableContent length={product.description?.length ?? 0}>
+                  <p>{product.description}</p>
+                </ExpandableContent>
               </div>
             </AccordionContent>
           </AccordionItem>
@@ -100,7 +103,9 @@ const ProductDetails = ({ product }: { product: IProduct }) => {
             </AccordionTrigger>
             <AccordionContent>
               <div className="space-y-4 font-normal text-sm text-muted-foreground">
-                <p>{tourData?.highlight}</p>
+                <ExpandableContent length={tourData?.highlight?.length ?? 0}>
+                  <p>{tourData?.highlight}</p>
+                </ExpandableContent>
               </div>
             </AccordionContent>
           </AccordionItem>
@@ -113,7 +118,9 @@ const ProductDetails = ({ product }: { product: IProduct }) => {
             </AccordionTrigger>
             <AccordionContent>
               <div className="space-y-4 font-normal text-sm text-muted-foreground">
-                <p>{tourData?.included}</p>
+                <ExpandableContent length={tourData?.included?.length ?? 0}>
+                  <p>{tourData?.included}</p>
+                </ExpandableContent>
               </div>
             </AccordionContent>
           </AccordionItem>
@@ -125,7 +132,11 @@ const ProductDetails = ({ product }: { product: IProduct }) => {
               {t("home.productDetails.itinerary")}
             </AccordionTrigger>
             <AccordionContent>
-              <TimelineList items={tourData?.itinerary} />
+              <ExpandableContent
+                length={(tourData?.itinerary?.join(" ") ?? "").length}
+              >
+                <TimelineList items={tourData?.itinerary} />
+              </ExpandableContent>
             </AccordionContent>
           </AccordionItem>
         )}
@@ -136,7 +147,11 @@ const ProductDetails = ({ product }: { product: IProduct }) => {
               {t("home.productDetails.additionalExpenses")}
             </AccordionTrigger>
             <AccordionContent>
-              <TimelineList items={tourData?.expenses} />
+              <ExpandableContent
+                length={(tourData?.expenses?.join(" ") ?? "").length}
+              >
+                <TimelineList items={tourData?.expenses} />
+              </ExpandableContent>
             </AccordionContent>
           </AccordionItem>
         )}
@@ -147,7 +162,11 @@ const ProductDetails = ({ product }: { product: IProduct }) => {
               {t("home.productDetails.whatToBring")}
             </AccordionTrigger>
             <AccordionContent>
-              <TimelineList items={tourData?.packing_list} />
+              <ExpandableContent
+                length={(tourData?.packing_list?.join(" ") ?? "").length}
+              >
+                <TimelineList items={tourData?.packing_list} />
+              </ExpandableContent>
             </AccordionContent>
           </AccordionItem>
         )}
