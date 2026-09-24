@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AdminStatusSwitch } from "../(components)/admin-status-switch";
 import { AdminDeleteCell } from "../(components)/admin-delete-cell";
-import { isRentalProduct } from "@/utils/product-helpers";
+import { getProductDisplayPrice, isRentalProduct } from "@/utils/product-helpers";
 import { formatUsd, USD_SYMBOL } from "@/utils/currency";
 import type { IProduct } from "@/types/product";
 
@@ -52,11 +52,7 @@ export function getAdminProductColumns(
               </div>
               <p className="text-xs text-muted-foreground">
                 {USD_SYMBOL}
-                {formatUsd(
-                  rental && product.rental?.price_per_day
-                    ? product.rental.price_per_day
-                    : product.price,
-                )}
+                {formatUsd(getProductDisplayPrice(product))}
                 {rental ? ` · ${t("dashboard.adminProducts.perDay")}` : ""}
               </p>
             </div>

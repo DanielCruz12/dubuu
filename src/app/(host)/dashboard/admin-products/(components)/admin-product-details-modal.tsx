@@ -43,7 +43,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Accordion,
   AccordionContent,
@@ -60,7 +59,7 @@ import {
 } from "@/components/ui/table";
 import { AdminStatusSwitch } from "./admin-status-switch";
 import { useDeleteProductMutation } from "@/redux/slices/product/product-slice";
-import { isRentalProduct } from "@/utils/product-helpers";
+import { getProductDisplayPrice, isRentalProduct } from "@/utils/product-helpers";
 import { formatUsd, USD_SYMBOL } from "@/utils/currency";
 import { useLanguage } from "@/lib/i18n-context";
 import type { IProduct, ITourProduct } from "@/types/product";
@@ -160,12 +159,8 @@ export function AdminProductDetailsModal({
   if (!product) return null;
 
   const rating = Number(product.average_rating) || 0;
-  const price = rental
-    ? Number.parseFloat(
-        String((product as IRentalProduct).rental?.price_per_day ?? ""),
-      )
-    : Number(product.price);
-  const displayPrice = Number.isFinite(price) ? price : 0;
+  // Precio visible: para tours usa el mínimo entre las fechas si no hay price base.
+  const displayPrice = getProductDisplayPrice(product);
 
   const locale = language === "en" ? "en" : "es";
   const dateFormat = "D MMM YYYY";
@@ -242,7 +237,7 @@ export function AdminProductDetailsModal({
             </div>
           </DialogHeader>
 
-          <ScrollArea className="min-h-0 flex-1">
+          <div className="min-h-0 flex-1 overflow-y-auto">
             <div className="space-y-4 px-4 py-4 md:px-6">
               {/* Galería */}
               <div>
@@ -386,7 +381,7 @@ export function AdminProductDetailsModal({
               {tourDetails}
               {rentalDetails}
             </div>
-          </ScrollArea>
+          </div>
 
           <DialogFooter className="flex-row flex-wrap gap-2 border-t px-4 py-3 md:px-6">
             <Button
@@ -510,7 +505,7 @@ function renderTourDetails(tour: ITourProduct, t: (key: string) => string) {
                     </TableCell>
                     <TableCell>
                       {USD_SYMBOL}
-                      {formatUsd(date.price ?? tour.price)}
+                      {formatUsd(date.price ?? getProductDisplayPrice(tour))}
                     </TableCell>
                     <TableCell>{date.max_people}</TableCell>
                     <TableCell>{date.people_booked}</TableCell>
