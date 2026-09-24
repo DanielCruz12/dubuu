@@ -45,6 +45,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
   Table,
   TableBody,
   TableCell,
@@ -240,7 +246,7 @@ export function AdminProductDetailsModal({
             <div className="space-y-4 px-4 py-4 md:px-6">
               {/* Galería */}
               <div>
-                <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl bg-muted">
+                <div className="relative h-44 w-full overflow-hidden rounded-xl bg-muted md:h-60">
                   {images.length > 0 ? (
                     <Image
                       src={images[Math.min(imageIndex, images.length - 1)]}
@@ -292,7 +298,7 @@ export function AdminProductDetailsModal({
                         key={`${src}-${i}`}
                         type="button"
                         onClick={() => setImageIndex(i)}
-                        className={`relative h-14 w-20 shrink-0 overflow-hidden rounded-lg border-2 transition-colors ${
+                        className={`relative h-10 w-14 shrink-0 overflow-hidden rounded-lg border-2 transition-colors ${
                           i === imageIndex
                             ? "border-primary"
                             : "border-transparent opacity-60 hover:opacity-100"
@@ -340,16 +346,6 @@ export function AdminProductDetailsModal({
                 </div>
               </Section>
 
-              {/* Descripción */}
-              <Section
-                title={t("dashboard.adminProducts.modal.description")}
-                icon={<Info className="h-4 w-4" />}
-              >
-                <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
-                  {product.description || "—"}
-                </p>
-              </Section>
-
               {/* Ubicación y clasificación */}
               <Section
                 title={t("dashboard.adminProducts.modal.location")}
@@ -383,6 +379,9 @@ export function AdminProductDetailsModal({
                   </div>
                 )}
               </Section>
+
+              {/* Contenido del producto en acordeón */}
+              {renderContentAccordion(product, t)}
 
               {tourDetails}
               {rentalDetails}
@@ -525,64 +524,125 @@ function renderTourDetails(tour: ITourProduct, t: (key: string) => string) {
           </div>
         )}
       </Section>
+    </>
+  );
+}
 
-      {d?.itinerary && d.itinerary.length > 0 && (
-        <Section
-          title={t("dashboard.adminProducts.tour.itinerary")}
-          icon={<ListChecks className="h-4 w-4" />}
-        >
+/**
+ * Contenido del producto en acordeón (descripción, destacar, incluye,
+ * itinerario, gastos y equipaje). Solo se muestran las secciones con datos.
+ */
+function renderContentAccordion(product: IProduct, t: (key: string) => string) {
+  const items: {
+    value: string;
+    title: string;
+    icon: React.ReactNode;
+    content: React.ReactNode;
+  }[] = [];
+
+  if (product.description) {
+    items.push({
+      value: "description",
+      title: t("dashboard.adminProducts.modal.description"),
+      icon: <Info className="h-4 w-4" />,
+      content: (
+        <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
+          {product.description}
+        </p>
+      ),
+    });
+  }
+
+  if (!isRentalProduct(product)) {
+    const d = (product as ITourProduct).tour;
+    if (d?.highlight) {
+      items.push({
+        value: "highlight",
+        title: t("dashboard.adminProducts.tour.highlight"),
+        icon: <Star className="h-4 w-4" />,
+        content: (
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            {d.highlight}
+          </p>
+        ),
+      });
+    }
+    if (d?.included) {
+      items.push({
+        value: "included",
+        title: t("dashboard.adminProducts.tour.included"),
+        icon: <Package className="h-4 w-4" />,
+        content: (
+          <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
+            {d.included}
+          </p>
+        ),
+      });
+    }
+    if (d?.itinerary && d.itinerary.length > 0) {
+      items.push({
+        value: "itinerary",
+        title: t("dashboard.adminProducts.tour.itinerary"),
+        icon: <ListChecks className="h-4 w-4" />,
+        content: (
           <ul className="list-inside list-decimal space-y-1 text-sm text-muted-foreground">
             {d.itinerary.map((item, i) => (
               <li key={i}>{item}</li>
             ))}
           </ul>
-        </Section>
-      )}
-
-      {d?.highlight && (
-        <Section
-          title={t("dashboard.adminProducts.tour.highlight")}
-          icon={<Star className="h-4 w-4" />}
-        >
-          <p className="text-sm text-muted-foreground">{d.highlight}</p>
-        </Section>
-      )}
-
-      {d?.included && (
-        <Section
-          title={t("dashboard.adminProducts.tour.included")}
-          icon={<Package className="h-4 w-4" />}
-        >
-          <p className="text-sm text-muted-foreground">{d.included}</p>
-        </Section>
-      )}
-
-      {d?.expenses && d.expenses.length > 0 && (
-        <Section
-          title={t("dashboard.adminProducts.tour.expenses")}
-          icon={<Wallet className="h-4 w-4" />}
-        >
+        ),
+      });
+    }
+    if (d?.expenses && d.expenses.length > 0) {
+      items.push({
+        value: "expenses",
+        title: t("dashboard.adminProducts.tour.expenses"),
+        icon: <Wallet className="h-4 w-4" />,
+        content: (
           <ul className="list-inside list-disc space-y-1 text-sm text-muted-foreground">
             {d.expenses.map((item, i) => (
               <li key={i}>{item}</li>
             ))}
           </ul>
-        </Section>
-      )}
-
-      {d?.packing_list && d.packing_list.length > 0 && (
-        <Section
-          title={t("dashboard.adminProducts.tour.packingList")}
-          icon={<Package className="h-4 w-4" />}
-        >
+        ),
+      });
+    }
+    if (d?.packing_list && d.packing_list.length > 0) {
+      items.push({
+        value: "packingList",
+        title: t("dashboard.adminProducts.tour.packingList"),
+        icon: <Package className="h-4 w-4" />,
+        content: (
           <ul className="list-inside list-disc space-y-1 text-sm text-muted-foreground">
             {d.packing_list.map((item, i) => (
               <li key={i}>{item}</li>
             ))}
           </ul>
-        </Section>
-      )}
-    </>
+        ),
+      });
+    }
+  }
+
+  if (items.length === 0) return null;
+
+  return (
+    <Accordion
+      type="multiple"
+      defaultValue={["description"]}
+      className="rounded-xl border px-4"
+    >
+      {items.map((item) => (
+        <AccordionItem key={item.value} value={item.value}>
+          <AccordionTrigger className="py-4 hover:no-underline">
+            <span className="flex items-center gap-2">
+              {item.icon}
+              {item.title}
+            </span>
+          </AccordionTrigger>
+          <AccordionContent className="pb-4">{item.content}</AccordionContent>
+        </AccordionItem>
+      ))}
+    </Accordion>
   );
 }
 
