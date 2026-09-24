@@ -329,7 +329,7 @@
     "email": "Email",
     "phone": "Phone",
     "rentalDetails": "Rental Details",
-	    "tourDetails": "Tour Details",
+    "tourDetails": "Tour Details",
     "pickupDate": "Pickup date",
     "dropoffDate": "Dropoff date",
     "pickupLocation": "Pickup location",
@@ -1006,6 +1006,118 @@
       "toast": {
         "created": "Audience created successfully",
         "deleted": "Audience deleted successfully"
+      }
+    }
+  },
+  "adminProducts": {
+    "title": "Products",
+    "description": "Review, approve, publish, edit or delete each host's products.",
+    "hostFilter": {
+      "label": "Filter by host",
+      "placeholder": "Select a host",
+      "empty": "Select a host to see their products."
+    },
+    "summary": {
+      "total": "Total",
+      "approved": "Approved",
+      "published": "Published"
+    },
+    "table": {
+      "product": "Product",
+      "host": "Host",
+      "approved": "Approved",
+      "published": "Published",
+      "actions": "Actions",
+      "view": "View details",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "typeTours": "Tour",
+    "typeRental": "Vehicle rental",
+    "perDay": "/day",
+    "yes": "Yes",
+    "no": "No",
+    "switches": {
+      "approveSuccess": "Product approved.",
+      "approveError": "Could not approve the product.",
+      "approveOffTitle": "Remove approval",
+      "approveOffDescription": "The product \"{{name}}\" will become pending and will no longer be shown publicly.",
+      "approveOffAction": "Remove approval",
+      "publishSuccess": "Publication status updated.",
+      "publishError": "Could not update publication status.",
+      "publishOffTitle": "Hide product",
+      "publishOffDescription": "The product \"{{name}}\" will no longer be visible on the platform.",
+      "publishOffAction": "Hide",
+      "cancel": "Cancel"
+    },
+    "delete": {
+      "confirmTitle": "Delete product",
+      "confirmDescription": "You are about to delete \"{{name}}\". This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete",
+      "deleting": "Deleting...",
+      "success": "Product deleted.",
+      "error": "Could not delete the product."
+    },
+    "modal": {
+      "created": "Created",
+      "updated": "Updated",
+      "galleryPrev": "Previous image",
+      "galleryNext": "Next image",
+      "reviewTitle": "Review",
+      "approvedHint": "The product only appears publicly if approved.",
+      "publishedHint": "Visible on the platform (independent of approval).",
+      "description": "Description",
+      "location": "Location & classification",
+      "address": "Address",
+      "country": "Country",
+      "category": "Category",
+      "audience": "Target audience",
+      "tourTitle": "Tour details",
+      "rentalTitle": "Vehicle details",
+      "editFull": "Full edit",
+      "delete": "Delete",
+      "close": "Close"
+    },
+    "tour": {
+      "departurePoint": "Departure point",
+      "duration": "Duration",
+      "days": "days",
+      "difficulty": "Difficulty",
+      "acceptsChildren": "Accepts children",
+      "dateTable": {
+        "date": "Date",
+        "price": "Price",
+        "spots": "Spots",
+        "booked": "Booked",
+        "status": "Status"
+      },
+      "itinerary": "Itinerary",
+      "highlight": "Highlight",
+      "included": "Included",
+      "expenses": "Not included expenses",
+      "packingList": "Packing list"
+    },
+    "rental": {
+      "doors": "Doors",
+      "mileage": "Mileage",
+      "pricePerDay": "Price per day",
+      "availableFrom": "Available from",
+      "availableUntil": "Available until",
+      "available": "Available",
+      "offersDelivery": "Offers delivery",
+      "deliveryMode": "Delivery mode",
+      "baseDeliveryFee": "Base delivery fee",
+      "feePerKm": "Fee per km",
+      "coverageAllCountry": "National coverage",
+      "coverageDepartments": "Departments",
+      "deposit": "Deposit",
+      "gps": "GPS",
+      "plate": "Plate",
+      "vin": "VIN",
+      "delivery": {
+        "specific_areas": "Specific areas",
+        "coverage": "Coverage"
       }
     }
   }

@@ -329,7 +329,7 @@
     "email": "Correo",
     "phone": "Teléfono",
     "rentalDetails": "Detalles del Alquiler",
-	    "tourDetails": "Detalles del Viaje",
+    "tourDetails": "Detalles del Viaje",
     "pickupDate": "Fecha de recogida",
     "dropoffDate": "Fecha de entrega",
     "pickupLocation": "Lugar de recogida",
@@ -1006,6 +1006,118 @@
       "toast": {
         "created": "Audiencia creada correctamente",
         "deleted": "Audiencia eliminada correctamente"
+      }
+    }
+  },
+  "adminProducts": {
+    "title": "Productos",
+    "description": "Revisa, aprueba, publica, edita o elimina los productos de cada host.",
+    "hostFilter": {
+      "label": "Filtrar por host",
+      "placeholder": "Selecciona un host",
+      "empty": "Selecciona un host para ver sus productos."
+    },
+    "summary": {
+      "total": "Total",
+      "approved": "Aprobados",
+      "published": "Publicados"
+    },
+    "table": {
+      "product": "Producto",
+      "host": "Host",
+      "approved": "Aprobado",
+      "published": "Publicado",
+      "actions": "Acciones",
+      "view": "Ver detalle",
+      "edit": "Editar",
+      "delete": "Eliminar"
+    },
+    "typeTours": "Tour",
+    "typeRental": "Alquiler de vehículo",
+    "perDay": "/día",
+    "yes": "Sí",
+    "no": "No",
+    "switches": {
+      "approveSuccess": "Producto aprobado.",
+      "approveError": "No se pudo aprobar el producto.",
+      "approveOffTitle": "Quitar aprobación",
+      "approveOffDescription": "El producto \"{{name}}\" pasará a estado pendiente y dejará de mostrarse públicamente.",
+      "approveOffAction": "Quitar aprobación",
+      "publishSuccess": "Estado de publicación actualizado.",
+      "publishError": "No se pudo actualizar la publicación.",
+      "publishOffTitle": "Ocultar producto",
+      "publishOffDescription": "El producto \"{{name}}\" dejará de estar visible en la plataforma.",
+      "publishOffAction": "Ocultar",
+      "cancel": "Cancelar"
+    },
+    "delete": {
+      "confirmTitle": "Eliminar producto",
+      "confirmDescription": "Vas a eliminar \"{{name}}\". Esta acción no se puede deshacer.",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar",
+      "deleting": "Eliminando...",
+      "success": "Producto eliminado.",
+      "error": "No se pudo eliminar el producto."
+    },
+    "modal": {
+      "created": "Creado",
+      "updated": "Actualizado",
+      "galleryPrev": "Imagen anterior",
+      "galleryNext": "Imagen siguiente",
+      "reviewTitle": "Revisión",
+      "approvedHint": "El producto solo aparece públicamente si está aprobado.",
+      "publishedHint": "Visible en la plataforma (independiente de la aprobación).",
+      "description": "Descripción",
+      "location": "Ubicación y clasificación",
+      "address": "Dirección",
+      "country": "País",
+      "category": "Categoría",
+      "audience": "Audiencia objetivo",
+      "tourTitle": "Detalles del tour",
+      "rentalTitle": "Detalles del vehículo",
+      "editFull": "Editar completo",
+      "delete": "Eliminar",
+      "close": "Cerrar"
+    },
+    "tour": {
+      "departurePoint": "Punto de partida",
+      "duration": "Duración",
+      "days": "días",
+      "difficulty": "Dificultad",
+      "acceptsChildren": "Acepta niños",
+      "dateTable": {
+        "date": "Fecha",
+        "price": "Precio",
+        "spots": "Cupos",
+        "booked": "Reservados",
+        "status": "Estado"
+      },
+      "itinerary": "Itinerario",
+      "highlight": "Destacado",
+      "included": "Incluido",
+      "expenses": "Gastos no incluidos",
+      "packingList": "Lista de equipaje"
+    },
+    "rental": {
+      "doors": "Puertas",
+      "mileage": "Kilometraje",
+      "pricePerDay": "Precio por día",
+      "availableFrom": "Disponible desde",
+      "availableUntil": "Disponible hasta",
+      "available": "Disponible",
+      "offersDelivery": "Ofrece entrega",
+      "deliveryMode": "Modo de entrega",
+      "baseDeliveryFee": "Tarifa base de entrega",
+      "feePerKm": "Tarifa por km",
+      "coverageAllCountry": "Cobertura nacional",
+      "coverageDepartments": "Departamentos",
+      "deposit": "Depósito",
+      "gps": "GPS",
+      "plate": "Placa",
+      "vin": "VIN",
+      "delivery": {
+        "specific_areas": "Áreas específicas",
+        "coverage": "Cobertura"
       }
     }
   }

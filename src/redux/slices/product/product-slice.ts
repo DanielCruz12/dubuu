@@ -1,5 +1,5 @@
 "use client";
-import type { IProduct, PatchTourProductBody, UpdateProductResponse } from "@/types/product";
+import type { IProduct, PatchTourProductBody, ProductHostSummary, UpdateProductResponse } from "@/types/product";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { urlWithLocale } from "@/redux/url-with-locale";
 
@@ -165,6 +165,11 @@ export const productsApiSlice = createApi({
         providesTags: (result, error, id) => [{ type: "Products", id }],
       }),
 
+      getProductHosts: builder.query<{ data: ProductHostSummary[] }, void>({
+        query: () => urlWithLocale("/api/v1/products/hosts"),
+        providesTags: [{ type: "Products", id: "HOSTS" }],
+      }),
+
       getProductsByUserId: builder.query<IProduct[], string>({
         query: (userId) => urlWithLocale(`/api/v1/products/user/${userId}`),
         providesTags: (result) => [
@@ -220,6 +225,7 @@ export const {
   useSearchProductsQuery,
   useGetProductQuery,
   useGetProductsByUserIdQuery,
+  useGetProductHostsQuery,
   useCreateProductMutation,
   useUpdateProductMutation,
   useDeleteProductMutation,

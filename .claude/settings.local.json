@@ -107,7 +107,10 @@
       "Bash(pnpm --version)",
       "Bash(cat next.config.mjs)",
       "Bash(cat next.config.js)",
-      "PowerShell(npx tsc --noEmit)"
+      "PowerShell(npx tsc --noEmit)",
+      "Read(//c/Users/daniel/Desktop/projects/personal_work/projects/dantours-drizzle-nodejs/src/routes/**)",
+      "Read(//c/Users/daniel/Desktop/projects/personal_work/projects/dantours-drizzle-nodejs/src/**)",
+      "Bash(python *)"
     ]
   }
 }

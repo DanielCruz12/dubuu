@@ -131,3 +131,13 @@ export interface UpdateProductResponse {
   product: IProduct;
   tourDates?: ITourProductDates[];
 }
+
+/** Resumen de un host (dueño de productos) para el panel admin. */
+export interface ProductHostSummary {
+  userId: string;
+  username: string;
+  email: string;
+  total: number;
+  /** Conteos por tipo de producto (clave normalizada: tours, rental, ...). */
+  byType: Record<string, number>;
+}

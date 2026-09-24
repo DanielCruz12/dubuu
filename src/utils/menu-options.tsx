@@ -119,6 +119,11 @@ export const commonDashboardItems: NavItem[] = [
 // Admin-only dashboard items
 export const adminDashboardItems: NavItem[] = [
   {
+    title: "Productos",
+    href: "/dashboard/admin-products",
+    icon: <List className="h-4 w-4 mr-2" />,
+  },
+  {
     title: "Catálogos",
     href: "/dashboard/catalog",
     icon: <Tags className="h-4 w-4 mr-2" />,
