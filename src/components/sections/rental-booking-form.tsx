@@ -527,20 +527,20 @@ export default function RentalBookingForm({
           }}
         />
       </div>
-      <div className="grid grid-cols-2 gap-2.5">
+      <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2">
         <div className="space-y-1.5">
           <Label className="text-xs flex items-center gap-1.5">
             <Clock className="h-3.5 w-3.5 opacity-70" aria-hidden />
             {t("home.rentalBooking.pickupTime")}
           </Label>
-          <TimePicker value={pickupTime} onChange={setPickupTime} />
+          <TimePicker value={pickupTime} onChange={setPickupTime} inline={!isDesktop}/>
         </div>
         <div className="space-y-1.5">
           <Label className="text-xs flex items-center gap-1.5">
             <Clock className="h-3.5 w-3.5 opacity-70" aria-hidden />
             {t("home.rentalBooking.returnTime")}
           </Label>
-          <TimePicker value={returnTime} onChange={setReturnTime} />
+          <TimePicker value={returnTime} onChange={setReturnTime} inline={!isDesktop} />
         </div>
       </div>
       {insufficientHours && (
