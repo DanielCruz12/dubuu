@@ -31,7 +31,7 @@ const HOURS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 interface TimePickerProps {
   value: string;
   onChange: (value: string) => void;
-  /** Renders inline without Popover — use inside mobile sheets */
+  /** Usa el selector de hora nativo del dispositivo, sin Popover — para sheets móviles */
   inline?: boolean;
 }
 
@@ -142,29 +142,15 @@ export function TimePicker({ value, onChange, inline = false }: TimePickerProps)
 
   if (inline) {
     return (
-      <div className="w-full rounded-lg border border-border/50 bg-muted/15">
-        <button
-          type="button"
-          onClick={() => setOpen(!open)}
-          className="w-full flex items-center justify-between px-3 py-2"
-        >
-          <span className="tabular-nums text-sm font-medium">{display}</span>
-          <Clock className="h-3.5 w-3.5 shrink-0 opacity-60" />
-        </button>
-        {open && (
-          <div className="px-2 pb-2 border-t border-border/30 pt-2">
-            <TimePickerContent
-              hour12={hour12}
-              minutes={minutes}
-              period={period}
-              selectHour={selectHour}
-              selectMinute={selectMinute}
-              setPeriod={setPeriod}
-              t={t}
-            />
-          </div>
-        )}
-      </div>
+      <input
+        type="time"
+        step={900}
+        value={value}
+        onChange={(e) => {
+          if (e.target.value) onChange(e.target.value);
+        }}
+        className="h-11 w-full rounded-lg border border-border/60 bg-background/80 px-3 text-base tabular-nums text-foreground dark:[color-scheme:dark] focus:outline-none focus:ring-2 focus:ring-primary/30"
+      />
     );
   }
 
