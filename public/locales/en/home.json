@@ -88,6 +88,7 @@
 		"selectDateRange": "Select date range",
 		"rangePickerTitle": "Dates and times",
 		"rangePickerDone": "Done",
+		"back": "Back",
 		"rangeHint": "Click the start day, then the return day.",
 		"pickupTime": "Start time",
 		"returnTime": "Return time",
@@ -563,6 +564,7 @@
 	"checkout": {
 		"title": "Complete purchase",
 		"description": "Fill in your details to process your order",
+		"amountToPay": "Amount to pay",
 		"contact": {
 			"title": "Contact Information",
 			"description": "Enter your contact details for order confirmation.",
@@ -598,6 +600,9 @@
 			"processing": "Processing...",
 			"proceedToPay": "Proceed to payment",
 			"cancel": "Cancel",
+			"back": "Back",
+			"slideToPay": "Slide to pay",
+			"slideToPayDone": "Done!",
 			"termsAgreeBefore": "By clicking ",
 			"termsAgreeButton": "Proceed to payment",
 			"termsAgreeAfter": ", you agree to our ",
@@ -659,6 +664,8 @@
 	},
 	"timePicker": {
 		"hour": "Hour",
-		"minutes": "Minutes"
+		"minutes": "Minutes",
+		"title": "Select time",
+		"done": "Done"
 	}
 }

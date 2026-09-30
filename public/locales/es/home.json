@@ -88,6 +88,7 @@
 		"selectDateRange": "Seleccionar rango de fechas",
 		"rangePickerTitle": "Fechas y horario",
 		"rangePickerDone": "Listo",
+		"back": "Regresar",
 		"rangeHint": "Haz clic en el día de inicio y luego en el de devolución.",
 		"pickupTime": "Hora de inicio",
 		"returnTime": "Hora de devolución",
@@ -563,6 +564,7 @@
 	"checkout": {
 		"title": "Finalizar Compra",
 		"description": "Complete sus datos para procesar su pedido",
+		"amountToPay": "Total a pagar",
 		"contact": {
 			"title": "Información de Contacto",
 			"description": "Ingresa tus datos de contacto para la confirmación del pedido.",
@@ -598,6 +600,9 @@
 			"processing": "Procesando...",
 			"proceedToPay": "Proceder al pago",
 			"cancel": "Cancelar",
+			"back": "Regresar",
+			"slideToPay": "Desliza para pagar",
+			"slideToPayDone": "¡Listo!",
 			"termsAgreeBefore": "Al hacer clic en ",
 			"termsAgreeButton": "Proceder al pago",
 			"termsAgreeAfter": ", aceptas nuestros ",
@@ -659,6 +664,8 @@
 	},
 	"timePicker": {
 		"hour": "Hora",
-		"minutes": "Minutos"
+		"minutes": "Minutos",
+		"title": "Seleccionar hora",
+		"done": "Listo"
 	}
 }

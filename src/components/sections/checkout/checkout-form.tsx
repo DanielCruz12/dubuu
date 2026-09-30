@@ -40,8 +40,11 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
-import { CreditCard, X } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import type { BookingFormData } from "@/types/booking";
+import { formatUsd, USD_SYMBOL } from "@/utils/currency";
+import { SlideToPay } from "@/components/ui/slide-to-pay";
+import { vibrateSuccess } from "@/lib/vibration";
 
 export default function CheckoutForm({
   setShowPaymentStep,
@@ -55,6 +58,8 @@ export default function CheckoutForm({
   const { t } = useLanguage();
   const user = useUser();
   const dispatch = useDispatch();
+  const convert = formatUsd;
+  const symbol = USD_SYMBOL;
 
   const methods = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutFormSchema),
@@ -107,6 +112,7 @@ export default function CheckoutForm({
       getBookingById(blinkResponse.bookingId).unwrap().then((data) => {
         if (data?.status === "completed" && !hasCompletedRef.current) {
           hasCompletedRef.current = true;
+          vibrateSuccess();
           setBlinkModalOpen(false);
           setBlinkResponse(null);
           toast.success(t("home.checkout.toast.paymentCompletedSuccess"));
@@ -160,6 +166,7 @@ export default function CheckoutForm({
   });
 
   useOnPaymentCompleted(() => {
+    vibrateSuccess();
     setBlinkModalOpen(false);
     setBlinkResponse(null);
     toast.success(t("home.checkout.toast.paymentCompletedSuccess"));
@@ -407,6 +414,20 @@ export default function CheckoutForm({
       <p className="text-sm text-muted-foreground mb-6">
         {t("home.checkout.description")}
       </p>
+
+      {/* Monto a pagar — siempre visible */}
+      <div className="sticky top-2 z-10 mb-5 rounded-xl border border-border bg-background/95 px-4 py-3 shadow-sm backdrop-blur">
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-sm font-medium text-muted-foreground">
+            {t("home.checkout.amountToPay")}
+          </span>
+          <span className="text-lg md:text-xl font-bold tabular-nums">
+            {symbol}
+            {convert(bookingData?.total ?? 0)}
+          </span>
+        </div>
+      </div>
+
       <form
         onSubmit={methods.handleSubmit(onSubmit)}
         className="flex flex-col gap-6"
@@ -416,26 +437,24 @@ export default function CheckoutForm({
         {paymentMethod !== "blink" && <ShippingForm />}
 
         <div className="flex flex-col gap-3">
-          <Button
-            size="lg"
+          <SlideToPay
+            onComplete={() => methods.handleSubmit(onSubmit)()}
+            label={t("home.checkout.payment.slideToPay")}
+            completedLabel={t("home.checkout.payment.slideToPayDone")}
+            loadingLabel={t("home.checkout.payment.processing")}
+            loading={isLoading}
             disabled={isLoading}
-            type="submit"
             className="w-full text-base py-2"
-          >
-            <CreditCard className="h-4 w-4 mr-2" />
-            {isLoading
-              ? t("home.checkout.payment.processing")
-              : t("home.checkout.payment.proceedToPay")}
-          </Button>
+          />
           <Button
             type="button"
-            variant="destructive"
+            variant="secondary"
             size="lg"
             onClick={() => setShowPaymentStep(false)}
             className="w-full text-base py-2 font-semibold"
           >
-            <X className="h-4 w-4 mr-2" />
-            {t("home.checkout.payment.cancel")}
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            {t("home.checkout.payment.back")}
           </Button>
         </div>
 

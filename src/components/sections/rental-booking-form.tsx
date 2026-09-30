@@ -14,6 +14,7 @@ import { es, enUS } from "date-fns/locale";
 import type { DateRange } from "react-day-picker";
 import { createPortal } from "react-dom";
 import {
+  ArrowLeft,
   CalendarCheck,
   CalendarDays,
   ChevronDown,
@@ -398,6 +399,19 @@ export default function RentalBookingForm({
   const extraHours = pricing.extraHours;
   const estimatedTotal = pricing.total;
 
+  // Monto a pagar — mostrado en todos los pasos del flujo de reserva
+  const totalRow = (
+    <div className="flex items-center justify-between gap-2 rounded-lg border border-border/60 bg-muted/20 px-3 py-2">
+      <span className="text-sm font-medium text-muted-foreground">
+        {t("home.bookingForm.total")}
+      </span>
+      <span className="text-base font-bold tabular-nums">
+        {symbol}
+        {estimatedTotal > 0 ? convert(estimatedTotal) : "—"}
+      </span>
+    </div>
+  );
+
   const insufficientHours = useMemo(() => {
     if (!pickup || !dropoff) return false;
     const [ph, pm] = pickupTime.split(":").map(Number);
@@ -533,14 +547,14 @@ export default function RentalBookingForm({
             <Clock className="h-3.5 w-3.5 opacity-70" aria-hidden />
             {t("home.rentalBooking.pickupTime")}
           </Label>
-          <TimePicker value={pickupTime} onChange={setPickupTime} inline={!isDesktop}/>
+          <TimePicker value={pickupTime} onChange={setPickupTime} modal={!isDesktop}/>
         </div>
         <div className="space-y-1.5">
           <Label className="text-xs flex items-center gap-1.5">
             <Clock className="h-3.5 w-3.5 opacity-70" aria-hidden />
             {t("home.rentalBooking.returnTime")}
           </Label>
-          <TimePicker value={returnTime} onChange={setReturnTime} inline={!isDesktop} />
+          <TimePicker value={returnTime} onChange={setReturnTime} modal={!isDesktop} />
         </div>
       </div>
       {insufficientHours && (
@@ -548,12 +562,25 @@ export default function RentalBookingForm({
           {t("home.rentalBooking.minHoursWarning")}
         </p>
       )}
+      {totalRow}
       <Button
         type="button"
         className="w-full rounded-full"
         onClick={() => handleRangePickerOpenChange(false)}
       >
         {t("home.rentalBooking.rangePickerDone")}
+      </Button>
+      <Button
+        type="button"
+        variant="secondary"
+        className="w-full gap-2 rounded-full"
+        onClick={() => {
+          setReserveFlowActive(false);
+          setRangePickerOpen(false);
+        }}
+      >
+        <ArrowLeft className="h-4 w-4" />
+        {t("home.rentalBooking.back")}
       </Button>
     </div>
   );
@@ -630,12 +657,25 @@ export default function RentalBookingForm({
         )}
       </div>
 
+      {totalRow}
       <Button
         type="button"
         className="w-full rounded-full"
         onClick={handleLocationDoneClick}
       >
         {t("home.rentalBooking.rangePickerDone")}
+      </Button>
+      <Button
+        type="button"
+        variant="secondary"
+        className="w-full gap-2 rounded-full"
+        onClick={() => {
+          setLocationModalOpen(false);
+          setRangePickerOpen(true);
+        }}
+      >
+        <ArrowLeft className="h-4 w-4" />
+        {t("home.rentalBooking.back")}
       </Button>
     </div>
   );
@@ -767,7 +807,8 @@ export default function RentalBookingForm({
         </p>
       </div>
 
-      <div className="sticky bottom-0 pt-2 pb-1 -mb-1 bg-background">
+      <div className="sticky bottom-0 space-y-2 pt-2 pb-1 -mb-1 bg-background">
+        {totalRow}
         <Button
           type="button"
           className="w-full gap-2 rounded-full"
@@ -783,6 +824,19 @@ export default function RentalBookingForm({
           </>
         )}
       </Button>
+        <Button
+          type="button"
+          variant="secondary"
+          className="w-full gap-2 rounded-full"
+          onClick={() => {
+            setShowDocsModal(false);
+            setReserveFlowActive(true);
+            setLocationModalOpen(true);
+          }}
+        >
+          <ArrowLeft className="h-4 w-4" />
+          {t("home.rentalBooking.back")}
+        </Button>
       </div>
 
       {/*  {!hasAllDocs && (

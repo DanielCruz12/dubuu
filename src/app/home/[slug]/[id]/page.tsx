@@ -63,6 +63,7 @@ import {
 } from "@/redux/slices/favorite/favorite-slice";
 import { formatUsd, USD_SYMBOL } from "@/utils/currency";
 import { useLanguage } from "@/lib/i18n-context";
+import { vibrateSuccess } from "@/lib/vibration";
 
 function withCacheKey(src: string, key?: string) {
   const trimmed = (src ?? "").trim();
@@ -90,6 +91,7 @@ export default function ProductPage() {
 
     function onPaymentCompleted(_data: { bookingId: string; status: string }) {
       console.log(_data);
+      vibrateSuccess();
       toast.success(t("home.checkout.toast.paymentConfirmed"));
     }
 

@@ -1,13 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { Clock } from "lucide-react";
+import { Check, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n-context";
 
@@ -31,8 +38,8 @@ const HOURS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 interface TimePickerProps {
   value: string;
   onChange: (value: string) => void;
-  /** Usa el selector de hora nativo del dispositivo, sin Popover — para sheets móviles */
-  inline?: boolean;
+  /** Abre el selector en un modal centrado en lugar de un popover — para sheets móviles */
+  modal?: boolean;
 }
 
 function TimePickerContent({
@@ -121,7 +128,7 @@ function TimePickerContent({
   );
 }
 
-export function TimePicker({ value, onChange, inline = false }: TimePickerProps) {
+export function TimePicker({ value, onChange, modal = false }: TimePickerProps) {
   const [open, setOpen] = useState(false);
   const { t } = useLanguage();
   const { hour12, minutes, period } = to12h(value);
@@ -140,17 +147,60 @@ export function TimePicker({ value, onChange, inline = false }: TimePickerProps)
     onChange(to24h(hour12, minutes, p));
   };
 
-  if (inline) {
+  const content = (
+    <TimePickerContent
+      hour12={hour12}
+      minutes={minutes}
+      period={period}
+      selectHour={selectHour}
+      selectMinute={selectMinute}
+      setPeriod={setPeriod}
+      t={t}
+    />
+  );
+
+  const trigger = (
+    <span className="flex w-full items-center justify-between gap-2">
+      <span className="tabular-nums">{display}</span>
+      <Clock className="h-3.5 w-3.5 shrink-0 opacity-60" />
+    </span>
+  );
+
+  if (modal) {
     return (
-      <input
-        type="time"
-        step={900}
-        value={value}
-        onChange={(e) => {
-          if (e.target.value) onChange(e.target.value);
-        }}
-        className="h-11 w-full rounded-lg border border-border/60 bg-background/80 px-3 text-base tabular-nums text-foreground dark:[color-scheme:dark] focus:outline-none focus:ring-2 focus:ring-primary/30"
-      />
+      <>
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full justify-between gap-2 bg-background/80 font-normal"
+          onClick={() => setOpen(true)}
+        >
+          {trigger}
+        </Button>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogContent className="w-full min-w-0 max-w-[calc(100vw-2rem)] gap-0 overflow-y-auto p-0 pt-5 sm:max-w-xs sm:pt-6">
+            <DialogHeader className="px-5 pb-2 text-left">
+              <DialogTitle className="text-base">
+                {t("home.timePicker.title")}
+              </DialogTitle>
+              <DialogDescription className="sr-only">
+                {t("home.timePicker.title")}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="w-full min-w-0 px-5 pb-5">
+              {content}
+              <Button
+                type="button"
+                className="mt-4 w-full gap-2 rounded-full"
+                onClick={() => setOpen(false)}
+              >
+                <Check className="h-4 w-4" />
+                {t("home.timePicker.done")}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </>
     );
   }
 
@@ -162,8 +212,7 @@ export function TimePicker({ value, onChange, inline = false }: TimePickerProps)
           variant="outline"
           className="w-full justify-between gap-2 bg-background/80 font-normal"
         >
-          <span className="tabular-nums">{display}</span>
-          <Clock className="h-3.5 w-3.5 shrink-0 opacity-60" />
+          {trigger}
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -171,15 +220,7 @@ export function TimePicker({ value, onChange, inline = false }: TimePickerProps)
         sideOffset={6}
         className="w-auto p-3 z-[99999]"
       >
-        <TimePickerContent
-          hour12={hour12}
-          minutes={minutes}
-          period={period}
-          selectHour={selectHour}
-          selectMinute={selectMinute}
-          setPeriod={setPeriod}
-          t={t}
-        />
+        {content}
       </PopoverContent>
     </Popover>
   );

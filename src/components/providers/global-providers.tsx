@@ -14,6 +14,7 @@ import NextTopLoader from "nextjs-toploader";
 import { SocketProvider } from "@/contexts/socket-context";
 import { ClerkLocalizedProvider } from "./clerk-localized-provider";
 import CookieConsentBanner from "@/components/cookie-consent-banner";
+import NotificationsAutoEnabler from "@/components/notifications-auto-enabler";
 
 const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -34,6 +35,7 @@ const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
                   </div>
                 </div>
                 <CookieConsentBanner />
+                <NotificationsAutoEnabler />
               </ThemeProvider>
             </SocketProvider>
           </AuthProvider>
