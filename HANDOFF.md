@@ -4,6 +4,16 @@
 ## Sesión: CLAUDE.md
 Se creó `CLAUDE.md` con la estructura del proyecto, las rutas de los formularios de Crear Tour / Alquiler (entradas `/dashboard/products/add?type=/?edit=`, pasos de cada wizard) y las convenciones de validación implementadas en la sesión anterior, para evitar re-explorar en futuras sesiones.
 
+## Sesión: panel admin + fix de seguridad en backend
+- **Frontend**: el select "Filtrar por host" del panel admin (`admin-products-content.tsx`) ahora muestra solo el nombre de usuario (se quitó email y resumen por tipo; se eliminó `summarizeByType`).
+- **Backend (repo dantours-drizzle-nodejs, con permiso explícito del usuario)**: se cerró el hueco de autorización en productos:
+  - `updateProduct` (`src/controllers/product-controller.ts`): la propiedad ya NO se valida contra el `user_id` del body (cualquier host podía falsificarlo para editar productos ajenos). Ahora se compara contra el id de la sesión autenticada (`req.auth.userId`), y `user_id`/`userId` del body se eliminan de `updateData` (no se puede reasignar dueño). Los admin tienen bypass (rol validado por `requireRole`).
+  - `deleteProduct`: NO tenía validación de propiedad alguna (cualquier host podía borrar cualquier producto). Se agregó el mismo chequeo con bypass para admin.
+  - `role-validator.ts`: ahora adjunta `(req as any).userRoles` para que los controladores no repitan la llamada a Clerk.
+  - Efecto colateral positivo: el admin ya puede actualizar productos de otros hosts desde el formulario de edición (el pendiente "dejemos eso para después" quedó resuelto de paso; el dueño no se reasigna porque `user_id` se descarta).
+- **Hueco de creación (aplicado tras confirmación)**: `POST /api/v1/products` ahora tiene `requireAuth()` + `requireRole(['host', 'admin'])` en `product-routes.ts`, y `createProduct` (`product-controller.ts`) fuerza `user_id` = usuario autenticado (ignora el del body), cerrando la suplantación en creación. Verificado que el middleware del frontend ya restringe el dashboard a host/admin, así que ningún flujo legítimo se rompe.
+- Verificado: `npx tsc --noEmit` sin errores en ambos repos.
+
 ## Sesión: Validación frontend en formularios de Crear Tour y Alquiler de Vehículo
 
 ### Qué se hizo

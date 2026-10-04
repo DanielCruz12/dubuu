@@ -116,7 +116,8 @@
       "PowerShell(npx next lint --file src/components/ui/time-picker.tsx --file src/components/ui/slide-to-pay.tsx --file src/components/sections/checkout/checkout-form.tsx --file src/app/home/[slug]/[id]/page.tsx --file src/components/sections/rental-booking-form.tsx --file src/lib/vibration.ts 2>&1 | Select-Object -First 30)",
       "PowerShell(npx tsc --noEmit -p tsconfig.json 2>&1 | Select-Object -First 40; npx next lint --file src/components/ui/slide-to-pay.tsx 2>&1 | Select-Object -First 10)",
       "PowerShell(npx tsc --noEmit -p tsconfig.json 2>&1 | Select-Object -First 20; npx next lint --file src/components/activate-notifications.tsx 2>&1 | Select-Object -First 10)",
-      "PowerShell(npx tsc --noEmit -p tsconfig.json 2>&1 | Select-Object -First 20; npx next lint --file src/lib/push-notifications.ts --file src/components/notifications-auto-enabler.tsx --file src/components/activate-notifications.tsx --file src/components/providers/global-providers.tsx 2>&1 | Select-Object -First 10)"
+      "PowerShell(npx tsc --noEmit -p tsconfig.json 2>&1 | Select-Object -First 20; npx next lint --file src/lib/push-notifications.ts --file src/components/notifications-auto-enabler.tsx --file src/components/activate-notifications.tsx --file src/components/providers/global-providers.tsx 2>&1 | Select-Object -First 10)",
+      "Read(//c/Users/daniel/Desktop/projects/personal_work/projects/dantours-drizzle-nodejs/**)"
     ]
   }
 }

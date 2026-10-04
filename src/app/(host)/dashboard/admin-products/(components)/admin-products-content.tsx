@@ -19,23 +19,7 @@ import {
   useGetProductsByUserIdQuery,
 } from "@/redux/slices/product/product-slice";
 import { useLanguage } from "@/lib/i18n-context";
-import type { IProduct, ProductHostSummary } from "@/types/product";
-
-function summarizeByType(
-  host: ProductHostSummary,
-  t: (key: string) => string,
-): string {
-  const parts = Object.entries(host.byType).map(([type, count]) => {
-    const label =
-      type === "tour"
-        ? t("dashboard.adminProducts.typeTours")
-        : type === "rental"
-          ? t("dashboard.adminProducts.typeRental")
-          : type;
-    return `${count} ${label}`;
-  });
-  return parts.join(" · ");
-}
+import type { IProduct } from "@/types/product";
 
 export function AdminProductsContent() {
   const { t } = useLanguage();
@@ -105,8 +89,7 @@ export function AdminProductsContent() {
                   <SelectContent>
                     {hosts.map((host) => (
                       <SelectItem key={host.userId} value={host.userId}>
-                        {host.username} ({host.email}) —{" "}
-                        {summarizeByType(host, t)}
+                        {host.username}
                       </SelectItem>
                     ))}
                   </SelectContent>
