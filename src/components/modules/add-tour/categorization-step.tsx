@@ -21,7 +21,9 @@ import {
 
 import { type CategorizationFormValues, getCategorizationSchema } from "./types";
 import { focusFirstStepField, scrollToFirstError } from "./utils";
+import { FormErrorSummary } from "./form-error-summary";
 import { useLanguage } from "@/lib/i18n-context";
+import { cn } from "@/lib/utils";
 
 // Importar los hooks de RTK Query con las nuevas rutas
 import { useGetProductTypesQuery } from "@/redux/slices/product/product-types";
@@ -118,6 +120,8 @@ export function CategorizationStep({
 
   const form = useForm<CategorizationFormValues>({
     resolver: zodResolver(categorizationSchema),
+    mode: "onTouched",
+    reValidateMode: "onChange",
     defaultValues: {
       product_type_id: fixedProductTypeId || defaultValues?.product_type_id || "",
       product_category_id: defaultValues?.product_category_id || "",
@@ -158,7 +162,7 @@ export function CategorizationStep({
     },
     (errors) => {
       // Hacer scroll al primer error
-      scrollToFirstError(errors);
+      scrollToFirstError(errors, formRef.current);
     },
   );
 
@@ -198,23 +202,30 @@ export function CategorizationStep({
 
   return (
     <Form {...form}>
-      <form ref={formRef} className="space-y-6" onSubmit={handleSubmit}>
+      <form ref={formRef} className="space-y-6" onSubmit={handleSubmit} noValidate>
+        <FormErrorSummary />
         <div className="grid grid-cols-1 gap-4">
           <FormField
             control={form.control}
             name="target_product_audience_id"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel>{t("dashboard.addTour.categorization.targetAudience")}</FormLabel>
                 <FormControl>
-                  <SingleCombobox
-                    options={audienceOptions}
-                    value={field.value}
-                    onChange={field.onChange}
-                    placeholder={t("dashboard.addTour.categorization.targetAudiencePlaceholder")}
-                    emptyMessage={t("dashboard.addTour.categorization.targetAudienceEmpty")}
-                    className="w-full"
-                  />
+                  <span data-error-field={field.name} className="block">
+                    <SingleCombobox
+                      options={audienceOptions}
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder={t("dashboard.addTour.categorization.targetAudiencePlaceholder")}
+                      emptyMessage={t("dashboard.addTour.categorization.targetAudienceEmpty")}
+                      className={cn(
+                        "w-full",
+                        fieldState.error &&
+                          "border-red-500 dark:border-red-500 focus:border-red-500 dark:focus:border-red-500",
+                      )}
+                    />
+                  </span>
                 </FormControl>
                 <FormMessage className="text-xs text-red-500" />
               </FormItem>
@@ -224,18 +235,24 @@ export function CategorizationStep({
             <FormField
               control={form.control}
               name="product_type_id"
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>{t("dashboard.addTour.categorization.productType")}</FormLabel>
                   <FormControl>
-                    <SingleCombobox
-                      options={productTypeOptions}
-                      value={field.value}
-                      onChange={handleProductTypeChange}
-                      placeholder={t("dashboard.addTour.categorization.productTypePlaceholder")}
-                      emptyMessage={t("dashboard.addTour.categorization.productTypeEmpty")}
-                      className="w-full"
-                    />
+                    <span data-error-field={field.name} className="block">
+                      <SingleCombobox
+                        options={productTypeOptions}
+                        value={field.value}
+                        onChange={handleProductTypeChange}
+                        placeholder={t("dashboard.addTour.categorization.productTypePlaceholder")}
+                        emptyMessage={t("dashboard.addTour.categorization.productTypeEmpty")}
+                        className={cn(
+                          "w-full",
+                          fieldState.error &&
+                            "border-red-500 dark:border-red-500 focus:border-red-500 dark:focus:border-red-500",
+                        )}
+                      />
+                    </span>
                   </FormControl>
                   <FormMessage className="text-xs text-red-500" />
                 </FormItem>
@@ -246,23 +263,29 @@ export function CategorizationStep({
           <FormField
             control={form.control}
             name="product_category_id"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel>{t("dashboard.addTour.categorization.productCategory")}</FormLabel>
                 <FormControl>
-                  <SingleCombobox
-                    options={categoryOptions}
-                    value={field.value}
-                    onChange={handleCategoryChange}
-                    placeholder={
-                      selectedProductTypeId
-                        ? t("dashboard.addTour.categorization.productCategoryPlaceholder")
-                        : t("dashboard.addTour.categorization.selectCategoryFirst")
-                    }
-                    emptyMessage={t("dashboard.addTour.categorization.productCategoryEmpty")}
-                    className="w-full"
-                    disabled={!selectedProductTypeId}
-                  />
+                  <span data-error-field={field.name} className="block">
+                    <SingleCombobox
+                      options={categoryOptions}
+                      value={field.value}
+                      onChange={handleCategoryChange}
+                      placeholder={
+                        selectedProductTypeId
+                          ? t("dashboard.addTour.categorization.productCategoryPlaceholder")
+                          : t("dashboard.addTour.categorization.selectCategoryFirst")
+                      }
+                      emptyMessage={t("dashboard.addTour.categorization.productCategoryEmpty")}
+                      className={cn(
+                        "w-full",
+                        fieldState.error &&
+                          "border-red-500 dark:border-red-500 focus:border-red-500 dark:focus:border-red-500",
+                      )}
+                      disabled={!selectedProductTypeId}
+                    />
+                  </span>
                 </FormControl>
                 <FormMessage className="text-xs text-red-500" />
               </FormItem>
@@ -272,18 +295,24 @@ export function CategorizationStep({
           <FormField
             control={form.control}
             name="amenities"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel>{t("dashboard.addTour.categorization.amenities")}</FormLabel>
                 <FormControl>
-                  <MultiCombobox
-                    options={amenityOptions}
-                    value={field.value}
-                    onChange={field.onChange}
-                    placeholder={t("dashboard.addTour.categorization.amenitiesPlaceholder")}
-                    emptyMessage={t("dashboard.addTour.categorization.amenitiesEmpty")}
-                    className="w-full"
-                  />
+                  <span data-error-field={field.name} className="block">
+                    <MultiCombobox
+                      options={amenityOptions}
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder={t("dashboard.addTour.categorization.amenitiesPlaceholder")}
+                      emptyMessage={t("dashboard.addTour.categorization.amenitiesEmpty")}
+                      className={cn(
+                        "w-full",
+                        fieldState.error &&
+                          "border-red-500 dark:border-red-500 focus:border-red-500 dark:focus:border-red-500",
+                      )}
+                    />
+                  </span>
                 </FormControl>
                 <FormMessage className="text-xs text-red-500" />
               </FormItem>

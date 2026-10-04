@@ -4,39 +4,166 @@ import type {
   MultimediaFormValues,
   TourFiles,
 } from "../add-tour/types";
+import {
+  sanitizeText,
+  VALIDATION_LIMITS,
+  PLATE_REGEX,
+  VIN_REGEX,
+} from "../add-tour/validation";
 
 export type TFunction = (key: string) => string;
 
+/** Sanitiza (anti-inyección) y recorta el texto antes de validar longitudes. */
+function cleanText(t: TFunction) {
+  console.log(t);
+  return z
+    .string()
+    .trim()
+    .transform(sanitizeText);
+}
+
+function maxCharsMessage(t: TFunction, max: number): string {
+  return t("dashboard.addTour.validation.maxChars").replace(
+    "{{max}}",
+    String(max),
+  );
+}
+
+function maxValueMessage(t: TFunction, max: number): string {
+  return t("dashboard.addTour.validation.maxValue").replace(
+    "{{max}}",
+    String(max),
+  );
+}
+
 export function getRentalBasicSchema(t: TFunction) {
   return z.object({
-    name: z.string().min(5, { message: t("dashboard.addRental.basic.validation.nameMin") }),
-    description: z
-      .string()
-      .min(20, { message: t("dashboard.addRental.basic.validation.descriptionMin") }),
+    name: cleanText(t).pipe(
+      z
+        .string()
+        .min(5, { message: t("dashboard.addRental.basic.validation.nameMin") })
+        .max(VALIDATION_LIMITS.NAME_MAX, {
+          message: maxCharsMessage(t, VALIDATION_LIMITS.NAME_MAX),
+        }),
+    ),
+    description: cleanText(t).pipe(
+      z
+        .string()
+        .min(20, { message: t("dashboard.addRental.basic.validation.descriptionMin") })
+        .max(VALIDATION_LIMITS.DESCRIPTION_MAX, {
+          message: maxCharsMessage(t, VALIDATION_LIMITS.DESCRIPTION_MAX),
+        }),
+    ),
   });
 }
 
 export function getRentalVehicleSchema(t: TFunction) {
-  return z.object({
-    brand: z.string().min(1, { message: t("dashboard.addRental.vehicle.validation.brandMin") }),
-    model: z.string().min(1, { message: t("dashboard.addRental.vehicle.validation.modelMin") }),
-    year: z.coerce
-      .number()
-      .int()
-      .min(1900)
-      .max(new Date().getFullYear() + 1),
-    condition: z.enum(["new", "used", "refurbished"]),
-    fuel_type: z.enum(["gasoline", "diesel", "electric", "hybrid"]),
-    color: z.string().min(1, { message: t("dashboard.addRental.vehicle.validation.colorMin") }),
-    engine: z.string().min(1, { message: t("dashboard.addRental.vehicle.validation.engineMin") }),
-    transmission: z.enum(["automatic", "manual"]),
-    seating_capacity: z.coerce.number().int().min(1).max(50),
-    plate: z.string().optional().default(""),
-    vin: z.string().optional().default(""),
-    has_gps: z.boolean().default(false),
-    has_deposit: z.boolean().default(false),
-    deposit_amount: z.string().optional().default("0.00"),
-  });
+  return z
+    .object({
+      brand: cleanText(t).pipe(
+        z
+          .string()
+          .min(1, { message: t("dashboard.addRental.vehicle.validation.brandMin") })
+          .max(VALIDATION_LIMITS.BRAND_MODEL_MAX, {
+            message: maxCharsMessage(t, VALIDATION_LIMITS.BRAND_MODEL_MAX),
+          }),
+      ),
+      model: cleanText(t).pipe(
+        z
+          .string()
+          .min(1, { message: t("dashboard.addRental.vehicle.validation.modelMin") })
+          .max(VALIDATION_LIMITS.BRAND_MODEL_MAX, {
+            message: maxCharsMessage(t, VALIDATION_LIMITS.BRAND_MODEL_MAX),
+          }),
+      ),
+      year: z.coerce
+        .number()
+        .int({ message: t("dashboard.addTour.validation.integer") })
+        .min(VALIDATION_LIMITS.YEAR_MIN, {
+          message: t("dashboard.addTour.validation.minValue").replace(
+            "{{min}}",
+            String(VALIDATION_LIMITS.YEAR_MIN),
+          ),
+        })
+        .max(new Date().getFullYear() + 1, {
+          message: maxValueMessage(t, new Date().getFullYear() + 1),
+        }),
+      condition: z.enum(["new", "used", "refurbished"]),
+      fuel_type: z.enum(["gasoline", "diesel", "electric", "hybrid"]),
+      color: z.string().min(1, { message: t("dashboard.addRental.vehicle.validation.colorMin") }),
+      engine: cleanText(t).pipe(
+        z
+          .string()
+          .min(1, { message: t("dashboard.addRental.vehicle.validation.engineMin") })
+          .max(VALIDATION_LIMITS.ENGINE_MAX, {
+            message: maxCharsMessage(t, VALIDATION_LIMITS.ENGINE_MAX),
+          }),
+      ),
+      transmission: z.enum(["automatic", "manual"]),
+      seating_capacity: z.coerce
+        .number()
+        .int({ message: t("dashboard.addTour.validation.integer") })
+        .min(1, {
+          message: t("dashboard.addTour.validation.minValue").replace(
+            "{{min}}",
+            "1",
+          ),
+        })
+        .max(VALIDATION_LIMITS.SEATING_MAX, {
+          message: maxValueMessage(t, VALIDATION_LIMITS.SEATING_MAX),
+        }),
+      plate: z
+        .string()
+        .trim()
+        .optional()
+        .default("")
+        .pipe(
+          z
+            .string()
+            .max(VALIDATION_LIMITS.PLATE_MAX, {
+              message: maxCharsMessage(t, VALIDATION_LIMITS.PLATE_MAX),
+            })
+            .regex(PLATE_REGEX, {
+              message: t("dashboard.addTour.validation.invalidChars"),
+            }),
+        ),
+      vin: z
+        .string()
+        .trim()
+        .optional()
+        .default("")
+        .pipe(
+          z
+            .string()
+            .max(VALIDATION_LIMITS.VIN_MAX, {
+              message: maxCharsMessage(t, VALIDATION_LIMITS.VIN_MAX),
+            })
+            .regex(VIN_REGEX, {
+              message: t("dashboard.addTour.validation.invalidChars"),
+            }),
+        ),
+      has_gps: z.boolean().default(false),
+      has_deposit: z.boolean().default(false),
+      deposit_amount: z.string().trim().optional().default("0.00"),
+    })
+    .superRefine((data, ctx) => {
+      if (data.has_deposit) {
+        const raw = String(data.deposit_amount ?? "");
+        if (!/^\d+(\.\d{1,2})?$/.test(raw)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t("dashboard.addRental.vehicle.validation.depositInvalid"),
+            path: ["deposit_amount"],
+          });
+        } else if (Number(raw) > VALIDATION_LIMITS.DEPOSIT_MAX) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: maxValueMessage(t, VALIDATION_LIMITS.DEPOSIT_MAX),
+            path: ["deposit_amount"],
+          });
+        }
+      }
+    });
 }
 
 export function getRentalDeliverySchema(t: TFunction) {
@@ -45,7 +172,17 @@ export function getRentalDeliverySchema(t: TFunction) {
       lat: z.number(),
       lng: z.number(),
     }),
-    radius_km: z.coerce.number().min(1),
+    radius_km: z.coerce
+      .number()
+      .min(1, {
+        message: t("dashboard.addTour.validation.minValue").replace(
+          "{{min}}",
+          "1",
+        ),
+      })
+      .max(VALIDATION_LIMITS.RADIUS_KM_MAX, {
+        message: maxValueMessage(t, VALIDATION_LIMITS.RADIUS_KM_MAX),
+      }),
   });
 
   return z
@@ -68,7 +205,17 @@ export function getRentalDeliverySchema(t: TFunction) {
       coverage_departments: z.array(z.string()).default([]),
 
       /** Tarifa por km (opcional, por defecto 0). */
-      fee_per_km: z.string(),
+      fee_per_km: z
+        .string()
+        .transform((v) => v.trim())
+        .refine(
+          (v) => /^\d+(\.\d{1,2})?$/.test(v),
+          t("dashboard.addRental.terms.validation.feePerKmInvalid"),
+        )
+        .refine(
+          (v) => Number(v) <= VALIDATION_LIMITS.FEE_PER_KM_MAX,
+          maxValueMessage(t, VALIDATION_LIMITS.FEE_PER_KM_MAX),
+        ),
 
       /**
        * Campo legado que sigue esperando el backend hoy.

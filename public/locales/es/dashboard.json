@@ -225,7 +225,8 @@
         "brandMin": "La marca es obligatoria.",
         "modelMin": "El modelo es obligatorio.",
         "colorMin": "El color es obligatorio.",
-        "engineMin": "El motor es obligatorio."
+        "engineMin": "El motor es obligatorio.",
+        "depositInvalid": "Ingresa un monto de depósito válido (solo números)."
       }
     },
     "terms": {
@@ -245,6 +246,7 @@
         "deliveryDistancePositive": "Indica una distancia mayor a cero si ofreces entrega.",
         "deliveryFeesRequired": "Indica tarifa base y por km si ofreces entrega.",
         "feePerKmRequired": "Indica la tarifa por km si ofreces entrega.",
+        "feePerKmInvalid": "Ingresa una tarifa por km válida (solo números).",
         "dateRange": "La fecha final debe ser igual o posterior a la inicial."
       }
     },
@@ -655,6 +657,19 @@
   },
   "addTour": {
     "progress": "Paso {{step}} de {{total}}",
+    "validation": {
+      "numericOnly": "Solo se admiten números.",
+      "numericCharBlocked": "Solo se admiten números. El carácter {{char}} no está permitido.",
+      "textCharBlocked": "El carácter {{char}} no está permitido en este campo.",
+      "invalidChars": "Este campo solo admite letras, números y guiones.",
+      "errorsTitle": "Corrige los siguientes errores para continuar:",
+      "maxChars": "No puede superar {{max}} caracteres.",
+      "maxValue": "El valor no puede superar {{max}}.",
+      "maxDecimals": "Se admiten como máximo 2 decimales.",
+      "pastDates": "No se permiten fechas pasadas.",
+      "itemMin": "Cada elemento debe tener al menos {{min}} caracteres.",
+      "integer": "Debe ser un número entero."
+    },
     "steps": {
       "basicInfo": {
         "title": "Información básica",

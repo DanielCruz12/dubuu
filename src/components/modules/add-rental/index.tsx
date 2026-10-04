@@ -338,6 +338,8 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
 
   // El borrador se restaura una sola vez, cuando Clerk ya expuso el userId.
   const draftRestoredRef = useRef(false);
+  // Guard síncrono contra doble envío (isSaving llega un render después).
+  const submitInFlightRef = useRef(false);
 
   // Restaurar borrador al montar (solo cliente; no en modo edición).
   // La clave es por usuario y tipo de producto; espera a que Clerk cargue el userId.
@@ -400,18 +402,22 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
     data: MultimediaFormValues,
     uploadedFiles: TourFiles,
   ) => {
-    setMultimedia(data);
-    const formPayload: RentalData = {
-      basic: basic!,
-      vehicle: vehicle!,
-      delivery: delivery!,
-      availabilitySnapshot,
-      categorization: categorization!,
-      multimedia: data,
-      files: uploadedFiles,
-    };
+    // Evitar doble envío: el guard es síncrono (isSaving tarda un render en reflejarse).
+    if (submitInFlightRef.current || isSaving) return;
+    submitInFlightRef.current = true;
 
     try {
+      setMultimedia(data);
+      const formPayload: RentalData = {
+        basic: basic!,
+        vehicle: vehicle!,
+        delivery: delivery!,
+        availabilitySnapshot,
+        categorization: categorization!,
+        multimedia: data,
+        files: uploadedFiles,
+      };
+
       const apiFormData = createRentalFormData(formPayload, userId, {
         isEditMode: Boolean(editProductId),
       });
@@ -440,6 +446,8 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
             : t("dashboard.addRental.toast.errorDescription"),
         },
       );
+    } finally {
+      submitInFlightRef.current = false;
     }
   };
 

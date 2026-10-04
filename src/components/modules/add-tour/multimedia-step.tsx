@@ -30,9 +30,20 @@ import {
   type TourFiles,
 } from "./types";
 import { focusFirstStepField, scrollToFirstError, validateFiles } from "./utils";
+import {
+  filterDecimalChars,
+  findBlockedChar,
+  handleFilteredChange,
+  handleFilteredKeyDown,
+  handleFilteredPaste,
+  numericBlockedMessage,
+  fieldBorderClass,
+} from "./validation";
+import { FormErrorSummary } from "./form-error-summary";
 import Image from "next/image";
 import { getHostEarningsFromFinalPrice } from "@/lib/price";
 import { useLanguage } from "@/lib/i18n-context";
+import { cn } from "@/lib/utils";
 // getCommissionRates comentado: solo se usaba para mostrar % en el desglose
 
 // Límites de subida (el usuario no puede subir por encima de esto)
@@ -131,12 +142,24 @@ export function MultimediaStep({
 
   const form = useForm<MultimediaFormValues>({
     resolver: zodResolver(multimediaSchema),
+    mode: "onTouched",
+    reValidateMode: "onChange",
     defaultValues: {
       price: defaultValues?.price || undefined,
       accepts_children: defaultValues?.accepts_children ?? false,
       children_price: defaultValues?.children_price ?? null,
     },
   });
+
+  const reportNumericBlocked = (name: "price" | "children_price") => (
+    char: string,
+  ) => {
+    form.setError(
+      name,
+      { type: "manual", message: numericBlockedMessage(t, char) },
+      { shouldFocus: false },
+    );
+  };
 
   const internalFormRef = useRef<HTMLFormElement>(null);
   const formRef = externalFormRef ?? internalFormRef;
@@ -381,13 +404,14 @@ export function MultimediaStep({
     },
     (errors) => {
       // Hacer scroll al primer error
-      scrollToFirstError(errors);
+      scrollToFirstError(errors, formRef.current);
     },
   );
 
   return (
     <Form {...form}>
-      <form ref={formRef} className="space-y-6" onSubmit={handleSubmit}>
+      <form ref={formRef} className="space-y-6" onSubmit={handleSubmit} noValidate>
+        <FormErrorSummary />
         <div className="grid grid-cols-1 gap-4">
           <div className="space-y-2">
             <Label htmlFor="banner">{t("dashboard.addTour.multimedia.bannerLabel")}</Label>
@@ -721,7 +745,7 @@ export function MultimediaStep({
           <FormField
             control={form.control}
             name="price"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel>
                   {priceLabelOverride ?? t("dashboard.addTour.multimedia.priceLabel")}
@@ -729,10 +753,37 @@ export function MultimediaStep({
                 <FormControl>
                   <Input
                     {...field}
-                    type="number"
-                    step="0.01"
+                    type="text"
+                    inputMode="decimal"
+                    autoComplete="off"
+                    onChange={(e) =>
+                      handleFilteredChange(
+                        e,
+                        filterDecimalChars,
+                        field.onChange,
+                        reportNumericBlocked("price"),
+                      )
+                    }
+                    onKeyDown={(e) =>
+                      handleFilteredKeyDown(
+                        e,
+                        filterDecimalChars,
+                        reportNumericBlocked("price"),
+                      )
+                    }
+                    onPaste={(e) =>
+                      handleFilteredPaste(
+                        e,
+                        filterDecimalChars,
+                        (v) => field.onChange(v),
+                        reportNumericBlocked("price"),
+                      )
+                    }
                     placeholder={t("dashboard.addTour.multimedia.pricePlaceholder")}
-                    className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white "
+                    className={cn(
+                      "focus:ring-0",
+                      fieldBorderClass(fieldState.error),
+                    )}
                   />
                 </FormControl>
                 <FormMessage className="text-xs text-red-500" />
@@ -772,7 +823,7 @@ export function MultimediaStep({
                 <FormField
                   control={form.control}
                   name="children_price"
-                  render={({ field }) => (
+                  render={({ field, fieldState }) => (
                     <FormItem>
                       <FormLabel>
                         {t("dashboard.addTour.multimedia.childrenPriceLabel")}
@@ -780,15 +831,51 @@ export function MultimediaStep({
                       <FormControl>
                         <Input
                           {...field}
-                          type="number"
-                          step="0.01"
+                          type="text"
+                          inputMode="decimal"
+                          autoComplete="off"
                           value={field.value ?? ""}
                           onChange={(e) => {
-                            const v = e.target.value;
-                            field.onChange(v === "" ? null : parseFloat(v));
+                            const raw = e.target.value;
+                            const cleaned = filterDecimalChars(raw);
+                            if (cleaned !== raw) {
+                              e.target.value = cleaned;
+                              form.setError(
+                                "children_price",
+                                {
+                                  type: "manual",
+                                  message: numericBlockedMessage(
+                                    t,
+                                    findBlockedChar(raw, cleaned),
+                                  ),
+                                },
+                                { shouldFocus: false },
+                              );
+                            }
+                            field.onChange(
+                              cleaned === "" ? null : parseFloat(cleaned),
+                            );
                           }}
+                          onKeyDown={(e) =>
+                            handleFilteredKeyDown(
+                              e,
+                              filterDecimalChars,
+                              reportNumericBlocked("children_price"),
+                            )
+                          }
+                          onPaste={(e) =>
+                            handleFilteredPaste(
+                              e,
+                              filterDecimalChars,
+                              (v) => field.onChange(v === "" ? null : parseFloat(v)),
+                              reportNumericBlocked("children_price"),
+                            )
+                          }
                           placeholder={t("dashboard.addTour.multimedia.childrenPricePlaceholder")}
-                          className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
+                          className={cn(
+                            "focus:ring-0",
+                            fieldBorderClass(fieldState.error),
+                          )}
                         />
                       </FormControl>
                       <FormMessage className="text-xs text-red-500" />

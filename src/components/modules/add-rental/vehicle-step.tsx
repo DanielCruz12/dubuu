@@ -23,7 +23,23 @@ import {
 
 import { type RentalVehicleFormValues, getRentalVehicleSchema } from "./types";
 import { focusFirstStepField, scrollToFirstError } from "../add-tour/utils";
+import {
+  filterIntegerChars,
+  filterDecimalChars,
+  filterSafeText,
+  filterPlateChars,
+  filterVinChars,
+  handleFilteredChange,
+  handleFilteredKeyDown,
+  handleFilteredPaste,
+  numericBlockedMessage,
+  textBlockedMessage,
+  fieldBorderClass,
+  VALIDATION_LIMITS,
+} from "../add-tour/validation";
+import { FormErrorSummary } from "../add-tour/form-error-summary";
 import { useLanguage } from "@/lib/i18n-context";
+import { cn } from "@/lib/utils";
 
 interface RentalVehicleStepProps {
   onSubmit: (data: RentalVehicleFormValues) => void;
@@ -37,6 +53,8 @@ export function RentalVehicleStep({ onSubmit, defaultValues }: RentalVehicleStep
 
   const form = useForm<RentalVehicleFormValues>({
     resolver: zodResolver(schema),
+    mode: "onTouched",
+    reValidateMode: "onChange",
     defaultValues: {
       brand: defaultValues?.brand ?? "",
       model: defaultValues?.model ?? "",
@@ -59,23 +77,73 @@ export function RentalVehicleStep({ onSubmit, defaultValues }: RentalVehicleStep
     focusFirstStepField(formRef.current, { delayMs: 100 });
   }, [defaultValues?.brand]);
 
+  // Avisa con un error puntual cuando se bloquea un carácter al escribir/pegar.
+  const reportTextBlocked =
+    (name: keyof RentalVehicleFormValues) => (char: string) => {
+      form.setError(
+        name,
+        { type: "manual", message: textBlockedMessage(t, char) },
+        { shouldFocus: false },
+      );
+    };
+  const reportNumericBlocked =
+    (name: keyof RentalVehicleFormValues) => (char: string) => {
+      form.setError(
+        name,
+        { type: "manual", message: numericBlockedMessage(t, char) },
+        { shouldFocus: false },
+      );
+    };
+
   const handleSubmit = form.handleSubmit(
     (data) => onSubmit(data),
-    (errors) => scrollToFirstError(errors),
+    (errors) => scrollToFirstError(errors, formRef.current),
   );
 
   return (
     <Form {...form}>
-      <form ref={formRef} className="space-y-4" onSubmit={handleSubmit}>
+      <form ref={formRef} className="space-y-4" onSubmit={handleSubmit} noValidate>
+        <FormErrorSummary />
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <FormField
             control={form.control}
             name="brand"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem className="col-span-2 md:col-span-1">
                 <FormLabel>{t("dashboard.addRental.vehicle.brand")}</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder={t("dashboard.addRental.vehicle.brandPlaceholder")} />
+                  <Input
+                    {...field}
+                    maxLength={VALIDATION_LIMITS.BRAND_MODEL_MAX}
+                    onChange={(e) =>
+                      handleFilteredChange(
+                        e,
+                        filterSafeText,
+                        field.onChange,
+                        reportTextBlocked("brand"),
+                      )
+                    }
+                    onKeyDown={(e) =>
+                      handleFilteredKeyDown(
+                        e,
+                        filterSafeText,
+                        reportTextBlocked("brand"),
+                      )
+                    }
+                    onPaste={(e) =>
+                      handleFilteredPaste(
+                        e,
+                        filterSafeText,
+                        (v) => field.onChange(v),
+                        reportTextBlocked("brand"),
+                      )
+                    }
+                    placeholder={t("dashboard.addRental.vehicle.brandPlaceholder")}
+                    className={cn(
+                      "focus:ring-0",
+                      fieldBorderClass(fieldState.error),
+                    )}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -84,11 +152,42 @@ export function RentalVehicleStep({ onSubmit, defaultValues }: RentalVehicleStep
           <FormField
             control={form.control}
             name="model"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel>{t("dashboard.addRental.vehicle.model")}</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder={t("dashboard.addRental.vehicle.modelPlaceholder")} />
+                  <Input
+                    {...field}
+                    maxLength={VALIDATION_LIMITS.BRAND_MODEL_MAX}
+                    onChange={(e) =>
+                      handleFilteredChange(
+                        e,
+                        filterSafeText,
+                        field.onChange,
+                        reportTextBlocked("model"),
+                      )
+                    }
+                    onKeyDown={(e) =>
+                      handleFilteredKeyDown(
+                        e,
+                        filterSafeText,
+                        reportTextBlocked("model"),
+                      )
+                    }
+                    onPaste={(e) =>
+                      handleFilteredPaste(
+                        e,
+                        filterSafeText,
+                        (v) => field.onChange(v),
+                        reportTextBlocked("model"),
+                      )
+                    }
+                    placeholder={t("dashboard.addRental.vehicle.modelPlaceholder")}
+                    className={cn(
+                      "focus:ring-0",
+                      fieldBorderClass(fieldState.error),
+                    )}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -97,12 +196,18 @@ export function RentalVehicleStep({ onSubmit, defaultValues }: RentalVehicleStep
           <FormField
             control={form.control}
             name="color"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel>{t("dashboard.addRental.vehicle.color")}</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger
+                      data-error-field={field.name}
+                      className={cn(
+                        "focus:ring-0",
+                        fieldBorderClass(fieldState.error),
+                      )}
+                    >
                       <SelectValue />
                     </SelectTrigger>
                   </FormControl>
@@ -135,12 +240,18 @@ export function RentalVehicleStep({ onSubmit, defaultValues }: RentalVehicleStep
           <FormField
             control={form.control}
             name="condition"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem className="col-span-2 md:col-span-1">
                 <FormLabel>{t("dashboard.addRental.vehicle.condition")}</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger
+                      data-error-field={field.name}
+                      className={cn(
+                        "focus:ring-0",
+                        fieldBorderClass(fieldState.error),
+                      )}
+                    >
                       <SelectValue />
                     </SelectTrigger>
                   </FormControl>
@@ -159,12 +270,18 @@ export function RentalVehicleStep({ onSubmit, defaultValues }: RentalVehicleStep
           <FormField
             control={form.control}
             name="transmission"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel>{t("dashboard.addRental.vehicle.transmission")}</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger
+                      data-error-field={field.name}
+                      className={cn(
+                        "focus:ring-0",
+                        fieldBorderClass(fieldState.error),
+                      )}
+                    >
                       <SelectValue />
                     </SelectTrigger>
                   </FormControl>
@@ -182,12 +299,18 @@ export function RentalVehicleStep({ onSubmit, defaultValues }: RentalVehicleStep
           <FormField
             control={form.control}
             name="fuel_type"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel>{t("dashboard.addRental.vehicle.fuel")}</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger
+                      data-error-field={field.name}
+                      className={cn(
+                        "focus:ring-0",
+                        fieldBorderClass(fieldState.error),
+                      )}
+                    >
                       <SelectValue />
                     </SelectTrigger>
                   </FormControl>
@@ -208,11 +331,42 @@ export function RentalVehicleStep({ onSubmit, defaultValues }: RentalVehicleStep
           <FormField
             control={form.control}
             name="year"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem className="col-span-2 md:col-span-1">
                 <FormLabel>{t("dashboard.addRental.vehicle.year")}</FormLabel>
                 <FormControl>
-                  <Input {...field} type="number" />
+                  <Input
+                    {...field}
+                    type="text"
+                    inputMode="numeric"
+                    onChange={(e) =>
+                      handleFilteredChange(
+                        e,
+                        filterIntegerChars,
+                        field.onChange,
+                        reportNumericBlocked("year"),
+                      )
+                    }
+                    onKeyDown={(e) =>
+                      handleFilteredKeyDown(
+                        e,
+                        filterIntegerChars,
+                        reportNumericBlocked("year"),
+                      )
+                    }
+                    onPaste={(e) =>
+                      handleFilteredPaste(
+                        e,
+                        filterIntegerChars,
+                        (v) => field.onChange(v),
+                        reportNumericBlocked("year"),
+                      )
+                    }
+                    className={cn(
+                      "focus:ring-0",
+                      fieldBorderClass(fieldState.error),
+                    )}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -221,11 +375,42 @@ export function RentalVehicleStep({ onSubmit, defaultValues }: RentalVehicleStep
           <FormField
             control={form.control}
             name="seating_capacity"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel>{t("dashboard.addRental.vehicle.seats")}</FormLabel>
                 <FormControl>
-                  <Input {...field} type="number" />
+                  <Input
+                    {...field}
+                    type="text"
+                    inputMode="numeric"
+                    onChange={(e) =>
+                      handleFilteredChange(
+                        e,
+                        filterIntegerChars,
+                        field.onChange,
+                        reportNumericBlocked("seating_capacity"),
+                      )
+                    }
+                    onKeyDown={(e) =>
+                      handleFilteredKeyDown(
+                        e,
+                        filterIntegerChars,
+                        reportNumericBlocked("seating_capacity"),
+                      )
+                    }
+                    onPaste={(e) =>
+                      handleFilteredPaste(
+                        e,
+                        filterIntegerChars,
+                        (v) => field.onChange(v),
+                        reportNumericBlocked("seating_capacity"),
+                      )
+                    }
+                    className={cn(
+                      "focus:ring-0",
+                      fieldBorderClass(fieldState.error),
+                    )}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -234,11 +419,42 @@ export function RentalVehicleStep({ onSubmit, defaultValues }: RentalVehicleStep
           <FormField
             control={form.control}
             name="engine"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel>{t("dashboard.addRental.vehicle.engine")}</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder={t("dashboard.addRental.vehicle.enginePlaceholder")} />
+                  <Input
+                    {...field}
+                    maxLength={VALIDATION_LIMITS.ENGINE_MAX}
+                    onChange={(e) =>
+                      handleFilteredChange(
+                        e,
+                        filterSafeText,
+                        field.onChange,
+                        reportTextBlocked("engine"),
+                      )
+                    }
+                    onKeyDown={(e) =>
+                      handleFilteredKeyDown(
+                        e,
+                        filterSafeText,
+                        reportTextBlocked("engine"),
+                      )
+                    }
+                    onPaste={(e) =>
+                      handleFilteredPaste(
+                        e,
+                        filterSafeText,
+                        (v) => field.onChange(v),
+                        reportTextBlocked("engine"),
+                      )
+                    }
+                    placeholder={t("dashboard.addRental.vehicle.enginePlaceholder")}
+                    className={cn(
+                      "focus:ring-0",
+                      fieldBorderClass(fieldState.error),
+                    )}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -250,11 +466,42 @@ export function RentalVehicleStep({ onSubmit, defaultValues }: RentalVehicleStep
           <FormField
             control={form.control}
             name="plate"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel>{t("dashboard.addRental.vehicle.plate")}</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder={t("dashboard.addRental.vehicle.platePlaceholder")} />
+                  <Input
+                    {...field}
+                    maxLength={VALIDATION_LIMITS.PLATE_MAX}
+                    onChange={(e) =>
+                      handleFilteredChange(
+                        e,
+                        filterPlateChars,
+                        field.onChange,
+                        reportTextBlocked("plate"),
+                      )
+                    }
+                    onKeyDown={(e) =>
+                      handleFilteredKeyDown(
+                        e,
+                        filterPlateChars,
+                        reportTextBlocked("plate"),
+                      )
+                    }
+                    onPaste={(e) =>
+                      handleFilteredPaste(
+                        e,
+                        filterPlateChars,
+                        (v) => field.onChange(v),
+                        reportTextBlocked("plate"),
+                      )
+                    }
+                    placeholder={t("dashboard.addRental.vehicle.platePlaceholder")}
+                    className={cn(
+                      "focus:ring-0",
+                      fieldBorderClass(fieldState.error),
+                    )}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -263,11 +510,42 @@ export function RentalVehicleStep({ onSubmit, defaultValues }: RentalVehicleStep
           <FormField
             control={form.control}
             name="vin"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel>{t("dashboard.addRental.vehicle.vin")}</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder={t("dashboard.addRental.vehicle.vinPlaceholder")} />
+                  <Input
+                    {...field}
+                    maxLength={VALIDATION_LIMITS.VIN_MAX}
+                    onChange={(e) =>
+                      handleFilteredChange(
+                        e,
+                        filterVinChars,
+                        field.onChange,
+                        reportTextBlocked("vin"),
+                      )
+                    }
+                    onKeyDown={(e) =>
+                      handleFilteredKeyDown(
+                        e,
+                        filterVinChars,
+                        reportTextBlocked("vin"),
+                      )
+                    }
+                    onPaste={(e) =>
+                      handleFilteredPaste(
+                        e,
+                        filterVinChars,
+                        (v) => field.onChange(v),
+                        reportTextBlocked("vin"),
+                      )
+                    }
+                    placeholder={t("dashboard.addRental.vehicle.vinPlaceholder")}
+                    className={cn(
+                      "focus:ring-0",
+                      fieldBorderClass(fieldState.error),
+                    )}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -320,11 +598,44 @@ export function RentalVehicleStep({ onSubmit, defaultValues }: RentalVehicleStep
             <FormField
               control={form.control}
               name="deposit_amount"
-              render={({ field }) => (
+              render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel>{t("dashboard.addRental.vehicle.depositAmount")}</FormLabel>
                   <FormControl>
-                    <Input {...field} type="number" step="0.01" min="0" placeholder="200.00" />
+                    <Input
+                      {...field}
+                      type="text"
+                      inputMode="decimal"
+                      autoComplete="off"
+                      onChange={(e) =>
+                        handleFilteredChange(
+                          e,
+                          filterDecimalChars,
+                          field.onChange,
+                          reportNumericBlocked("deposit_amount"),
+                        )
+                      }
+                      onKeyDown={(e) =>
+                        handleFilteredKeyDown(
+                          e,
+                          filterDecimalChars,
+                          reportNumericBlocked("deposit_amount"),
+                        )
+                      }
+                      onPaste={(e) =>
+                        handleFilteredPaste(
+                          e,
+                          filterDecimalChars,
+                          (v) => field.onChange(v),
+                          reportNumericBlocked("deposit_amount"),
+                        )
+                      }
+                      placeholder="200.00"
+                      className={cn(
+                        "focus:ring-0",
+                        fieldBorderClass(fieldState.error),
+                      )}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

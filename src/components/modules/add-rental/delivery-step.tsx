@@ -28,11 +28,21 @@ import {
 
 import { type RentalDeliveryFormValues, getRentalDeliverySchema } from "./types";
 import { focusFirstStepField, scrollToFirstError } from "../add-tour/utils";
+import {
+  filterDecimalChars,
+  handleFilteredChange,
+  handleFilteredKeyDown,
+  handleFilteredPaste,
+  numericBlockedMessage,
+  fieldBorderClass,
+} from "../add-tour/validation";
+import { FormErrorSummary } from "../add-tour/form-error-summary";
 import { useLanguage } from "@/lib/i18n-context";
 import { getCountrySelectOptions } from "@/lib/country-options";
 import { MultiCombobox } from "@/components/ui/combobox";
 import { countries } from "@/utils/data";
 import RadiusLocationPicker from "@/components/radius-location-picker";
+import { cn } from "@/lib/utils";
 
 interface RentalDeliveryStepProps {
   onSubmit: (data: RentalDeliveryFormValues) => void;
@@ -48,6 +58,8 @@ export function RentalDeliveryStep({ onSubmit, defaultValues }: RentalDeliverySt
 
   const form = useForm<RentalDeliveryFormValues>({
     resolver: zodResolver(schema),
+    mode: "onTouched",
+    reValidateMode: "onChange",
     defaultValues: {
       country: defaultValues?.country ?? "SV",
       delivery_mode: defaultValues?.delivery_mode ?? "specific_areas",
@@ -66,6 +78,14 @@ export function RentalDeliveryStep({ onSubmit, defaultValues }: RentalDeliverySt
       max_delivery_distance_km: defaultValues?.max_delivery_distance_km ?? 0,
     },
   });
+
+  const reportNumericBlocked = (name: "fee_per_km") => (char: string) => {
+    form.setError(
+      name,
+      { type: "manual", message: numericBlockedMessage(t, char) },
+      { shouldFocus: false },
+    );
+  };
 
   const deliveryMode = form.watch("delivery_mode");
   const selectedCountry = form.watch("country");
@@ -104,22 +124,29 @@ export function RentalDeliveryStep({ onSubmit, defaultValues }: RentalDeliverySt
         max_delivery_distance_km: derivedMaxKm,
       });
     },
-    (errors) => scrollToFirstError(errors),
+    (errors) => scrollToFirstError(errors, formRef.current),
   );
 
   return (
     <Form {...form}>
-      <form ref={formRef} className="space-y-6" onSubmit={handleSubmit}>
+      <form ref={formRef} className="space-y-6" onSubmit={handleSubmit} noValidate>
+        <FormErrorSummary />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}
             name="country"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem className="md:col-span-2">
                 <FormLabel>{t("dashboard.addRental.basic.country")}</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger
+                      data-error-field={field.name}
+                      className={cn(
+                        "focus:ring-0",
+                        fieldBorderClass(fieldState.error),
+                      )}
+                    >
                       <SelectValue placeholder={t("dashboard.addRental.basic.countryPlaceholder")} />
                     </SelectTrigger>
                   </FormControl>
@@ -139,11 +166,43 @@ export function RentalDeliveryStep({ onSubmit, defaultValues }: RentalDeliverySt
           <FormField
             control={form.control}
             name="fee_per_km"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem className="md:col-span-2">
                 <FormLabel>{t("dashboard.addRental.terms.feePerKm")}</FormLabel>
                 <FormControl>
-                  <Input {...field} inputMode="decimal" />
+                  <Input
+                    {...field}
+                    type="text"
+                    inputMode="decimal"
+                    autoComplete="off"
+                    onChange={(e) =>
+                      handleFilteredChange(
+                        e,
+                        filterDecimalChars,
+                        field.onChange,
+                        reportNumericBlocked("fee_per_km"),
+                      )
+                    }
+                    onKeyDown={(e) =>
+                      handleFilteredKeyDown(
+                        e,
+                        filterDecimalChars,
+                        reportNumericBlocked("fee_per_km"),
+                      )
+                    }
+                    onPaste={(e) =>
+                      handleFilteredPaste(
+                        e,
+                        filterDecimalChars,
+                        (v) => field.onChange(v),
+                        reportNumericBlocked("fee_per_km"),
+                      )
+                    }
+                    className={cn(
+                      "focus:ring-0",
+                      fieldBorderClass(fieldState.error),
+                    )}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

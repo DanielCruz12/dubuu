@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 
 import { type LocationFormValues, getLocationSchema, type Location } from "./types";
 import { focusFirstStepField, scrollToFirstError } from "./utils";
+import { FormErrorSummary } from "./form-error-summary";
 import LocationPicker from "@/components/location-picker";
 import { useLanguage } from "@/lib/i18n-context";
 
@@ -55,6 +56,8 @@ export function LocationStep({
 
   const form = useForm<LocationFormValues>({
     resolver: zodResolver(locationSchema),
+    mode: "onTouched",
+    reValidateMode: "onChange",
     defaultValues: {
       lat: initialLat,
       lng: initialLng,
@@ -75,7 +78,7 @@ export function LocationStep({
       onSubmit(data);
     },
     (errors) => {
-      scrollToFirstError(errors);
+      scrollToFirstError(errors, formRef.current);
     },
   );
 
@@ -85,7 +88,8 @@ export function LocationStep({
 
   return (
     <Form {...form}>
-      <form ref={formRef} className="space-y-4" onSubmit={handleSubmit}>
+      <form ref={formRef} className="space-y-4" onSubmit={handleSubmit} noValidate>
+        <FormErrorSummary />
         <div className="grid grid-cols-1 gap-4">
           <FormField
             control={form.control}

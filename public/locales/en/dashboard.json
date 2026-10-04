@@ -225,7 +225,8 @@
         "brandMin": "Brand is required.",
         "modelMin": "Model is required.",
         "colorMin": "Color is required.",
-        "engineMin": "Engine is required."
+        "engineMin": "Engine is required.",
+        "depositInvalid": "Enter a valid deposit amount (numbers only)."
       }
     },
     "terms": {
@@ -245,6 +246,7 @@
         "deliveryDistancePositive": "Enter a distance greater than zero when delivery is enabled.",
         "deliveryFeesRequired": "Enter base fee and per-km fee when delivery is enabled.",
         "feePerKmRequired": "Enter the per-km fee when delivery is enabled.",
+        "feePerKmInvalid": "Enter a valid per-km fee (numbers only).",
         "dateRange": "End date must be on or after start date."
       }
     },
@@ -655,6 +657,19 @@
   },
   "addTour": {
     "progress": "Step {{step}} of {{total}}",
+    "validation": {
+      "numericOnly": "Only numbers are allowed.",
+      "numericCharBlocked": "Only numbers are allowed. The character {{char}} is not permitted.",
+      "textCharBlocked": "The character {{char}} is not allowed in this field.",
+      "invalidChars": "This field only accepts letters, numbers and hyphens.",
+      "errorsTitle": "Fix the following errors to continue:",
+      "maxChars": "Must not exceed {{max}} characters.",
+      "maxValue": "The value must not exceed {{max}}.",
+      "maxDecimals": "A maximum of 2 decimal places is allowed.",
+      "pastDates": "Past dates are not allowed.",
+      "itemMin": "Each item must have at least {{min}} characters.",
+      "integer": "Must be a whole number."
+    },
     "steps": {
       "basicInfo": {
         "title": "Basic information",

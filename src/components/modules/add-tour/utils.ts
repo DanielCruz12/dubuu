@@ -437,15 +437,63 @@ export function focusFirstStepField(
 
 // Función para hacer scroll al primer error
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const scrollToFirstError = (errors: Record<string, any>) => {
-  if (Object.keys(errors).length > 0) {
-    const firstErrorKey = Object.keys(errors)[0];
-    const element = document.querySelector(
-      `[name="${firstErrorKey}"], [id="${firstErrorKey}"]`
-    );
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "center" });
+
+/**
+ * Busca el elemento visible asociado a un campo de error (por name de RHF
+ * o por el atributo data-error-field) dentro de root (o todo el documento).
+ */
+function findErrorFieldTarget(
+  root: HTMLElement | null,
+  key: string,
+): HTMLElement | null {
+  const searchRoot: ParentNode = root ?? document;
+  const named = searchRoot.querySelector<HTMLElement>(`[name="${key}"]`);
+  if (named && isVisibleForFocus(named)) return named;
+  const marked = searchRoot.querySelector<HTMLElement>(
+    `[data-error-field="${key}"]`,
+  );
+  if (marked && isVisibleForFocus(marked)) return marked;
+  return null;
+}
+
+/** Scroll al campo del error y foco en su control (o su primer control interno). */
+function focusErrorTarget(target: HTMLElement): void {
+  target.scrollIntoView({ behavior: "smooth", block: "center" });
+  const focusable = target.matches(
+    'input, textarea, select, button, [role="combobox"]',
+  )
+    ? target
+    : target.querySelector<HTMLElement>(
+        'input, textarea, select, button, [role="combobox"]',
+      );
+  try {
+    (focusable ?? target).focus({ preventScroll: true });
+  } catch {
+    // ignore
+  }
+}
+
+/** Scroll + foco al campo de un error (usado por el resumen de errores). */
+export function scrollToErrorField(key: string): void {
+  const target = findErrorFieldTarget(null, key);
+  if (target) focusErrorTarget(target);
+}
+
+export const scrollToFirstError = (
+  errors: Record<string, unknown>,
+  root?: HTMLElement | null,
+) => {
+  const keys = Object.keys(errors);
+  if (keys.length > 0) {
+    for (const key of keys) {
+      const target = findErrorFieldTarget(root ?? null, key);
+      if (target) {
+        focusErrorTarget(target);
+        return;
+      }
     }
+    // Ningún error tiene elemento visible: enfocar el primer campo del formulario.
+    if (root) focusFirstStepField(root, { delayMs: 0 });
   }
 };
 

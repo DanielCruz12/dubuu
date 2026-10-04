@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useEffect, useRef, type RefObject } from "react";
+import type React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -53,6 +54,16 @@ import {
   normalizeTourDifficultyForForm,
   scrollToFirstError,
 } from "./utils";
+import {
+  filterSafeText,
+  findBlockedChar,
+  handleFilteredKeyDown,
+  handleFilteredPaste,
+  textBlockedMessage,
+  fieldBorderClass,
+  VALIDATION_LIMITS,
+} from "./validation";
+import { FormErrorSummary } from "./form-error-summary";
 import { TourDifficultyBadge } from "@/components/difficulty-badge";
 import { useLanguage } from "@/lib/i18n-context";
 
@@ -178,6 +189,8 @@ export function DetailsStep({
 
   const form = useForm<DetailsFormValues>({
     resolver: zodResolver(detailsSchema),
+    mode: "onTouched",
+    reValidateMode: "onChange",
     defaultValues: {
       highlight: defaultValues?.highlight || "",
       included: defaultValues?.included || "",
@@ -191,6 +204,39 @@ export function DetailsStep({
       packing_list: defaultValues?.packing_list || [],
     },
   });
+
+  // Mensajes puntuales cuando se bloquea un carácter en los inputs de listas.
+  const [itineraryBlockedMsg, setItineraryBlockedMsg] = useState<string | null>(
+    null,
+  );
+  const [expenseBlockedMsg, setExpenseBlockedMsg] = useState<string | null>(
+    null,
+  );
+  const [packingBlockedMsg, setPackingBlockedMsg] = useState<string | null>(
+    null,
+  );
+
+  const reportListBlocked =
+    (setMsg: (msg: string | null) => void) => (char: string) => {
+      setMsg(textBlockedMessage(t, char));
+    };
+
+  /** Filtra el input de una lista y mantiene el mensaje de carácter bloqueado. */
+  const handleListItemChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setValue: (v: string) => void,
+    setMsg: (msg: string | null) => void,
+  ) => {
+    const raw = e.target.value;
+    const cleaned = filterSafeText(raw);
+    if (cleaned !== raw) {
+      e.target.value = cleaned;
+      setMsg(textBlockedMessage(t, findBlockedChar(raw, cleaned)));
+    } else {
+      setMsg(null);
+    }
+    setValue(cleaned);
+  };
 
   const addItineraryItem = () => {
     if (newItineraryItem.trim()) {
@@ -326,7 +372,7 @@ export function DetailsStep({
     },
     (errors) => {
       // Hacer scroll al primer error
-      scrollToFirstError(errors);
+      scrollToFirstError(errors, formRef.current);
     }
   );
 
@@ -336,19 +382,68 @@ export function DetailsStep({
 
   return (
     <Form {...form}>
-      <form ref={formRef} className="space-y-4" onSubmit={handleSubmit}>
+      <form ref={formRef} className="space-y-4" onSubmit={handleSubmit} noValidate>
+        <FormErrorSummary />
         <div className="grid grid-cols-1 gap-4">
           <FormField
             control={form.control}
             name="highlight"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel>{t("dashboard.addTour.details.highlight")}</FormLabel>
                 <FormControl>
                   <Textarea
                     {...field}
+                    maxLength={VALIDATION_LIMITS.HIGHLIGHT_MAX}
+                    onChange={(e) => {
+                      const raw = e.target.value;
+                      const cleaned = filterSafeText(raw);
+                      if (cleaned !== raw) {
+                        e.target.value = cleaned;
+                        form.setError(
+                          "highlight",
+                          {
+                            type: "manual",
+                            message: textBlockedMessage(
+                              t,
+                              findBlockedChar(raw, cleaned),
+                            ),
+                          },
+                          { shouldFocus: false },
+                        );
+                      }
+                      field.onChange(cleaned);
+                    }}
+                    onKeyDown={(e) =>
+                      handleFilteredKeyDown(e, filterSafeText, (char) =>
+                        form.setError(
+                          "highlight",
+                          {
+                            type: "manual",
+                            message: textBlockedMessage(t, char),
+                          },
+                          { shouldFocus: false },
+                        ),
+                      )
+                    }
+                    onPaste={(e) =>
+                      handleFilteredPaste(e, filterSafeText, (v) => field.onChange(v), (char) =>
+                        form.setError(
+                          "highlight",
+                          {
+                            type: "manual",
+                            message: textBlockedMessage(t, char),
+                          },
+                          { shouldFocus: false },
+                        ),
+                      )
+                    }
                     placeholder={t("dashboard.addTour.details.highlightPlaceholder")}
-                    className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white min-h-[80px]"
+                    className={cn(
+                      "focus:ring-0 min-h-[80px] border-gray-200 dark:border-gray-800",
+                      fieldState.error &&
+                        "border-red-500 dark:border-red-500 focus:border-red-500 dark:focus:border-red-500",
+                    )}
                   />
                 </FormControl>
                 <FormMessage className="text-xs text-red-500" />
@@ -359,14 +454,62 @@ export function DetailsStep({
           <FormField
             control={form.control}
             name="included"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel>{t("dashboard.addTour.details.included")}</FormLabel>
                 <FormControl>
                   <Textarea
                     {...field}
+                    maxLength={VALIDATION_LIMITS.INCLUDED_MAX}
+                    onChange={(e) => {
+                      const raw = e.target.value;
+                      const cleaned = filterSafeText(raw);
+                      if (cleaned !== raw) {
+                        e.target.value = cleaned;
+                        form.setError(
+                          "included",
+                          {
+                            type: "manual",
+                            message: textBlockedMessage(
+                              t,
+                              findBlockedChar(raw, cleaned),
+                            ),
+                          },
+                          { shouldFocus: false },
+                        );
+                      }
+                      field.onChange(cleaned);
+                    }}
+                    onKeyDown={(e) =>
+                      handleFilteredKeyDown(e, filterSafeText, (char) =>
+                        form.setError(
+                          "included",
+                          {
+                            type: "manual",
+                            message: textBlockedMessage(t, char),
+                          },
+                          { shouldFocus: false },
+                        ),
+                      )
+                    }
+                    onPaste={(e) =>
+                      handleFilteredPaste(e, filterSafeText, (v) => field.onChange(v), (char) =>
+                        form.setError(
+                          "included",
+                          {
+                            type: "manual",
+                            message: textBlockedMessage(t, char),
+                          },
+                          { shouldFocus: false },
+                        ),
+                      )
+                    }
                     placeholder={t("dashboard.addTour.details.includedPlaceholder")}
-                    className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white min-h-[80px]"
+                    className={cn(
+                      "focus:ring-0 min-h-[80px] border-gray-200 dark:border-gray-800",
+                      fieldState.error &&
+                        "border-red-500 dark:border-red-500 focus:border-red-500 dark:focus:border-red-500",
+                    )}
                   />
                 </FormControl>
                 <FormMessage className="text-xs text-red-500" />
@@ -377,7 +520,7 @@ export function DetailsStep({
           <FormField
             control={form.control}
             name="difficulty"
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <FormItem>
                 <FormLabel>{t("dashboard.addTour.details.difficulty")}</FormLabel>
                 <Select
@@ -385,7 +528,13 @@ export function DetailsStep({
                   value={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white">
+                    <SelectTrigger
+                      data-error-field={field.name}
+                      className={cn(
+                        "focus:ring-0",
+                        fieldBorderClass(fieldState.error),
+                      )}
+                    >
                       <SelectValue placeholder={t("dashboard.addTour.details.difficultyPlaceholder")}>
                         {field.value ? (
                           <TourDifficultyBadge
@@ -438,15 +587,48 @@ export function DetailsStep({
                   <div className="flex space-x-2">
                     <Input
                       value={newItineraryItem}
-                      onChange={(e) => setNewItineraryItem(e.target.value)}
+                      maxLength={VALIDATION_LIMITS.ITINERARY_ITEM_MAX}
+                      aria-invalid={Boolean(form.formState.errors.itinerary)}
+                      aria-describedby={
+                        form.formState.errors.itinerary
+                          ? "itinerary-error"
+                          : undefined
+                      }
+                      onChange={(e) =>
+                        handleListItemChange(
+                          e,
+                          setNewItineraryItem,
+                          setItineraryBlockedMsg,
+                        )
+                      }
                       placeholder={t("dashboard.addTour.details.itineraryItemPlaceholder")}
-                      className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
+                      className={cn(
+                        "focus:ring-0",
+                        fieldBorderClass(Boolean(form.formState.errors.itinerary)),
+                      )}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
                           addItineraryItem();
+                          return;
                         }
+                        handleFilteredKeyDown(
+                          e,
+                          filterSafeText,
+                          reportListBlocked(setItineraryBlockedMsg),
+                        );
                       }}
+                      onPaste={(e) =>
+                        handleFilteredPaste(
+                          e,
+                          filterSafeText,
+                          (v) => {
+                            setNewItineraryItem(v);
+                            setItineraryBlockedMsg(null);
+                          },
+                          reportListBlocked(setItineraryBlockedMsg),
+                        )
+                      }
                     />
                     <Button
                       type="button"
@@ -457,6 +639,9 @@ export function DetailsStep({
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
+                  {itineraryBlockedMsg && !form.formState.errors.itinerary && (
+                    <p className="text-xs text-red-500">{itineraryBlockedMsg}</p>
+                  )}
                   <DndContext
                     sensors={itinerarySensors}
                     collisionDetection={closestCenter}
@@ -498,7 +683,7 @@ export function DetailsStep({
                     </SortableContext>
                   </DndContext>
                   {form.formState.errors.itinerary && (
-                    <p className="text-xs text-red-500">
+                    <p id="itinerary-error" className="text-xs text-red-500">
                       {form.formState.errors.itinerary.message}
                     </p>
                   )}
@@ -517,15 +702,39 @@ export function DetailsStep({
                   <div className="flex space-x-2">
                     <Input
                       value={newExpenseItem}
-                      onChange={(e) => setNewExpenseItem(e.target.value)}
+                      maxLength={VALIDATION_LIMITS.LIST_ITEM_MAX}
+                      onChange={(e) =>
+                        handleListItemChange(
+                          e,
+                          setNewExpenseItem,
+                          setExpenseBlockedMsg,
+                        )
+                      }
                       placeholder={t("dashboard.addTour.details.expensesPlaceholder")}
                       className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
                           addExpenseItem();
+                          return;
                         }
+                        handleFilteredKeyDown(
+                          e,
+                          filterSafeText,
+                          reportListBlocked(setExpenseBlockedMsg),
+                        );
                       }}
+                      onPaste={(e) =>
+                        handleFilteredPaste(
+                          e,
+                          filterSafeText,
+                          (v) => {
+                            setNewExpenseItem(v);
+                            setExpenseBlockedMsg(null);
+                          },
+                          reportListBlocked(setExpenseBlockedMsg),
+                        )
+                      }
                     />
                     <Button
                       type="button"
@@ -536,6 +745,9 @@ export function DetailsStep({
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
+                  {expenseBlockedMsg && (
+                    <p className="text-xs text-red-500">{expenseBlockedMsg}</p>
+                  )}
                   <div className="space-y-2 max-h-[150px] overflow-y-auto">
                     {expenseItems.map((item, index) => (
                       <div
@@ -571,15 +783,39 @@ export function DetailsStep({
                   <div className="flex space-x-2">
                     <Input
                       value={newPackingItem}
-                      onChange={(e) => setNewPackingItem(e.target.value)}
+                      maxLength={VALIDATION_LIMITS.LIST_ITEM_MAX}
+                      onChange={(e) =>
+                        handleListItemChange(
+                          e,
+                          setNewPackingItem,
+                          setPackingBlockedMsg,
+                        )
+                      }
                       placeholder={t("dashboard.addTour.details.packing_listPlaceholder")}
                       className="border-gray-200 dark:border-gray-800 focus:ring-0 focus:border-black dark:focus:border-white"
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
                           addPackingItem();
+                          return;
                         }
+                        handleFilteredKeyDown(
+                          e,
+                          filterSafeText,
+                          reportListBlocked(setPackingBlockedMsg),
+                        );
                       }}
+                      onPaste={(e) =>
+                        handleFilteredPaste(
+                          e,
+                          filterSafeText,
+                          (v) => {
+                            setNewPackingItem(v);
+                            setPackingBlockedMsg(null);
+                          },
+                          reportListBlocked(setPackingBlockedMsg),
+                        )
+                      }
                     />
                     <Button
                       type="button"
@@ -590,6 +826,9 @@ export function DetailsStep({
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>
+                  {packingBlockedMsg && (
+                    <p className="text-xs text-red-500">{packingBlockedMsg}</p>
+                  )}
                   <div className="space-y-2 max-h-[150px] overflow-y-auto">
                     {packingItems.map((item, index) => (
                       <div
@@ -626,8 +865,12 @@ export function DetailsStep({
                     <FormControl>
                       <Button
                         variant="outline"
+                        data-error-field="available_dates"
                         className={cn(
-                          "w-full justify-start text-left font-normal border-gray-200 dark:border-gray-800",
+                          "w-full justify-start text-left font-normal",
+                          fieldBorderClass(
+                            Boolean(form.formState.errors.available_dates),
+                          ),
                           !datesWithTimes.length && "text-muted-foreground"
                         )}
                       >
