@@ -43,8 +43,7 @@ export function MenuProfileSheet({
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="pr-0 w-[min(280px,85vw)]">
-        <SheetTitle></SheetTitle>
+      <SheetContent side="left" className="w-[250px] pr-0">        <SheetTitle></SheetTitle>
         <SheetDescription></SheetDescription>
         <div className="mb-4 flex items-center">
           <Image src="/logo.svg" priority alt="Dubuu Logo" width={80} height={20} />

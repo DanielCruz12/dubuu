@@ -1,5 +1,3 @@
-export type PayoutStatusType = "pending" | "paid";
-
 export interface PayoutSummary {
   totalCollected: number;
   totalCommission: number;
@@ -8,67 +6,72 @@ export interface PayoutSummary {
   outstanding: number;
   previousTotalCollected?: number;
   bookingCount?: number;
+  pendingHosts?: number;
 }
 
-export interface PayoutBooking {
-  bookingId: string;
+/** Estado de pago de un host (tabla All Hosts). */
+export type HostPayoutStatus = "pending" | "partial" | "paid";
+
+export interface HostsTableRow {
   hostId: string;
-  hostName: string;
-  productId: string;
-  productName: string;
-  bookingDate: string;
-  total: string;
-  commission: string;
-  hostEarnings: string;
-  payoutStatus: PayoutStatusType;
+  username: string;
+  displayName: string;
+  totalToPay: number;
+  totalPaid: number;
+  outstanding: number;
+  lastPayment: string | null;
+  status: HostPayoutStatus;
 }
 
+export interface HostsTableResponse {
+  data: HostsTableRow[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+export interface HostsTableParams {
+  dateFrom?: string;
+  dateTo?: string;
+  hostId?: string;
+  search?: string;
+  status?: HostPayoutStatus;
+  sortBy?: "username" | "totalToPay" | "totalPaid" | "outstanding" | "lastPayment";
+  sortOrder?: "asc" | "desc";
+  page?: number;
+  pageSize?: number;
+}
+
+/** Pago a host (modelo por-host, Fase 4). */
 export interface PayoutRecord {
   id: string;
-  bookingId: string;
+  hostId: string;
   hostName: string;
-  productName: string;
-  hostEarnings: string;
-  commissionAmount: string;
-  totalCollected: string;
-  paidAt: string;
+  amount: string;
+  /** YYYY-MM-DD */
+  paymentDate: string;
+  /** HH:MM:SS o vacío */
+  paymentTime: string;
+  /** bank_transfer | cash | other */
   paymentMethod: string;
-  paymentReference: string;
-  paidBy: string;
+  bankAccountUsed: string;
+  transactionReference: string;
+  receiptUrl: string;
   notes: string;
-  attachmentUrl: string;
+  paidBy: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface PayoutFilters {
   dateFrom?: string;
   dateTo?: string;
   hostId?: string;
-  productId?: string;
-  payoutStatus?: PayoutStatusType;
   page?: number;
   pageSize?: number;
 }
 
-export interface PayoutBookingsResponse {
-  data: PayoutBooking[];
-  total: number;
-  page: number;
-  pageSize: number;
-}
-
-export interface PayoutHistoryResponse {
-  data: PayoutRecord[];
-  total: number;
-  page: number;
-  pageSize: number;
-}
-
 export interface HostOption {
-  id: string;
-  name: string;
-}
-
-export interface ProductOption {
   id: string;
   name: string;
 }

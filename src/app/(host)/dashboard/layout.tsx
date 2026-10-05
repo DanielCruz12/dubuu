@@ -14,7 +14,7 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="md:grid md:grid-cols-[220px_minmax(0,1fr)] lg:grid-cols-[240px_minmax(0,1fr)] px-2 md:px-20 min-h-screen">
+    <div className="md:grid md:grid-cols-[260px_minmax(0,1fr)] lg:grid-cols-[280px_minmax(0,1fr)] px-2 md:px-20 min-h-screen">
       <aside className="z-30 hidden shrink-0 md:block md:sticky md:top-4 md:self-start md:max-h-[calc(100dvh-2rem)] md:overflow-y-auto">
         <SideNav />
       </aside>

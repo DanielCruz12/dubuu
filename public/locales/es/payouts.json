@@ -7,30 +7,23 @@
       "short": "Todo el dinero recibido por las reservas.",
       "long": "Es la suma de todo lo que pagaron los huéspedes por sus reservas durante el período seleccionado."
     },
+    "paid": {
+      "label": "Total pagado",
+      "short": "Ya enviado a los hosts."
+    },
     "commission": {
       "label": "Comisión (12%)",
-      "short": "Lo que gana la plataforma por cada reserva.",
+      "short": "Ganancia de Dubuu.",
       "long": "Es el porcentaje que la plataforma cobra por cada reserva realizada. Este monto representa tus ganancias como plataforma."
     },
-    "payable": {
-      "label": "Pagable a Hosts",
-      "short": "Dinero que les corresponde recibir a los hosts.",
-      "long": "Es el dinero que debes pagar a los hosts por las reservas completadas, después de descontar la comisión de la plataforma."
-    },
-    "paid": {
-      "label": "Pagado",
-      "short": "Dinero que ya fue enviado a los hosts.",
-      "long": "Es el total de pagos que ya realizaste a los hosts. Estas reservas ya fueron liquidadas."
-    },
     "outstanding": {
-      "label": "Saldo Pendiente",
-      "short": "Dinero que aún falta pagar a los hosts.",
-      "long": "Es el monto que todavía está pendiente de enviar a los hosts. Cuando proceses el pago, pasará automáticamente a \"Pagado\"."
+      "label": "Total a pagar",
+      "short": "Falta pagar a los hosts.",
+      "long": "Es el monto que todavía está pendiente de enviar a los hosts en el período seleccionado."
     }
   },
   "trend": {
-    "vsLastMonth": "{{trend}} vs mes anterior",
-    "bookings": "{{count}} reservas"
+    "vsLastMonth": "{{trend}} vs mes anterior"
   },
   "filters": {
     "period": {
@@ -43,58 +36,35 @@
     "allHosts": "Todos los hosts",
     "searchHost": "Buscar host...",
     "noHostsFound": "No encontrado",
-    "export": "Exportar"
+    "export": "Exportar",
+    "exporting": "Exportando…"
   },
-  "tabs": {
-    "pending": "Pendientes",
-    "history": "Historial"
+  "hostsTable": {
+    "title": "Todos los hosts",
+    "searchPlaceholder": "Buscar host...",
+    "statusAll": "Todos los estados",
+    "statusPending": "Pendiente",
+    "statusPartial": "Parcial",
+    "statusPaid": "Pagado",
+    "colHost": "Host",
+    "colToPay": "Por pagar",
+    "colPaid": "Pagado",
+    "colOutstanding": "Pendiente",
+    "colLastPayment": "Último pago",
+    "colStatus": "Estado",
+    "view": "Ver",
+    "emptyTitle": "No se encontraron hosts",
+    "emptyDesc": "Ajusta la búsqueda o los filtros para ver resultados.",
+    "clearFilters": "Limpiar filtros"
   },
   "table": {
-    "host": "Host",
-    "product": "Producto",
-    "total": "Total",
-    "commission": "Comisión",
-    "hostEarnings": "Ganancia Host",
-    "status": "Estado",
-    "action": "Acción",
-    "pay": "Pagar",
-    "date": "Fecha",
-    "amountPaid": "Monto Pagado",
-    "method": "Método",
-    "notes": "Notas",
-    "booking": "Reserva",
-    "selected": "{{count}} seleccionados",
-    "markAsPaid": "Marcar como Pagado",
     "previous": "Anterior",
     "next": "Siguiente",
-    "pageOf": "{{page}} de {{total}}",
-    "status_pending": "Pendiente",
-    "status_paid": "Pagado"
-  },
-  "empty": {
-    "pendingTitle": "No hay pagos pendientes",
-    "pendingDesc": "Cuando existan reservas finalizadas, aparecerán aquí para que puedas procesar los pagos a los hosts.",
-    "historyTitle": "No hay historial de pagos",
-    "historyDesc": "Los pagos que realices a los hosts aparecerán registrados aquí junto con su método de pago y comprobante.",
-    "viewHistory": "Ver historial de pagos"
-  },
-  "confirmDialog": {
-    "title": "Confirmar pago",
-    "descriptionSingle": "¿Marcar esta reserva como pagada al host?",
-    "descriptionBatch": "¿Marcar {{count}} reservas como pagadas?",
-    "paymentMethod": "Método de pago",
-    "paymentMethodPlaceholder": "Efectivo, transferencia, etc.",
-    "notes": "Notas",
-    "notesPlaceholder": "Número de referencia, comprobante u otra información...",
-    "attachment": "Comprobante (opcional)",
-    "cancel": "Cancelar",
-    "confirm": "Confirmar",
-    "uploading": "Subiendo..."
+    "pageOf": "{{page}} de {{total}}"
   },
   "toast": {
-    "markedAsPaid": "Marcado como pagado",
-    "batchMarkedAsPaid": "{{count}} reservas marcadas como pagadas",
-    "errorMarking": "Error al marcar como pagado"
+    "exportSuccess": "Reporte exportado.",
+    "exportError": "No se pudo exportar el reporte."
   },
   "error": {
     "title": "Error",

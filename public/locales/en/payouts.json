@@ -7,30 +7,23 @@
       "short": "All money received from bookings.",
       "long": "The sum of everything guests paid for their bookings during the selected period."
     },
+    "paid": {
+      "label": "Total paid",
+      "short": "Already sent to hosts."
+    },
     "commission": {
       "label": "Commission (12%)",
-      "short": "What the platform earns per booking.",
+      "short": "Dubuu earnings.",
       "long": "The percentage the platform charges for each completed booking. This amount represents your earnings as a platform."
     },
-    "payable": {
-      "label": "Payable to Hosts",
-      "short": "Money owed to hosts.",
-      "long": "The amount you must pay hosts for completed bookings, after deducting the platform commission."
-    },
-    "paid": {
-      "label": "Paid Out",
-      "short": "Money already sent to hosts.",
-      "long": "The total payments you've already made to hosts. These bookings have been settled."
-    },
     "outstanding": {
-      "label": "Outstanding Balance",
-      "short": "Money still owed to hosts.",
-      "long": "The amount still pending to be sent to hosts. Once you process the payment, it will automatically move to \"Paid Out\"."
+      "label": "Total to pay",
+      "short": "Still owed to hosts.",
+      "long": "The amount still pending to be sent to hosts in the selected period."
     }
   },
   "trend": {
-    "vsLastMonth": "{{trend}} vs last month",
-    "bookings": "{{count}} bookings"
+    "vsLastMonth": "{{trend}} vs last month"
   },
   "filters": {
     "period": {
@@ -43,58 +36,35 @@
     "allHosts": "All hosts",
     "searchHost": "Search host...",
     "noHostsFound": "Not found",
-    "export": "Export"
+    "export": "Export",
+    "exporting": "Exporting…"
   },
-  "tabs": {
-    "pending": "Pending",
-    "history": "History"
+  "hostsTable": {
+    "title": "All Hosts",
+    "searchPlaceholder": "Search host...",
+    "statusAll": "All statuses",
+    "statusPending": "Pending",
+    "statusPartial": "Partial",
+    "statusPaid": "Paid",
+    "colHost": "Host",
+    "colToPay": "To pay",
+    "colPaid": "Paid",
+    "colOutstanding": "Outstanding",
+    "colLastPayment": "Last payment",
+    "colStatus": "Status",
+    "view": "View",
+    "emptyTitle": "No hosts found",
+    "emptyDesc": "Adjust the search or filters to see results.",
+    "clearFilters": "Clear filters"
   },
   "table": {
-    "host": "Host",
-    "product": "Product",
-    "total": "Total",
-    "commission": "Commission",
-    "hostEarnings": "Host Earnings",
-    "status": "Status",
-    "action": "Action",
-    "pay": "Pay",
-    "date": "Date",
-    "amountPaid": "Amount Paid",
-    "method": "Method",
-    "notes": "Notes",
-    "booking": "Booking",
-    "selected": "{{count}} selected",
-    "markAsPaid": "Mark as Paid",
     "previous": "Previous",
     "next": "Next",
-    "pageOf": "{{page}} of {{total}}",
-    "status_pending": "Pending",
-    "status_paid": "Paid"
-  },
-  "empty": {
-    "pendingTitle": "No pending payouts",
-    "pendingDesc": "Once bookings are completed, they will appear here for you to process host payments.",
-    "historyTitle": "No payment history",
-    "historyDesc": "Payments you make to hosts will be recorded here along with their method and receipt.",
-    "viewHistory": "View payment history"
-  },
-  "confirmDialog": {
-    "title": "Confirm payment",
-    "descriptionSingle": "Mark this booking as paid to the host?",
-    "descriptionBatch": "Mark {{count}} bookings as paid?",
-    "paymentMethod": "Payment method",
-    "paymentMethodPlaceholder": "Cash, bank transfer, etc.",
-    "notes": "Notes",
-    "notesPlaceholder": "Reference number, receipt, or other info...",
-    "attachment": "Receipt (optional)",
-    "cancel": "Cancel",
-    "confirm": "Confirm",
-    "uploading": "Uploading..."
+    "pageOf": "{{page}} of {{total}}"
   },
   "toast": {
-    "markedAsPaid": "Marked as paid",
-    "batchMarkedAsPaid": "{{count}} bookings marked as paid",
-    "errorMarking": "Error marking as paid"
+    "exportSuccess": "Report exported.",
+    "exportError": "Could not export the report."
   },
   "error": {
     "title": "Error",

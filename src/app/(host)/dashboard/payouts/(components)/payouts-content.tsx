@@ -2,20 +2,21 @@
 
 import { useState, useMemo } from "react";
 import { startOfMonth, endOfDay } from "date-fns";
-import type { DatePreset } from "./payouts-filters";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  PayoutPeriodFilter,
+  PayoutHostFilter,
+  type DatePreset,
+} from "./payouts-filters";
+import { Download, Loader2, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AlertCircle } from "lucide-react";
 import { DashboardTitle } from "@/components/dashboard-title";
 import { useLanguage } from "@/lib/i18n-context";
 import { SummaryCards } from "./summary-cards";
-import { PayoutsFilters } from "./payouts-filters";
-import { PayoutsTable } from "./payouts-table";
-import { PayoutHistoryTable } from "./payout-history-table";
+import { HostsTable } from "./hosts-table";
 import {
   useGetPayoutSummaryQuery,
-  useGetPayoutBookingsQuery,
-  useGetPayoutHistoryQuery,
   useGetHostsQuery,
 } from "@/redux/slices/payout/payout-slice";
 import type { PayoutFilters } from "@/types/payout";
@@ -26,35 +27,54 @@ export function PayoutsContent() {
   const [dateFrom, setDateFrom] = useState<Date | undefined>(startOfMonth(new Date()));
   const [dateTo, setDateTo] = useState<Date | undefined>(endOfDay(new Date()));
   const [hostId, setHostId] = useState<string | undefined>();
-  const [productId, setProductId] = useState<string | undefined>();
-  const [page, setPage] = useState(1);
-  const [historyPage, setHistoryPage] = useState(1);
-  const [activeTab, setActiveTab] = useState("pending");
+  const [exporting, setExporting] = useState(false);
 
   const filters: PayoutFilters = useMemo(
-    () => ({ dateFrom: dateFrom?.toISOString(), dateTo: dateTo?.toISOString(), hostId, productId }),
-    [dateFrom, dateTo, hostId, productId],
-  );
-
-  const bookingFilters: PayoutFilters = useMemo(
-    () => ({ ...filters, payoutStatus: activeTab === "pending" ? "pending" : undefined, page, pageSize: 20 }),
-    [filters, activeTab, page],
+    () => ({ dateFrom: dateFrom?.toISOString(), dateTo: dateTo?.toISOString(), hostId }),
+    [dateFrom, dateTo, hostId],
   );
 
   const summaryQuery = useGetPayoutSummaryQuery(filters);
-  const bookingsQuery = useGetPayoutBookingsQuery(bookingFilters);
-  const historyQuery = useGetPayoutHistoryQuery({ ...filters, page: historyPage, pageSize: 20 });
-
-  const pendingCountQuery = useGetPayoutBookingsQuery({ ...filters, payoutStatus: "pending", page: 1, pageSize: 1 });
-  const historyCountQuery = useGetPayoutHistoryQuery({ ...filters, page: 1, pageSize: 1 });
-
   const hostsQuery = useGetHostsQuery();
-
-  const pendingCount = pendingCountQuery.data?.total ?? undefined;
-  const historyCount = historyCountQuery.data?.total ?? undefined;
 
   const loading = summaryQuery.isLoading || hostsQuery.isLoading;
   const error = summaryQuery.error || hostsQuery.error;
+
+  // Descarga el CSV del historial de pagos con los filtros activos.
+  const handleExport = async () => {
+    try {
+      setExporting(true);
+      const params = new URLSearchParams();
+      if (dateFrom) params.append("dateFrom", dateFrom.toISOString());
+      if (dateTo) params.append("dateTo", dateTo.toISOString());
+      if (hostId) params.append("hostId", hostId);
+
+      const res = await fetch(
+        `/backend/api/v1/admin/payouts/export?${params.toString()}`,
+      );
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const blob = await res.blob();
+      const disposition = res.headers.get("Content-Disposition") ?? "";
+      const filenameMatch = disposition.match(/filename="([^"]+)"/);
+      const filename = filenameMatch?.[1] ?? "pagos_dubuu.csv";
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+
+      toast.success(t("payouts.toast.exportSuccess"));
+    } catch {
+      toast.error(t("payouts.toast.exportError"));
+    } finally {
+      setExporting(false);
+    }
+  };
 
   return (
     <div className="p-4 md:p-5 space-y-5 max-w-6xl">
@@ -76,8 +96,8 @@ export function PayoutsContent() {
           {loading ? (
             <div className="space-y-2.5">
               <Skeleton className="h-16 w-full rounded-lg" />
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-                {Array.from({ length: 4 }).map((_, i) => (
+              <div className="grid grid-cols-2 gap-2">
+                {Array.from({ length: 2 }).map((_, i) => (
                   <Skeleton key={i} className="h-24 rounded-lg" />
                 ))}
               </div>
@@ -86,73 +106,51 @@ export function PayoutsContent() {
             <SummaryCards summary={summaryQuery.data} />
           )}
 
-          <PayoutsFilters
-            datePreset={datePreset}
-            onDatePresetChange={setDatePreset}
-            dateFrom={dateFrom}
-            dateTo={dateTo}
-            onDateFromChange={setDateFrom}
-            onDateToChange={setDateTo}
+          {/* Tabla ligera de todos los hosts (Fase 3): usa el rango global y
+              respeta el host seleccionado. Barra: host+estado arriba;
+              buscador, período, fechas (solo Personalizado) y Exportar abajo. */}
+          <HostsTable
+            dateFrom={dateFrom?.toISOString()}
+            dateTo={dateTo?.toISOString()}
             hostId={hostId}
-            onHostIdChange={(id) => { setHostId(id); setProductId(undefined); setPage(1); }}
-            hosts={hostsQuery.data ?? []}
+            onDefaultHost={(hostId) => {
+              if (!hostId) return;
+              setHostId((current) => current ?? hostId);
+            }}
+            toolbarTopLeft={
+              <PayoutHostFilter
+                hostId={hostId}
+                onHostIdChange={(id) => { setHostId(id); }}
+                hosts={hostsQuery.data ?? []}
+              />
+            }
+            toolbarMainLeft={
+              <PayoutPeriodFilter
+                datePreset={datePreset}
+                onDatePresetChange={setDatePreset}
+                dateFrom={dateFrom}
+                dateTo={dateTo}
+                onDateFromChange={setDateFrom}
+                onDateToChange={setDateTo}
+              />
+            }
+            toolbarRight={
+              <Button
+                variant="outline"
+                size="sm"
+                className="font-normal"
+                onClick={handleExport}
+                disabled={exporting}
+              >
+                {exporting ? (
+                  <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                ) : (
+                  <Download className="mr-2 h-3 w-3" />
+                )}
+                {exporting ? t("payouts.filters.exporting") : t("payouts.filters.export")}
+              </Button>
+            }
           />
-
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList>
-              <TabsTrigger value="pending" className="gap-1.5">
-                {t("payouts.tabs.pending")}
-                {pendingCount !== undefined && (
-                  <span className="inline-flex items-center justify-center h-5 min-w-5 rounded-full bg-muted-foreground/15 px-1.5 text-xs font-medium">
-                    {pendingCount}
-                  </span>
-                )}
-              </TabsTrigger>
-              <TabsTrigger value="history" className="gap-1.5">
-                {t("payouts.tabs.history")}
-                {historyCount !== undefined && (
-                  <span className="inline-flex items-center justify-center h-5 min-w-5 rounded-full bg-muted-foreground/15 px-1.5 text-xs font-medium">
-                    {historyCount}
-                  </span>
-                )}
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="pending" className="mt-3">
-              {bookingsQuery.isLoading ? (
-                <div className="space-y-3">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Skeleton key={i} className="h-12 w-full rounded-lg" />
-                  ))}
-                </div>
-              ) : (
-                <PayoutsTable
-                  data={bookingsQuery.data}
-                  page={page}
-                  onPageChange={setPage}
-                  isLoading={bookingsQuery.isFetching}
-                  onViewHistory={() => setActiveTab("history")}
-                />
-              )}
-            </TabsContent>
-
-            <TabsContent value="history" className="mt-3">
-              {historyQuery.isLoading ? (
-                <div className="space-y-3">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Skeleton key={i} className="h-12 w-full rounded-lg" />
-                  ))}
-                </div>
-              ) : (
-                <PayoutHistoryTable
-                  data={historyQuery.data}
-                  page={historyPage}
-                  onPageChange={setHistoryPage}
-                  isLoading={historyQuery.isFetching}
-                />
-              )}
-            </TabsContent>
-          </Tabs>
         </>
       )}
     </div>

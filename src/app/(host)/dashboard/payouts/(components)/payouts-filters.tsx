@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { format, startOfWeek, startOfMonth, startOfYear, endOfDay } from "date-fns";
 import { es } from "date-fns/locale";
-import { CalendarIcon, ChevronDown, Download } from "lucide-react";
+import { CalendarIcon, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -31,18 +31,6 @@ import type { HostOption } from "@/types/payout";
 
 export type DatePreset = "week" | "month" | "year" | "custom";
 
-interface Props {
-  datePreset: DatePreset;
-  onDatePresetChange: (p: DatePreset) => void;
-  dateFrom: Date | undefined;
-  dateTo: Date | undefined;
-  onDateFromChange: (d: Date | undefined) => void;
-  onDateToChange: (d: Date | undefined) => void;
-  hostId: string | undefined;
-  onHostIdChange: (id: string | undefined) => void;
-  hosts: HostOption[];
-}
-
 const now = new Date();
 const PRESET_DATES: Record<Exclude<DatePreset, "custom">, { from: Date; to: Date }> = {
   week: { from: startOfWeek(now, { weekStartsOn: 1 }), to: endOfDay(now) },
@@ -50,21 +38,25 @@ const PRESET_DATES: Record<Exclude<DatePreset, "custom">, { from: Date; to: Date
   year: { from: startOfYear(now), to: endOfDay(now) },
 };
 
-export function PayoutsFilters({
+interface PeriodFilterProps {
+  datePreset: DatePreset;
+  onDatePresetChange: (p: DatePreset) => void;
+  dateFrom: Date | undefined;
+  dateTo: Date | undefined;
+  onDateFromChange: (d: Date | undefined) => void;
+  onDateToChange: (d: Date | undefined) => void;
+}
+
+/** Selector de período; el rango de fechas solo aparece con "Personalizado". */
+export function PayoutPeriodFilter({
   datePreset,
   onDatePresetChange,
   dateFrom,
   dateTo,
   onDateFromChange,
   onDateToChange,
-  hostId,
-  onHostIdChange,
-  hosts,
-}: Props) {
+}: PeriodFilterProps) {
   const { t } = useLanguage();
-  const [hostOpen, setHostOpen] = useState(false);
-
-  const selectedHost = hosts.find((h) => h.id === hostId);
 
   const presetKeys: DatePreset[] = ["week", "month", "year", "custom"];
 
@@ -78,24 +70,24 @@ export function PayoutsFilters({
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <div className="flex flex-wrap items-center gap-2 flex-1">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="min-w-[120px] justify-between font-normal">
-              {t(`payouts.filters.period.${datePreset}`)}
-              <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            {presetKeys.map((key) => (
-              <DropdownMenuItem key={key} onClick={() => handlePresetChange(key)}>
-                {t(`payouts.filters.period.${key}`)}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm" className="min-w-[120px] justify-between font-normal">
+            {t(`payouts.filters.period.${datePreset}`)}
+            <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start">
+          {presetKeys.map((key) => (
+            <DropdownMenuItem key={key} onClick={() => handlePresetChange(key)}>
+              {t(`payouts.filters.period.${key}`)}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
 
+      {datePreset === "custom" && (
         <Popover>
           <PopoverTrigger asChild>
             <Button
@@ -117,48 +109,58 @@ export function PayoutsFilters({
                 if (range) {
                   onDateFromChange(range.from);
                   onDateToChange(range.to);
-                  if (range.from || range.to) onDatePresetChange("custom");
                 }
               }}
               numberOfMonths={2}
             />
           </PopoverContent>
         </Popover>
+      )}
+    </>
+  );
+}
 
-        <Popover open={hostOpen} onOpenChange={setHostOpen}>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className="min-w-[160px] justify-between font-normal">
-              <span className={!selectedHost ? "text-muted-foreground" : ""}>
-                {selectedHost ? selectedHost.name : t("payouts.filters.allHosts")}
-              </span>
-              <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="p-0" align="start">
-            <Command>
-              <CommandInput placeholder={t("payouts.filters.searchHost")} />
-              <CommandList>
-                <CommandEmpty>{t("payouts.filters.noHostsFound")}</CommandEmpty>
-                <CommandGroup>
-                  <CommandItem onSelect={() => { onHostIdChange(undefined); setHostOpen(false); }}>
-                    {t("payouts.filters.allHosts")}
-                  </CommandItem>
-                  {hosts.map((h) => (
-                    <CommandItem key={h.id} onSelect={() => { onHostIdChange(h.id); setHostOpen(false); }}>
-                      {h.name}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
-      </div>
+interface HostFilterProps {
+  hostId: string | undefined;
+  onHostIdChange: (id: string | undefined) => void;
+  hosts: HostOption[];
+}
 
-      <Button variant="outline" size="sm" className="font-normal">
-        <Download className="mr-2 h-3 w-3" />
-        {t("payouts.filters.export")}
-      </Button>
-    </div>
+/** Selector de host (usa el username). */
+export function PayoutHostFilter({ hostId, onHostIdChange, hosts }: HostFilterProps) {
+  const { t } = useLanguage();
+  const [hostOpen, setHostOpen] = useState(false);
+
+  const selectedHost = hosts.find((h) => h.id === hostId);
+
+  return (
+    <Popover open={hostOpen} onOpenChange={setHostOpen}>
+      <PopoverTrigger asChild>
+        <Button variant="outline" size="sm" className="min-w-[160px] justify-between font-normal">
+          <span className={!selectedHost ? "text-muted-foreground" : ""}>
+            {selectedHost ? selectedHost.name : t("payouts.filters.allHosts")}
+          </span>
+          <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="p-0" align="start">
+        <Command>
+          <CommandInput placeholder={t("payouts.filters.searchHost")} />
+          <CommandList>
+            <CommandEmpty>{t("payouts.filters.noHostsFound")}</CommandEmpty>
+            <CommandGroup>
+              <CommandItem onSelect={() => { onHostIdChange(undefined); setHostOpen(false); }}>
+                {t("payouts.filters.allHosts")}
+              </CommandItem>
+              {hosts.map((h) => (
+                <CommandItem key={h.id} onSelect={() => { onHostIdChange(h.id); setHostOpen(false); }}>
+                  {h.name}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 }

@@ -36,6 +36,12 @@ Marketplace B2C de tours/experiencias y alquiler de vehículos en El Salvador. N
 - Errores de red/validación del backend del tour: `getTourSaveErrorInfo` en `utils.ts` (el rental aún muestra error genérico).
 - Envío: FormData multipart (archivos comprimidos a WebP en multimedia-step); guard de doble envío con `submitInFlightRef` en ambos índices; borrador se limpia al crear.
 
+## Panel admin de pagos
+
+- **Spec canónica del panel admin**: `src/instructions/panel-admin.md` (escrita por el usuario; columnas, flujos, validaciones y API por fases). `panel-admin.md` (raíz) registra el progreso por fases y las decisiones de implementación.
+- Vista: `src/app/(host)/dashboard/payouts/` (solo admin, backend `/api/v1/admin/payouts/*` en el repo dantours). Componentes: `payouts-content`, `summary-cards` (6 tarjetas), `payouts-filters` (+export CSV), `hosts-table` (tabla ligera All Hosts), `payouts-table` (pendientes), `payout-history-table`.
+- Fases completadas: 1 (limpieza), 2 (tarjetas + Generate Report CSV), 3 (tabla All Hosts con endpoint `/hosts-table`). Fase 4 en progreso: la tabla `payouts` ya migró a **pago-por-host** (schema `src/database/schemas/payouts.ts` en el backend: host_id, amount, payment_date/time, método, referencia, comprobante, auditoría); los endpoints por-reserva (`/bookings`, `/mark-paid*`) se eliminaron y el frontend ya no tiene la pestaña de pendientes. Falta la UI: página de detalle del host, modal Register Payment, tabs y comprobantes. Fase 5 (Reports PDF/Excel/CSV) pendiente.
+
 ## Otros puntos útiles
 
 - `isProductType(product, "tours" | "rental")` y `productTypeNameToFormKind` en `src/utils/` para distinguir tipos de producto.
