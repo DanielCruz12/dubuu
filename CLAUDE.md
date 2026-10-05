@@ -38,9 +38,13 @@ Marketplace B2C de tours/experiencias y alquiler de vehículos en El Salvador. N
 
 ## Panel admin de pagos
 
-- **Spec canónica del panel admin**: `src/instructions/panel-admin.md` (escrita por el usuario; columnas, flujos, validaciones y API por fases). `panel-admin.md` (raíz) registra el progreso por fases y las decisiones de implementación.
-- Vista: `src/app/(host)/dashboard/payouts/` (solo admin, backend `/api/v1/admin/payouts/*` en el repo dantours). Componentes: `payouts-content`, `summary-cards` (6 tarjetas), `payouts-filters` (+export CSV), `hosts-table` (tabla ligera All Hosts), `payouts-table` (pendientes), `payout-history-table`.
-- Fases completadas: 1 (limpieza), 2 (tarjetas + Generate Report CSV), 3 (tabla All Hosts con endpoint `/hosts-table`). Fase 4 en progreso: la tabla `payouts` ya migró a **pago-por-host** (schema `src/database/schemas/payouts.ts` en el backend: host_id, amount, payment_date/time, método, referencia, comprobante, auditoría); los endpoints por-reserva (`/bookings`, `/mark-paid*`) se eliminaron y el frontend ya no tiene la pestaña de pendientes. Falta la UI: página de detalle del host, modal Register Payment, tabs y comprobantes. Fase 5 (Reports PDF/Excel/CSV) pendiente.
+- **Spec canónica del panel admin**: `src/instructions/panel-admin.md` (escrita por el usuario; columnas, flujos, validaciones y API por fases). `panel-admin.md` (raíz) = tracker de progreso/decisiones. `HANDOFF.md` = estado actual consolidado.
+- Vista: `src/app/(host)/dashboard/payouts/` (solo admin, backend `/api/v1/admin/payouts/*` en el repo dantours). Componentes actuales:
+  - `payouts-content` — orquesta estado global (rango, hostId, export CSV con fetch+blob).
+  - `summary-cards` — hero Recaudado 80% + Pagado 20% (mobile: recaudado 100% + 3 columnas), 2 cards flujo (Comisión, Total a pagar). Sin tooltips.
+  - `payouts-filters` — exporta `PayoutPeriodFilter` (presets; calendario SOLO con "Personalizado") y `PayoutHostFilter` (usa username).
+  - `hosts-table` — tabla ligera All Hosts con barra en 2 filas (host+estado arriba; buscador+período+fechas+exportar abajo) vía props `toolbarTopLeft`/`toolbarMainLeft`/`toolbarRight`; default Pendiente, preselección del primer host pendiente (`onDefaultHost`), colores por deuda.
+- Fases: 1–3 completadas (ver `panel-admin.md`). Fase 4 en progreso: `payouts` ya es **pago-por-host** en código Y en la BD (migración aplicada y confirmada): backend `src/database/schemas/payouts.ts` (host_id text, amount, payment_date/time, método, referencia, comprobante, auditoría). Falta toda la UI del detalle del host (Host Payment Details, Register Payment, tabs, comprobantes). Fase 5 (Reports) pendiente. El historial global ya no se muestra en la vista (irá en el detalle del host); `payout-history-table.tsx` fue borrado.
 
 ## Otros puntos útiles
 
