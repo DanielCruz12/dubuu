@@ -75,3 +75,68 @@ export interface HostOption {
   id: string;
   name: string;
 }
+
+/** Fase 4 — detalle de pago de un host. */
+export interface HostPaymentUser {
+  id: string;
+  username: string;
+  displayName: string;
+  email: string;
+  phoneNumber: string;
+  imageUrl: string;
+}
+
+export interface HostPaymentFinances {
+  totalToPay: number;
+  totalPaid: number;
+  outstanding: number;
+  lastPayment: string | null;
+  status: HostPayoutStatus;
+  /** 0-100 */
+  paidPercent: number;
+}
+
+export interface HostPaymentDetail {
+  user: HostPaymentUser;
+  finances: HostPaymentFinances;
+}
+
+export interface HostBankDetails {
+  bankName: string;
+  accountNumber: string;
+  accountType: string;
+  lastUpdated: string;
+}
+
+export interface HostPaymentHistoryParams {
+  hostId: string;
+  dateFrom?: string;
+  dateTo?: string;
+  search?: string;
+  method?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface PayoutHistoryResponse {
+  data: PayoutRecord[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+export interface RegisterPaymentInput {
+  hostId: string;
+  amount: number;
+  /** YYYY-MM-DD */
+  paymentDate: string;
+  /** HH:mm */
+  paymentTime?: string;
+  /** bank_transfer | cash | other */
+  paymentMethod: string;
+  transactionReference?: string;
+  receiptUrl?: string;
+  notes?: string;
+  bankAccountUsed?: string;
+  allowExceed?: boolean;
+}

@@ -44,7 +44,7 @@ Marketplace B2C de tours/experiencias y alquiler de vehículos en El Salvador. N
   - `summary-cards` — hero Recaudado 80% + Pagado 20% (mobile: recaudado 100% + 3 columnas), 2 cards flujo (Comisión, Total a pagar). Sin tooltips.
   - `payouts-filters` — exporta `PayoutPeriodFilter` (presets; calendario SOLO con "Personalizado") y `PayoutHostFilter` (usa username).
   - `hosts-table` — tabla ligera All Hosts con barra en 2 filas (host+estado arriba; buscador+período+fechas+exportar abajo) vía props `toolbarTopLeft`/`toolbarMainLeft`/`toolbarRight`; default Pendiente, preselección del primer host pendiente (`onDefaultHost`), colores por deuda.
-- Fases: 1–3 completadas (ver `panel-admin.md`). Fase 4 en progreso: `payouts` ya es **pago-por-host** en código Y en la BD (migración aplicada y confirmada): backend `src/database/schemas/payouts.ts` (host_id text, amount, payment_date/time, método, referencia, comprobante, auditoría). Falta toda la UI del detalle del host (Host Payment Details, Register Payment, tabs, comprobantes). Fase 5 (Reports) pendiente. El historial global ya no se muestra en la vista (irá en el detalle del host); `payout-history-table.tsx` fue borrado.
+- Fases: 1–4 completadas (ver `panel-admin.md`): `payouts` es **pago-por-host** en código y en la BD; página de detalle `/dashboard/payouts/hosts/:hostId` con stats, tabs, Register Payment y comprobantes (componentes en `(components)/host-detail/`). Fase 5 (Reports PDF/Excel/CSV) pendiente. El historial global ya no se muestra en la vista principal; `payout-history-table.tsx` fue borrado.
 
 ## Otros puntos útiles
 

@@ -1,5 +1,15 @@
 # Estado actual
-Última actualización: 2026-10-05
+Última actualización: 2026-10-08
+
+## Fase 4 del panel admin COMPLETADA (2026-10-08)
+- Página `/dashboard/payouts/hosts/:hostId` reemplazó el placeholder: cabecera (avatar, nombre, email, teléfono, badge estado, botón a datos bancarios), 3 stats + barra de progreso, tabs Overview / Payment History / Bank Details, skeletons.
+- Overview: próximo pago (viernes, monto = outstanding) con botón Registrar pago; pagos recientes.
+- Payment History: tabla con filtros (búsqueda, rango de fechas, método), paginación, export CSV del host y ver comprobante.
+- Bank Details: banco, tipo de cuenta, número enmascarado + copiar, última actualización, alerta de verificación.
+- Register Payment modal: monto (decimales filtrados), fecha, hora, método (referencia obligatoria en transferencias), comprobante subido al seleccionar (PDF/JPG/PNG), notas, validaciones inline + "permitir exceder" si el monto supera el saldo; toast y refresco automático vía tags RTK.
+- Comprobante modal: metadatos + preview (img/iframe PDF) + descargar + abrir en pestaña.
+- Backend: `GET /hosts/:hostId`, `GET /hosts/:hostId/history`, `GET /hosts/:hostId/bank-details`, `POST /admin/payouts` (validaciones: monto>0 y ≤outstanding salvo allowExceed, fecha, método, referencia en transferencias; auditoría con paid_by de sesión). Export por host reutiliza `/export?hostId=`.
+- Queda: borrar `drop-payouts.tmp.js` del backend; Fase 5 (Reports PDF/Excel/CSV + historial de reportes); limpiar `bookings.payout_status`.
 
 ## Vista de pagos admin (`/dashboard/payouts`) — estado final tras todos los ajustes
 
