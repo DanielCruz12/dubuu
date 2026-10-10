@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
+import Image from "next/image";
 import { format } from "date-fns";
-import { Download, ExternalLink, FileText } from "lucide-react";
+import { Download, FileText, Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -20,8 +22,13 @@ interface Props {
   onClose: () => void;
 }
 
+function isRemoteSrc(src: string): boolean {
+  return /^https?:\/\//i.test(src);
+}
+
 export function ReceiptModal({ record, onClose }: Props) {
   const { t } = useLanguage();
+  const [downloading, setDownloading] = useState(false);
 
   if (!record) return null;
 
@@ -33,6 +40,30 @@ export function ReceiptModal({ record, onClose }: Props) {
       )
     : record.paymentDate;
 
+  const handleDownload = async () => {
+    if (!record.receiptUrl) return;
+    try {
+      setDownloading(true);
+      const res = await fetch(record.receiptUrl);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download =
+        record.transactionReference?.trim() || "comprobante";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch {
+      // Si no se puede descargar el blob (CORS, etc.), abrir en otra pestaña.
+      window.open(record.receiptUrl, "_blank", "noopener,noreferrer");
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   return (
     <Dialog open={record !== null} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-xl">
@@ -42,7 +73,7 @@ export function ReceiptModal({ record, onClose }: Props) {
             {t("payouts.receipt.title")}
           </DialogTitle>
           <DialogDescription>
-            {t("payouts.history.methodBankTransfer")}
+            {t("payouts.registerPayment.methodBankTransfer")}
           </DialogDescription>
         </DialogHeader>
 
@@ -80,12 +111,16 @@ export function ReceiptModal({ record, onClose }: Props) {
                 className="h-80 w-full"
               />
             ) : (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={record.receiptUrl}
-                alt="Receipt"
-                className="mx-auto max-h-80 w-auto object-contain"
-              />
+              <div className="relative h-80 w-full">
+                <Image
+                  src={record.receiptUrl}
+                  alt="Comprobante de pago"
+                  fill
+                  unoptimized={isRemoteSrc(record.receiptUrl)}
+                  className="object-contain"
+                  sizes="(max-width: 576px) 100vw, 576px"
+                />
+              </div>
             )}
           </div>
         ) : (
@@ -96,20 +131,18 @@ export function ReceiptModal({ record, onClose }: Props) {
 
         <DialogFooter>
           {record.receiptUrl && (
-            <>
-              <Button variant="outline" asChild>
-                <a href={record.receiptUrl} download target="_blank" rel="noopener noreferrer">
-                  <Download className="mr-1.5 h-4 w-4" />
-                  {t("payouts.receipt.download")}
-                </a>
-              </Button>
-              <Button variant="outline" asChild>
-                <a href={record.receiptUrl} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="mr-1.5 h-4 w-4" />
-                  {t("payouts.receipt.openInNewTab")}
-                </a>
-              </Button>
-            </>
+            <Button
+              variant="outline"
+              onClick={handleDownload}
+              disabled={downloading}
+            >
+              {downloading ? (
+                <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+              ) : (
+                <Download className="mr-1.5 h-4 w-4" />
+              )}
+              {t("payouts.receipt.download")}
+            </Button>
           )}
           <Button onClick={onClose}>{t("payouts.receipt.close")}</Button>
         </DialogFooter>

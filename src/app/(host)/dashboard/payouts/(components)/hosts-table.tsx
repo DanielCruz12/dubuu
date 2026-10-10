@@ -28,7 +28,7 @@ import { useLanguage } from "@/lib/i18n-context";
 import { cn } from "@/lib/utils";
 import type { HostPayoutStatus, HostsTableRow } from "@/types/payout";
 
-type SortKey = "username" | "totalToPay" | "totalPaid" | "outstanding" | "lastPayment";
+type SortKey = "username" | "totalToPay" | "totalPaid" | "lastPayment";
 
 interface Props {
   dateFrom?: string;
@@ -51,7 +51,6 @@ const SORTABLE_COLUMNS: { key: SortKey; labelKey: string; align?: "right"; width
   { key: "username", labelKey: "payouts.hostsTable.colHost" },
   { key: "totalToPay", labelKey: "payouts.hostsTable.colToPay", align: "right", width: "min-w-[130px]" },
   { key: "totalPaid", labelKey: "payouts.hostsTable.colPaid", align: "right" },
-  { key: "outstanding", labelKey: "payouts.hostsTable.colOutstanding", align: "right" },
   { key: "lastPayment", labelKey: "payouts.hostsTable.colLastPayment" },
 ];
 
@@ -127,7 +126,7 @@ export function HostsTable({ dateFrom, dateTo, hostId, onDefaultHost, toolbarTop
   const [search, setSearch] = useState("");
   // Por defecto solo los pendientes: no cargamos toda la tabla de una vez.
   const [status, setStatus] = useState<HostPayoutStatus | "all">("pending");
-  const [sortBy, setSortBy] = useState<SortKey>("outstanding");
+  const [sortBy, setSortBy] = useState<SortKey>("totalToPay");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [page, setPage] = useState(1);
   const defaultHostEmittedRef = useRef(false);
@@ -285,14 +284,6 @@ export function HostsTable({ dateFrom, dateTo, hostId, onDefaultHost, toolbarTop
                     )}
                   >
                     {fmt(row.totalPaid)}
-                  </TableCell>
-                  <TableCell
-                    className={cn(
-                      "text-right font-medium",
-                      row.outstanding > 0 ? "text-red-600" : "text-green-600",
-                    )}
-                  >
-                    {fmt(row.outstanding)}
                   </TableCell>
                   <TableCell className="whitespace-nowrap text-muted-foreground">
                     {row.lastPayment

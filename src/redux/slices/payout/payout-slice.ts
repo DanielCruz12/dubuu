@@ -41,7 +41,6 @@ function hostHistoryParamsToQuery(params: HostPaymentHistoryParams) {
   if (params.dateFrom) searchParams.append("dateFrom", params.dateFrom);
   if (params.dateTo) searchParams.append("dateTo", params.dateTo);
   if (params.search) searchParams.append("search", params.search);
-  if (params.method) searchParams.append("method", params.method);
   if (params.page) searchParams.append("page", String(params.page));
   if (params.pageSize) searchParams.append("pageSize", String(params.pageSize));
   return searchParams.toString();

@@ -15,13 +15,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useLanguage } from "@/lib/i18n-context";
 import { cn } from "@/lib/utils";
@@ -51,7 +44,6 @@ export function RegisterPaymentModal({
   const [amount, setAmount] = useState("");
   const [paymentDate, setPaymentDate] = useState("");
   const [paymentTime, setPaymentTime] = useState("");
-  const [method, setMethod] = useState("");
   const [reference, setReference] = useState("");
   const [notes, setNotes] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -61,13 +53,12 @@ export function RegisterPaymentModal({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [serverError, setServerError] = useState<string | null>(null);
 
-  // Reinicia el formulario al abrir/cerrar.
+  // Reinicia el formulario al abrir; la hora queda con la hora actual.
   useEffect(() => {
     if (!open) return;
     setAmount("");
     setPaymentDate("");
-    setPaymentTime("");
-    setMethod("");
+    setPaymentTime(new Date().toTimeString().slice(0, 5));
     setReference("");
     setNotes("");
     setFile(null);
@@ -133,8 +124,8 @@ export function RegisterPaymentModal({
       next.amount = t("payouts.registerPayment.errors.amountExceeds");
     }
     if (!paymentDate) next.date = t("payouts.registerPayment.errors.dateRequired");
-    if (!method) next.method = t("payouts.registerPayment.errors.methodRequired");
-    if (method === "bank_transfer" && !reference.trim()) {
+    // El pago es siempre transferencia bancaria: la referencia es obligatoria.
+    if (!reference.trim()) {
       next.reference = t("payouts.registerPayment.errors.referenceRequired");
     }
     setErrors(next);
@@ -150,7 +141,6 @@ export function RegisterPaymentModal({
         amount: numericAmount,
         paymentDate,
         paymentTime: paymentTime || undefined,
-        paymentMethod: method,
         transactionReference: reference.trim() || undefined,
         receiptUrl,
         notes: notes.trim() || undefined,
@@ -252,53 +242,24 @@ export function RegisterPaymentModal({
             />
           </div>
 
-          <div className="space-y-1.5">
-            <Label>{t("payouts.registerPayment.paymentMethod")}</Label>
-            <Select
-              value={method}
-              onValueChange={(v) => {
-                setMethod(v);
-                setErrors((prev) => ({ ...prev, method: "", reference: "" }));
+          <div className="space-y-1.5 sm:col-span-2">
+            <Label htmlFor="rp-reference">
+              {t("payouts.registerPayment.reference")}
+            </Label>
+            <Input
+              id="rp-reference"
+              value={reference}
+              onChange={(e) => {
+                setReference(e.target.value);
+                setErrors((prev) => ({ ...prev, reference: "" }));
               }}
-            >
-              <SelectTrigger className={cn("h-9 w-full", errorClass("method"))}>
-                <SelectValue placeholder={t("payouts.registerPayment.methodPlaceholder")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="bank_transfer">
-                  {t("payouts.registerPayment.methodBankTransfer")}
-                </SelectItem>
-                <SelectItem value="cash">
-                  {t("payouts.registerPayment.methodCash")}
-                </SelectItem>
-                <SelectItem value="other">
-                  {t("payouts.registerPayment.methodOther")}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            {errors.method && <p className="text-xs text-red-500">{errors.method}</p>}
+              placeholder={t("payouts.registerPayment.referencePlaceholder")}
+              className={cn("h-9", errorClass("reference"))}
+            />
+            {errors.reference && (
+              <p className="text-xs text-red-500">{errors.reference}</p>
+            )}
           </div>
-
-          {method === "bank_transfer" && (
-            <div className="space-y-1.5 sm:col-span-2">
-              <Label htmlFor="rp-reference">
-                {t("payouts.registerPayment.reference")}
-              </Label>
-              <Input
-                id="rp-reference"
-                value={reference}
-                onChange={(e) => {
-                  setReference(e.target.value);
-                  setErrors((prev) => ({ ...prev, reference: "" }));
-                }}
-                placeholder={t("payouts.registerPayment.referencePlaceholder")}
-                className={cn("h-9", errorClass("reference"))}
-              />
-              {errors.reference && (
-                <p className="text-xs text-red-500">{errors.reference}</p>
-              )}
-            </div>
-          )}
 
           <div className="space-y-1.5 sm:col-span-2">
             <Label htmlFor="rp-file">{t("payouts.registerPayment.receipt")}</Label>

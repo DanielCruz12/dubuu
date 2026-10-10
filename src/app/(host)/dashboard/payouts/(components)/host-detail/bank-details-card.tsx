@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Copy, Check, AlertTriangle, Landmark } from "lucide-react";
+import { Copy, Check, Landmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLanguage } from "@/lib/i18n-context";
@@ -39,7 +39,10 @@ export function BankDetailsCard({ hostId }: Props) {
   }
 
   const hasData = Boolean(
-    data?.bankName || data?.accountNumber || data?.accountType,
+    data?.bankName ||
+    data?.accountNumber ||
+    data?.accountType ||
+    data?.holderName,
   );
 
   const rows: { key: string; label: string; value: string; masked?: boolean }[] = [
@@ -51,6 +54,7 @@ export function BankDetailsCard({ hostId }: Props) {
       value: data?.accountNumber ?? "",
       masked: true,
     },
+    { key: "holderName", label: t("payouts.bankDetails.accountHolder"), value: data?.holderName ?? "" },
   ];
 
   return (
@@ -104,10 +108,10 @@ export function BankDetailsCard({ hostId }: Props) {
         )}
       </div>
 
-      <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-amber-700 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-400">
+      {/*   <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-amber-700 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-400">
         <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
         <p className="text-xs leading-relaxed">{t("payouts.bankDetails.verifyAlert")}</p>
-      </div>
+      </div> */}
     </div>
   );
 }

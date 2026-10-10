@@ -105,6 +105,8 @@ export interface HostBankDetails {
   bankName: string;
   accountNumber: string;
   accountType: string;
+  holderName: string;
+  email: string;
   lastUpdated: string;
 }
 
@@ -113,7 +115,6 @@ export interface HostPaymentHistoryParams {
   dateFrom?: string;
   dateTo?: string;
   search?: string;
-  method?: string;
   page?: number;
   pageSize?: number;
 }
@@ -132,8 +133,7 @@ export interface RegisterPaymentInput {
   paymentDate: string;
   /** HH:mm */
   paymentTime?: string;
-  /** bank_transfer | cash | other */
-  paymentMethod: string;
+  /** Siempre transferencia bancaria (único método soportado). */
   transactionReference?: string;
   receiptUrl?: string;
   notes?: string;

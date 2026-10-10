@@ -1,59 +1,47 @@
 # Estado actual
-Última actualización: 2026-10-08
+Última actualización: 2026-10-10
 
-## Fase 4 del panel admin COMPLETADA (2026-10-08)
-- Página `/dashboard/payouts/hosts/:hostId` reemplazó el placeholder: cabecera (avatar, nombre, email, teléfono, badge estado, botón a datos bancarios), 3 stats + barra de progreso, tabs Overview / Payment History / Bank Details, skeletons.
-- Overview: próximo pago (viernes, monto = outstanding) con botón Registrar pago; pagos recientes.
-- Payment History: tabla con filtros (búsqueda, rango de fechas, método), paginación, export CSV del host y ver comprobante.
-- Bank Details: banco, tipo de cuenta, número enmascarado + copiar, última actualización, alerta de verificación.
-- Register Payment modal: monto (decimales filtrados), fecha, hora, método (referencia obligatoria en transferencias), comprobante subido al seleccionar (PDF/JPG/PNG), notas, validaciones inline + "permitir exceder" si el monto supera el saldo; toast y refresco automático vía tags RTK.
-- Comprobante modal: metadatos + preview (img/iframe PDF) + descargar + abrir en pestaña.
-- Backend: `GET /hosts/:hostId`, `GET /hosts/:hostId/history`, `GET /hosts/:hostId/bank-details`, `POST /admin/payouts` (validaciones: monto>0 y ≤outstanding salvo allowExceed, fecha, método, referencia en transferencias; auditoría con paid_by de sesión). Export por host reutiliza `/export?hostId=`.
-- Queda: borrar `drop-payouts.tmp.js` del backend; Fase 5 (Reports PDF/Excel/CSV + historial de reportes); limpiar `bookings.payout_status`.
+## Vista de pagos admin (`/dashboard/payouts`) — estado final
 
-## Vista de pagos admin (`/dashboard/payouts`) — estado final tras todos los ajustes
+**Tarjetas** (`summary-cards.tsx`): hero Total Recaudado (80%) + Total pagado (20%) en fila (desktop); mobile: Recaudado 100% + 3 columnas (Pagado, Comisión, Total a pagar). Solo 4 métricas, sin tooltips. "Ganancia de Dubuu" en comisión. Tendencia vs período anterior (`previousTotalCollected`).
 
-**Tarjetas** (`summary-cards.tsx`):
-- Hero: Total Recaudado (80%) + Total pagado (20%) en la misma fila (desktop). En mobile: Total Recaudado 100% y debajo 3 columnas (Total pagado, Comisión, Total a pagar).
-- Solo 4 métricas: collected, paid, commission, outstanding ("Total a pagar"). Sin tooltips. "Ganancia de Dubuu" como descripción de comisión. La tendencia usa `previousTotalCollected`; el conteo de reservas se quitó del hero.
-- Cards eliminadas: Pagable a Hosts, Hosts por pagar (el backend aún devuelve `pendingHosts` — sin uso; se puede quitar).
+**Tabla All Hosts** (`hosts-table.tsx` + `payouts-filters.tsx` + `payouts-content.tsx`):
+- Columnas: **Host(username) · Por pagar · Pagado · Último pago · Estado · View** (sin "Pendiente" — duplicaba "Por pagar").
+- "Por pagar" = **lo que falta por pagar** (disminuye con los pagos). Colores: rojo si hay monto/deuda, verde en 0.00; "Pagado" rojo si aún se debe.
+- Barra 2 filas: [Host]+[Estado] arriba; [Buscador (largo, al inicio)] [Período] [Fechas solo con "Personalizado"] … [Exportar] abajo. Mobile apilado.
+- Default: filtro **Pendiente**, orden "Por pagar" desc, preselección del primer host pendiente (`onDefaultHost`). Concordancia: host seleccionado → tabla solo ese host.
+- Export CSV global: `GET /admin/payouts/export` (`;`, BOM, `pagos_dubuu[_desde][_hasta].csv`), descarga fetch+blob.
 
-**Barra de la tabla** (`hosts-table.tsx` + `payouts-filters.tsx` + `payouts-content.tsx`):
-- Fila superior: [Host] + [Estado] a la par (mobile también, host primero, tamaño natural).
-- Fila principal: [Buscador (más largo, al inicio, w-64/72, full-width mobile)] [Período "Este mes"] [Rango de fechas — SOLO si el preset es "Personalizado"] … [Exportar al final].
-- `payouts-filters.tsx` se dividió en `PayoutPeriodFilter` y `PayoutHostFilter` (el host usa username del backend `getHosts`).
-- Export CSV: `GET /admin/payouts/export` (separador `;`, BOM, filename `pagos_dubuu[_desde][_hasta].csv`), descarga con `fetch`+blob en `payouts-content.tsx` (auth por cookie de Clerk).
+## Detalle del host (`/dashboard/payouts/hosts/:hostId`) — Fase 4, estado final
 
-**Tabla All Hosts**:
-- Columnas: Host(username) · Por pagar · Pagado · Pendiente · Último pago · Estado · View.
-- Colores: Por pagar > 0 rojo / 0 verde; Pagado según deuda (outstanding > 0 → rojo aunque sea 0.00; al día → verde); Pendiente igual.
-- Por defecto: filtro **Pendiente**, orden outstanding desc (primero a quien más se le debe). `onDefaultHost` preselecciona el primer host pendiente en el select de host de arriba.
-- Concordancia: si hay host seleccionado, la tabla muestra solo ese host (backend filtra por `hostId`). "Todos los estados" sigue disponible en el select de estado.
-- View → `/dashboard/payouts/hosts/:hostId` (página placeholder hasta Fase 4).
-
-**Quitado de esta pantalla**: historial global de pagos (irá en el detalle del host, Fase 4). `payout-history-table.tsx` borrado (git lo tiene). Endpoint backend `/history` sigue existiendo (lo usarán Fase 4 y el export).
-
-**Sidebar**: layout dashboard 260px (md) / 280px (lg) en `src/app/(host)/dashboard/layout.tsx`. El sheet mobile quedó en `w-[250px]` (ajuste manual del usuario en `src/layouts/sidebar.tsx`).
+- Cabecera: avatar, nombre/@username, email y teléfono **desencriptados** (el backend los devuelve planos). Sin badge de estado, sin botón "Ver / Editar datos de pago".
+- Stats: **Por pagar + Pagado** (2 cards) + barra de progreso (solo si hay actividad).
+- **Tabs: Historial de pagos (default) y Datos bancarios** (la tab "Resumen" se eliminó).
+- **Registrar pago**: botón arriba a la derecha del Historial, SOLO si `outstanding > 0`. Modal: monto (decimales filtrados, ≤ outstanding salvo checkbox "permitir exceder"), fecha, hora (precarga la hora actual), **referencia obligatoria siempre**, comprobante PDF/JPG/PNG (se sube al seleccionar, muestra nombre/tamaño), notas. **Método fijo: transferencia bancaria** (sin select).
+- Historial: tabla (fecha+hora, monto, referencia, estado, comprobante, notas), búsqueda, rango de fechas, paginación y export CSV del host (`/export?hostId=`). Sin columna ni filtro de método.
+- **Datos bancarios**: lee de `payment_accounts` (payment_method='bank'), todos los campos **desencriptados** en el endpoint. Muestra: Banco, Tipo de cuenta, Número de cuenta (enmascarado; copiar copia el completo) y Titular — cada uno con botón copiar. Sin correo de contacto ni alerta (por decisión del usuario).
+- **Comprobante**: modal con metadatos + preview (`next/image` fill/contain/unoptimized para imágenes; iframe para PDF) + descarga real fetch→blob (fallback: abrir en pestaña). Sin "Abrir en nueva pestaña" como botón.
+- Subida de comprobantes: `/files/upload` genera key único `receipts/<ts>-<i>-<nombre seguro><ext>` vía CloudFront (antes usaba el nombre original → URLs rotas).
 
 ## Backend de pagos (dantours-drizzle-nodejs)
-- Modelo por-HOST en `payouts`: host_id(text→users.id), amount, payment_date/time, payment_method(bank_transfer|cash|other), bank_account_used, transaction_reference, receipt_url, notes, paid_by, created_at/updated_at + índices. (Antes era pago-por-reserva; se eliminaron `/bookings`, `/mark-paid`, `/mark-paid-batch` y su UI.)
-- Endpoints vivos: `/admin/payouts/summary` (incluye previousTotalCollected, bookingCount, pendingHosts), `/history`, `/export`, `/hosts-table` (params: dateFrom, dateTo, hostId, search, status, sortBy, sortOrder, page, pageSize), `/hosts`.
-- **Migración aplicada en la BD (confirmada por el usuario, 2026-10-05)**: la tabla `payouts` ya vive en la BD con el modelo por-host. Queda pendiente solo borrar el script temporal `drop-payouts.tmp.js` del backend (ya no se necesita).
-- BD sin `__drizzle_migrations` (siempre se usó `dz:push`): `dz:mig` no aplica hasta baselinar (deuda técnica). Journal saneado (0022 recreado como no-op; 0023 aplica el is_active real).
-- `bookings.payout_status` quedó sin uso (limpieza futura).
+
+- `payouts` por-HOST (migrado y aplicado en BD): host_id(text→users.id), amount, payment_date/time, payment_method ('bank_transfer' fijo), bank_account_used, transaction_reference, receipt_url, notes, paid_by, created_at/updated_at + índices.
+- Endpoints: `/admin/payouts/summary` (previousTotalCollected, bookingCount, pendingHosts), `/history`, `/export`, `/hosts-table` (dateFrom, dateTo, hostId, search, status, sortBy, sortOrder, page, pageSize), `/hosts`, `/hosts/:hostId`, `/hosts/:hostId/history`, `/hosts/:hostId/bank-details`, `POST /admin/payouts` (validaciones: monto>0 y ≤ outstanding salvo allowExceed, fecha, referencia obligatoria; paid_by = sesión).
+- **PII encriptada en BD** (AES, `utils/crypto.ts`): users.email/phone_number y todos los campos de payment_accounts. Los endpoints de admin los desencriptan (fallback legado). `payment_method` de payment_accounts también está encriptado.
+- BD sin `__drizzle_migrations` (se maneja con `dz:push`; baselinar si se quiere `dz:mig`). `bookings.payout_status` sin uso (limpieza futura). Queda borrar `drop-payouts.tmp.js` del backend.
 
 ## Seguridad (backend, hecho en sesiones previas)
-- `updateProduct`/`deleteProduct`: propiedad validada contra `req.auth.userId` (nunca el body); admin bypass vía `(req as any).userRoles` (adjuntado en `role-validator.ts`). `user_id` del body se descarta.
-- `POST /api/v1/products`: ahora con `requireAuth()` + `requireRole(['host','admin'])` y `createProduct` fuerza `user_id` = sesión.
+- `updateProduct`/`deleteProduct`: propiedad contra `req.auth.userId` (nunca el body); bypass admin vía `(req as any).userRoles` (adjuntado en `role-validator.ts`); `user_id` del body se descarta.
+- `POST /api/v1/products`: `requireAuth()` + `requireRole(['host','admin'])`; `createProduct` fuerza `user_id` = sesión.
 
 ## Validación de formularios (Crear Tour / Alquiler)
-Implementada completa (ver sesión en CLAUDE.md): filtros en vivo por tipo de campo, sanitización anti-inyección, zod con trim/min/max, errores en tiempo real, resumen de errores, doble envío bloqueado. Convenciones en `src/components/modules/add-tour/validation.ts` y `form-error-summary.tsx`.
+Completa (detalles en CLAUDE.md): filtros en vivo por tipo de campo, sanitización anti-inyección, zod trim/min/max, errores en tiempo real con aria, resumen de errores, doble envío bloqueado. Convenciones en `src/components/modules/add-tour/validation.ts` y `form-error-summary.tsx`.
 
 ## Docs
-- Spec canónica del panel admin: `src/instructions/panel-admin.md` (del usuario). Tracker de progreso: `panel-admin.md` (raíz).
-- `CLAUDE.md`: estructura, formularios, validación y estado del panel admin.
+- Spec canónica del panel admin: `src/instructions/panel-admin.md`. Tracker de progreso: `panel-admin.md` (raíz). Este archivo: estado actual consolidado.
+- `CLAUDE.md`: estructura, formularios, validación y panel admin.
 
-## Pendientes globales
-- **Fase 4** (spec #4–#10): página Host Payment Details (avatar, email, teléfono, 3 stats + barra de progreso, tabs Overview/Payment History/Bank Details, modal Register Payment con monto libre/fecha/hora/método/referencia/comprobante y validaciones, modal de comprobante, auditoría "Created by"). Endpoints previstos: `GET /admin/payouts/hosts/:hostId`, `/hosts/:hostId/history`, `/hosts/:hostId/bank-details`, `POST /admin/payouts`, `POST /admin/payouts/:paymentId/receipt`. Nota: los datos bancarios viven en `users` (bank_name, account_number, account_type).
-- **Fase 5**: Reports (PDF/Excel/CSV + historial de reportes).
-- Deuda técnica BD: baselinar `__drizzle_migrations` si algún día se quiere flujo `dz:mig` (hoy la BD se maneja con `dz:push`).
+## Pendientes
+- **Fase 5**: Reports (filtros, formato PDF/Excel/CSV + historial de reportes generados).
+- Limpiar `bookings.payout_status` (sin uso) y borrar `drop-payouts.tmp.js` del backend.
+- Baselinar `__drizzle_migrations` si se adopta flujo `dz:mig`.

@@ -9,13 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -41,17 +34,10 @@ interface Props {
 
 const PAGE_SIZE = 20;
 
-const METHOD_LABELS: Record<string, string> = {
-  bank_transfer: "payouts.history.methodBankTransfer",
-  cash: "payouts.history.methodCash",
-  other: "payouts.history.methodOther",
-};
-
 export function HostHistoryTable({ hostId, onViewReceipt }: Props) {
   const { t } = useLanguage();
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
-  const [method, setMethod] = useState<string>("all");
   const [dateFrom, setDateFrom] = useState<Date | undefined>();
   const [dateTo, setDateTo] = useState<Date | undefined>();
   const [page, setPage] = useState(1);
@@ -70,7 +56,6 @@ export function HostHistoryTable({ hostId, onViewReceipt }: Props) {
     dateFrom: dateFrom?.toISOString(),
     dateTo: dateTo?.toISOString(),
     search: search || undefined,
-    method: method === "all" ? undefined : method,
     page,
     pageSize: PAGE_SIZE,
   });
@@ -78,11 +63,6 @@ export function HostHistoryTable({ hostId, onViewReceipt }: Props) {
   const rows = query.data?.data ?? [];
   const total = query.data?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-
-  const methodLabel = (m: string) => {
-    const key = METHOD_LABELS[m];
-    return key ? t(key) : m || "—";
-  };
 
   const formatDate = (date: string, time: string) => {
     if (!date) return "—";
@@ -166,24 +146,6 @@ export function HostHistoryTable({ hostId, onViewReceipt }: Props) {
           </PopoverContent>
         </Popover>
 
-        <Select
-          value={method}
-          onValueChange={(v) => {
-            setMethod(v);
-            setPage(1);
-          }}
-        >
-          <SelectTrigger className="h-8 w-44">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t("payouts.hostDetail.historyAllMethods")}</SelectItem>
-            <SelectItem value="bank_transfer">{t("payouts.history.methodBankTransfer")}</SelectItem>
-            <SelectItem value="cash">{t("payouts.history.methodCash")}</SelectItem>
-            <SelectItem value="other">{t("payouts.history.methodOther")}</SelectItem>
-          </SelectContent>
-        </Select>
-
         <div className="ml-auto">
           <Button
             variant="outline"
@@ -222,11 +184,10 @@ export function HostHistoryTable({ hostId, onViewReceipt }: Props) {
               <TableRow>
                 <TableHead>{t("payouts.table.date")}</TableHead>
                 <TableHead className="text-right">{t("payouts.table.amount")}</TableHead>
-                <TableHead>{t("payouts.table.method")}</TableHead>
                 <TableHead>{t("payouts.table.reference")}</TableHead>
                 <TableHead>{t("payouts.hostsTable.colStatus")}</TableHead>
                 <TableHead>{t("payouts.hostDetail.receiptColumn")}</TableHead>
-                <TableHead>{t("payouts.table.notes")}</TableHead>
+                {/*  <TableHead>{t("payouts.table.notes")}</TableHead> */}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -238,7 +199,6 @@ export function HostHistoryTable({ hostId, onViewReceipt }: Props) {
                   <TableCell className="text-right font-medium text-emerald-600">
                     ${parseFloat(r.amount).toFixed(2)}
                   </TableCell>
-                  <TableCell>{methodLabel(r.paymentMethod)}</TableCell>
                   <TableCell>{r.transactionReference || "—"}</TableCell>
                   <TableCell>
                     <Badge className="bg-green-500/10 text-green-600 border-green-500/20">
@@ -247,7 +207,7 @@ export function HostHistoryTable({ hostId, onViewReceipt }: Props) {
                   </TableCell>
                   <TableCell>
                     <Button
-                      variant="outline"
+                      variant="secondary"
                       size="sm"
                       className="h-7 text-xs"
                       disabled={!r.receiptUrl}
@@ -256,9 +216,9 @@ export function HostHistoryTable({ hostId, onViewReceipt }: Props) {
                       {t("payouts.hostDetail.viewReceipt")}
                     </Button>
                   </TableCell>
-                  <TableCell className="max-w-[200px] truncate text-muted-foreground">
+                  {/*  <TableCell className="max-w-[200px] truncate text-muted-foreground">
                     {r.notes || "—"}
-                  </TableCell>
+                  </TableCell> */}
                 </TableRow>
               ))}
             </TableBody>

@@ -20,24 +20,27 @@ Según spec #2, con simplificaciones acordadas:
 - **Generate Report** → export CSV `GET /admin/payouts/export` (separador `;`, BOM UTF-8, filename `pagos_dubuu[_desde][_hasta].csv`). Botón al final de la barra de la tabla. El PDF/Excel de la spec #11 queda para la fase de Reports.
 - El historial global de pagos NO vive en esta pantalla (se movió al detalle del host — Fase 4).
 
-## Fase 3 — Tabla de todos los hosts (completada y ajustada hasta 2026-10-05)
+## Fase 3 — Tabla de todos los hosts (completada y ajustada hasta 2026-10-10)
 Según spec #3:
-- `HostsTable` debajo de las estadísticas. Columnas: Host(username), Total to pay, Paid, Outstanding, Last payment, Status, Actions(View). Colores: rojo cuando hay monto/deuda, verde cuando es 0/al día.
+- `HostsTable` debajo de las estadísticas. Columnas finales (sin duplicidad): **Host(username), Por pagar, Pagado, Último pago, Estado, Actions(View)**.
+  - **"Por pagar" = lo que falta por pagar** (disminuye con cada pago; ya NO es el total histórico). La columna "Pendiente" se eliminó porque duplicaba "Por pagar".
+  - Colores: rojo cuando hay monto/deuda, verde cuando es 0/al día; "Pagado" rojo si aún se debe (outstanding > 0) aunque sea 0.00.
 - Barra en 2 filas: **[Host]+[Estado]** arriba; **[Buscador (largo, al inicio)] [Período] [Fechas si custom]** … **[Exportar]** abajo. Responsive en mobile.
-- Por defecto: filtro **Pendiente** (no carga todo de una vez) y orden outstanding desc — primero a quién más se le debe (spec #13). Preselecciona automáticamente el primer host pendiente en el select de host superior.
+- Por defecto: filtro **Pendiente** (no carga todo de una vez) y orden "Por pagar" desc — primero a quién más se le debe (spec #13). Preselecciona automáticamente el primer host pendiente en el select de host superior.
 - Concordancia: si hay host seleccionado, la tabla muestra solo ese host; "Todos los hosts" muestra la lista.
-- `View` → `/dashboard/payouts/hosts/:hostId` (placeholder hasta Fase 4).
-- Endpoint: `GET /admin/payouts/hosts-table?dateFrom&dateTo&hostId&search&status&sortBy&sortOrder&page&pageSize` → devuelve exactamente lo que la tabla muestra. Agregados por host con grouped queries y paginación en memoria.
+- `View` → `/dashboard/payouts/hosts/:hostId` (detalle de la Fase 4).
+- Endpoint: `GET /admin/payouts/hosts-table?dateFrom&dateTo&hostId&search&status&sortBy&sortOrder&page&pageSize`. El campo `outstanding` sigue en la respuesta (lo usan estados/colores), pero `totalToPay` ya es el saldo restante. Agregados por host con grouped queries y paginación en memoria.
 
-## Fase 4 — Host Payment Details (completada 2026-10-08)
+## Fase 4 — Host Payment Details (completada y ajustada con el usuario hasta 2026-10-10)
 Spec #4–#10, #12:
-- **Página** `/dashboard/payouts/hosts/:hostId` (`host-detail-content.tsx` + componentes en `(components)/host-detail/`): cabecera con avatar, nombre/@username, email, teléfono, badge de estado y botón "Ver / Editar datos de pago" (abre la pestaña Banco); 3 estadísticas (Por pagar/Pagado/Pendiente) + barra de progreso "% pagado"; skeletons de carga.
-- **Tabs**: Overview (próximo pago cada viernes con fecha estimada, monto = outstanding y botón Registrar pago; pagos recientes con ver comprobante) · Payment History (tabla con fecha+hora, monto, método, referencia, estado, comprobante, notas; búsqueda, rango de fechas, filtro por método, paginación y export CSV del host) · Bank Details (banco, tipo de cuenta, número enmascarado con botón copiar, última actualización, alerta de verificación).
-- **Register Payment** (`register-payment-modal.tsx`): host + saldo pendiente; monto (filtrado a decimales, máx. 2), fecha, hora, método (bank_transfer/cash/other), referencia (obligatoria en transferencias), comprobante PDF/JPG/PNG (se sube al seleccionar vía `/files/upload` y muestra nombre/tamaño), notas; validaciones inline (monto > 0, monto ≤ outstanding salvo checkbox "Permitir exceder", fecha y método obligatorios); toast de éxito y actualización automática (RTK tags invalidan summary/detalle/historial).
-- **Comprobante** (`receipt-modal.tsx`): metadatos del pago (fecha, monto, host, referencia, estado PAID), preview de imagen o PDF en iframe, descargar y abrir en nueva pestaña.
-- **Backend**: `GET /admin/payouts/hosts/:hostId` (detalle + finanzas históricas del host), `GET /hosts/:hostId/history` (filtros fecha/búsqueda/método + paginación), `GET /hosts/:hostId/bank-details` (datos de `users`), `POST /admin/payouts` (registra pago validando monto/fecha/método/referencia/outstanding; `paid_by` = sesión; auditoría spec #12 completa). El export por host reutiliza `GET /export?hostId=`.
-- **Nota**: `POST /admin/payouts/:paymentId/receipt` (spec #14) no fue necesario — el comprobante se sube antes de registrar el pago y queda asociado al pago en `receipt_url`.
-- **Modelo de datos**: `payouts` por-host con auditoría, migrado y aplicado en la BD. `bookings.payout_status` quedó sin uso (limpieza futura). Queda borrar el script temporal `drop-payouts.tmp.js` del backend.
+- **Página** `/dashboard/payouts/hosts/:hostId` (`host-detail-content.tsx` + componentes en `(components)/host-detail/`): cabecera con avatar, nombre/@username, email y teléfono **desencriptados**; **2 estadísticas (Por pagar / Pagado)** + barra de progreso "% pagado" (solo si el host tiene actividad); skeletons de carga. Sin badge de estado ni botón "Ver / Editar datos de pago".
+- **Tabs (solo 2)**: **Payment History** (default; tabla fecha+hora, monto, referencia, estado, comprobante, notas; búsqueda, rango de fechas, paginación y export CSV del host; botón **Registrar pago** arriba a la derecha SOLO si `outstanding > 0`) · **Bank Details**. La tab "Resumen" (próximo pago semanal + pagos recientes) se eliminó por decisión del usuario.
+- **Register Payment** (`register-payment-modal.tsx`): host + saldo pendiente; monto (decimales filtrados, ≤ outstanding salvo checkbox "Permitir exceder"), fecha, hora (precarga la hora actual), **referencia obligatoria siempre**, comprobante PDF/JPG/PNG (se sube al seleccionar y muestra nombre/tamaño), notas. **Único método: transferencia bancaria** (sin select; backend fija `payment_method = 'bank_transfer'`). Toast y actualización automática vía tags RTK.
+- **Bank Details** (`bank-details-card.tsx`): lee de `payment_accounts` (payment_method='bank'), con **todos los campos desencriptados** en el endpoint. Muestra Banco, Tipo de cuenta, Número de cuenta (enmascarado; el botón copiar copia el completo) y Titular — con botón copiar en cada dato. Sin correo de contacto ni alerta (por decisión del usuario).
+- **Comprobante** (`receipt-modal.tsx`): metadatos del pago + preview con `next/image` (fill/contain/unoptimized; iframe para PDF) y **descarga real** fetch→blob (fallback: pestaña nueva). Subida vía `/files/upload` con key único `receipts/<ts>-<i>-<nombre seguro><ext>` por CloudFront.
+- **Backend**: `GET /admin/payouts/hosts/:hostId` (detalle + finanzas; email/teléfono desencriptados), `GET /hosts/:hostId/history` (fecha/búsqueda + paginación), `GET /hosts/:hostId/bank-details` (desencriptado), `POST /admin/payouts` (monto>0, ≤ outstanding salvo allowExceed, fecha, referencia obligatoria; `paid_by` = sesión; auditoría spec #12). Export por host reutiliza `GET /export?hostId=` (sin columna de método).
+- **Nota**: `POST /admin/payouts/:paymentId/receipt` (spec #14) no fue necesario — el comprobante se sube antes de registrar el pago y queda en `receipt_url`.
+- **Modelo de datos**: `payouts` por-host con auditoría, migrado y aplicado en la BD. `bookings.payout_status` sin uso (limpieza futura). Queda borrar `drop-payouts.tmp.js` del backend.
 
 ## Fase 5 — Reports (pendiente)
 Spec #11: sección Payment Reports con filtros (rango, host, estado, formato PDF/Excel/CSV) + historial de reportes generados (fecha, rango, host, formato, generado por, descarga). Por ahora solo existe el CSV directo (global y por host) de las Fases 2 y 4.
