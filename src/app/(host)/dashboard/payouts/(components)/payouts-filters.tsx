@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { format, startOfWeek, startOfMonth, startOfYear, endOfDay } from "date-fns";
 import { es } from "date-fns/locale";
 import { CalendarIcon, ChevronDown } from "lucide-react";
@@ -12,14 +11,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -27,7 +18,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n-context";
-import type { HostOption } from "@/types/payout";
 
 export type DatePreset = "week" | "month" | "year" | "custom";
 
@@ -117,50 +107,5 @@ export function PayoutPeriodFilter({
         </Popover>
       )}
     </>
-  );
-}
-
-interface HostFilterProps {
-  hostId: string | undefined;
-  onHostIdChange: (id: string | undefined) => void;
-  hosts: HostOption[];
-}
-
-/** Selector de host (usa el username). */
-export function PayoutHostFilter({ hostId, onHostIdChange, hosts }: HostFilterProps) {
-  const { t } = useLanguage();
-  const [hostOpen, setHostOpen] = useState(false);
-
-  const selectedHost = hosts.find((h) => h.id === hostId);
-
-  return (
-    <Popover open={hostOpen} onOpenChange={setHostOpen}>
-      <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="min-w-[160px] justify-between font-normal">
-          <span className={!selectedHost ? "text-muted-foreground" : ""}>
-            {selectedHost ? selectedHost.name : t("payouts.filters.allHosts")}
-          </span>
-          <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="p-0" align="start">
-        <Command>
-          <CommandInput placeholder={t("payouts.filters.searchHost")} />
-          <CommandList>
-            <CommandEmpty>{t("payouts.filters.noHostsFound")}</CommandEmpty>
-            <CommandGroup>
-              <CommandItem onSelect={() => { onHostIdChange(undefined); setHostOpen(false); }}>
-                {t("payouts.filters.allHosts")}
-              </CommandItem>
-              {hosts.map((h) => (
-                <CommandItem key={h.id} onSelect={() => { onHostIdChange(h.id); setHostOpen(false); }}>
-                  {h.name}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
   );
 }

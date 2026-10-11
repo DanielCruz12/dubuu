@@ -106,10 +106,6 @@ Email
 Phone
 Status
 
-Botón:
-
-**View / Edit Payment Details**
-
 Mostrar tres estadísticas:
 
 ### Total to pay
@@ -134,34 +130,9 @@ Agregar una barra de progreso:
 
 Crear tabs:
 
-### Overview
-
 ### Payment History
 
 ### Bank Details
-
----
-
-# 6. Overview
-
-Mostrar:
-
-## Recent payments
-
-Tabla:
-
-* Date
-* Amount
-* Status
-* Receipt
-
-Ejemplo:
-
-Jun 25, 2025 | $200.00 | Paid | View
-
-Jun 10, 2025 | $150.00 | Paid | View
-
-May 28, 2025 | $70.00 | Paid | View
 
 ---
 
@@ -211,11 +182,6 @@ También mostrar:
 Last updated:
 Jun 12, 2025
 
-
-Agregar una alerta:
-
-**Verify the bank details before making a payment.**
-
 ---
 
 # 8. Register Payment Modal
@@ -252,14 +218,6 @@ Date picker
 
 Time picker
 
-### Payment method
-
-Select:
-
-* Bank transfer
-* Cash
-* Other
-
 ### Transaction/reference number
 
 Input
@@ -289,7 +247,6 @@ Antes de guardar mostrar validaciones:
 
 * Amount cannot exceed outstanding balance unless explicitly allowed.
 * Payment date required.
-* Payment method required.
 * Receipt recommended/required depending on configuration.
 * Reference number required for bank transfers.
 
@@ -442,7 +399,6 @@ Cada pago registrado debe guardar:
 * Amount
 * Payment date
 * Payment time
-* Payment method
 * Bank account used
 * Transaction/reference number
 * Receipt/document

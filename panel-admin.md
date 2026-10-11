@@ -25,9 +25,9 @@ Según spec #3:
 - `HostsTable` debajo de las estadísticas. Columnas finales (sin duplicidad): **Host(username), Por pagar, Pagado, Último pago, Estado, Actions(View)**.
   - **"Por pagar" = lo que falta por pagar** (disminuye con cada pago; ya NO es el total histórico). La columna "Pendiente" se eliminó porque duplicaba "Por pagar".
   - Colores: rojo cuando hay monto/deuda, verde cuando es 0/al día; "Pagado" rojo si aún se debe (outstanding > 0) aunque sea 0.00.
-- Barra en 2 filas: **[Host]+[Estado]** arriba; **[Buscador (largo, al inicio)] [Período] [Fechas si custom]** … **[Exportar]** abajo. Responsive en mobile.
-- Por defecto: filtro **Pendiente** (no carga todo de una vez) y orden "Por pagar" desc — primero a quién más se le debe (spec #13). Preselecciona automáticamente el primer host pendiente en el select de host superior.
-- Concordancia: si hay host seleccionado, la tabla muestra solo ese host; "Todos los hosts" muestra la lista.
+- Barra en 2 filas: **[Estado]** arriba; **[Buscador (largo, al inicio)] [Período] [Fechas si custom]** … **[Exportar]** abajo. Responsive en mobile. (El select de host se eliminó — decisión del usuario: la tabla se gestiona con búsqueda/estado y el detalle por fila.)
+- **Solo hosts con al menos una reserva** (join a bookings en el backend): sin reservas no hay fila que revisar.
+- Por defecto: filtro **Pendiente** (no carga todo de una vez) y orden "Por pagar" desc — primero a quién más se le debe (spec #13).
 - `View` → `/dashboard/payouts/hosts/:hostId` (detalle de la Fase 4).
 - Endpoint: `GET /admin/payouts/hosts-table?dateFrom&dateTo&hostId&search&status&sortBy&sortOrder&page&pageSize`. El campo `outstanding` sigue en la respuesta (lo usan estados/colores), pero `totalToPay` ya es el saldo restante. Agregados por host con grouped queries y paginación en memoria.
 

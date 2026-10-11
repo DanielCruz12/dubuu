@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { format } from "date-fns";
 import { Search, Eye, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
@@ -33,11 +33,7 @@ type SortKey = "username" | "totalToPay" | "totalPaid" | "lastPayment";
 interface Props {
   dateFrom?: string;
   dateTo?: string;
-  /** Si hay un host seleccionado arriba, la tabla muestra solo ese host. */
-  hostId?: string;
-  /** Avisa una sola vez con el primer host pendiente (para preseleccionarlo arriba). */
-  onDefaultHost?: (hostId: string) => void;
-  /** Fila superior de la barra (ej. selector de host), a la izquierda del estado. */
+  /** Fila superior de la barra (controles extra), a la izquierda del estado. */
   toolbarTopLeft?: React.ReactNode;
   /** Fila principal, después del buscador (ej. período y fechas). */
   toolbarMainLeft?: React.ReactNode;
@@ -120,7 +116,7 @@ function SortableHeader({
  * Solo resumen por host; el detalle se carga en otra página al pulsar View.
  * Por defecto ordena por outstanding desc: primero a quienes más se les debe.
  */
-export function HostsTable({ dateFrom, dateTo, hostId, onDefaultHost, toolbarTopLeft, toolbarMainLeft, toolbarRight }: Props) {
+export function HostsTable({ dateFrom, dateTo, toolbarTopLeft, toolbarMainLeft, toolbarRight }: Props) {
   const { t } = useLanguage();
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
@@ -129,7 +125,6 @@ export function HostsTable({ dateFrom, dateTo, hostId, onDefaultHost, toolbarTop
   const [sortBy, setSortBy] = useState<SortKey>("totalToPay");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [page, setPage] = useState(1);
-  const defaultHostEmittedRef = useRef(false);
 
   // Debounce de búsqueda.
   useEffect(() => {
@@ -140,15 +135,9 @@ export function HostsTable({ dateFrom, dateTo, hostId, onDefaultHost, toolbarTop
     return () => clearTimeout(timeout);
   }, [searchInput]);
 
-  // Al cambiar de host (select superior) volver a la primera página.
-  useEffect(() => {
-    setPage(1);
-  }, [hostId]);
-
   const query = useGetHostsTableQuery({
     dateFrom,
     dateTo,
-    hostId,
     search: search || undefined,
     status: status === "all" ? undefined : status,
     sortBy,
@@ -160,18 +149,6 @@ export function HostsTable({ dateFrom, dateTo, hostId, onDefaultHost, toolbarTop
   const rows: HostsTableRow[] = query.data?.data ?? [];
   const total = query.data?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-
-  // Avisa una sola vez con el primer host pendiente (estado por defecto,
-  // ordenado por outstanding desc: el que más se le debe).
-  useEffect(() => {
-    if (!onDefaultHost || defaultHostEmittedRef.current) return;
-    if (status !== "pending" || search) return;
-    const first = query.data?.data?.[0];
-    if (first && first.status === "pending") {
-      defaultHostEmittedRef.current = true;
-      onDefaultHost(first.hostId);
-    }
-  }, [onDefaultHost, query.data, status, search]);
 
   const handleSort = (key: SortKey) => {
     if (sortBy === key) {

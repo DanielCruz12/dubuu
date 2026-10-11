@@ -2,7 +2,6 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type {
   PayoutSummary,
   PayoutFilters,
-  HostOption,
   HostsTableParams,
   HostsTableResponse,
   HostPaymentDetail,
@@ -16,7 +15,6 @@ function paramsToQuery(filters: PayoutFilters) {
   const searchParams = new URLSearchParams();
   if (filters.dateFrom) searchParams.append("dateFrom", filters.dateFrom);
   if (filters.dateTo) searchParams.append("dateTo", filters.dateTo);
-  if (filters.hostId) searchParams.append("hostId", filters.hostId);
   if (filters.page) searchParams.append("page", String(filters.page));
   if (filters.pageSize) searchParams.append("pageSize", String(filters.pageSize));
   return searchParams.toString();
@@ -26,7 +24,6 @@ function hostsTableParamsToQuery(params: HostsTableParams) {
   const searchParams = new URLSearchParams();
   if (params.dateFrom) searchParams.append("dateFrom", params.dateFrom);
   if (params.dateTo) searchParams.append("dateTo", params.dateTo);
-  if (params.hostId) searchParams.append("hostId", params.hostId);
   if (params.search) searchParams.append("search", params.search);
   if (params.status) searchParams.append("status", params.status);
   if (params.sortBy) searchParams.append("sortBy", params.sortBy);
@@ -54,10 +51,6 @@ export const payoutApiSlice = createApi({
     getPayoutSummary: builder.query<PayoutSummary, PayoutFilters>({
       query: (filters) => `/api/v1/admin/payouts/summary?${paramsToQuery(filters)}`,
       providesTags: ["PayoutSummary"],
-    }),
-
-    getHosts: builder.query<HostOption[], void>({
-      query: () => "/api/v1/admin/payouts/hosts",
     }),
 
     getHostsTable: builder.query<HostsTableResponse, HostsTableParams>({
@@ -97,7 +90,6 @@ export const payoutApiSlice = createApi({
 
 export const {
   useGetPayoutSummaryQuery,
-  useGetHostsQuery,
   useGetHostsTableQuery,
   useGetHostPaymentDetailQuery,
   useGetHostPaymentHistoryQuery,

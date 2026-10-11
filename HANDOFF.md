@@ -1,6 +1,11 @@
 # Estado actual
 Última actualización: 2026-10-10
 
+## Tabla All Hosts: solo hosts con reservas y sin select de host
+- Backend `getHostsTable`: solo devuelve hosts con **al menos una reserva** (join a bookings); sin reservas no hay nada que pagar ni revisar.
+- Se eliminó el select de host de la barra (y su endpoint `GET /admin/payouts/hosts` + query `getHosts` + tipo `HostOption` + traducciones allHosts/searchHost/noHostsFound). La tabla se gestiona solo con: estado (fila superior), búsqueda, período, fechas y exportar.
+- Se eliminó también `hostId` de la tabla/params del frontend (el backend de summary/export sigue aceptando hostId opcional por compatibilidad) y la lógica de preselección `onDefaultHost`.
+
 ## Vista de pagos admin (`/dashboard/payouts`) — estado final
 
 **Tarjetas** (`summary-cards.tsx`): hero Total Recaudado (80%) + Total pagado (20%) en fila (desktop); mobile: Recaudado 100% + 3 columnas (Pagado, Comisión, Total a pagar). Solo 4 métricas, sin tooltips. "Ganancia de Dubuu" en comisión. Tendencia vs período anterior (`previousTotalCollected`).

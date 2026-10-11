@@ -33,9 +33,6 @@
       "custom": "Personalizado"
     },
     "dateRange": "Rango de fechas",
-    "allHosts": "Todos los hosts",
-    "searchHost": "Buscar host...",
-    "noHostsFound": "No encontrado",
     "export": "Exportar",
     "exporting": "Exportando…"
   },

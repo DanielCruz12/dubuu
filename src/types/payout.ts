@@ -33,7 +33,6 @@ export interface HostsTableResponse {
 export interface HostsTableParams {
   dateFrom?: string;
   dateTo?: string;
-  hostId?: string;
   search?: string;
   status?: HostPayoutStatus;
   sortBy?: "username" | "totalToPay" | "totalPaid" | "outstanding" | "lastPayment";
@@ -66,14 +65,8 @@ export interface PayoutRecord {
 export interface PayoutFilters {
   dateFrom?: string;
   dateTo?: string;
-  hostId?: string;
   page?: number;
   pageSize?: number;
-}
-
-export interface HostOption {
-  id: string;
-  name: string;
 }
 
 /** Fase 4 — detalle de pago de un host. */

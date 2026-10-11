@@ -2,11 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { startOfMonth, endOfDay } from "date-fns";
-import {
-  PayoutPeriodFilter,
-  PayoutHostFilter,
-  type DatePreset,
-} from "./payouts-filters";
+import { PayoutPeriodFilter, type DatePreset } from "./payouts-filters";
 import { Download, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -15,10 +11,7 @@ import { DashboardTitle } from "@/components/dashboard-title";
 import { useLanguage } from "@/lib/i18n-context";
 import { SummaryCards } from "./summary-cards";
 import { HostsTable } from "./hosts-table";
-import {
-  useGetPayoutSummaryQuery,
-  useGetHostsQuery,
-} from "@/redux/slices/payout/payout-slice";
+import { useGetPayoutSummaryQuery } from "@/redux/slices/payout/payout-slice";
 import type { PayoutFilters } from "@/types/payout";
 
 export function PayoutsContent() {
@@ -26,19 +19,17 @@ export function PayoutsContent() {
   const [datePreset, setDatePreset] = useState<DatePreset>("month");
   const [dateFrom, setDateFrom] = useState<Date | undefined>(startOfMonth(new Date()));
   const [dateTo, setDateTo] = useState<Date | undefined>(endOfDay(new Date()));
-  const [hostId, setHostId] = useState<string | undefined>();
   const [exporting, setExporting] = useState(false);
 
   const filters: PayoutFilters = useMemo(
-    () => ({ dateFrom: dateFrom?.toISOString(), dateTo: dateTo?.toISOString(), hostId }),
-    [dateFrom, dateTo, hostId],
+    () => ({ dateFrom: dateFrom?.toISOString(), dateTo: dateTo?.toISOString() }),
+    [dateFrom, dateTo],
   );
 
   const summaryQuery = useGetPayoutSummaryQuery(filters);
-  const hostsQuery = useGetHostsQuery();
 
-  const loading = summaryQuery.isLoading || hostsQuery.isLoading;
-  const error = summaryQuery.error || hostsQuery.error;
+  const loading = summaryQuery.isLoading;
+  const error = summaryQuery.error;
 
   // Descarga el CSV del historial de pagos con los filtros activos.
   const handleExport = async () => {
@@ -47,7 +38,6 @@ export function PayoutsContent() {
       const params = new URLSearchParams();
       if (dateFrom) params.append("dateFrom", dateFrom.toISOString());
       if (dateTo) params.append("dateTo", dateTo.toISOString());
-      if (hostId) params.append("hostId", hostId);
 
       const res = await fetch(
         `/backend/api/v1/admin/payouts/export?${params.toString()}`,
@@ -106,24 +96,12 @@ export function PayoutsContent() {
             <SummaryCards summary={summaryQuery.data} />
           )}
 
-          {/* Tabla ligera de todos los hosts (Fase 3): usa el rango global y
-              respeta el host seleccionado. Barra: host+estado arriba;
-              buscador, período, fechas (solo Personalizado) y Exportar abajo. */}
+          {/* Tabla ligera de todos los hosts (Fase 3): usa el rango global.
+              Barra: estado arriba; buscador, período, fechas (solo
+              Personalizado) y Exportar abajo. */}
           <HostsTable
             dateFrom={dateFrom?.toISOString()}
             dateTo={dateTo?.toISOString()}
-            hostId={hostId}
-            onDefaultHost={(hostId) => {
-              if (!hostId) return;
-              setHostId((current) => current ?? hostId);
-            }}
-            toolbarTopLeft={
-              <PayoutHostFilter
-                hostId={hostId}
-                onHostIdChange={(id) => { setHostId(id); }}
-                hosts={hostsQuery.data ?? []}
-              />
-            }
             toolbarMainLeft={
               <PayoutPeriodFilter
                 datePreset={datePreset}
