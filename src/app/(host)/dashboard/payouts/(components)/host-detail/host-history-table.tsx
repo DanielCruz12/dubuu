@@ -24,17 +24,30 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLanguage } from "@/lib/i18n-context";
-import { useGetHostPaymentHistoryQuery } from "@/redux/slices/payout/payout-slice";
+import {
+  useGetHostPaymentHistoryQuery,
+  useGetOwnPaymentHistoryQuery,
+} from "@/redux/slices/payout/payout-slice";
 import type { PayoutRecord } from "@/types/payout";
 
 interface Props {
-  hostId: string;
+  /** Modo admin: historial de este host. */
+  hostId?: string;
+  /** Modo host autenticado: historial propio vía /api/v1/payments/history. */
+  own?: boolean;
+  /** Botón Exportar (solo admin; el endpoint de export es admin-only). */
+  showExport?: boolean;
   onViewReceipt: (record: PayoutRecord) => void;
 }
 
 const PAGE_SIZE = 20;
 
-export function HostHistoryTable({ hostId, onViewReceipt }: Props) {
+export function HostHistoryTable({
+  hostId,
+  own = false,
+  showExport = true,
+  onViewReceipt,
+}: Props) {
   const { t } = useLanguage();
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
@@ -51,14 +64,21 @@ export function HostHistoryTable({ hostId, onViewReceipt }: Props) {
     return () => clearTimeout(timeout);
   }, [searchInput]);
 
-  const query = useGetHostPaymentHistoryQuery({
-    hostId,
+  const filters = {
     dateFrom: dateFrom?.toISOString(),
     dateTo: dateTo?.toISOString(),
     search: search || undefined,
     page,
     pageSize: PAGE_SIZE,
-  });
+  };
+
+  const adminQuery = useGetHostPaymentHistoryQuery(
+    { ...filters, hostId: hostId ?? "" },
+    { skip: own || !hostId },
+  );
+  const ownQuery = useGetOwnPaymentHistoryQuery(filters, { skip: !own });
+
+  const query = own ? ownQuery : adminQuery;
 
   const rows = query.data?.data ?? [];
   const total = query.data?.total ?? 0;
@@ -76,7 +96,7 @@ export function HostHistoryTable({ hostId, onViewReceipt }: Props) {
     try {
       setExporting(true);
       const params = new URLSearchParams();
-      params.append("hostId", hostId);
+      if (hostId) params.append("hostId", hostId);
       if (dateFrom) params.append("dateFrom", dateFrom.toISOString());
       if (dateTo) params.append("dateTo", dateTo.toISOString());
 
@@ -146,22 +166,24 @@ export function HostHistoryTable({ hostId, onViewReceipt }: Props) {
           </PopoverContent>
         </Popover>
 
-        <div className="ml-auto">
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 font-normal"
-            onClick={handleExport}
-            disabled={exporting}
-          >
-            {exporting ? (
-              <Loader2 className="mr-2 h-3 w-3 animate-spin" />
-            ) : (
-              <Download className="mr-2 h-3 w-3" />
-            )}
-            {t("payouts.filters.export")}
-          </Button>
-        </div>
+        {showExport && (
+          <div className="ml-auto">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 font-normal"
+              onClick={handleExport}
+              disabled={exporting}
+            >
+              {exporting ? (
+                <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+              ) : (
+                <Download className="mr-2 h-3 w-3" />
+              )}
+              {t("payouts.filters.export")}
+            </Button>
+          </div>
+        )}
       </div>
 
       {query.isLoading ? (

@@ -73,6 +73,15 @@ export const payoutApiSlice = createApi({
       providesTags: ["HostPaymentHistory"],
     }),
 
+    /** Historial de pagos del host autenticado (dashboard del host). */
+    getOwnPaymentHistory: builder.query<
+      PayoutHistoryResponse,
+      Omit<HostPaymentHistoryParams, "hostId">
+    >({
+      query: (params) =>
+        `/api/v1/payments/history?${hostHistoryParamsToQuery({ ...params, hostId: "" })}`,
+    }),
+
     getHostBankDetails: builder.query<HostBankDetails, string>({
       query: (hostId) => `/api/v1/admin/payouts/hosts/${hostId}/bank-details`,
     }),
@@ -93,6 +102,7 @@ export const {
   useGetHostsTableQuery,
   useGetHostPaymentDetailQuery,
   useGetHostPaymentHistoryQuery,
+  useGetOwnPaymentHistoryQuery,
   useGetHostBankDetailsQuery,
   useRegisterPaymentMutation,
 } = payoutApiSlice;

@@ -297,6 +297,7 @@
   "youHaveOneReservation": "You have 1 reservation",
   "youHaveManyReservations": "You have {{count}} reservations",
   "viewAllReservations": "View all reservations",
+  "paymentHistory": "Payment history",
   "status_inProcess": "In process",
   "status_completed": "Completed",
   "status_pending": "Pending",

@@ -1,6 +1,12 @@
 # Estado actual
 Última actualización: 2026-10-10
 
+## Historial de pagos para el HOST (dashboard)
+- Nuevo endpoint `GET /api/v1/payments/history` (rol host, en `payment-account-routes.ts`): devuelve los pagos del host autenticado reutilizando `getHostPaymentHistory` del servicio de payouts (misma forma que el admin).
+- El dashboard del host (`dashboard-content.tsx`) muestra debajo de los gráficos la **misma tabla del admin** (Fecha, Monto, Referencia, Estado, Comprobante) reutilizando `HostHistoryTable` con `own` (usa `useGetOwnPaymentHistoryQuery`) y `showExport={false}` (el export es admin-only). El comprobante se ve con el mismo `ReceiptModal`.
+- Los gráficos se achicaron: el bar chart de actividad pasó de 290px a 200px de alto.
+- Traducciones `dashboard.paymentHistory` agregadas (es/en).
+
 ## Tabla All Hosts: solo hosts con reservas y sin select de host
 - Backend `getHostsTable`: solo devuelve hosts con **al menos una reserva** (join a bookings); sin reservas no hay nada que pagar ni revisar.
 - Se eliminó el select de host de la barra (y su endpoint `GET /admin/payouts/hosts` + query `getHosts` + tipo `HostOption` + traducciones allHosts/searchHost/noHostsFound). La tabla se gestiona solo con: estado (fila superior), búsqueda, período, fechas y exportar.

@@ -31,7 +31,7 @@ export function Overview({ data }: OverviewProps) {
   const chartData = data?.length ? toChartData(data) : defaultData;
 
   return (
-    <div className="min-w-[280px] w-full" style={{ height: 290 }}>
+    <div className="min-w-[280px] w-full" style={{ height: 200 }}>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={chartData}>
         <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />

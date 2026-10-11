@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -17,6 +18,9 @@ import { useUser } from "@clerk/nextjs";
 import { useLanguage } from "@/lib/i18n-context";
 import { getHostEarningsFromTotalSum } from "@/lib/price";
 import { useGetPanelSummaryQuery } from "@/redux/slices/panel/panel-slice";
+import { HostHistoryTable } from "../payouts/(components)/host-detail/host-history-table";
+import { ReceiptModal } from "../payouts/(components)/host-detail/receipt-modal";
+import type { PayoutRecord } from "@/types/payout";
 
 function getStatusLabelKey(status: string): string {
   if (status === "in-process") return "dashboard.status_inProcess";
@@ -30,6 +34,7 @@ export function DashboardContent() {
   const { user } = useUser();
   const userId = user?.id;
   const { t } = useLanguage();
+  const [receiptRecord, setReceiptRecord] = useState<PayoutRecord | null>(null);
   const { data, isLoading, error } = useGetPanelSummaryQuery(userId ?? "", {
     skip: !userId,
   });
@@ -155,7 +160,7 @@ export function DashboardContent() {
 
       <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7">
         <Card className="min-w-0 md:col-span-2 lg:col-span-4">
-          <CardHeader>
+          <CardHeader className="pb-1">
             <CardTitle>{t("dashboard.reservationActivity")}</CardTitle>
             <CardDescription>
               {t("dashboard.reservationActivityDescription")}
@@ -166,7 +171,7 @@ export function DashboardContent() {
           </CardContent>
         </Card>
         <Card className="min-w-0 md:col-span-2 lg:col-span-3">
-          <CardHeader>
+          <CardHeader className="pb-1">
             <CardTitle>{t("dashboard.upcomingReservations")}</CardTitle>
             <CardDescription>
               {upcomingReservations.total === 1
@@ -186,6 +191,23 @@ export function DashboardContent() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Historial de pagos del host (misma tabla del admin, sin export). */}
+      <section className="space-y-3">
+        <h2 className="text-sm font-semibold">{t("dashboard.paymentHistory")}</h2>
+        {userId && (
+          <HostHistoryTable
+            own
+            showExport={false}
+            onViewReceipt={(record) => setReceiptRecord(record)}
+          />
+        )}
+      </section>
+
+      <ReceiptModal
+        record={receiptRecord}
+        onClose={() => setReceiptRecord(null)}
+      />
     </div>
   );
 }
