@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect, useMemo, useRef } from "react";
@@ -118,12 +119,12 @@ function mapRentalProductToForm(p: IRentalProduct): {
       specific_areas:
         r.delivery_mode === "specific_areas"
           ? (r.specific_areas ?? []).map((a: IRentalSpecificArea) => ({
-              center: {
-                lat: Number(a.center_lat),
-                lng: Number(a.center_lng),
-              },
-              radius_km: Number(a.radius_km),
-            }))
+            center: {
+              lat: Number(a.center_lat),
+              lng: Number(a.center_lng),
+            },
+            radius_km: Number(a.radius_km),
+          }))
           : [],
 
       coverage_all_country: r.coverage_all_country ?? true,
@@ -165,7 +166,7 @@ function createRentalFormData(
 
   const avail =
     formData.availabilitySnapshot?.available_from &&
-    formData.availabilitySnapshot?.available_until
+      formData.availabilitySnapshot?.available_until
       ? formData.availabilitySnapshot
       : defaultAvailabilityRange();
 
@@ -406,6 +407,23 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
     if (submitInFlightRef.current || isSaving) return;
     submitInFlightRef.current = true;
 
+    // ── Datos de diagnóstico (temporal, quitar al terminar de depurar) ──
+    const started = Date.now();
+    const allFiles = [
+      uploadedFiles.bannerFile,
+      ...uploadedFiles.imageFiles,
+      ...uploadedFiles.videoFiles,
+      ...uploadedFiles.fileAttachments,
+    ].filter(Boolean) as File[];
+    const totalMB = (
+      allFiles.reduce((sum, f) => sum + f.size, 0) /
+      1024 /
+      1024
+    ).toFixed(1);
+    const videoTypes =
+      uploadedFiles.videoFiles.map((f) => f.type || "sin-tipo").join(",") ||
+      "ninguno";
+
     try {
       setMultimedia(data);
       const formPayload: RentalData = {
@@ -421,6 +439,16 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
       const apiFormData = createRentalFormData(formPayload, userId, {
         isEditMode: Boolean(editProductId),
       });
+
+      console.log(
+        "[rental] enviando:",
+        Array.from(apiFormData.entries()).map(([k, v]) =>
+          v instanceof File
+            ? `${k}: ${v.name} ${(v.size / 1024 / 1024).toFixed(1)}MB ${v.type}`
+            : k,
+        ),
+      );
+
       if (editProductId) {
         await updateProduct({ id: editProductId, data: apiFormData }).unwrap();
         toast.success(t("dashboard.addRental.toast.updateSuccess"), {
@@ -434,16 +462,23 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
         });
       }
       router.push("/dashboard/products");
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error("[rental] fallo al guardar:", error);
+
+      const secs = Math.round((Date.now() - started) / 1000);
+      const status = error?.status ?? "sin-estado";
+      // FETCH_ERROR trae el motivo real en error.error (ej. "TypeError: Load failed")
+      const detail =
+        error?.data?.message ?? error?.error ?? error?.message ?? "sin detalle";
+      const debug = `[${status}] ${detail} · ${allFiles.length} arch, ${totalMB} MB · video: ${videoTypes} · ${secs}s`;
+
       toast.error(
         editProductId
           ? t("dashboard.addRental.toast.updateError")
           : t("dashboard.addRental.toast.error"),
         {
-          description: editProductId
-            ? t("dashboard.addRental.toast.updateErrorDescription")
-            : t("dashboard.addRental.toast.errorDescription"),
+          description: debug,
+          duration: 20000,
         },
       );
     } finally {
@@ -559,21 +594,19 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
               {Array.from({ length: totalSteps }).map((_, index) => (
                 <div key={index} className="flex items-center">
                   <div
-                    className={`flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 rounded-full border ${
-                      step >= index + 1
-                        ? "bg-black text-white border-black dark:bg-white dark:text-black dark:border-white"
-                        : "bg-transparent text-gray-400 border-gray-300 dark:border-gray-700"
-                    }`}
+                    className={`flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 rounded-full border ${step >= index + 1
+                      ? "bg-black text-white border-black dark:bg-white dark:text-black dark:border-white"
+                      : "bg-transparent text-gray-400 border-gray-300 dark:border-gray-700"
+                      }`}
                   >
                     <span className="text-xs sm:text-sm">{index + 1}</span>
                   </div>
                   {index < totalSteps - 1 && (
                     <div
-                      className={`h-px w-2 sm:w-4 mx-1 ${
-                        step > index + 1
-                          ? "bg-black dark:bg-white"
-                          : "bg-gray-300 dark:bg-gray-700"
-                      }`}
+                      className={`h-px w-2 sm:w-4 mx-1 ${step > index + 1
+                        ? "bg-black dark:bg-white"
+                        : "bg-gray-300 dark:bg-gray-700"
+                        }`}
                     />
                   )}
                 </div>
@@ -685,11 +718,11 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
                   existingMedia={
                     existingRental
                       ? {
-                          bannerUrl: existingRental.banner,
-                          imageUrls: existingRental.images ?? [],
-                          videoUrls: existingRental.videos ?? [],
-                          fileUrls: existingRental.files ?? [],
-                        }
+                        bannerUrl: existingRental.banner,
+                        imageUrls: existingRental.images ?? [],
+                        videoUrls: existingRental.videos ?? [],
+                        fileUrls: existingRental.files ?? [],
+                      }
                       : undefined
                   }
                 />
