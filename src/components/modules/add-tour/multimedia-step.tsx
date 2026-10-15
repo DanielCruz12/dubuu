@@ -47,25 +47,24 @@ import { cn } from "@/lib/utils";
 // getCommissionRates comentado: solo se usaba para mostrar % en el desglose
 
 // Límites de subida (el usuario no puede subir por encima de esto)
-const MAX_BANNER_IMAGE_MB = 5;
-const MAX_GALLERY_IMAGE_MB = 5;
+const MAX_BANNER_IMAGE_MB = 25;
+const MAX_GALLERY_IMAGE_MB = 25;
 const MAX_VIDEO_MB = 50;
+const MAX_TOTAL_VIDEO_MB = 100; // suma de todos los videos
 const MAX_PDF_MB = 10;
 
-// Compresión: reducir lo máximo posible con un estándar razonable (WebP, máx. 350 KB)
 const GALLERY_IMAGE_COMPRESSION_OPTIONS = {
   maxSizeMB: 0.35,
   maxWidthOrHeight: 1920,
   useWebWorker: true,
-  fileType: "image/webp" as const,
+  fileType: "image/jpeg" as const,
 };
 
-// Banner: mantener mucho más detalle (no agresivo), para que quede nítido en la cabecera
 const BANNER_IMAGE_COMPRESSION_OPTIONS = {
   maxSizeMB: 1.5,
   maxWidthOrHeight: 3840,
   useWebWorker: true,
-  fileType: "image/webp" as const,
+  fileType: "image/jpeg" as const,
 };
 
 const VIDEO_MAX_DURATION_SECONDS = 30;
@@ -182,9 +181,7 @@ export function MultimediaStep({
   }, [formRef, defaultValues?.price, isEditMode]);
 
   // Manejar la carga de archivos (banner e imágenes se comprimen a WebP, máx. 1MB)
-  const handleBannerUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.[0]) return;
     const file = e.target.files[0];
     if (file.size > MAX_BANNER_IMAGE_MB * 1024 * 1024) {
@@ -194,6 +191,7 @@ export function MultimediaStep({
           String(MAX_BANNER_IMAGE_MB),
         ),
       );
+      e.target.value = "";
       return;
     }
     setIsCompressingBanner(true);
@@ -213,13 +211,12 @@ export function MultimediaStep({
     e.target.value = "";
   };
 
-  const handleImagesUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleImagesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.length) return;
     const selectedFiles = Array.from(e.target.files);
     if (totalGalleryCount + selectedFiles.length > 10) {
       toast.error(t("dashboard.addTour.multimedia.toast.maxImages"));
+      e.target.value = "";
       return;
     }
     const oversized = selectedFiles.filter(
@@ -232,23 +229,27 @@ export function MultimediaStep({
           String(MAX_GALLERY_IMAGE_MB),
         ),
       );
+      e.target.value = "";
       return;
     }
     setIsCompressingImages(true);
     try {
       const compressed = await Promise.all(
-        selectedFiles.map((f) =>
-          imageCompression(f, GALLERY_IMAGE_COMPRESSION_OPTIONS),
+        selectedFiles.map((f) => imageCompression(f, GALLERY_IMAGE_COMPRESSION_OPTIONS)),
+      );
+      // Las miniaturas se generan en el mismo orden que los archivos
+      const previews = await Promise.all(
+        compressed.map(
+          (file) =>
+            new Promise<string>((resolve) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result as string);
+              reader.readAsDataURL(file);
+            }),
         ),
       );
-      const newFiles = [...imageFiles, ...compressed];
-      setImageFiles(newFiles);
-      compressed.forEach((file) => {
-        const reader = new FileReader();
-        reader.onload = () =>
-          setImagePreviews((prev) => [...prev, reader.result as string]);
-        reader.readAsDataURL(file);
-      });
+      setImageFiles((prev) => [...prev, ...compressed]);
+      setImagePreviews((prev) => [...prev, ...previews]);
     } catch (err) {
       console.error(err);
       toast.error(t("dashboard.addTour.multimedia.toast.compressError"));
@@ -258,18 +259,15 @@ export function MultimediaStep({
     e.target.value = "";
   };
 
-  const handleVideosUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleVideosUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.length) return;
     const selectedFiles = Array.from(e.target.files);
     if (videoFiles.length + selectedFiles.length > 5) {
       toast.error(t("dashboard.addTour.multimedia.toast.maxVideos"));
+      e.target.value = "";
       return;
     }
-    const oversized = selectedFiles.filter(
-      (f) => f.size > MAX_VIDEO_MB * 1024 * 1024,
-    );
+    const oversized = selectedFiles.filter((f) => f.size > MAX_VIDEO_MB * 1024 * 1024);
     if (oversized.length > 0) {
       toast.error(
         t("dashboard.addTour.multimedia.toast.videoSize").replace(
@@ -277,6 +275,14 @@ export function MultimediaStep({
           String(MAX_VIDEO_MB),
         ),
       );
+      e.target.value = "";
+      return;
+    }
+    const currentMB = videoFiles.reduce((s, f) => s + f.size, 0) / 1024 / 1024;
+    const newMB = selectedFiles.reduce((s, f) => s + f.size, 0) / 1024 / 1024;
+    if (currentMB + newMB > MAX_TOTAL_VIDEO_MB) {
+      toast.error(`Los videos no pueden sumar más de ${MAX_TOTAL_VIDEO_MB} MB en total.`);
+      e.target.value = "";
       return;
     }
     setIsCheckingVideos(true);
@@ -379,12 +385,12 @@ export function MultimediaStep({
         fileAttachments,
         isEditMode
           ? {
-              existingBannerUrl:
-                existingMedia?.bannerUrl?.trim() && !removedExistingBanner
-                  ? existingMedia.bannerUrl
-                  : undefined,
-              existingImageCount: keptExistingImageUrls.length,
-            }
+            existingBannerUrl:
+              existingMedia?.bannerUrl?.trim() && !removedExistingBanner
+                ? existingMedia.bannerUrl
+                : undefined,
+            existingImageCount: keptExistingImageUrls.length,
+          }
           : undefined,
       );
 
@@ -416,11 +422,10 @@ export function MultimediaStep({
           <div className="space-y-2">
             <Label htmlFor="banner">{t("dashboard.addTour.multimedia.bannerLabel")}</Label>
             <div
-              className={`relative border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-md p-4 text-center transition-colors ${
-                isCompressingBanner
-                  ? "cursor-wait bg-gray-50 dark:bg-gray-900/50"
-                  : "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900"
-              }`}
+              className={`relative border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-md p-4 text-center transition-colors ${isCompressingBanner
+                ? "cursor-wait bg-gray-50 dark:bg-gray-900/50"
+                : "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900"
+                }`}
               onClick={() =>
                 !isCompressingBanner &&
                 document.getElementById("banner-upload")?.click()
@@ -490,11 +495,10 @@ export function MultimediaStep({
             </div>
 
             <div
-              className={`relative border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-md p-4 text-center transition-colors ${
-                isCompressingImages
-                  ? "cursor-wait bg-gray-50 dark:bg-gray-900/50"
-                  : "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900"
-              }`}
+              className={`relative border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-md p-4 text-center transition-colors ${isCompressingImages
+                ? "cursor-wait bg-gray-50 dark:bg-gray-900/50"
+                : "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900"
+                }`}
               onClick={() =>
                 !isCompressingImages &&
                 totalGalleryCount < 10 &&
@@ -585,11 +589,10 @@ export function MultimediaStep({
           <div className="space-y-2">
             <Label htmlFor="videos">{t("dashboard.addTour.multimedia.videosLabel")}</Label>
             <div
-              className={`relative border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-md p-4 text-center transition-colors ${
-                isCheckingVideos
-                  ? "cursor-wait bg-gray-50 dark:bg-gray-900/50"
-                  : "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900"
-              }`}
+              className={`relative border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-md p-4 text-center transition-colors ${isCheckingVideos
+                ? "cursor-wait bg-gray-50 dark:bg-gray-900/50"
+                : "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900"
+                }`}
               onClick={() =>
                 !isCheckingVideos &&
                 document.getElementById("videos-upload")?.click()
