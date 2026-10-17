@@ -18,6 +18,7 @@ import { useUser } from "@clerk/nextjs";
 import { useLanguage } from "@/lib/i18n-context";
 import { getHostEarningsFromTotalSum } from "@/lib/price";
 import { useGetPanelSummaryQuery } from "@/redux/slices/panel/panel-slice";
+import { useGetOwnPaymentHistoryQuery } from "@/redux/slices/payout/payout-slice";
 import { HostHistoryTable } from "../payouts/(components)/host-detail/host-history-table";
 import { ReceiptModal } from "../payouts/(components)/host-detail/receipt-modal";
 import type { PayoutRecord } from "@/types/payout";
@@ -38,6 +39,9 @@ export function DashboardContent() {
   const { data, isLoading, error } = useGetPanelSummaryQuery(userId ?? "", {
     skip: !userId,
   });
+  // Solo para saber si el host tiene pagos registrados (la tabla hace su propia consulta paginada)
+  const { data: ownHistory, isLoading: ownHistoryLoading } =
+    useGetOwnPaymentHistoryQuery({ page: 1, pageSize: 1 }, { skip: !userId });
 
   const getStatusLabel = (status: string) => {
     const key = getStatusLabelKey(status);
@@ -85,6 +89,8 @@ export function DashboardContent() {
 
   const totalCollected = Number(totalRevenue.total) || 0;
   const revenueAfterCommission = getHostEarningsFromTotalSum(totalCollected);
+
+  const hasPaymentHistory = !ownHistoryLoading && (ownHistory?.total ?? 0) > 0;
 
   const activeSubtext =
     activeReservations.lastReservationAt != null
@@ -190,19 +196,23 @@ export function DashboardContent() {
             />
           </CardContent>
         </Card>
-      </div>
-
-      {/* Historial de pagos del host (misma tabla del admin, sin export). */}
-      <section className="space-y-3">
-        <h2 className="text-sm font-semibold">{t("dashboard.paymentHistory")}</h2>
-        {userId && (
-          <HostHistoryTable
-            own
-            showExport={false}
-            onViewReceipt={(record) => setReceiptRecord(record)}
-          />
+        {/* Historial de pagos del host: 100% de ancho, debajo de actividad y próximas reservas.
+            Solo se muestra si el host tiene pagos registrados. */}
+        {hasPaymentHistory && (
+          <Card className="min-w-0 md:col-span-2 lg:col-span-7">
+            <CardHeader className="pb-1">
+              <CardTitle>{t("dashboard.paymentHistory")}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <HostHistoryTable
+                own
+                showExport={false}
+                onViewReceipt={(record) => setReceiptRecord(record)}
+              />
+            </CardContent>
+          </Card>
         )}
-      </section>
+      </div>
 
       <ReceiptModal
         record={receiptRecord}

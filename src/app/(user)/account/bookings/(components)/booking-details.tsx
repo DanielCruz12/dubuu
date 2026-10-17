@@ -16,7 +16,7 @@ import {
 import type { IBookingUser } from "@/types/booking";
 import moment from "moment";
 import "moment/locale/es";
-import { statusColors, statusTextTranslations } from "@/utils/data";
+import { statusTextTranslations } from "@/utils/data";
 import { useLanguage } from "@/lib/i18n-context";
 import PDFButton from "@/components/pdf/pdf-button";
 import { useUser } from "@clerk/nextjs";
@@ -192,8 +192,13 @@ export function BookingDetails({
             <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"></div>
             <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
               <Badge
-                className={`mb-3 font-normal py-1 px-2 ${statusColors[uiStatus as keyof typeof statusColors]}`}
-                variant="outline"
+                className={`mb-3 font-normal py-1 px-2 border-transparent text-white ${
+                  uiStatus === "completado" || uiStatus === "confirmado"
+                    ? "bg-green-600"
+                    : uiStatus === "cancelado"
+                      ? "bg-red-600"
+                      : "bg-amber-600"
+                }`}
               >
                 {statusText[uiStatus as keyof typeof statusText]}
               </Badge>
