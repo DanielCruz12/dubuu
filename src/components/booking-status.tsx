@@ -117,6 +117,9 @@ export function BookingStatus({
         },
       ];
 
+  const friendlyDateFormat =
+    language === "es" ? "dddd, D [de] MMMM h:mm A" : "dddd, MMMM D h:mm A";
+
   const receiptData: ReceiptProps = {
     receiptNumber: id.slice(0, 13),
     date: new Date().toLocaleDateString(language === "es" ? "es-ES" : "en-US", {
@@ -124,16 +127,20 @@ export function BookingStatus({
       month: "2-digit",
       day: "2-digit",
     }),
-    reservationDate: isRental
-      ? [
-          moment(pickupTime).locale(language).format(language === "es" ? "dddd, D [de] MMMM h:mm A" : "dddd, MMMM D h:mm A"),
-          moment(dropoffTime).locale(language).format(language === "es" ? "dddd, D [de] MMMM h:mm A" : "dddd, MMMM D h:mm A"),
-        ].join("\n")
-      : tourDate
-        ? moment(tourDate)
-            .locale(language)
-            .format(language === "es" ? "dddd, D [de] MMMM h:mm A" : "dddd, MMMM D h:mm A")
+    reservationDate:
+      !isRental && tourDate
+        ? moment(tourDate).locale(language).format(friendlyDateFormat)
         : undefined,
+    pickupDateTime:
+      isRental && pickupTime
+        ? moment(pickupTime).locale(language).format(friendlyDateFormat)
+        : undefined,
+    pickupLocation: isRental ? pickupLocation || undefined : undefined,
+    dropoffDateTime:
+      isRental && dropoffTime
+        ? moment(dropoffTime).locale(language).format(friendlyDateFormat)
+        : undefined,
+    dropoffLocation: isRental ? dropoffLocation || undefined : undefined,
     customerName,
     items: receiptItems,
     subtotal: paidTotal,

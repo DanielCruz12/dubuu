@@ -81,21 +81,21 @@ export function BookingDetails({
       ? "dddd, D [de] MMMM h:mm A"
       : "dddd, MMMM D h:mm A";
 
-  const reservationDateText = isRental
-    ? [
-        booking.pickup_time
-          ? moment(booking.pickup_time).locale(language === "es" ? "es" : "en").format(dateLabelFormat)
-          : "",
-        booking.dropoff_time
-          ? moment(booking.dropoff_time).locale(language === "es" ? "es" : "en").format(dateLabelFormat)
-          : "",
-      ]
-        .filter(Boolean)
-        .join("\n")
-    : booking.tourDate
+  const reservationDateText =
+    !isRental && booking.tourDate
       ? moment(booking.tourDate)
           .locale(language === "es" ? "es" : "en")
           .format(dateLabelFormat)
+      : undefined;
+
+  const pickupDateTimeText =
+    isRental && booking.pickup_time
+      ? moment(booking.pickup_time).locale(language === "es" ? "es" : "en").format(dateLabelFormat)
+      : undefined;
+
+  const dropoffDateTimeText =
+    isRental && booking.dropoff_time
+      ? moment(booking.dropoff_time).locale(language === "es" ? "es" : "en").format(dateLabelFormat)
       : undefined;
 
   const receiptData: ReceiptProps = {
@@ -105,7 +105,11 @@ export function BookingDetails({
       month: "2-digit",
       day: "2-digit",
     }),
-    reservationDate: reservationDateText || undefined,
+    reservationDate: reservationDateText,
+    pickupDateTime: pickupDateTimeText,
+    pickupLocation: isRental ? booking.pickup_location || undefined : undefined,
+    dropoffDateTime: dropoffDateTimeText,
+    dropoffLocation: isRental ? booking.dropoff_location || undefined : undefined,
     customerName,
     items: [
       {

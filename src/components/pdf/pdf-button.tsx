@@ -150,19 +150,63 @@ export default function PDFButton({
       doc.setFontSize(11);
       doc.text(receiptData.date, 10, 70);
 
-      // La fecha de reserva puede traer varias líneas (recogida / devolución)
+      // Fecha de reserva: tour (una línea) o alquiler (recogida/entrega con fecha, hora y lugar)
       let reservationExtra = 0;
-      if (receiptData.reservationDate) {
+      const hasRentalLegs =
+        receiptData.pickupDateTime || receiptData.dropoffDateTime;
+
+      if (hasRentalLegs) {
+        doc.setFontSize(10);
+        doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
+        doc.text("FECHA DE RESERVA", 10, 75);
+
+        let legY = 80;
+        if (receiptData.pickupDateTime) {
+          doc.setFontSize(9);
+          doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
+          doc.text("RECOGIDA", 10, legY);
+          doc.setFontSize(11);
+          doc.setTextColor(0, 0, 0);
+          doc.text(receiptData.pickupDateTime, 45, legY);
+          legY += 5;
+          if (receiptData.pickupLocation) {
+            doc.setFontSize(9);
+            doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
+            doc.text("LUGAR", 10, legY);
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            const locLines = doc.splitTextToSize(receiptData.pickupLocation, 145);
+            doc.text(locLines, 45, legY);
+            legY += 5 * locLines.length;
+          }
+        }
+        if (receiptData.dropoffDateTime) {
+          doc.setFontSize(9);
+          doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
+          doc.text("ENTREGA", 10, legY);
+          doc.setFontSize(11);
+          doc.setTextColor(0, 0, 0);
+          doc.text(receiptData.dropoffDateTime, 45, legY);
+          legY += 5;
+          if (receiptData.dropoffLocation) {
+            doc.setFontSize(9);
+            doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
+            doc.text("LUGAR", 10, legY);
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            const locLines = doc.splitTextToSize(receiptData.dropoffLocation, 145);
+            doc.text(locLines, 45, legY);
+            legY += 5 * locLines.length;
+          }
+        }
+        reservationExtra = legY - 85;
+      } else if (receiptData.reservationDate) {
         doc.setFontSize(10);
         doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
         doc.text("FECHA DE RESERVA", 10, 75);
         doc.setTextColor(0, 0, 0);
         doc.setFontSize(11);
-        const reservationLines = receiptData.reservationDate
-          .split("\n")
-          .filter(Boolean);
-        doc.text(reservationLines, 10, 80);
-        reservationExtra = (reservationLines.length - 1) * 5;
+        doc.text(receiptData.reservationDate, 10, 80);
       }
 
       // Información de pago (a la derecha)

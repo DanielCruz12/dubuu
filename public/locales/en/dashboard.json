@@ -339,6 +339,8 @@
     "dropoffLocation": "Dropoff location",
     "location": "Location",
     "viewOnGoogleMaps": "View on Google Maps",
+    "pickup": "Pickup",
+    "dropoff": "Dropoff",
     "pickupNotes": "Pickup notes",
     "userNotes": "Client message",
     "noNotes": "No notes",

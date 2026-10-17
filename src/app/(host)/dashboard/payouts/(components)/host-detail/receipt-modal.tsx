@@ -35,9 +35,9 @@ export function ReceiptModal({ record, onClose }: Props) {
   const isPdf = record.receiptUrl.toLowerCase().includes(".pdf");
   const dateTime = record.paymentTime
     ? format(
-        new Date(`${record.paymentDate}T${record.paymentTime}`),
-        "MMM d, yyyy — HH:mm",
-      )
+      new Date(`${record.paymentDate}T${record.paymentTime}`),
+      "MMM d, yyyy — HH:mm",
+    )
     : record.paymentDate;
 
   const handleDownload = async () => {
@@ -96,7 +96,7 @@ export function ReceiptModal({ record, onClose }: Props) {
           </div>
           <div className="flex justify-between items-center">
             <span className="text-muted-foreground">{t("payouts.receipt.status")}</span>
-            <Badge className="bg-green-500/10 text-green-600 border-green-500/20">
+            <Badge className="bg-green-600 text-white">
               {t("payouts.receipt.statusPaid")}
             </Badge>
           </div>

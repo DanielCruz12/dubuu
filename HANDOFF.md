@@ -4,7 +4,8 @@
 ## Recibo PDF y detalles de reserva del host
 - **Recibo (PDF del cliente)**: la fecha de reserva ahora sale en minúscula y legible (`sábado, 31 de octubre 12:00 PM`; en inglés `Saturday, October 31 12:00 PM`). Para alquileres, recogida y devolución van en **líneas separadas** dentro del PDF (se quitó el separador `→`/`—` que jsPDF 4 renderizaba mal — era la causa del texto "muy separado"). `pdf-button.tsx` ahora dibuja la fecha multi-línea y desplaza el contenido siguiente (`reservationExtra`). Fuentes de datos: `booking-status.tsx` y `booking-details.tsx` (user) con `"\n"`.
 - **Modal de detalles del host** (`booking-details-modal.tsx`): las fechas de reserva/recogida/entrega ahora usan el mismo formato legible (antes `DD/MM/YYYY h:mm A`). Se agregó botón **"Ver en Google Maps"** (`https://www.google.com/maps/search/?api=1&query=<dirección>`, misma URL que usa rental-booking-form): en alquileres usa `pickup_location`; en tours usa la dirección del producto (`products` del listado, prop nueva `tourAddress` desde `bookings-table.tsx` — sin cambio de backend). En tours también se muestra la dirección en el modal.
-- Traducciones nuevas `dashboard.clientDetails.location` y `.viewOnGoogleMaps` (es/en).
+- **Recogida/Entrega separadas (alquiler)**: en el recibo PDF, la sección FECHA DE RESERVA ahora muestra bloques RECOGIDA (fecha+hora+lugar) y ENTREGA (fecha+hora+lugar) con sus lugares (`pickupDateTime/pickupLocation/dropoffDateTime/dropoffLocation` nuevos en `ReceiptProps`; los llenan `booking-status.tsx` y `booking-details.tsx`; `reservationDate` quedó solo para tours). En el modal del host, recogida y entrega son bloques separados (cuándo, a qué hora y dónde) y **cada uno tiene su propio botón** "Ver en Google Maps".
+- Traducciones nuevas `dashboard.clientDetails.location`, `.viewOnGoogleMaps`, `.pickup` y `.dropoff` (es/en).
 
 
 ## Comisiones — tasas definitivas y concordancia frontend/backend

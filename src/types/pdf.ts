@@ -10,6 +10,14 @@ export type ReceiptProps = {
   date: string
   /** Fecha de emisión del recibo */
   reservationDate?: string
+  /** Fecha y hora de recogida (alquiler) */
+  pickupDateTime?: string
+  /** Lugar de recogida (alquiler) */
+  pickupLocation?: string
+  /** Fecha y hora de entrega (alquiler) */
+  dropoffDateTime?: string
+  /** Lugar de entrega (alquiler) */
+  dropoffLocation?: string
   customerName: string
   customerEmail?: string
   customerAddress?: string

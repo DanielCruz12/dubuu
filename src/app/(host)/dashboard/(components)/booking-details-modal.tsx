@@ -164,10 +164,14 @@ export function BookingDetailsModal({
 
   const paymentLabel = getPaymentMethodLabel(booking.paymentMethod, t);
 
-  const mapsQuery = isRental ? booking.pickup_location : tourAddress;
-  const mapsUrl = mapsQuery
-    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsQuery)}`
-    : null;
+  const mapsUrlFor = (address: string | null | undefined) =>
+    address
+      ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
+      : null;
+
+  const pickupMapsUrl = mapsUrlFor(booking.pickup_location);
+  const dropoffMapsUrl = mapsUrlFor(booking.dropoff_location);
+  const tourMapsUrl = mapsUrlFor(tourAddress);
 
   const documents = [
     { src: booking.dui_front, label: t("dashboard.clientDetails.duiFront") },
@@ -207,49 +211,52 @@ export function BookingDetailsModal({
           </div>
 
           {isRental ? (
-            <>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <p className="text-xs text-muted-foreground">{t("dashboard.clientDetails.pickupDate")}</p>
-                  <p className="text-sm font-medium">
-                    {booking.pickup_time
-                      ? moment(booking.pickup_time).locale(locale).format(dateFormat)
-                      : "—"}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">{t("dashboard.clientDetails.dropoffDate")}</p>
-                  <p className="text-sm font-medium">
-                    {booking.dropoff_time
-                      ? moment(booking.dropoff_time).locale(locale).format(dateFormat)
-                      : "—"}
-                  </p>
-                </div>
+            <div className="space-y-3">
+              <div>
+                <p className="text-xs text-muted-foreground">{t("dashboard.clientDetails.pickup")}</p>
+                <p className="text-sm font-medium">
+                  {booking.pickup_time
+                    ? moment(booking.pickup_time).locale(locale).format(dateFormat)
+                    : "—"}
+                </p>
+                <p className="text-sm font-medium">{booking.pickup_location ?? "—"}</p>
+                {pickupMapsUrl && (
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="h-8 mt-1.5 text-xs"
+                  >
+                    <a href={pickupMapsUrl} target="_blank" rel="noopener noreferrer">
+                      <MapPin className="mr-1.5 h-3.5 w-3.5" />
+                      {t("dashboard.clientDetails.viewOnGoogleMaps")}
+                    </a>
+                  </Button>
+                )}
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <p className="text-xs text-muted-foreground">{t("dashboard.clientDetails.pickupLocation")}</p>
-                  <p className="text-sm font-medium">{booking.pickup_location ?? "—"}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">{t("dashboard.clientDetails.dropoffLocation")}</p>
-                  <p className="text-sm font-medium">{booking.dropoff_location ?? "—"}</p>
-                </div>
+              <div>
+                <p className="text-xs text-muted-foreground">{t("dashboard.clientDetails.dropoff")}</p>
+                <p className="text-sm font-medium">
+                  {booking.dropoff_time
+                    ? moment(booking.dropoff_time).locale(locale).format(dateFormat)
+                    : "—"}
+                </p>
+                <p className="text-sm font-medium">{booking.dropoff_location ?? "—"}</p>
+                {dropoffMapsUrl && (
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="h-8 mt-1.5 text-xs"
+                  >
+                    <a href={dropoffMapsUrl} target="_blank" rel="noopener noreferrer">
+                      <MapPin className="mr-1.5 h-3.5 w-3.5" />
+                      {t("dashboard.clientDetails.viewOnGoogleMaps")}
+                    </a>
+                  </Button>
+                )}
               </div>
-              {mapsUrl && (
-                <Button
-                  asChild
-                  variant="outline"
-                  size="sm"
-                  className="h-8 text-xs w-full sm:w-auto"
-                >
-                  <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
-                    <MapPin className="mr-1.5 h-3.5 w-3.5" />
-                    {t("dashboard.clientDetails.viewOnGoogleMaps")}
-                  </a>
-                </Button>
-              )}
-            </>
+            </div>
           ) : (
             <>
               <div className="flex items-start gap-2">
@@ -270,20 +277,20 @@ export function BookingDetailsModal({
                   <p className="text-sm font-medium">{booking.tickets ?? "—"}</p>
                 </div>
               </div>
-              {mapsQuery && (
+              {tourAddress && (
                 <div className="flex items-start gap-2">
                   <MapPin className="h-4 w-4 mt-0.5 text-primary shrink-0" />
                   <div className="min-w-0 flex-1">
                     <p className="text-xs text-muted-foreground">{t("dashboard.clientDetails.location")}</p>
-                    <p className="text-sm font-medium">{mapsQuery}</p>
-                    {mapsUrl && (
+                    <p className="text-sm font-medium">{tourAddress}</p>
+                    {tourMapsUrl && (
                       <Button
                         asChild
                         variant="outline"
                         size="sm"
                         className="h-8 mt-1.5 text-xs"
                       >
-                        <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
+                        <a href={tourMapsUrl} target="_blank" rel="noopener noreferrer">
                           <MapPin className="mr-1.5 h-3.5 w-3.5" />
                           {t("dashboard.clientDetails.viewOnGoogleMaps")}
                         </a>
