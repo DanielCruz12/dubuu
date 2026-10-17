@@ -356,23 +356,6 @@ export function getTourSaveErrorInfo(
   return { title: genericTitle, description: genericDescription };
 }
 
-// Función para calcular precios
-export const calculatePrices = (basePrice: number) => {
-  const tourismTax = basePrice * 0.05; // 5% impuesto de turismo
-  const platformFee = basePrice * 0.1; // 10% comisión de plataforma
-  const totalDeductions = tourismTax + platformFee;
-  const sellerEarns = basePrice - totalDeductions;
-  const userPays = basePrice;
-
-  return {
-    tourismTax,
-    platformFee,
-    totalDeductions,
-    sellerEarns,
-    userPays,
-  };
-};
-
 function isVisibleForFocus(el: HTMLElement): boolean {
   if (el.hasAttribute("disabled")) return false;
   if (el.closest(".hidden")) return false;

@@ -231,6 +231,14 @@ export function BookingsDataTable() {
     exportToExcel(dataToExport, t("dashboard.bookings.exportSheetName"));
   };
 
+  // Dirección del producto de la reserva en detalle (para el link de Google Maps)
+  const detailsProduct = detailsBooking
+    ? products?.find((p) => p.id === detailsBooking.productId)
+    : undefined;
+  const detailsTourAddress = detailsProduct
+    ? `${detailsProduct.address}, ${detailsProduct.country}`
+    : undefined;
+
   // Solo mostrar skeleton mientras carga los productos iniciales
   if (isLoading || !products || !user) {
     return (
@@ -415,6 +423,7 @@ export function BookingsDataTable() {
         booking={detailsBooking}
         open={detailsOpen}
         onClose={() => setDetailsOpen(false)}
+        tourAddress={detailsTourAddress}
       />
     </div>
   );

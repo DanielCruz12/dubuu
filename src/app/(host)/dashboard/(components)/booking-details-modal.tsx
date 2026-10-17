@@ -18,7 +18,8 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Ticket, CreditCard, Phone } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Calendar, Ticket, CreditCard, Phone, MapPin } from "lucide-react";
 import type { HostBooking } from "@/types/booking";
 import { statusColors, statusTextTranslations } from "@/utils/data";
 import moment from "moment";
@@ -130,19 +131,22 @@ interface BookingDetailsModalProps {
   booking: HostBooking | null;
   open: boolean;
   onClose: () => void;
+  /** Dirección del producto (tours) para el link de Google Maps */
+  tourAddress?: string | null;
 }
 
 export function BookingDetailsModal({
   booking,
   open,
   onClose,
+  tourAddress,
 }: BookingDetailsModalProps) {
   const { t, language } = useLanguage();
   const isDesktop = useIsDesktopMd();
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
   const locale = language === "es" ? "es" : "en";
   const dateFormat =
-    language === "es" ? "DD/MM/YYYY h:mm A" : "MM/DD/YYYY h:mm A";
+    language === "es" ? "dddd, D [de] MMMM h:mm A" : "dddd, MMMM D h:mm A";
   const statusText = statusTextTranslations[language];
 
   if (!booking) return null;
@@ -159,6 +163,11 @@ export function BookingDetailsModal({
     statusText[uiStatus as keyof typeof statusText] || booking.status;
 
   const paymentLabel = getPaymentMethodLabel(booking.paymentMethod, t);
+
+  const mapsQuery = isRental ? booking.pickup_location : tourAddress;
+  const mapsUrl = mapsQuery
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsQuery)}`
+    : null;
 
   const documents = [
     { src: booking.dui_front, label: t("dashboard.clientDetails.duiFront") },
@@ -227,6 +236,19 @@ export function BookingDetailsModal({
                   <p className="text-sm font-medium">{booking.dropoff_location ?? "—"}</p>
                 </div>
               </div>
+              {mapsUrl && (
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="h-8 text-xs w-full sm:w-auto"
+                >
+                  <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
+                    <MapPin className="mr-1.5 h-3.5 w-3.5" />
+                    {t("dashboard.clientDetails.viewOnGoogleMaps")}
+                  </a>
+                </Button>
+              )}
             </>
           ) : (
             <>
@@ -248,6 +270,28 @@ export function BookingDetailsModal({
                   <p className="text-sm font-medium">{booking.tickets ?? "—"}</p>
                 </div>
               </div>
+              {mapsQuery && (
+                <div className="flex items-start gap-2">
+                  <MapPin className="h-4 w-4 mt-0.5 text-primary shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs text-muted-foreground">{t("dashboard.clientDetails.location")}</p>
+                    <p className="text-sm font-medium">{mapsQuery}</p>
+                    {mapsUrl && (
+                      <Button
+                        asChild
+                        variant="outline"
+                        size="sm"
+                        className="h-8 mt-1.5 text-xs"
+                      >
+                        <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
+                          <MapPin className="mr-1.5 h-3.5 w-3.5" />
+                          {t("dashboard.clientDetails.viewOnGoogleMaps")}
+                        </a>
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              )}
             </>
           )}
 

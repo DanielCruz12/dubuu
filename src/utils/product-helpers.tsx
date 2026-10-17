@@ -138,37 +138,3 @@ export function getDisplayAddress(product: IProduct): string {
   return product.address;
 }
 
-// Utility function to calculate rental total price
-export function calculateRentalPrice(
-  rental: IRentalProduct,
-  startDate: string,
-  endDate: string,
-  needsDelivery = false,
-  deliveryDistance = 0
-): {
-  days: number;
-  basePrice: number;
-  deliveryFee: number;
-  total: number;
-} {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-  const days = Math.ceil(
-    (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
-  );
-
-  const basePrice = Number.parseFloat(rental.rental.price_per_day) * days;
-
-  let deliveryFee = 0;
-  if (needsDelivery && rental.rental.offers_delivery && deliveryDistance > 0) {
-    deliveryFee =
-      deliveryDistance * Number.parseFloat(String(rental.rental.fee_per_km ?? "0"));
-  }
-
-  return {
-    days,
-    basePrice,
-    deliveryFee,
-    total: basePrice + deliveryFee,
-  };
-}

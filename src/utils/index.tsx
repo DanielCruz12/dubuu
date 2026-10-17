@@ -57,15 +57,6 @@ export function isProductType<T extends string>(
   return rawName === String(type).toLowerCase();
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const calculateTotal = ({ watchData, product }: any): number => {
-  const ticketTotal = watchData.tickets.adult * product.price;
-  const iva = ticketTotal * 0.13;
-  const turismo = ticketTotal * 0.05;
-  const serviceFee = ticketTotal * 0.03;
-  return parseFloat((ticketTotal + iva + turismo + serviceFee).toFixed(2));
-};
-
 export const getCountryById = (id: string): Country | undefined => {
   return countries.find((country) => country.id === id);
 };
@@ -109,26 +100,6 @@ export function getPaymentMethodName(method: PaymentMethod | null): string {
     default:
       return "";
   }
-}
-
-export function calculateRentalPrice(
-  pricePerDay: number,
-  from: Date,
-  to: Date,
-): number {
-  const msInHour = 1000 * 60 * 60;
-  const totalHours = Math.ceil((to.getTime() - from.getTime()) / msInHour);
-
-  if (totalHours <= 0) throw new Error("El rango de fechas es inválido");
-  if (totalHours > 24 * 15) throw new Error("Máximo de 15 días por alquiler");
-
-  const fullDays = Math.floor(totalHours / 24);
-  const extraHours = totalHours % 24;
-
-  const pricePerHour = (pricePerDay / 24) * 1.5; // 50% más caro por hora
-  const total = fullDays * pricePerDay + extraHours * pricePerHour;
-
-  return parseFloat(total.toFixed(2));
 }
 
 export const statusConfig = {

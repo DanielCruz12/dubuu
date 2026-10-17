@@ -1,5 +1,18 @@
 # Estado actual
-Última actualización: 2026-10-10
+Última actualización: 2026-10-16
+
+## Recibo PDF y detalles de reserva del host
+- **Recibo (PDF del cliente)**: la fecha de reserva ahora sale en minúscula y legible (`sábado, 31 de octubre 12:00 PM`; en inglés `Saturday, October 31 12:00 PM`). Para alquileres, recogida y devolución van en **líneas separadas** dentro del PDF (se quitó el separador `→`/`—` que jsPDF 4 renderizaba mal — era la causa del texto "muy separado"). `pdf-button.tsx` ahora dibuja la fecha multi-línea y desplaza el contenido siguiente (`reservationExtra`). Fuentes de datos: `booking-status.tsx` y `booking-details.tsx` (user) con `"\n"`.
+- **Modal de detalles del host** (`booking-details-modal.tsx`): las fechas de reserva/recogida/entrega ahora usan el mismo formato legible (antes `DD/MM/YYYY h:mm A`). Se agregó botón **"Ver en Google Maps"** (`https://www.google.com/maps/search/?api=1&query=<dirección>`, misma URL que usa rental-booking-form): en alquileres usa `pickup_location`; en tours usa la dirección del producto (`products` del listado, prop nueva `tourAddress` desde `bookings-table.tsx` — sin cambio de backend). En tours también se muestra la dirección en el modal.
+- Traducciones nuevas `dashboard.clientDetails.location` y `.viewOnGoogleMaps` (es/en).
+
+
+## Comisiones — tasas definitivas y concordancia frontend/backend
+- **Tasas definitivas (decisión del usuario): 8.5% plataforma (ganancia Dubuu) + 3.5% Wompi = 12% total.**
+- Frontend `src/lib/price.ts`: eliminados `getTaxBreakdown` (sumaba comisiones ENCIMA del precio publicado y etiquetaba `iva: paymentProcessing` — modelo abandonado) y `getCommissionRates` (sin uso). Quedan `getHostEarningsFromFinalPrice` y `getHostEarningsFromTotalSum`. El desglose ahora redondea el 12% combinado (`totalFee`), igual que el backend → sin diferencias de centavos entre dashboard del host y panel de pagos. Se quitó el comentario huérfano en `multimedia-step.tsx`.
+- Backend `src/lib/commission.ts` alineado: 0.09/0.03 → 0.085/0.035. Los cálculos solo usan el total (12%) y host share (88%) en `payout-service.ts`; el desglose individual no entra en ninguna fórmula.
+- Flujo verificado: el viajero paga **exactamente el precio publicado** (booking-form envía `userPays` sin recargo; Wompi cobra ese monto; `booking-service` lo guarda tal cual). Las comisiones se descuentan del host (88%).
+- **Funciones muertas con recargo viejo eliminadas** (no las usaba ninguna pantalla): `calculateTotal` (`src/utils/index.tsx`, sumaba 13% IVA + 5% turismo + 3% fee encima), `calculatePrices` (`src/components/modules/add-tour/utils.ts`, 5% turismo + 10% plataforma) y `calculateRentalPrice` duplicada (`utils/index.tsx` y `utils/product-helpers.tsx`).
 
 ## Historial de pagos para el HOST (dashboard)
 - Nuevo endpoint `GET /api/v1/payments/history` (rol host, en `payment-account-routes.ts`): devuelve los pagos del host autenticado reutilizando `getHostPaymentHistory` del servicio de payouts (misma forma que el admin).

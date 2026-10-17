@@ -2,38 +2,11 @@
  * Configuración de comisiones - Fácil de modificar
  */
 const COMMISSION_RATES = {
-  PLATFORM_RATE: 0.09, // 9% - Comisión de la plataforma
-  PAYMENT_PROCESSING_RATE: 0.03, // 3% - Comisión del procesador de pagos
+  PLATFORM_RATE: 0.085, // 8.5 % - Ganancia neta de Dubuu
+  PAYMENT_PROCESSING_RATE: 0.035, // 3.5 % - Wompi
 } as const;
 
-/**
- * Calcula el precio total incluyendo comisiones
- * @param basePrice - Precio base sin comisiones
- * @param options - Opciones de configuración
- * @returns Precio total formateado como string o como número
- */
-
-/**
- * Obtiene el desglose de comisiones para un precio base
- * @param basePrice - Precio base sin comisiones
- * @param quantity - Cantidad de productos
- * @returns Objeto con el desglose de comisiones
- */
-export function getTaxBreakdown(basePrice: number, quantity = 1) {
-  const subtotal = basePrice * quantity;
-  const platformFee = subtotal * COMMISSION_RATES.PLATFORM_RATE;
-  const paymentProcessing = subtotal * COMMISSION_RATES.PAYMENT_PROCESSING_RATE;
-  const total = subtotal + platformFee + paymentProcessing;
-
-  return {
-    subtotal,
-    platformFee,
-    paymentProcessing,
-    total,
-    serviceFee: platformFee,
-    iva: paymentProcessing,
-  };
-}
+const round2 = (n: number) => Math.round(n * 100) / 100;
 
 /**
  * Calcula cuánto recibe el host desde el precio final (para multimedia-step)
@@ -41,34 +14,14 @@ export function getTaxBreakdown(basePrice: number, quantity = 1) {
  * @param quantity - Cantidad
  * @returns Desglose desde precio final
  */
-export function getHostEarningsFromFinalPrice(
-  finalPrice: number,
-  quantity = 1
-) {
-  const userPays = finalPrice * quantity;
-  const platformFee = userPays * COMMISSION_RATES.PLATFORM_RATE;
-  const paymentProcessing = userPays * COMMISSION_RATES.PAYMENT_PROCESSING_RATE;
-  const hostReceives = userPays - platformFee - paymentProcessing;
+export function getHostEarningsFromFinalPrice(finalPrice: number, quantity = 1) {
+  const userPays = round2(finalPrice * quantity);
+  const totalFee = round2(userPays * (COMMISSION_RATES.PLATFORM_RATE + COMMISSION_RATES.PAYMENT_PROCESSING_RATE));
+  const paymentProcessing = round2(userPays * COMMISSION_RATES.PAYMENT_PROCESSING_RATE);
+  const platformFee = round2(totalFee - paymentProcessing);
+  const hostReceives = round2(userPays - totalFee);
 
-  return {
-    userPays,
-    platformFee,
-    paymentProcessing,
-    hostReceives,
-  };
-}
-
-/**
- * Obtiene las tasas de comisión actuales
- * @returns Objeto con las tasas de comisión
- */
-export function getCommissionRates() {
-  return {
-    platformRate: COMMISSION_RATES.PLATFORM_RATE,
-    paymentProcessingRate: COMMISSION_RATES.PAYMENT_PROCESSING_RATE,
-    platformPercentage: `${(COMMISSION_RATES.PLATFORM_RATE * 100).toFixed(0)}%`,
-    paymentProcessingPercentage: `${(COMMISSION_RATES.PAYMENT_PROCESSING_RATE * 100).toFixed(0)}%`,
-  };
+  return { userPays, platformFee, paymentProcessing, hostReceives };
 }
 
 /**

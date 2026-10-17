@@ -337,6 +337,8 @@
     "dropoffDate": "Fecha de entrega",
     "pickupLocation": "Lugar de recogida",
     "dropoffLocation": "Lugar de entrega",
+    "location": "Dirección",
+    "viewOnGoogleMaps": "Ver en Google Maps",
     "pickupNotes": "Notas de recogida",
     "userNotes": "Mensaje del cliente",
     "noNotes": "Sin notas",

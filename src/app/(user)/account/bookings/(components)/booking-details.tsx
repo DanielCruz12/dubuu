@@ -78,11 +78,20 @@ export function BookingDetails({
 
   const dateLabelFormat =
     language === "es"
-      ? "dddd, D [de] MMMM - h:mm A"
-      : "dddd, MMMM D - h:mm A";
+      ? "dddd, D [de] MMMM h:mm A"
+      : "dddd, MMMM D h:mm A";
 
   const reservationDateText = isRental
-    ? `${booking.pickup_time ? moment(booking.pickup_time).locale(language === "es" ? "es" : "en").format(dateLabelFormat) : ""} → ${booking.dropoff_time ? moment(booking.dropoff_time).locale(language === "es" ? "es" : "en").format(dateLabelFormat) : ""}`
+    ? [
+        booking.pickup_time
+          ? moment(booking.pickup_time).locale(language === "es" ? "es" : "en").format(dateLabelFormat)
+          : "",
+        booking.dropoff_time
+          ? moment(booking.dropoff_time).locale(language === "es" ? "es" : "en").format(dateLabelFormat)
+          : "",
+      ]
+        .filter(Boolean)
+        .join("\n")
     : booking.tourDate
       ? moment(booking.tourDate)
           .locale(language === "es" ? "es" : "en")

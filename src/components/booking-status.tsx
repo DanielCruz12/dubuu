@@ -125,11 +125,14 @@ export function BookingStatus({
       day: "2-digit",
     }),
     reservationDate: isRental
-      ? `${moment(pickupTime).locale(language).format("MMM D, YYYY h:mm A")} — ${moment(dropoffTime).locale(language).format("MMM D, YYYY h:mm A")}`
+      ? [
+          moment(pickupTime).locale(language).format(language === "es" ? "dddd, D [de] MMMM h:mm A" : "dddd, MMMM D h:mm A"),
+          moment(dropoffTime).locale(language).format(language === "es" ? "dddd, D [de] MMMM h:mm A" : "dddd, MMMM D h:mm A"),
+        ].join("\n")
       : tourDate
         ? moment(tourDate)
             .locale(language)
-            .format(language === "es" ? "dddd, D [de] MMMM - h:mm A" : "dddd, MMM D - h:mm A")
+            .format(language === "es" ? "dddd, D [de] MMMM h:mm A" : "dddd, MMMM D h:mm A")
         : undefined,
     customerName,
     items: receiptItems,

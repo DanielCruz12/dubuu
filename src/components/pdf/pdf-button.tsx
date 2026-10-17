@@ -150,13 +150,19 @@ export default function PDFButton({
       doc.setFontSize(11);
       doc.text(receiptData.date, 10, 70);
 
+      // La fecha de reserva puede traer varias líneas (recogida / devolución)
+      let reservationExtra = 0;
       if (receiptData.reservationDate) {
         doc.setFontSize(10);
         doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
         doc.text("FECHA DE RESERVA", 10, 75);
         doc.setTextColor(0, 0, 0);
         doc.setFontSize(11);
-        doc.text(receiptData.reservationDate, 10, 80);
+        const reservationLines = receiptData.reservationDate
+          .split("\n")
+          .filter(Boolean);
+        doc.text(reservationLines, 10, 80);
+        reservationExtra = (reservationLines.length - 1) * 5;
       }
 
       // Información de pago (a la derecha)
@@ -193,17 +199,17 @@ export default function PDFButton({
         doc.text(receiptData.paymentStatus, 200, 70, { align: "right" });
       }
 
-      doc.line(10, 85, 200, 85);
+      doc.line(10, 85 + reservationExtra, 200, 85 + reservationExtra);
 
       // Información del cliente
       doc.setFontSize(10);
       doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
-      doc.text("CLIENTE", 10, 90);
+      doc.text("CLIENTE", 10, 90 + reservationExtra);
       doc.setTextColor(0, 0, 0);
       doc.setFontSize(14);
-      doc.text(receiptData.customerName, 10, 95);
+      doc.text(receiptData.customerName, 10, 95 + reservationExtra);
 
-      yPos = 100;
+      yPos = 100 + reservationExtra;
       doc.setFontSize(10);
       doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
       if (receiptData.customerAddress) {

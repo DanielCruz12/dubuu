@@ -44,7 +44,6 @@ import Image from "next/image";
 import { getHostEarningsFromFinalPrice } from "@/lib/price";
 import { useLanguage } from "@/lib/i18n-context";
 import { cn } from "@/lib/utils";
-// getCommissionRates comentado: solo se usaba para mostrar % en el desglose
 
 // Límites de subida (el usuario no puede subir por encima de esto)
 const MAX_BANNER_IMAGE_MB = 25;
