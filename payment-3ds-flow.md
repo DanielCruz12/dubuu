@@ -99,8 +99,7 @@ Ver sección "Entrega final" al pie de este archivo.
 - [x] `payment-result-content.tsx`: escucha `payment:completed` del socket → "paid" instantáneo.
 - Typecheck backend y frontend ✓.
 
-**Pendiente del usuario (para diagnosticar el webhook):**
-1. Verificar `API_URL` en Railway = URL pública del backend (con ella se arma `urlWebhook`).
-2. Panel de Wompi → aplicativo → notificaciones webhook: ver entregas/reintentos y el código de respuesta.
-3. Repetir un pago y pegar los logs `[wompi-webhook]...` del backend (o avisar si NO aparece ninguno → Wompi no está entregando).
-4. La reserva atascada puede completarse sola si Wompi reintenta el evento tras el fix; si no, ver opciones de reconciliación manual.
+**Seguimiento 2026-10-18 (2ª ronda):**
+- Causa probable del atasco: la comparación de monto ignoraba el evento con 200 → Wompi no reintenta. Eliminada la comparación y los logs de diagnóstico (el usuario indicó que no servían). El flujo quedó equivalente al handler original que ya funcionaba (firma HMAC → marcar paid/completed) más: payment_attempt, rechazo explícito→failed, idempotencia y fallback legado.
+- El usuario aclaró: el valor esperado en la app es **'paid'** (paymentStatus); `status='completed'` se mantiene porque las pantallas filtran por él.
+- **3ª ronda — autorreparación (a petición del usuario, nada de SQL manual)**: `payment-status` consulta a Wompi (`GET /TransaccionCompra/{id}`, docs oficiales: `resultadoTransaccion` 0/1/2 y `esAprobada`) cuando la reserva está pending y actualiza a paid/failed con efectos. Helpers compartidos `completeBookingPayment`/`failBookingPayment`/`emitBookingCompletedEffects` en `payment-attempts-service.ts`; webhook refactorizado para usarlos. La reserva atascada se autorrepara sola al abrir /payment/result (sin SQL).

@@ -1,6 +1,18 @@
 # Estado actual
 Última actualización: 2026-10-18
 
+## Autorreparación de pagos Wompi (sin intervención manual)
+
+- `GET /api/v1/bookings/:id/payment-status` ahora **autorrepara**: si la reserva sigue `pending` y tiene `idTransaccion`, consulta `GET /TransaccionCompra/{id}` de Wompi (nuevo `getTransaction3DS` en `payment-3ds-service.ts`) y según `resultadoTransaccion` (0 aprobada / 1 declinada / 2 fallida) o `esAprobada` marca `paymentStatus='paid'` (+ `status='completed'`, intento, socket/WhatsApp/push si hubo transición) o `failed`. Así el pago se marca solo aunque el webhook nunca llegue — el polling de /payment/result lo dispara.
+- Lógica compartida en `payment-attempts-service.ts`: `completeBookingPayment` / `failBookingPayment` / `emitBookingCompletedEffects` (el webhook ahora los reutiliza — menos duplicación, misma idempotencia).
+- tsc backend ✓.
+
+## Fix webhook Wompi (pago real atascado)
+
+- **Causa probable del atasco**: la comparación de monto agregada al webhook ignoraba el evento (respondía 200 sin actualizar) cuando el formato del monto del payload no coincidía; Wompi al recibir 200 no reintenta → la reserva quedaba pendiente aunque el cobro se hizo. **Se eliminó esa comparación** (y los logs de diagnóstico que no servían). El webhook ahora: firma HMAC (igual que antes), busca `payment_attempt` → sin rechazo explícito marca `paymentStatus='paid'` + `status='completed'` (el valor importante para la app es **paid**; `status='completed'` se mantiene porque todas las pantallas filtran por él), fallback legado por `bookings.idTransaccion`, idempotente, efectos solo en la transición.
+- **Reserva atascada** (id `29bbd42f-8f13-4409-b76c-602d993714e2`): requiere actualización manual en BD (Wompi no reintentará un evento que respondió 200). SQL entregado al usuario en el chat.
+- tsc backend ✓.
+
 ## Debug pagos reales (Wompi) — campos requeridos y diagnóstico del webhook
 
 - **Campos de dirección ahora requeridos**: `checkout-schema.ts` valida `city` y `zipCode` para tarjeta (antes solo address/country/state — por eso Wompi rechazaba "El campo ciudad es un dato requerido" con el campo vacío). El backend (`payment-3ds-controller.ts`) también valida los 8 campos del cliente (400 con mensaje claro) y avisa 503 si falta `API_URL` (sin ella el webhook no puede confirmarse).
