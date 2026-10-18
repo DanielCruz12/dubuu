@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useAuth, useUser, SignInButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n-context";
+import { useOnPaymentCompleted } from "@/contexts/socket-context";
 import { vibrateSuccess } from "@/lib/vibration";
 import {
   AlertTriangle,
@@ -36,6 +37,14 @@ export default function PaymentResultContent({ bookingId }: { bookingId: string 
     setStatusState(value);
     if (value === "paid") vibrateSuccess();
   };
+
+  // Si el webhook marca la reserva como pagada mientras el usuario espera, el
+  // socket confirma al instante (sin esperar el siguiente ciclo de polling).
+  useOnPaymentCompleted((payload) => {
+    if (payload.bookingId === bookingId) {
+      setStatus("paid");
+    }
+  });
 
   const poll = useCallback(async () => {
     if (!bookingId) return;

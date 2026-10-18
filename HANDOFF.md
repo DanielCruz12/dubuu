@@ -1,6 +1,14 @@
 # Estado actual
 Última actualización: 2026-10-18
 
+## Debug pagos reales (Wompi) — campos requeridos y diagnóstico del webhook
+
+- **Campos de dirección ahora requeridos**: `checkout-schema.ts` valida `city` y `zipCode` para tarjeta (antes solo address/country/state — por eso Wompi rechazaba "El campo ciudad es un dato requerido" con el campo vacío). El backend (`payment-3ds-controller.ts`) también valida los 8 campos del cliente (400 con mensaje claro) y avisa 503 si falta `API_URL` (sin ella el webhook no puede confirmarse).
+- **Webhook Wompi con diagnóstico seguro**: `wompi-webhook-controller.ts` ahora loguea `[wompi-webhook]` — keys raíz del payload (nunca valores), IdTransaccion extraído, monto/aprobado, fallback legado y firmas rechazadas (403). `extractTransactionId` normaliza a string.
+- **Result page escucha el socket**: `payment-result-content.tsx` usa `useOnPaymentCompleted` → estado "paid" instantáneo si el webhook completa mientras el usuario espera (sin esperar el polling).
+- **Aclaración**: `payout_status` es el estado de pago al HOST (siempre 'pending' hasta que Dubuu le pague) — no es el estado del pago del viajero. Lo relevante ahora: `bookings.paymentStatus` y `bookings.status`.
+- Pendiente del usuario: verificar `API_URL` en Railway (URL pública del backend), revisar en el panel de Wompi las entregas del webhook, y repetir una prueba pegando los logs nuevos `[wompi-webhook]`.
+
 ## Vibración háptica en SlideToPay
 
 - `slide-to-pay.tsx` ahora vibra al iniciar el deslizamiento (`vibrateTap()`, pulso ligero de 15ms en `pointerdown`) y al completarlo (`vibrateSuccess()` en `finish()` — también cubre el atajo de teclado). Nuevo helper `vibrateTap` en `src/lib/vibration.ts`. Nota: en iPhone/iOS Safari no hay Vibration API — los guards lo ignoran silenciosamente.

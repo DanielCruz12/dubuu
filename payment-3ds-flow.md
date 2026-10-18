@@ -85,3 +85,22 @@ Reglas: nombres reales del código (no inventar), no loguear tarjetas/CVV/errore
 ## Entrega final ✅
 
 Ver sección "Entrega final" al pie de este archivo.
+
+---
+
+## Seguimiento 2026-10-18 (prueba con tarjeta real)
+
+**Reporte del usuario:** error "El campo ciudad es un dato requerido" (primer intento), luego 3DS completado y cargo real a la tarjeta, pero el webhook nunca marcó la reserva → la pantalla /payment/result agotó el polling ("Estamos confirmando tu pago"). Logs de Clerk (`email.created`) son ruido ajeno. `payout_status` pending es correcto (es el payout del HOST, no el pago del viajero).
+
+**Cambios aplicados:**
+- [x] `checkout-schema.ts`: `city` y `zipCode` obligatorios para tarjeta (antes solo address/country/state).
+- [x] `payment-3ds-controller.ts`: valida los 8 campos del cliente (400 claro) + guard 503 si falta `API_URL`.
+- [x] `wompi-webhook-controller.ts`: logs de diagnóstico seguros (`[wompi-webhook]` — keys raíz, IdTransaccion, monto, aprobado, firma rechazada, fallback legado); `extractTransactionId` → String.
+- [x] `payment-result-content.tsx`: escucha `payment:completed` del socket → "paid" instantáneo.
+- Typecheck backend y frontend ✓.
+
+**Pendiente del usuario (para diagnosticar el webhook):**
+1. Verificar `API_URL` en Railway = URL pública del backend (con ella se arma `urlWebhook`).
+2. Panel de Wompi → aplicativo → notificaciones webhook: ver entregas/reintentos y el código de respuesta.
+3. Repetir un pago y pegar los logs `[wompi-webhook]...` del backend (o avisar si NO aparece ninguno → Wompi no está entregando).
+4. La reserva atascada puede completarse sola si Wompi reintenta el evento tras el fix; si no, ver opciones de reconciliación manual.

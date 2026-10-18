@@ -193,6 +193,20 @@ export const checkoutFormSchema = checkoutFormSchemaBase.superRefine(
           path: ["state"],
         });
       }
+      if ((data.city?.trim() ?? "").length < 2) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "La ciudad es obligatoria.",
+          path: ["city"],
+        });
+      }
+      if ((data.zipCode?.trim() ?? "").length < 3) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "El código postal es obligatorio.",
+          path: ["zipCode"],
+        });
+      }
     }
   }
 );
