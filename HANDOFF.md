@@ -1,6 +1,10 @@
 # Estado actual
 Última actualización: 2026-10-18
 
+## Confetti en pantalla de éxito de pago
+
+- `payment-result-content.tsx`: al pasar a 'paid' dispara `canvas-confetti` (ráfaga central + dos laterales a los 250ms) junto con la vibración. `tsc` ✓.
+
 ## Autorreparación de pagos Wompi (sin intervención manual)
 
 - `GET /api/v1/bookings/:id/payment-status` ahora **autorrepara**: si la reserva sigue `pending` y tiene `idTransaccion`, consulta `GET /TransaccionCompra/{id}` de Wompi (nuevo `getTransaction3DS` en `payment-3ds-service.ts`) y según `resultadoTransaccion` (0 aprobada / 1 declinada / 2 fallida) o `esAprobada` marca `paymentStatus='paid'` (+ `status='completed'`, intento, socket/WhatsApp/push si hubo transición) o `failed`. Así el pago se marca solo aunque el webhook nunca llegue — el polling de /payment/result lo dispara.

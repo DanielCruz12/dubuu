@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useAuth, useUser, SignInButton } from "@clerk/nextjs";
+import confetti from "canvas-confetti";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n-context";
 import { useOnPaymentCompleted } from "@/contexts/socket-context";
@@ -35,7 +36,15 @@ export default function PaymentResultContent({ bookingId }: { bookingId: string 
   const setStatus = (value: PaymentStatus) => {
     statusRef.current = value;
     setStatusState(value);
-    if (value === "paid") vibrateSuccess();
+    if (value === "paid") {
+      vibrateSuccess();
+      // Celebración: ráfaga central + laterales
+      confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
+      window.setTimeout(() => {
+        confetti({ particleCount: 60, angle: 60, spread: 55, origin: { x: 0 } });
+        confetti({ particleCount: 60, angle: 120, spread: 55, origin: { x: 1 } });
+      }, 250);
+    }
   };
 
   // Si el webhook marca la reserva como pagada mientras el usuario espera, el
