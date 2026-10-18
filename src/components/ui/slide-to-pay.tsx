@@ -3,6 +3,7 @@
 import { useCallback, useRef, useState } from "react";
 import { ArrowRight, Check, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { vibrateSuccess, vibrateTap } from "@/lib/vibration";
 
 const THUMB_SIZE = 48; // h-12 w-12
 const TRACK_PADDING = 8; // p-2 del carril
@@ -53,6 +54,7 @@ export function SlideToPay({
     setMaxLeft(max);
     setLeft(max);
     setCompleted(true);
+    vibrateSuccess();
     onComplete();
     // Si no entra en estado de carga (p. ej. falló la validación), el carril regresa
     setTimeout(() => {
@@ -69,6 +71,7 @@ export function SlideToPay({
     if (max <= 0) return;
     setMaxLeft(max);
     setDragging(true);
+    vibrateTap();
     e.currentTarget.setPointerCapture(e.pointerId);
     dragRef.current = { startClientX: e.clientX, startLeft: left, moved: 0 };
   };

@@ -1,6 +1,10 @@
 # Estado actual
 Última actualización: 2026-10-18
 
+## Vibración háptica en SlideToPay
+
+- `slide-to-pay.tsx` ahora vibra al iniciar el deslizamiento (`vibrateTap()`, pulso ligero de 15ms en `pointerdown`) y al completarlo (`vibrateSuccess()` en `finish()` — también cubre el atajo de teclado). Nuevo helper `vibrateTap` en `src/lib/vibration.ts`. Nota: en iPhone/iOS Safari no hay Vibration API — los guards lo ignoran silenciosamente.
+
 ## Flujo de pago 3DS + pantalla de éxito /payment/result (tracker: `payment-3ds-flow.md`)
 
 - **Backend** (`dantours-drizzle-nodejs`): tabla `payment_attempts` + columna `bookings.paymentStatus` (default 'pending'); migración `drizzle/0028_robust_ma_gnuci.sql` **sin ejecutar** (aplicar con `npm run dz:push`). Controller 3DS (`payment-3ds-controller.ts`) exige auth, recibe `bookingId` sin `total`, valida dueño (404/409) y monto desde `booking.total`, redirige a `${FRONTEND_URL}/payment/result?booking=<id>`, guarda intento `pending` y loguea sin datos de tarjeta. Webhook Wompi: HMAC confirmado vs docs oficiales, busca el intento, compara monto, idempotente, marca paid/failed y emite socket/WhatsApp/push solo en la transición; extracción defensiva del payload con TODO para confirmar campos reales. `GET /api/v1/bookings/:id/payment-status` (dueño, devuelve `{status}`). `updateBookingStatusByTransactionId` ahora también pone `paymentStatus='paid'` (cubre Blink).

@@ -9,3 +9,15 @@ export function vibrateSuccess() {
     // Vibración no disponible — ignorar
   }
 }
+
+/** Vibración ligera de retroalimentación táctil (p. ej. al iniciar un deslizamiento). */
+export function vibrateTap(durationMs = 15) {
+  if (typeof navigator === "undefined" || typeof navigator.vibrate !== "function") {
+    return;
+  }
+  try {
+    navigator.vibrate(durationMs);
+  } catch {
+    // Vibración no disponible — ignorar
+  }
+}
