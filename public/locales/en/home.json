@@ -642,6 +642,23 @@
 			"viewMyBookings": "Go to my bookings"
 		}
 	},
+	"paymentResult": {
+		"pending": "Confirming your payment…",
+		"pendingDesc": "This may take a few seconds.",
+		"paidTitle": "Payment successful!",
+		"paidDesc": "Your booking was registered and confirmed successfully.",
+		"viewBookings": "View my bookings",
+		"failedTitle": "Payment could not be completed",
+		"failedDesc": "Your payment was declined or canceled. You can try again.",
+		"timeoutTitle": "We are confirming your payment",
+		"timeoutDesc": "Check your bookings in a few minutes to see the status.",
+		"signInTitle": "Sign in to see your payment status",
+		"signInDesc": "Sign in with the same account you used to book.",
+		"signIn": "Sign in",
+		"goHome": "Back to home",
+		"invalidTitle": "Booking not specified",
+		"invalidDesc": "Could not identify the booking. Check your bookings to see the status."
+	},
 	"dashboard": {
 		"addTour": {
 			"location": {

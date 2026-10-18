@@ -6,9 +6,12 @@ import { urlWithLocale } from "@/redux/url-with-locale";
 
 export type CreateBookingInput = Omit<
   Booking,
-  "id" | "created_at" | "updated_at"
+  // La reserva se crea ANTES de iniciar la transacción de pago (3DS):
+  // idTransaccion llega después, cuando el backend liga la transacción.
+  "id" | "created_at" | "updated_at" | "idTransaccion"
 > & {
   tour_date_id?: string | string[];
+  idTransaccion?: string;
 };
 
 // Definimos el API slice sin depender de hooks de React

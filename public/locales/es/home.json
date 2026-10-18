@@ -642,6 +642,23 @@
 			"viewMyBookings": "Ir a mis reservas"
 		}
 	},
+	"paymentResult": {
+		"pending": "Confirmando tu pago…",
+		"pendingDesc": "Esto puede tomar unos segundos.",
+		"paidTitle": "¡Pago exitoso!",
+		"paidDesc": "Tu reserva fue registrada y confirmada correctamente.",
+		"viewBookings": "Ver mis reservas",
+		"failedTitle": "El pago no se pudo completar",
+		"failedDesc": "Tu pago fue rechazado o cancelado. Puedes intentarlo de nuevo.",
+		"timeoutTitle": "Estamos confirmando tu pago",
+		"timeoutDesc": "Revisa tus reservas en unos minutos para ver el estado.",
+		"signInTitle": "Inicia sesión para ver el estado de tu pago",
+		"signInDesc": "Necesitas iniciar sesión con la misma cuenta que usaste para reservar.",
+		"signIn": "Iniciar sesión",
+		"goHome": "Volver al inicio",
+		"invalidTitle": "Reserva no especificada",
+		"invalidDesc": "No se pudo identificar la reserva. Revisa tus reservas para ver el estado."
+	},
 	"dashboard": {
 		"addTour": {
 			"location": {

@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
 import { ArrowLeft } from "lucide-react";
 import type { BookingFormData } from "@/types/booking";
@@ -102,6 +103,16 @@ export default function CheckoutForm({
   const [invoiceExpiresSeconds, setInvoiceExpiresSeconds] = useState(0);
   const [getBookingById] = useLazyGetBookingByIdQuery();
   const hasCompletedRef = useRef(false);
+  const router = useRouter();
+  // Reserva creada en este checkout (flujo tarjeta): se reutiliza en reintentos
+  // para no duplicar reservas si el 3DS falla.
+  const createdBookingIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    // Si cambian los datos de la reserva (el usuario volvió y editó), olvidar
+    // la reserva creada previamente.
+    createdBookingIdRef.current = null;
+  }, [bookingData]);
 
   // Detectar cuando el usuario vuelve a la pestaña (mobile: volver de Blink wallet)
   useEffect(() => {
@@ -112,6 +123,7 @@ export default function CheckoutForm({
       getBookingById(blinkResponse.bookingId).unwrap().then((data) => {
         if (data?.status === "completed" && !hasCompletedRef.current) {
           hasCompletedRef.current = true;
+          const completedBookingId = blinkResponse?.bookingId;
           vibrateSuccess();
           setBlinkModalOpen(false);
           setBlinkResponse(null);
@@ -120,6 +132,10 @@ export default function CheckoutForm({
             bookingsApiSlice.util.invalidateTags([{ type: "Bookings", id: "USER_LIST" }])
           );
           onPaymentSuccess?.();
+          // Llevar a la pantalla de resultado (igual que el flujo 3DS)
+          if (completedBookingId) {
+            router.push(`/payment/result?booking=${completedBookingId}`);
+          }
         }
       }).catch(() => {});
     };
@@ -166,6 +182,7 @@ export default function CheckoutForm({
   });
 
   useOnPaymentCompleted(() => {
+    const completedBookingId = blinkResponse?.bookingId;
     vibrateSuccess();
     setBlinkModalOpen(false);
     setBlinkResponse(null);
@@ -174,6 +191,10 @@ export default function CheckoutForm({
       bookingsApiSlice.util.invalidateTags([{ type: "Bookings", id: "USER_LIST" }])
     );
     onPaymentSuccess?.();
+    // Llevar a la pantalla de resultado (igual que el flujo 3DS)
+    if (completedBookingId) {
+      router.push(`/payment/result?booking=${completedBookingId}`);
+    }
   });
 
   useEffect(() => {
@@ -321,53 +342,73 @@ export default function CheckoutForm({
       return;
     }
 
-    const payload = {
-      ...bookingData,
-      ...values,
-      phone: parsedPhone.nationalNumber,
-    };
-
     toast.promise(
       (async () => {
-        const response = await create3DSTransaction(payload).unwrap();
+        // Crear la reserva ANTES de iniciar el 3DS: el backend valida que sea
+        // del usuario y toma el monto de booking.total (nunca del cliente).
+        let bookingId = createdBookingIdRef.current;
 
-        if (bookingData.kind === "rental") {
-          const formData = new FormData();
-          formData.append("user_id", bookingData.user_id);
-          formData.append("product_id", bookingData.product_id);
-          formData.append("is_live", "true");
-          formData.append("total", String(bookingData.total));
-          formData.append("pickup_time", bookingData.pickup_time);
-          formData.append("dropoff_time", bookingData.dropoff_time);
-          formData.append("pickup_location", bookingData.pickup_location);
-          formData.append("dropoff_location", bookingData.dropoff_location);
-          formData.append("paymentMethod", values.paymentMethod);
-          formData.append("idTransaccion", response.idTransaccion ?? "");
-          if (bookingData.start_date_display) formData.append("start_date_display", bookingData.start_date_display);
-          if (bookingData.end_date_display) formData.append("end_date_display", bookingData.end_date_display);
-          if (bookingData.maps_link) formData.append("maps_link", bookingData.maps_link);
-          if (bookingData.vehicle_model) formData.append("vehicle_model", bookingData.vehicle_model);
-          if (bookingData.duiFrontFile) formData.append("dui_front", bookingData.duiFrontFile);
-          if (bookingData.duiBackFile) formData.append("dui_back", bookingData.duiBackFile);
-          if (bookingData.licenseFrontFile) formData.append("license_front", bookingData.licenseFrontFile);
-          if (bookingData.licenseBackFile) formData.append("license_back", bookingData.licenseBackFile);
-          if (bookingData.pickup_notes) formData.append("pickup_notes", bookingData.pickup_notes);
+        if (!bookingId) {
+          let createdBooking: { id?: string } | undefined;
 
-          await createBooking(formData).unwrap();
-        } else {
-          await createBooking({
-            user_id: bookingData.user_id,
-            product_id: bookingData.product_id,
-            is_live: true,
-            tickets:
-              bookingData.tickets.adult +
-              (bookingData.tickets.children ?? 0),
-            total: bookingData.total,
-            tour_date_id: [bookingData.datetime],
-            paymentMethod: values.paymentMethod,
-            idTransaccion: response.idTransaccion ?? "",
-          }).unwrap();
+          if (bookingData.kind === "rental") {
+            const formData = new FormData();
+            formData.append("user_id", bookingData.user_id);
+            formData.append("product_id", bookingData.product_id);
+            formData.append("is_live", "true");
+            formData.append("total", String(bookingData.total));
+            formData.append("pickup_time", bookingData.pickup_time);
+            formData.append("dropoff_time", bookingData.dropoff_time);
+            formData.append("pickup_location", bookingData.pickup_location);
+            formData.append("dropoff_location", bookingData.dropoff_location);
+            formData.append("paymentMethod", values.paymentMethod);
+            if (bookingData.start_date_display) formData.append("start_date_display", bookingData.start_date_display);
+            if (bookingData.end_date_display) formData.append("end_date_display", bookingData.end_date_display);
+            if (bookingData.maps_link) formData.append("maps_link", bookingData.maps_link);
+            if (bookingData.vehicle_model) formData.append("vehicle_model", bookingData.vehicle_model);
+            if (bookingData.duiFrontFile) formData.append("dui_front", bookingData.duiFrontFile);
+            if (bookingData.duiBackFile) formData.append("dui_back", bookingData.duiBackFile);
+            if (bookingData.licenseFrontFile) formData.append("license_front", bookingData.licenseFrontFile);
+            if (bookingData.licenseBackFile) formData.append("license_back", bookingData.licenseBackFile);
+            if (bookingData.pickup_notes) formData.append("pickup_notes", bookingData.pickup_notes);
+
+            createdBooking = await createBooking(formData).unwrap();
+          } else {
+            createdBooking = await createBooking({
+              user_id: bookingData.user_id,
+              product_id: bookingData.product_id,
+              is_live: true,
+              tickets:
+                bookingData.tickets.adult +
+                (bookingData.tickets.children ?? 0),
+              total: bookingData.total,
+              tour_date_id: [bookingData.datetime],
+              paymentMethod: values.paymentMethod,
+            }).unwrap();
+          }
+
+          if (!createdBooking?.id) {
+            throw new Error("No se pudo crear la reserva");
+          }
+          createdBookingIdRef.current = createdBooking.id;
+          bookingId = createdBooking.id;
         }
+
+        // 3DS: con bookingId y SIN total (el backend usa booking.total)
+        const response = await create3DSTransaction({
+          bookingId,
+          firstName: values.firstName,
+          lastName: values.lastName,
+          email: values.email,
+          address: values.address,
+          city: values.city,
+          state: values.state,
+          zipCode: values.zipCode,
+          country: values.country,
+          cardNumber: values.cardNumber,
+          cardExpiry: values.cardExpiry,
+          cardCvc: values.cardCvc,
+        }).unwrap();
 
         onPaymentSuccess?.();
 

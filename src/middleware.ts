@@ -14,6 +14,9 @@ const isPublicRoute = createRouteMatcher([
   "/contact(.*)",
   "/terms(.*)",
   "/privacy(.*)",
+  // La pantalla de resultado de pago maneja ella misma la sesión (la persona
+  // puede volver del banco sin sesión iniciada todavía).
+  "/payment(.*)",
 ]);
 
 const isAccountRoute = createRouteMatcher(["/account(.*)"]);

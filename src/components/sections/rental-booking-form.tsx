@@ -547,14 +547,17 @@ export default function RentalBookingForm({
             <Clock className="h-3.5 w-3.5 opacity-70" aria-hidden />
             {t("home.rentalBooking.pickupTime")}
           </Label>
-          <TimePicker value={pickupTime} onChange={setPickupTime} modal={!isDesktop}/>
+          {/* modal siempre: el Popover dentro del Dialog modal de fechas no recibe
+              clics (versiones distintas de radix dismissable-layer entre
+              dialog 1.1.4 y popover 1.1.6). */}
+          <TimePicker value={pickupTime} onChange={setPickupTime} modal />
         </div>
         <div className="space-y-1.5">
           <Label className="text-xs flex items-center gap-1.5">
             <Clock className="h-3.5 w-3.5 opacity-70" aria-hidden />
             {t("home.rentalBooking.returnTime")}
           </Label>
-          <TimePicker value={returnTime} onChange={setReturnTime} modal={!isDesktop} />
+          <TimePicker value={returnTime} onChange={setReturnTime} modal />
         </div>
       </div>
       {insufficientHours && (

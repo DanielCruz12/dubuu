@@ -53,7 +53,7 @@ export default function ActivateNotifications() {
         <CardDescription>
           {status === "active"
             ? "Notificaciones activadas. Recibirás alertas cuando se confirmen tus reservas."
-            : "Las notificaciones se activan automáticamente. Si no lo están, inténtalo con el botón."}
+            : "Activa las notificaciones para recibir alertas cuando se confirmen tus reservas."}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
