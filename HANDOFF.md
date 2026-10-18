@@ -8,22 +8,22 @@
 ## Autorreparación de pagos Wompi (sin intervención manual)
 
 - `GET /api/v1/bookings/:id/payment-status` ahora **autorrepara**: si la reserva sigue `pending` y tiene `idTransaccion`, consulta `GET /TransaccionCompra/{id}` de Wompi (nuevo `getTransaction3DS` en `payment-3ds-service.ts`) y según `resultadoTransaccion` (0 aprobada / 1 declinada / 2 fallida) o `esAprobada` marca `paymentStatus='paid'` (+ `status='completed'`, intento, socket/WhatsApp/push si hubo transición) o `failed`. Así el pago se marca solo aunque el webhook nunca llegue — el polling de /payment/result lo dispara.
+- **Solo aplica a pagos Wompi/tarjeta**: se excluye `paymentMethod === 'blink'` (en Blink `idTransaccion` es el paymentHash, no consultable en Wompi).
 - Lógica compartida en `payment-attempts-service.ts`: `completeBookingPayment` / `failBookingPayment` / `emitBookingCompletedEffects` (el webhook ahora los reutiliza — menos duplicación, misma idempotencia).
 - tsc backend ✓.
 
 ## Fix webhook Wompi (pago real atascado)
 
 - **Causa probable del atasco**: la comparación de monto agregada al webhook ignoraba el evento (respondía 200 sin actualizar) cuando el formato del monto del payload no coincidía; Wompi al recibir 200 no reintenta → la reserva quedaba pendiente aunque el cobro se hizo. **Se eliminó esa comparación** (y los logs de diagnóstico que no servían). El webhook ahora: firma HMAC (igual que antes), busca `payment_attempt` → sin rechazo explícito marca `paymentStatus='paid'` + `status='completed'` (el valor importante para la app es **paid**; `status='completed'` se mantiene porque todas las pantallas filtran por él), fallback legado por `bookings.idTransaccion`, idempotente, efectos solo en la transición.
-- **Reserva atascada** (id `29bbd42f-8f13-4409-b76c-602d993714e2`): requiere actualización manual en BD (Wompi no reintentará un evento que respondió 200). SQL entregado al usuario en el chat.
+- **Reserva atascada** (id `29bbd42f-8f13-4409-b76c-602d993714e2`): se **autorrepara sola** al abrir `/payment/result?booking=<id>` (la consulta a Wompi la marca `paid`). El SQL manual quedó como plan B.
 - tsc backend ✓.
 
 ## Debug pagos reales (Wompi) — campos requeridos y diagnóstico del webhook
 
 - **Campos de dirección ahora requeridos**: `checkout-schema.ts` valida `city` y `zipCode` para tarjeta (antes solo address/country/state — por eso Wompi rechazaba "El campo ciudad es un dato requerido" con el campo vacío). El backend (`payment-3ds-controller.ts`) también valida los 8 campos del cliente (400 con mensaje claro) y avisa 503 si falta `API_URL` (sin ella el webhook no puede confirmarse).
-- **Webhook Wompi con diagnóstico seguro**: `wompi-webhook-controller.ts` ahora loguea `[wompi-webhook]` — keys raíz del payload (nunca valores), IdTransaccion extraído, monto/aprobado, fallback legado y firmas rechazadas (403). `extractTransactionId` normaliza a string.
 - **Result page escucha el socket**: `payment-result-content.tsx` usa `useOnPaymentCompleted` → estado "paid" instantáneo si el webhook completa mientras el usuario espera (sin esperar el polling).
 - **Aclaración**: `payout_status` es el estado de pago al HOST (siempre 'pending' hasta que Dubuu le pague) — no es el estado del pago del viajero. Lo relevante ahora: `bookings.paymentStatus` y `bookings.status`.
-- Pendiente del usuario: verificar `API_URL` en Railway (URL pública del backend), revisar en el panel de Wompi las entregas del webhook, y repetir una prueba pegando los logs nuevos `[wompi-webhook]`.
+- Pendiente del usuario: verificar `API_URL` en Railway (URL pública del backend). La autorreparación (arriba) cubre los casos de webhook perdido, así que ya no se depende de logs.
 
 ## Vibración háptica en SlideToPay
 
@@ -31,8 +31,9 @@
 
 ## Flujo de pago 3DS + pantalla de éxito /payment/result (tracker: `payment-3ds-flow.md`)
 
-- **Backend** (`dantours-drizzle-nodejs`): tabla `payment_attempts` + columna `bookings.paymentStatus` (default 'pending'); migración `drizzle/0028_robust_ma_gnuci.sql` **sin ejecutar** (aplicar con `npm run dz:push`). Controller 3DS (`payment-3ds-controller.ts`) exige auth, recibe `bookingId` sin `total`, valida dueño (404/409) y monto desde `booking.total`, redirige a `${FRONTEND_URL}/payment/result?booking=<id>`, guarda intento `pending` y loguea sin datos de tarjeta. Webhook Wompi: HMAC confirmado vs docs oficiales, busca el intento, compara monto, idempotente, marca paid/failed y emite socket/WhatsApp/push solo en la transición; extracción defensiva del payload con TODO para confirmar campos reales. `GET /api/v1/bookings/:id/payment-status` (dueño, devuelve `{status}`). `updateBookingStatusByTransactionId` ahora también pone `paymentStatus='paid'` (cubre Blink).
-- **Frontend**: flujo tarjeta invertido — la reserva se crea ANTES del 3DS (ref `createdBookingIdRef` evita duplicados en reintentos) y el 3DS se llama solo con `bookingId` + datos de cliente/tarjeta. Blink navega a `/payment/result?booking=ID` al confirmarse el pago. Nueva ruta pública `/payment/result` con polling (2s × 15) al endpoint de estado, estados pagado/fallido/pendiente/agotado, SignInButton modal si no hay sesión. `CreateBookingInput.idTransaccion` ahora opcional. Claves `home.paymentResult.*` es/en.
+- **Backend** (`dantours-drizzle-nodejs`): tabla `payment_attempts` + columna `bookings.paymentStatus` (default 'pending'); migración `drizzle/0028_robust_ma_gnuci.sql` **sin ejecutar** (aplicar con `npm run dz:push`). Controller 3DS (`payment-3ds-controller.ts`) exige auth, recibe `bookingId` sin `total`, valida dueño (404/409) y monto desde `booking.total`, redirige a `${FRONTEND_URL}/payment/result?booking=<id>`, guarda intento `pending` y loguea sin datos de tarjeta. Webhook Wompi: HMAC confirmado vs docs oficiales, busca el intento, idempotente, marca paid/failed (fallo solo ante rechazo explícito) y emite socket/WhatsApp/push solo en la transición; extracción defensiva del payload con TODO para confirmar campos reales. `GET /api/v1/bookings/:id/payment-status` (dueño, devuelve `{status}`, con autorreparación vs Wompi). `updateBookingStatusByTransactionId` ahora también pone `paymentStatus='paid'` (cubre Blink).
+- **Frontend**: flujo tarjeta invertido — la reserva se crea ANTES del 3DS (ref `createdBookingIdRef` evita duplicados en reintentos) y el 3DS se llama solo con `bookingId` + datos de cliente/tarjeta. Nueva ruta pública `/payment/result` con polling (2s × 15) al endpoint de estado, estados pagado/fallido/pendiente/agotado, SignInButton modal si no hay sesión, socket y confetti al pasar a 'paid'. `CreateBookingInput.idTransaccion` ahora opcional. Claves `home.paymentResult.*` es/en.
+- **Flujo Blink**: mecánica sin cambios (reserva in-process + paymentHash en `idTransaccion` → QR/countdown → webhook svix → socket). Cambios: `paymentStatus='paid'` al completarse, navegación a `/payment/result?booking=ID` al confirmar (socket o visibilitychange), y la autorreparación de Wompi está excluida para Blink.
 - **Env nueva backend**: `FRONTEND_URL` (default `https://www.dubuu.com`). Pendiente del usuario: ejecutar la migración y validar con un pago real el formato del payload del webhook (TODO en `wompi-webhook-controller.ts`).
 - Nota backend: lint no disponible (falta `@typescript-eslint/eslint-plugin`); se verificó con `npx tsc --noEmit` por fase.
 
