@@ -16,6 +16,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/lib/i18n-context";
 import type { PayoutRecord } from "@/types/payout";
+import Lightbox from "yet-another-react-lightbox";
+import Zoom from "yet-another-react-lightbox/plugins/zoom";
+import DownloadPlugin from "yet-another-react-lightbox/plugins/download";
 
 interface Props {
   record: PayoutRecord | null;
@@ -29,8 +32,14 @@ function isRemoteSrc(src: string): boolean {
 export function ReceiptModal({ record, onClose }: Props) {
   const { t } = useLanguage();
   const [downloading, setDownloading] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   if (!record) return null;
+
+  const handleClose = () => {
+    setLightboxOpen(false);
+    onClose();
+  };
 
   const isPdf = record.receiptUrl.toLowerCase().includes(".pdf");
   const dateTime = record.paymentTime
@@ -65,7 +74,8 @@ export function ReceiptModal({ record, onClose }: Props) {
   };
 
   return (
-    <Dialog open={record !== null} onOpenChange={(open) => !open && onClose()}>
+    <>
+    <Dialog open={record !== null} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -111,7 +121,12 @@ export function ReceiptModal({ record, onClose }: Props) {
                 className="h-80 w-full"
               />
             ) : (
-              <div className="relative h-80 w-full">
+              <button
+                type="button"
+                onClick={() => setLightboxOpen(true)}
+                className="relative h-48 w-full cursor-zoom-in"
+                aria-label="Ampliar comprobante"
+              >
                 <Image
                   src={record.receiptUrl}
                   alt="Comprobante de pago"
@@ -120,7 +135,7 @@ export function ReceiptModal({ record, onClose }: Props) {
                   className="object-contain"
                   sizes="(max-width: 576px) 100vw, 576px"
                 />
-              </div>
+              </button>
             )}
           </div>
         ) : (
@@ -144,9 +159,22 @@ export function ReceiptModal({ record, onClose }: Props) {
               {t("payouts.receipt.download")}
             </Button>
           )}
-          <Button onClick={onClose}>{t("payouts.receipt.close")}</Button>
+          <Button onClick={handleClose}>{t("payouts.receipt.close")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
+
+    {!isPdf && record.receiptUrl && (
+      <Lightbox
+        open={lightboxOpen}
+        close={() => setLightboxOpen(false)}
+        slides={[{ src: record.receiptUrl, alt: "Comprobante de pago" }]}
+        plugins={[Zoom, DownloadPlugin]}
+        portal={{
+          root: typeof document !== "undefined" ? document.body : undefined,
+        }}
+      />
+    )}
+    </>
   );
 }

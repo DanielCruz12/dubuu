@@ -1,6 +1,20 @@
 # Estado actual
 Última actualización: 2026-10-18
 
+## Lightbox de documentos (host) y comprobante de recibo con yet-another-react-lightbox
+
+- **Ver detalles (host)**: `booking-details-modal.tsx` — se eliminó el `ImageLightbox` custom (se abría por debajo del modal porque su `fixed z-[9999]` quedaba atrapado en el stacking context del ancestro del Dialog/Sheet). Ahora usa `Lightbox` de `yet-another-react-lightbox` (ya instalada, usada en `image-collage`) con `portal={{ root: document.body }}` (garantiza que quede SIEMPRE encima del modal; el guard `typeof document !== "undefined"` protege el SSR), navegación entre los documentos (DUI frente/revés, licencia frente/revés) y plugins Zoom/Download/Fullscreen. `lightboxIndex` se resetea al cerrar el modal (evita lightbox huérfano).
+- **Ver recibo (comprobante de pagos)**: `receipt-modal.tsx` — la imagen del comprobante ahora abre el mismo `Lightbox` (portal a body, plugins Zoom/Download — alias `DownloadPlugin` por el choque con el ícono `Download` de lucide) y el preview dentro del modal pasó de `h-80` a `h-48` (más pequeño, clickeable con `cursor-zoom-in`). El iframe del PDF no cambia (no aplica lightbox). Cerrar el modal también cierra el lightbox (`handleClose`).
+- `tsc --noEmit` ✓.
+
+## Checkout: carril de pago habilitado solo con datos completos y fijo al completar
+
+- **SlideToPay deshabilitado hasta que el formulario sea válido**: `checkout-form.tsx` calcula `isFormValid` con `checkoutFormSchema.safeParse(methods.watch())` (determinista, no depende del `isValid` inicial de react-hook-form) y lo pasa como `disabled` al carril. Cubre contacto (nombre/apellido/teléfono) y, según método: tarjeta (email, datos de tarjeta y dirección) o blink (solo contacto). El email de Clerk se prellena con un `setValue` apenas está disponible (el campo email no tiene input visible; sin esto el pago con tarjeta podía quedar bloqueado si `useGetUserQuery` no respondía).
+- **Carril queda al 100% al completar el pago**: nueva prop `success` en `slide-to-pay.tsx` — cuando es true fija el pulgar al final con check de forma permanente. Un intento que termina sin éxito (`loading` true → false sin `success`) regresa al inicio para reintentar. El fallback de 900 ms de `finish()` ahora también respeta `successRef`.
+- **`loading` del carril cubre todo el pipeline**: `isLoading` ahora incluye `updateUser` y `createBooking` además de las mutaciones 3DS/Blink — antes el carril podía "regresar" a mitad de un pago si la creación de la reserva tardaba más de 900 ms.
+- **Validaciones extra en el checkout**: `checkout-schema.ts` aplica `.trim()` a todos los campos de texto del esquema base (los valores enviados ya van recortados) y exige que `zipCode` contenga solo dígitos (mensaje "El código postal debe contener solo números."). `shipping-form.tsx` filtra caracteres no numéricos en zipCode mientras se escribe (patrón del CVC de `credit-card-form.tsx`) con `inputMode="numeric"` y `maxLength=10`. Solo El Salvador tiene regiones activas en `utils/data.ts` (Guatemala comentado), por eso el zip numérico no rompe otros países.
+- `tsc --noEmit` ✓.
+
 ## Confetti en pantalla de éxito de pago
 
 - `payment-result-content.tsx`: al pasar a 'paid' dispara `canvas-confetti` (ráfaga central + dos laterales a los 250ms) junto con la vibración. `tsc` ✓.

@@ -65,22 +65,23 @@ export const paymentMethodSchema = z.object({
   paymentMethod: z.enum(["credit", "blink", "paypal", "wompi", "googlepay"]),
 });
 
-// Esquema base: todos los campos opcionales/permisivos para que superRefine decida
+// Esquema base: todos los campos opcionales/permisivos para que superRefine
+// decida. Los textos se recortan (trim) antes de validar y de usarse en el envío.
 const checkoutFormSchemaBase = z.object({
-  firstName: z.string(),
-  lastName: z.string(),
-  email: z.string().optional(),
-  phone: z.string(),
-  address: z.string().optional(),
-  city: z.string().optional(),
-  state: z.string().optional(),
-  zipCode: z.string().optional(),
-  country: z.string().optional(),
+  firstName: z.string().trim(),
+  lastName: z.string().trim(),
+  email: z.string().trim().optional(),
+  phone: z.string().trim(),
+  address: z.string().trim().optional(),
+  city: z.string().trim().optional(),
+  state: z.string().trim().optional(),
+  zipCode: z.string().trim().optional(),
+  country: z.string().trim().optional(),
   paymentMethod: z.enum(["credit", "blink", "paypal", "wompi", "googlepay"]),
-  cardNumber: z.string().optional(),
-  cardName: z.string().optional(),
-  cardExpiry: z.string().optional(),
-  cardCvc: z.string().optional(),
+  cardNumber: z.string().trim().optional(),
+  cardName: z.string().trim().optional(),
+  cardExpiry: z.string().trim().optional(),
+  cardCvc: z.string().trim().optional(),
 });
 
 // Validación condicional: solo exigir lo que corresponde al método de pago
@@ -204,6 +205,12 @@ export const checkoutFormSchema = checkoutFormSchemaBase.superRefine(
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "El código postal es obligatorio.",
+          path: ["zipCode"],
+        });
+      } else if (!/^\d+$/.test((data.zipCode ?? "").trim())) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "El código postal debe contener solo números.",
           path: ["zipCode"],
         });
       }

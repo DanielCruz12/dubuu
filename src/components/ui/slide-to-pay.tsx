@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowRight, Check, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { vibrateSuccess, vibrateTap } from "@/lib/vibration";
@@ -17,6 +17,8 @@ interface SlideToPayProps {
   loadingLabel?: string;
   disabled?: boolean;
   loading?: boolean;
+  /** Si es true, el carril queda fijo al 100% con el check (pago completado). */
+  success?: boolean;
   className?: string;
 }
 
@@ -27,6 +29,7 @@ export function SlideToPay({
   loadingLabel,
   disabled = false,
   loading = false,
+  success = false,
   className,
 }: SlideToPayProps) {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -37,6 +40,8 @@ export function SlideToPay({
   } | null>(null);
   const loadingRef = useRef(loading);
   loadingRef.current = loading;
+  const successRef = useRef(success);
+  successRef.current = success;
 
   const [left, setLeft] = useState(0);
   const [maxLeft, setMaxLeft] = useState(0);
@@ -49,6 +54,26 @@ export function SlideToPay({
     return Math.max(0, track.clientWidth - THUMB_SIZE - TRACK_PADDING * 2);
   }, []);
 
+  // Pago completado: fijar el carril al 100% de forma permanente.
+  useEffect(() => {
+    if (!success) return;
+    const max = measureMax();
+    setMaxLeft(max);
+    setLeft(max);
+    setCompleted(true);
+  }, [success, measureMax]);
+
+  // Un intento que termina sin éxito (loading true → false) regresa al
+  // inicio para permitir reintentar.
+  const prevLoadingRef = useRef(loading);
+  useEffect(() => {
+    if (prevLoadingRef.current && !loading && !success) {
+      setLeft(0);
+      setCompleted(false);
+    }
+    prevLoadingRef.current = loading;
+  }, [loading, success]);
+
   const finish = useCallback(() => {
     const max = measureMax();
     setMaxLeft(max);
@@ -56,9 +81,10 @@ export function SlideToPay({
     setCompleted(true);
     vibrateSuccess();
     onComplete();
-    // Si no entra en estado de carga (p. ej. falló la validación), el carril regresa
+    // Si no entra en estado de carga ni se completa el pago (p. ej. falló la
+    // validación), el carril regresa al inicio.
     setTimeout(() => {
-      if (!loadingRef.current) {
+      if (!loadingRef.current && !successRef.current) {
         setLeft(0);
         setCompleted(false);
       }

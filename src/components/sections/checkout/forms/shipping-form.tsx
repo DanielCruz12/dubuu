@@ -166,7 +166,15 @@ export default function ShippingForm() {
                 <FormControl>
                   <Input
                     placeholder={t("home.checkout.address.placeholderZip")}
-                    {...field}
+                    value={field.value}
+                    onChange={(e) =>
+                      // Solo dígitos (el código postal de El Salvador es numérico)
+                      setValue("zipCode", e.target.value.replace(/\D/g, ""), {
+                        shouldValidate: true,
+                      })
+                    }
+                    maxLength={10}
+                    inputMode="numeric"
                     className="transition-all duration-200 "
                   />
                 </FormControl>

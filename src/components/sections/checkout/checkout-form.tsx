@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 import { useLanguage } from "@/lib/i18n-context";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -87,10 +87,22 @@ export default function CheckoutForm({
     useCreate3DSTransactionMutation();
   const [createBlinkPayment, { isLoading: isBlinkLoading }] =
     useCreateBlinkPaymentMutation();
-  const [updateUser] = useUpdateUserMutation();
+  const [updateUser, { isLoading: isUpdateUserLoading }] =
+    useUpdateUserMutation();
 
-  const [createBooking] = useCreateBookingMutation();
-  const isLoading = is3DSLoading || isBlinkLoading;
+  const [createBooking, { isLoading: isBookingLoading }] =
+    useCreateBookingMutation();
+  // Incluye todo el pipeline (actualizar usuario, crear reserva y transacción)
+  // para que el carril no "regrese" a mitad de un pago.
+  const isLoading =
+    is3DSLoading || isBlinkLoading || isBookingLoading || isUpdateUserLoading;
+
+  // Pago completado con éxito: el carril SlideToPay queda fijo al 100%.
+  const [paymentSucceeded, setPaymentSucceeded] = useState(false);
+  const handlePaymentSuccess = useCallback(() => {
+    setPaymentSucceeded(true);
+    onPaymentSuccess?.();
+  }, [onPaymentSuccess]);
 
   const [blinkModalOpen, setBlinkModalOpen] = useState(false);
   const [blinkResponse, setBlinkResponse] = useState<{
@@ -131,7 +143,7 @@ export default function CheckoutForm({
           dispatch(
             bookingsApiSlice.util.invalidateTags([{ type: "Bookings", id: "USER_LIST" }])
           );
-          onPaymentSuccess?.();
+          handlePaymentSuccess();
           // Llevar a la pantalla de resultado (igual que el flujo 3DS)
           if (completedBookingId) {
             router.push(`/payment/result?booking=${completedBookingId}`);
@@ -144,7 +156,7 @@ export default function CheckoutForm({
 
     document.addEventListener("visibilitychange", handleVisibility);
     return () => document.removeEventListener("visibilitychange", handleVisibility);
-  }, [blinkModalOpen, blinkResponse, dispatch, getBookingById, onPaymentSuccess, t]);
+  }, [blinkModalOpen, blinkResponse, dispatch, getBookingById, handlePaymentSuccess, t]);
 
   // Countdown 3 min cuando se abre el modal Lightning; al llegar a 0 verifica pago
   useEffect(() => {
@@ -190,7 +202,7 @@ export default function CheckoutForm({
     dispatch(
       bookingsApiSlice.util.invalidateTags([{ type: "Bookings", id: "USER_LIST" }])
     );
-    onPaymentSuccess?.();
+    handlePaymentSuccess();
     // Llevar a la pantalla de resultado (igual que el flujo 3DS)
     if (completedBookingId) {
       router.push(`/payment/result?booking=${completedBookingId}`);
@@ -217,6 +229,15 @@ export default function CheckoutForm({
       });
     }
   }, [currentUser, methods, user.user?.emailAddresses]);
+
+  // Prellenar el email de Clerk apenas esté disponible: el campo email no
+  // tiene input visible y sin él el pago con tarjeta nunca sería válido.
+  useEffect(() => {
+    const clerkEmail = user.user?.emailAddresses[0]?.emailAddress ?? "";
+    if (clerkEmail) {
+      methods.setValue("email", clerkEmail);
+    }
+  }, [user.user?.emailAddresses, methods]);
 
   async function onSubmit(values: CheckoutFormValues) {
     if (!bookingData) {
@@ -410,7 +431,7 @@ export default function CheckoutForm({
           cardCvc: values.cardCvc,
         }).unwrap();
 
-        onPaymentSuccess?.();
+        handlePaymentSuccess();
 
         if (response?.urlCompletarPago3Ds) {
           setTimeout(() => {
@@ -441,6 +462,11 @@ export default function CheckoutForm({
   };
 
   const paymentMethod = methods.watch("paymentMethod");
+
+  // Validez global según el esquema: el carril de pago solo se habilita con
+  // los datos completos (contacto y, según el método, dirección y tarjeta).
+  const formValues = methods.watch();
+  const isFormValid = checkoutFormSchema.safeParse(formValues).success;
 
   const [cancellationModalOpen, setCancellationModalOpen] = useState(false);
 
@@ -484,7 +510,8 @@ export default function CheckoutForm({
             completedLabel={t("home.checkout.payment.slideToPayDone")}
             loadingLabel={t("home.checkout.payment.processing")}
             loading={isLoading}
-            disabled={isLoading}
+            disabled={!isFormValid || isLoading}
+            success={paymentSucceeded}
             className="w-full text-base py-2"
           />
           <Button

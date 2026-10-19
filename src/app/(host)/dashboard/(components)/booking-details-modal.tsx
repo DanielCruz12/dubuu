@@ -20,6 +20,10 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, Ticket, CreditCard, Phone, MapPin } from "lucide-react";
+import Lightbox from "yet-another-react-lightbox";
+import Zoom from "yet-another-react-lightbox/plugins/zoom";
+import Download from "yet-another-react-lightbox/plugins/download";
+import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen";
 import type { HostBooking } from "@/types/booking";
 import { statusColors, statusTextTranslations } from "@/utils/data";
 import moment from "moment";
@@ -62,49 +66,6 @@ function DocumentImage({
   );
 }
 
-function ImageLightbox({
-  src,
-  alt,
-  open,
-  onClose,
-}: {
-  src: string;
-  alt: string;
-  open: boolean;
-  onClose: () => void;
-}) {
-  if (!open) return null;
-
-  return (
-    <div
-      className="fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center"
-      onClick={onClose}
-    >
-      <button
-        type="button"
-        onClick={onClose}
-        className="absolute top-2 right-2 z-10 text-white opacity-90 bg-black/40 rounded-full p-1.5 hover:opacity-100 transition-opacity"
-        aria-label="Close"
-      >
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-          <line x1="5" y1="5" x2="15" y2="15" />
-          <line x1="15" y1="5" x2="5" y2="15" />
-        </svg>
-      </button>
-      <div
-        className="w-full h-full max-h-screen overflow-auto touch-auto flex items-center justify-center"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <img
-          src={src}
-          alt={alt}
-          className="max-w-[95vw] max-h-[95vh] object-contain"
-        />
-      </div>
-    </div>
-  );
-}
-
 function mapStatus(status: string): string {
   const statusMap: Record<string, string> = {
     completed: "completado",
@@ -143,7 +104,12 @@ export function BookingDetailsModal({
 }: BookingDetailsModalProps) {
   const { t, language } = useLanguage();
   const isDesktop = useIsDesktopMd();
-  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  // Si el modal se cierra, cerrar también el lightbox (evita un lightbox huérfano).
+  useEffect(() => {
+    if (!open) setLightboxIndex(null);
+  }, [open]);
   const locale = language === "es" ? "es" : "en";
   const dateFormat =
     language === "es" ? "dddd, D [de] MMMM h:mm A" : "dddd, MMMM D h:mm A";
@@ -179,6 +145,26 @@ export function BookingDetailsModal({
     { src: booking.license_front, label: t("dashboard.clientDetails.licenseFront") },
     { src: booking.license_back, label: t("dashboard.clientDetails.licenseBack") },
   ].filter((d) => d.src);
+
+  const lightboxSlides = documents.map((doc) => ({
+    src: doc.src!,
+    alt: doc.label,
+  }));
+
+  // Portal a body: el lightbox debe renderizarse fuera del stacking context
+  // del Dialog/Sheet para mostrarse SIEMPRE por encima del modal.
+  const lightboxElement = (
+    <Lightbox
+      open={lightboxIndex !== null}
+      close={() => setLightboxIndex(null)}
+      slides={lightboxSlides}
+      index={lightboxIndex ?? 0}
+      plugins={[Zoom, Download, Fullscreen]}
+      portal={{
+        root: typeof document !== "undefined" ? document.body : undefined,
+      }}
+    />
+  );
 
   const content = (
     <div className="space-y-6 overflow-y-auto max-h-[min(70vh,520px)] pr-1">
@@ -352,10 +338,10 @@ export function BookingDetailsModal({
           </h3>
           {documents.length > 0 ? (
             <div className="grid grid-cols-2 gap-3">
-              {documents.map((doc) => (
+              {documents.map((doc, index) => (
                 <div key={doc.label}>
                   <p className="text-xs text-muted-foreground mb-1">{doc.label}</p>
-                  <DocumentImage src={doc.src!} alt={doc.label} onOpen={() => setLightboxSrc(doc.src!)} />
+                  <DocumentImage src={doc.src!} alt={doc.label} onOpen={() => setLightboxIndex(index)} />
                 </div>
               ))}
             </div>
@@ -383,14 +369,7 @@ export function BookingDetailsModal({
             <div className="px-6 pb-6">{content}</div>
           </DialogContent>
         </Dialog>
-        {lightboxSrc && (
-          <ImageLightbox
-            src={lightboxSrc}
-            alt="Document"
-            open={!!lightboxSrc}
-            onClose={() => setLightboxSrc(null)}
-          />
-        )}
+        {lightboxElement}
       </>
     );
   }
@@ -408,14 +387,7 @@ export function BookingDetailsModal({
           {content}
         </SheetContent>
       </Sheet>
-      {lightboxSrc && (
-        <ImageLightbox
-          src={lightboxSrc}
-          alt="Document"
-          open={!!lightboxSrc}
-          onClose={() => setLightboxSrc(null)}
-        />
-      )}
+      {lightboxElement}
     </>
   );
 }
