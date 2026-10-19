@@ -120,7 +120,8 @@
       "Read(//c/Users/daniel/Desktop/projects/personal_work/projects/dantours-drizzle-nodejs/**)",
       "Bash(echo \"BACKEND_EXIT:$?\")",
       "Bash(echo \"FRONT_EXIT:$?\")",
-      "Bash(echo \"BACK_EXIT:$?\")"
+      "Bash(echo \"BACK_EXIT:$?\")",
+      "Bash(grep -o \"portal[^;]\\\\{0,120\\\\}\" node_modules/yet-another-react-lightbox/dist/index.js)"
     ]
   }
 }

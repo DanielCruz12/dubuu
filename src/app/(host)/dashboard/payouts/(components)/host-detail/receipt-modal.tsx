@@ -170,9 +170,6 @@ export function ReceiptModal({ record, onClose }: Props) {
         close={() => setLightboxOpen(false)}
         slides={[{ src: record.receiptUrl, alt: "Comprobante de pago" }]}
         plugins={[Zoom, DownloadPlugin]}
-        portal={{
-          root: typeof document !== "undefined" ? document.body : undefined,
-        }}
       />
     )}
     </>

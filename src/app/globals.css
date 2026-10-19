@@ -397,3 +397,10 @@ h1[data-localization-key="userProfile.navbar.title"] {
 .cl-navbarMobileMenuButton {
   @apply text-foreground;
 }
+
+/* Lightbox de yet-another-react-lightbox: debe quedar POR ENCIMA de los
+   overlays de Dialog/Sheet (este proyecto los usa con z-[11000]; el default
+   del portal de YARL es 9999, por eso la imagen se veía detrás del modal). */
+.yarl__portal {
+  --yarl__portal_zindex: 11001;
+}

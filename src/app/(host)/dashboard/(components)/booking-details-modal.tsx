@@ -151,8 +151,8 @@ export function BookingDetailsModal({
     alt: doc.label,
   }));
 
-  // Portal a body: el lightbox debe renderizarse fuera del stacking context
-  // del Dialog/Sheet para mostrarse SIEMPRE por encima del modal.
+  // YARL monta su portal en body; el z-index por encima de los overlays del
+  // Dialog/Sheet (z-[11000]) se ajusta en globals.css (--yarl__portal_zindex).
   const lightboxElement = (
     <Lightbox
       open={lightboxIndex !== null}
@@ -160,9 +160,6 @@ export function BookingDetailsModal({
       slides={lightboxSlides}
       index={lightboxIndex ?? 0}
       plugins={[Zoom, Download, Fullscreen]}
-      portal={{
-        root: typeof document !== "undefined" ? document.body : undefined,
-      }}
     />
   );
 
