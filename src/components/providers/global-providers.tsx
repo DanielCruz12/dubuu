@@ -16,6 +16,7 @@ import { ClerkLocalizedProvider } from "./clerk-localized-provider";
 import CookieConsentBanner from "@/components/cookie-consent-banner";
 import NotificationsAutoEnabler from "@/components/notifications-auto-enabler";
 import NotificationsConsentModal from "@/components/notifications-consent-modal";
+import { MessagingNotifications } from "@/components/messaging/messaging-notifications";
 
 const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -38,6 +39,7 @@ const GlobalProviders = ({ children }: { children: React.ReactNode }) => {
                 <CookieConsentBanner />
                 <NotificationsAutoEnabler />
                 <NotificationsConsentModal />
+                <MessagingNotifications />
               </ThemeProvider>
             </SocketProvider>
           </AuthProvider>

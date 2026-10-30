@@ -1,5 +1,55 @@
 # Estado actual
-Última actualización: 2026-10-18
+Última actualización: 2026-10-30
+
+## Módulo de mensajería host ↔ usuario (entregado 2026-10-30)
+
+- **Un chat por reserva** entre viajero y host. Rutas: `/account/messages` y `/dashboard/messages` (con `?booking=<id>`). Progreso por fases: `MESSAGING_PROGRESS.md`.
+- **Frontend**: slice RTK `messagesApi` (chats, no leídos, mensajes, enviar, leído, reacciones), lista de chats (último mensaje, badge, datos reserva, skeleton/vacío), conversación (burbujas, scroll inteligente, ✓/✓✓/✓✓azul, hora relativa auto-actualizada, ubicación Leaflet con pin + Google Maps, reacciones, aviso ámbar anti-evasión), "Mensajes" con badge en dropdown + sidebars (desktop/móvil), toast global al recibir mensaje. i18n ES/EN (`messaging.json`).
+- **Backend** (repo dantours, con autorización): tablas `messages` + `message_reactions` (migración `0030_messaging_tables.sql`, NO aplicada a prod), validador anti-evasión (links, redes, teléfonos con separadores o en palabras, emails, frases de contacto → 422 + aviso), pipeline de moderación extensible con placeholder IA, endpoints `/api/v1/messages/...`, socket `message:new|delivered|read|reaction`, push FCM con link según rol. Test anti-evasión 32/32.
+- **Verificación**: `tsc` limpio en backend; en frontend sin errores nuevos (13 preexistentes intactos). Pendiente del usuario: aplicar migración en dev/prod y E2E manual (guía en `MESSAGING_PROGRESS.md`).
+- **Hallazgos**: tipos de `socket.io-client` rotos en frontend (runtime OK; aislado con `SocketEmitterLike`); `drop-payouts.tmp.js` (backend) sigue pendiente de borrar (confirmación del usuario).
+
+## Voz a texto en mensajes (2026-10-30)
+
+- Botón mic en el composer: graba (MediaRecorder, máx. 2 min), transcribe con Meta Model API (serie Muse Spark) y deja el texto en el input para revisar antes de enviar. El audio no se guarda.
+- Backend: `POST /api/v1/messages/bookings/:bookingId/transcribe` (`ai-transcribe-service.ts`, solo participantes); el transcript pasa anti-evasión (422 + aviso si bloquea). Env nueva: `AI_TRANSCRIBE_MODEL` (default `muse-spark-1.3`).
+- Verificación: tsc limpio, jest 45/45. Pendiente usuario: `AI_API_KEY` en backend + E2E con micrófono (ver `MESSAGING_PROGRESS.md`).
+- **Fix 2026-10-30**: el header `Permissions-Policy` traía `microphone=()` (mic bloqueado en todo el sitio → "Permiso denegado" sin preguntar). Cambiado a `microphone=(self)` en `next.config.mjs`; requiere reiniciar el dev server.
+- **Fix 2026-10-30 (404 en transcripción)**: Meta Model API no expone `/audio/transcriptions`; el endpoint real es `POST /v1/asr/transcribe` (parte `request` JSON + parte `audio`, WAV PCM16 mono). Backend adaptado + respuesta tolerante; frontend convierte la grabación a WAV 16 kHz con Web Audio API (`audio-to-wav.ts`). Modelo sigue `muse-spark-1.3`. Jest 52/52.
+- **Fix 2026-10-30 (400 Malformed request)**: el endpoint valida estricto — `audioEncoding` debe ser `"WAV"` (no `LINEAR16`) y solo se envían `model` + `audioEncoding` en la parte `request`. Test agregado que fija el payload. Reinicia el backend y reintenta.
+- **Fix 2026-10-30 (docs oficiales dev.meta.ai/docs/speech-to-text)**: el request requiere `?sessionId=<uuid>` en la URL y `mode` en el JSON (`ENDPOINTING` para dictado); respuesta oficial `{transcript, turns[]}` (ya tolerada). Modelo default cambiado a `muse-voice-transcribe-1.0` — el endpoint ASR solo sirve el modelo de voz; resto del proyecto sigue en Spark. Jest 52/52.
+- **Fix 2026-10-30 (respuesta en texto plano)**: el proveedor a veces responde el transcript como string (no JSON) → se trataba como vacío (422). Parser tolera texto plano y JSON serializado + log con preview. Tests 22/22 en transcribe (54/54 total módulo).
+
+## Fix lint del build (2026-10-30)
+
+- Tres issues de `next build` corregidos: `use-relative-time.ts` (`let` → `const` en el Set del ticker), `ai-create-modal.tsx` (`mapAnalyzeError` envuelto en `useCallback([t])` y agregado a deps de `handleGenerate`, sin cambio de comportamiento), `checkout-form.tsx` (`router` agregado a deps del `useEffect` de Blink).
+- `tsc` sin errores nuevos (13 preexistentes intactos). ESLint no corre en el sandbox (falla al cargar por `glob` en el store pnpm); pendiente confirmar con el build del usuario.
+- **Limpieza**: borrado `HANDOFF.md.new` (copia stale del 27/10, contenido ya absorbido; queda un solo HANDOFF en frontend).
+
+## Crear producto con IA — Fase 0 (análisis, sin código)
+
+- Plan: `src/instructions/add-ia-product.md`. Solo categoría alquiler de vehículos.
+- Hallazgos clave: `products` no tiene `status`/`active` (existen `is_active` default true e `is_approved` default false); `rentals` no tiene `doors`, `mileage`, carrocería ni `available_from/until`; el mínimo de banner + 5 imágenes es solo validación del frontend (el backend no exige mínimo); el backend no usa Zod ni tiene SDK de IA; `auth.token` de Redux nunca se setea (la auth viaja por cookie `__session` de Clerk vía rewrite `/backend`).
+- Propuesta pendiente de confirmación: borrador = `is_active=false, is_approved=false`; columnas nuevas `products.created_with_ai`, `products.ai_generated_at`, `products.ai_confidence` (jsonb), `users.ai_creations_used`; endpoints `POST /api/v1/ai-products/vehicles/analyze` y `/publish` en archivo de rutas separado reutilizando `createProductService`/`createRentalHandler`/`uploadFilesToS3`/`saveProductWithTranslations`.
+- Pendiente (Fase 1): instalar `zod` + SDK de IA en backend con API key (requiere autorización explícita); decidir si se agregan columnas `doors`/`car_body_type`; el "Crear" a interceptar con el modal está en `products-table.tsx` (botón `addButton`, tabs tours y rentals).
+- Nota de entorno: la herramienta PowerShell falló por el sandbox de Windows (ACL timeout) — no se pudo correr `tsc`; reintentar en Fase 3.
+- **Fase 1 backend APLICADA en el repo dantours-drizzle-nodejs (2026-10-28, con autorización del usuario).** Decisiones del usuario: borrador = solo `is_approved=false`; sin columnas de puertas/carrocería; backend autorizado; proveedor Meta Model API (`https://api.meta.ai/v1`, compatible OpenAI, modelo `muse-spark-1.3`, sin SDK extra); API key pendiente. Archivos: columnas IA en `products`/`users`, migración `drizzle/0029_ai_product_columns.sql`, `src/constants/ai-products.ts`, `src/services/ai-vehicle-service.ts`, `src/controllers/ai-product-controller.ts`, `src/routes/v1/ai-product-routes.ts`, mount en `routes/v1/index.ts`, `zod` en package.json. Hecho en backend: zod instalado, `npx tsc --noEmit` ✓, sonda de montaje ✓ (3 rutas responden auth, `GET /products` 200). El uso se descuenta en `/analyze` exitoso (publish no descuenta). Pendiente del usuario: definir `AI_API_KEY` en backend `.env` + Railway, correr `npm run dz:push` (BD prod — no ejecutado a propósito) y pruebas E2E.
+
+## Crear producto con IA — Fase 2 (frontend, entregada)
+
+- **Ubicación nueva (separada, no rompe flujo manual)**: `src/components/ai-create/` (`ai-constants.ts`, `ai-types.ts`, `ai-prefill.ts`, `ai-choice-cards.tsx`, `ai-upload-step.tsx`, `ai-generating-step.tsx`, `ai-result-step.tsx`, `ai-success-step.tsx`, `ai-create-modal.tsx`) y `src/redux/slices/ai-product/ai-product-slice.ts` (RTK Query). Mount en `src/redux/store.tsx`.
+- **Modal futurista (glass oscuro + glow dorado/atardacer, sin púrpura)**: al pulsar "Agregar" en `products-table.tsx` —ahora interceptado para ambas tabs— se abre `AiCreateModal` (z-11000, fondo zinc-950, borde zinc-800, acento amber-500). Header con línea superior degradada, cierre accesible, botón Volver, pie con contador `usadas/límite`. Respeta `prefers-reduced-motion`.
+- **Paso 1 — Elección**: `AiChoiceCards` con 2 tarjetas grandes (grid 1 col móvil, 2 col desktop): "Crear con IA" (ilustración auto + Sparkles, badge Nuevo, hint "Solo para alquiler... 1 imagen · borrador privado") y "Crear manualmente" (pen icon, "Clásico", "6 pasos"). IA deshabilitada con candado y mensaje `Has usado X de 4` si `GET /api/v1/ai-products/vehicles/limit` devuelve `canCreate=false`.
+- **Paso 2 — Sube la foto**: `AiUploadStep` dropzone drag&drop + click, preview 16/10, validación tipo (image/*) y máx. 10 MB, consejos breves (foto completa, buena luz, sin zoom excesivo), notas iOS Safari (funciona con cámara iPhone), error box rojo, botón "Generar con IA" deshabilitado sin archivo o si ya hubo intento en la sesión.
+- **Paso 3 — Generación (momento clave)**: `AiGeneratingStep` muestra la foto con orb degradado cálido (amber/orange) + shimmer + línea de escaneo vertical (animación 2.2s alternate) y mensajes cíclicos cada 1.6s: "Analizando…", "Detectando marca y modelo…", "Redactando tu descripción…", "Calculando un precio sugerido…". Sin spinner genérico. Respeta reduced-motion (desactiva scan/shimmer).
+- **Paso 4 — Resultado / Preview**: `AiResultStep` split 360px + resto (stack móvil). Izquierda: foto con badge "IA · portada" + preview de tarjeta pública (cómo se verá el listado: marca/modelo, título, descripción, pills asientos/transmisión/combustible, precio). Derecha: grid 2 cols de 12 campos con fade-in escalonado (90ms, desactivado en reduced-motion), cada campo con chip "IA · Alta/Media/Baja" (verde/ámbar/gris) y si `isMissing` → badge "Completa este dato" (ámbar). Todos editables inline (Input, Textarea, Select) con validación zod (`getAiResultSchema` fallback a español si falta clave i18n). Debajo preview. Dos botones: "Publicar borrador" (crea borrador) y "Editar antes de publicar" (guarda prefill en localStorage y lleva al wizard de 5 pasos precargado).
+- **Publicar**: `POST /api/v1/ai-products/vehicles/publish` (FormData) reutiliza `createProduct` flow pero fuerza `is_active=false` (borrador oculto), `is_approved=false`, `is_live=true`, defaults país SV, entrega coverage todo el país, disponibilidad 1 año, categorías vacías (backend puede completar). Imagen: `banner` + `images` desde el File original; fallback `imageUrl`/`imageKey` si ya subida. En 404 (backend aún no montado) usa modo demo con toast y mock (no bloquea verificación visual). Éxito → vista "¡Borrador creado!" (`AiSuccessStep`) con check + siguiente paso (activar en dashboard) y enlaces a edición/ir a productos. Si backend devuelve `AI_LIMIT_REACHED`, mensaje claro.
+- **Editar antes de publicar**: `setAiPrefill(userId, rentalTypeId, {suggestion, imageUrl, imagePreview})` (TTL 30 min) → cierra modal → `router.push(/dashboard/products/add?type=<rentalId>&ai=1)` → `RentalForm` (`src/components/modules/add-rental/index.tsx`) detecta prefill (prioridad sobre borrador) y precarga `basic` (name/description), `vehicle` (brand/model/year/color/transmisión/fuel/seating/engine/condition) y `multimedia.price`; toast "Datos de IA precargados". El usuario completa entrega/categorías/multimedia y crea normal. Límite: un intento de generación por sesión (`sessionStorage ai:attempted`), sin botón Regenerar.
+- **Integración modal**: `products-table.tsx` ahora usa `useState aiOpen` y botón "Agregar" abre el modal (ambas tabs). `AiCreateModal` resuelve `rentalTypeId`/`toursTypeId` vía `useGetProductTypesQuery` + `productTypeNameToFormKind`; manual para tours va a tours flow, para rental a rental flow.
+- **Estilos**: `globals.css` añade keyframes `ai-scan`, `ai-shimmer`, `ai-orbPulse` y clases `.ai-scan`/`.ai-shimmer`/`.ai-orb` desactivadas en `prefers-reduced-motion`. Modal usa Dialog z-11000 ya existente; sin blobs púrpura, sin bg-clip-text, sin 3-card grid repetido. Mobile-first iPhone testeado (dropzone tap, file input accept image/*, preview contain).
+- **Validación y accesibilidad**: dropzone con role button, aria-label, keyboard Enter/Space, focus ring; Dialog con title/description; chip con texto; errores con aria. Sin bloqueos con `prefers-reduced-motion`. Estados carga/error/vacío en cada pantalla.
+- **Fase 3 frontend (verificación, 2026-10-27)**: `npx tsc --noEmit` ✓ (solo fallaba por caché stale `.next/types/app/test-ai` de una página ya eliminada — se limpió ese artefacto regenerable, sin tocar fuentes). Claves `dashboard.aiCreate.*` ya agregadas en `public/locales/es+en/dashboard.json` (las consume `getAiResultSchema` vía `useLanguage`; el resto de pasos usa español fijo según spec). Revisión de integración sin hallazgos bloqueantes: slice RTK con `baseUrl: "/backend"` igual que `product-slice` (auth por cookie Clerk), "Agregar" abre el modal en ambas tabs (desktop y móvil), prefill mapea `basic`/`vehicle`/`multimedia` con defaults y prioridad sobre borrador, keyframes `ai-*` presentes en `globals.css` con `prefers-reduced-motion`. Sin tests (pedido del usuario). Lint no corrido (prohibido por AGENTS.md).
+- **Pendiente Fase 3**: backend montado + zod + tsc ✓ (2026-10-28); falta `npm run dz:push` (BD prod, tarea del usuario) + definir `AI_API_KEY`; pruebas manuales E2E (imagen buena / no-vehículo / borrosa / timeout / límite / corte de red / flujo manual sin regresiones) cuando el backend responda; `HANDOFF.md.new` borrado el 2026-10-30 (los demás `*.new` y `patch_es.py` ya no existen).
 
 ## Lightbox de documentos (host) y comprobante de recibo con yet-another-react-lightbox
 
@@ -133,6 +183,28 @@ Completa (detalles en CLAUDE.md): filtros en vivo por tipo de campo, sanitizaci�
 ## Docs
 - Spec canónica del panel admin: `src/instructions/panel-admin.md`. Tracker de progreso: `panel-admin.md` (raíz). Este archivo: estado actual consolidado.
 - `CLAUDE.md`: estructura, formularios, validación y panel admin.
+
+## Crear con IA — resultado en un clic + fotos mejoradas (2026-10-28)
+
+- **Sin bloqueo de sesión**: se eliminó el gate de "un intento por pestaña" (`AI_SESSION_ATTEMPT_KEY`/`hasAttemptedThisSession`) que dejaba el botón Generar muerto tras el primer intento; el límite real lo aplica el backend (4 creaciones, error `AI_LIMIT_REACHED` mapeado).
+- **Restyle**: acento ámbar/naranja → azul futurista (sky-400/cyan) en todo `ai-create/` + orbe `.ai-orb` en `globals.css`.
+- **Resultado sin formulario**: `AiResultStep` ahora es resumen (portada, tarjeta pública, specs detectadas, aviso de datos autocompletados) + "Publicar borrador" en un clic; `suggestionToPublishValues` completa nulos con valores temporales válidos para el backend. "Editar detalles" lleva al wizard con prefill crudo.
+- **Fotos IA**: el flujo llama a `POST /vehicles/enhance-image` tras analizar (nuevo `useEnhanceVehicleImageMutation`); la portada publicada es el banner mejorado (nunca la original si hay banner) y se muestra/descarga la versión redes 4:5. `analyze`/`enhance` invalidan el tag `AiLimit` para refrescar el contador.
+- **Prompt backend**: `name`/`description`/`price_per_day` obligatorios siempre; mejor estimación + confidence calibrado en técnicos en vez de null.
+- **Galería IA (2026-10-28)**: el resultado muestra tira "Galería IA" con las 5 vistas (`views.*` es/en); publish envía `imageUrls` (portada + galería) para que el producto tenga 6 fotos.
+- **Consistencia visual (2026-10-28)**: nuevo `AiMediaFrame` (caja 16:9 fluida máx. 400px, centrada) usado en input/subida/proceso/portada; contenido con `absolute inset-0`. Resultado con `AiDraftCard` minimalista (lenguaje TourCard: eyebrow, pills con iconos, precio sand, confianza volcanic); confianza alta usa `volcanic-300`.
+
+## Limpieza de código IA sin uso (2026-10-29)
+
+- `ai-types.ts`: eliminados `AiAnalyzeErrorCode`, `confidenceChipClass`, `getAiResultSchema` (restos del flujo con formulario editable) y `suggestionToFormValues` (sin llamadas); `AiResultFormValues` pasó de `z.infer` a interfaz explícita con la misma forma y se quitó el import de zod.
+- `ai-constants.ts`: eliminados `AI_CREATION_LIMIT` (el límite lo dicta el backend) y `AI_ALLOWED_EXTS` (sin uso).
+- `ai-create-modal.tsx`: eliminada la vista `"error"` (nunca se entraba — los errores vuelven a `upload`) y una condición duplicada de `AI_LIMIT_REACHED` en `mapAnalyzeError`.
+- `ai-product-slice.ts`: quitada la invalidación del tag `AiLimit/LIST` (ningún endpoint lo provee).
+- `ai-upload-step.tsx`: el `accept` del input se deriva de `AI_ALLOWED_TYPES` en vez de duplicar el literal.
+- `dashboard.json` (es/en): eliminadas las claves huérfanas `aiCreate.validation.*` (5), `aiCreate.retryButton` y `aiCreate.unexpectedError`.
+- Se conserva a propósito: fallbacks demo 404 (backend IA aún sin desplegar), doble `append("image"/"file")` (compatibilidad con backend), todas las clases `ai-*` de `globals.css` (en uso).
+- Verificación: `npx tsc --noEmit` sin errores en los archivos tocados; los 5 errores restantes (`home/[slug]/[id]/page.tsx` Socket, `clerk-localized-provider.tsx` @clerk/types) son preexistentes en archivos no modificados. JSON es/en validados.
+- Nota: `ai-create-modal.tsx` cambió en disco durante la sesión (versión i18n con `t()`); la limpieza se aplicó sobre la versión vigente releída.
 
 ## Pendientes
 - **Fase 5**: Reports (filtros, formato PDF/Excel/CSV + historial de reportes generados).

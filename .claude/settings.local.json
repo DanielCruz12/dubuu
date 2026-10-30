@@ -121,7 +121,11 @@
       "Bash(echo \"BACKEND_EXIT:$?\")",
       "Bash(echo \"FRONT_EXIT:$?\")",
       "Bash(echo \"BACK_EXIT:$?\")",
-      "Bash(grep -o \"portal[^;]\\\\{0,120\\\\}\" node_modules/yet-another-react-lightbox/dist/index.js)"
+      "Bash(grep -o \"portal[^;]\\\\{0,120\\\\}\" node_modules/yet-another-react-lightbox/dist/index.js)",
+      "Read(//c/Users/daniel/Desktop/projects/personal_work/projects/**)",
+      "Read(//c/Users/daniel/Desktop/projects/**)",
+      "Bash(sed 's/\\\\\\(API_KEY\\\\\\)=.*/\\\\1=***REDACTED***/')",
+      "WebSearch"
     ]
   }
 }

@@ -78,7 +78,7 @@ export function getNamespacesForRoute(pathname: string): string[] {
     namespaces.push("home", "menu");
   }
   if (pathname.includes("/dashboard") || pathname.includes("/account")) {
-    namespaces.push("menu", "home", "dashboard", "payouts");
+    namespaces.push("menu", "home", "dashboard", "payouts", "messaging");
   }
   if (pathname.includes("/contact")) {
     namespaces.push("menu", "contact");

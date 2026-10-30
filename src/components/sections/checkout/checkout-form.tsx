@@ -156,7 +156,7 @@ export default function CheckoutForm({
 
     document.addEventListener("visibilitychange", handleVisibility);
     return () => document.removeEventListener("visibilitychange", handleVisibility);
-  }, [blinkModalOpen, blinkResponse, dispatch, getBookingById, handlePaymentSuccess, t]);
+  }, [blinkModalOpen, blinkResponse, dispatch, getBookingById, handlePaymentSuccess, router, t]);
 
   // Countdown 3 min cuando se abre el modal Lightning; al llegar a 0 verifica pago
   useEffect(() => {

@@ -4,7 +4,9 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useClerkToken } from "@/components/providers/auth-provider";
+import { useUser } from "@clerk/nextjs";
 import { Loader2 } from "lucide-react";
 import {
   accountNavItems,
@@ -12,6 +14,7 @@ import {
   adminDashboardItems,
   hostDashboardItems,
 } from "@/utils/menu-options";
+import { useGetUnreadCountQuery } from "@/redux/slices/messaging/messaging-slice";
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/lib/i18n-context";
 
@@ -19,8 +22,14 @@ export function SideNav() {
   const pathname = usePathname();
   const router = useRouter();
   const { hasRole, isLoadingRole } = useClerkToken();
+  const { user } = useUser();
   const [navItems, setNavItems] = useState(accountNavItems);
   const { t } = useLanguage();
+
+  const { data: unread } = useGetUnreadCountQuery(undefined, {
+    skip: !user?.id,
+  });
+  const unreadCount = unread?.unreadCount ?? 0;
 
   // Handle all redirects and navigation items in a single useEffect
   useEffect(() => {
@@ -71,6 +80,8 @@ export function SideNav() {
   return (
     <nav className="flex flex-col justify-start gap-4 pr-4">
       {navItems.map((item) => {
+        const showUnread =
+          item.href.endsWith("/messages") && unreadCount > 0;
         return (
           <Link
             key={item.href}
@@ -85,6 +96,11 @@ export function SideNav() {
           >
             {item.icon}
             {t(item.title)}
+            {showUnread && (
+              <Badge className="ml-auto h-5 min-w-5 justify-center rounded-full px-1.5 text-[11px]">
+                {unreadCount > 99 ? "99+" : unreadCount}
+              </Badge>
+            )}
           </Link>
         );
       })}

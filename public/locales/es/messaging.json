@@ -1,0 +1,62 @@
+{
+  "title": "Mensajes",
+  "description": "Tus conversaciones con anfitriones y viajeros",
+  "list": {
+    "loading": "Cargando conversaciones...",
+    "emptyTitle": "Sin conversaciones todavía",
+    "emptyTravelerDescription": "Cuando tengas una reserva podrás chatear con tu anfitrión aquí.",
+    "emptyHostDescription": "Cuando tengas reservas podrás chatear con tus viajeros aquí.",
+    "emptyCta": "Ver mis reservas",
+    "noMessages": "Sin mensajes todavía",
+    "locationPreview": "Ubicación compartida",
+    "youPrefix": "Tú"
+  },
+  "conversation": {
+    "selectChat": "Selecciona una conversación",
+    "selectChatHint": "Elige un chat de la lista para ver los mensajes.",
+    "back": "Atrás",
+    "loading": "Cargando mensajes...",
+    "emptyTitle": "Aún no hay mensajes",
+    "emptyHint": "Escribe el primer mensaje para iniciar la conversación.",
+    "inputPlaceholder": "Escribe un mensaje...",
+    "send": "Enviar",
+    "shareLocation": "Compartir ubicación",
+    "blockedTitle": "Mensaje no enviado",
+    "loadMore": "Cargar anteriores",
+    "newMessages": "Nuevos mensajes",
+    "imageAlt": "Foto de perfil",
+    "sent": "Enviado",
+    "delivered": "Entregado",
+    "read": "Leído",
+    "react": "Reaccionar",
+    "removeReaction": "Quitar reacción",
+    "openInMaps": "Abrir en Google Maps",
+    "sendError": "No se pudo enviar. Inténtalo de nuevo.",
+    "loadError": "No se pudieron cargar los mensajes.",
+    "retry": "Reintentar"
+  },
+  "location": {
+    "dialogTitle": "Compartir ubicación",
+    "dialogHint": "Mueve el mapa para colocar el pin donde quieras.",
+    "myLocation": "Mi ubicación",
+    "locating": "Ubicando...",
+    "labelPlaceholder": "Etiqueta opcional (ej. Entrada principal)",
+    "cancel": "Cancelar",
+    "send": "Enviar ubicación",
+    "error": "No se pudo obtener tu ubicación."
+  },
+  "time": {
+    "now": "ahora mismo"
+  },
+  "unknownUser": "Usuario",
+  "voice": {
+    "record": "Grabar mensaje de voz",
+    "stopAndSend": "Detener y transcribir",
+    "cancel": "Descartar grabación",
+    "transcribing": "Transcribiendo...",
+    "denied": "Permiso de micrófono denegado.",
+    "unsupported": "Tu navegador no soporta grabación de voz.",
+    "failed": "No se pudo grabar el audio.",
+    "transcribeFailed": "No se pudo transcribir el audio."
+  }
+}

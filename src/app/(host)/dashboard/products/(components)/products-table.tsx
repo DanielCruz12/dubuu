@@ -38,12 +38,12 @@ import {
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DataTableSkeleton } from "@/components/skeletons/datatable-skeleton";
-import Link from "next/link";
 import { useLanguage } from "@/lib/i18n-context";
 import moment from "moment";
 import "moment/locale/es";
 import { Input } from "@/components/ui/input";
 import { ProductTypeKey, productTypeKeyToFormKind, formKindToProductTypeKey, type ProductFormKind } from "@/constants/product-type";
+import { AiCreateModal } from "@/components/ai-create/ai-create-modal";
 
 const STORAGE_KEY = "dashboard-table-kind";
 
@@ -175,6 +175,8 @@ export function ProductsDataTable() {
   });
 
   const { data: productTypes = [], isLoading: isLoadingProductTypes } = useGetProductTypesQuery();
+
+  const [aiOpen, setAiOpen] = useState(false);
 
   /** Product type UUID from API for the list filter (tours vs rental). */
   const productTypeIdForAdd = useMemo(() => {
@@ -340,221 +342,197 @@ export function ProductsDataTable() {
   }
 
   return (
-    <div className="space-y-4 pt-6">
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex flex-col gap-4 mb-6">
-            <div className="w-full max-w-xs">
-              <label className="text-sm font-medium mb-1 block">
-                {t("dashboard.products.filters.listKind")}
-              </label>
-              <Select
-                value={tableKind}
-                onValueChange={(v) => { const k = v as ProductFormKind; setTableKind(k); localStorage.setItem(STORAGE_KEY, formKindToProductTypeKey(k)); }}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="tours">{t("dashboard.products.filters.kindTours")}</SelectItem>
-                  <SelectItem value="rental">{t("dashboard.products.filters.kindRental")}</SelectItem>
-                </SelectContent>
-              </Select>
+    <>
+      <div className="space-y-4 pt-6">
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex flex-col gap-4 mb-6">
+              <div className="w-full max-w-xs">
+                <label className="text-sm font-medium mb-1 block">
+                  {t("dashboard.products.filters.listKind")}
+                </label>
+                <Select
+                  value={tableKind}
+                  onValueChange={(v) => { const k = v as ProductFormKind; setTableKind(k); localStorage.setItem(STORAGE_KEY, formKindToProductTypeKey(k)); }}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="tours">{t("dashboard.products.filters.kindTours")}</SelectItem>
+                    <SelectItem value="rental">{t("dashboard.products.filters.kindRental")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {tableKind === "tours" ? (
+                <div className="flex flex-col md:flex-row gap-4 items-end">
+                  <div className="w-full md:w-1/3 min-w-0">
+                    <label className="text-sm font-medium mb-1 block">
+                      {t("dashboard.products.filters.product")}
+                    </label>
+                    <Popover open={openTourSelect} onOpenChange={setOpenTourSelect}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={openTourSelect}
+                          className="w-full justify-between min-w-0 text-left"
+                        >
+                          <span className="truncate">
+                            {selectedTourId
+                              ? availableTours.find((tour) => tour.id === selectedTourId)?.name
+                              : t("dashboard.products.filters.selectProduct")}
+                          </span>
+                          <SearchIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full p-0" align="start">
+                        <Command shouldFilter={false}>
+                          <CommandInput
+                            value={searchTerm}
+                            onValueChange={setSearchTerm}
+                            placeholder={t("dashboard.products.filters.searchProduct")}
+                          />
+                          <CommandList>
+                            <CommandEmpty>
+                              {t("dashboard.products.filters.noProductsFound")}
+                            </CommandEmpty>
+                            <CommandGroup className="max-h-64 overflow-y-auto">
+                              {filteredProducts.map((tour) => (
+                                <CommandItem
+                                  key={tour.id}
+                                  value={tour.name}
+                                  onSelect={() => {
+                                    handleTourChange(tour.id);
+                                    setOpenTourSelect(false);
+                                    setSearchTerm("");
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      selectedTourId === tour.id ? "opacity-100" : "opacity-0",
+                                    )}
+                                  />
+                                  {tour.name}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div className="w-full md:w-1/3 min-w-0">
+                    <label className="text-sm font-medium mb-1 block">
+                      {t("dashboard.products.filters.productDate")}
+                    </label>
+                    {!selectedTourId ? (
+                      <div className="flex h-10 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm text-muted-foreground">
+                        {t("dashboard.products.filters.selectProductFirst")}
+                      </div>
+                    ) : (
+                      <Select
+                        value={selectedDateId}
+                        onValueChange={setSelectedDateId}
+                        disabled={availableDates.length === 0}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder={t("dashboard.products.filters.selectDate")} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableDates.length > 0 ? (
+                            availableDates.map((date) => (
+                              <SelectItem key={date.id} value={date.id}>
+                                {format(new Date(date.date), "dd/MM/yyyy HH:mm")}
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <SelectItem value="no-dates" disabled>
+                              {t("dashboard.products.filters.noDates")}
+                            </SelectItem>
+                          )}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-2 ml-auto">
+                    {filteredTours.length > 0 && (
+                      <Button
+                        onClick={handleExportTours}
+                        variant="outline"
+                        className="flex items-center gap-2"
+                      >
+                        <FileSpreadsheet className="h-4 w-4" />
+                        <span>{t("dashboard.products.filters.export")}</span>
+                      </Button>
+                    )}
+
+                    {isLoadingProductTypes ? (
+                      <Button type="button" disabled className="flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <span>{t("dashboard.products.filters.addButton")}</span>
+                      </Button>
+                    ) : (
+                      <Button type="button" onClick={() => setAiOpen(true)} className="flex items-center gap-2">
+                        <PlusCircle className="h-4 w-4" />
+                        <span>{t("dashboard.products.filters.addButton")}</span>
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col sm:flex-row gap-4 items-end">
+                  <div className="w-full sm:flex-1 min-w-0">
+                    <label className="text-sm font-medium mb-1 block">
+                      {t("dashboard.products.filters.searchRental")}
+                    </label>
+                    <Input
+                      value={rentalSearchTerm}
+                      onChange={(e) => setRentalSearchTerm(e.target.value)}
+                      placeholder={t("dashboard.products.filters.searchRentalPlaceholder")}
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 sm:ml-auto">
+                    {filteredRentals.length > 0 && (
+                      <Button
+                        onClick={handleExportRentals}
+                        variant="outline"
+                        className="flex items-center gap-2"
+                      >
+                        <FileSpreadsheet className="h-4 w-4" />
+                        <span>{t("dashboard.products.filters.export")}</span>
+                      </Button>
+                    )}
+                    {isLoadingProductTypes ? (
+                      <Button type="button" disabled className="flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <span>{t("dashboard.products.filters.addButton")}</span>
+                      </Button>
+                    ) : (
+                      <Button type="button" onClick={() => setAiOpen(true)} className="flex items-center gap-2">
+                        <PlusCircle className="h-4 w-4" />
+                        <span>{t("dashboard.products.filters.addButton")}</span>
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             {tableKind === "tours" ? (
-              <div className="flex flex-col md:flex-row gap-4 items-end">
-                <div className="w-full md:w-1/3 min-w-0">
-                  <label className="text-sm font-medium mb-1 block">
-                    {t("dashboard.products.filters.product")}
-                  </label>
-                  <Popover open={openTourSelect} onOpenChange={setOpenTourSelect}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        aria-expanded={openTourSelect}
-                        className="w-full justify-between min-w-0 text-left"
-                      >
-                        <span className="truncate">
-                          {selectedTourId
-                            ? availableTours.find((tour) => tour.id === selectedTourId)?.name
-                            : t("dashboard.products.filters.selectProduct")}
-                        </span>
-                        <SearchIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-full p-0" align="start">
-                      <Command shouldFilter={false}>
-                        <CommandInput
-                          value={searchTerm}
-                          onValueChange={setSearchTerm}
-                          placeholder={t("dashboard.products.filters.searchProduct")}
-                        />
-                        <CommandList>
-                          <CommandEmpty>
-                            {t("dashboard.products.filters.noProductsFound")}
-                          </CommandEmpty>
-                          <CommandGroup className="max-h-64 overflow-y-auto">
-                            {filteredProducts.map((tour) => (
-                              <CommandItem
-                                key={tour.id}
-                                value={tour.name}
-                                onSelect={() => {
-                                  handleTourChange(tour.id);
-                                  setOpenTourSelect(false);
-                                  setSearchTerm("");
-                                }}
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    selectedTourId === tour.id ? "opacity-100" : "opacity-0",
-                                  )}
-                                />
-                                {tour.name}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                </div>
-
-                <div className="w-full md:w-1/3 min-w-0">
-                  <label className="text-sm font-medium mb-1 block">
-                    {t("dashboard.products.filters.productDate")}
-                  </label>
-                  {!selectedTourId ? (
-                    <div className="flex h-10 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm text-muted-foreground">
-                      {t("dashboard.products.filters.selectProductFirst")}
-                    </div>
-                  ) : (
-                    <Select
-                      value={selectedDateId}
-                      onValueChange={setSelectedDateId}
-                      disabled={availableDates.length === 0}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder={t("dashboard.products.filters.selectDate")} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {availableDates.length > 0 ? (
-                          availableDates.map((date) => (
-                            <SelectItem key={date.id} value={date.id}>
-                              {format(new Date(date.date), "dd/MM/yyyy HH:mm")}
-                            </SelectItem>
-                          ))
-                        ) : (
-                          <SelectItem value="no-dates" disabled>
-                            {t("dashboard.products.filters.noDates")}
-                          </SelectItem>
-                        )}
-                      </SelectContent>
-                    </Select>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-2 ml-auto">
-                  {filteredTours.length > 0 && (
-                    <Button
-                      onClick={handleExportTours}
-                      variant="outline"
-                      className="flex items-center gap-2"
-                    >
-                      <FileSpreadsheet className="h-4 w-4" />
-                      <span>{t("dashboard.products.filters.export")}</span>
-                    </Button>
-                  )}
-
-                  {isLoadingProductTypes ? (
-                    <Button type="button" disabled className="flex items-center gap-2">
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>{t("dashboard.products.filters.addButton")}</span>
-                    </Button>
-                  ) : productTypeIdForAdd ? (
-                    <Button asChild className="flex items-center gap-2">
-                      <Link
-                        href={`/dashboard/products/add?type=${encodeURIComponent(productTypeIdForAdd)}`}
-                      >
-                        <PlusCircle className="h-4 w-4" />
-                        <span>{t("dashboard.products.filters.addButton")}</span>
-                      </Link>
-                    </Button>
-                  ) : (
-                    <Button
-                      type="button"
-                      disabled
-                      className="flex items-center gap-2"
-                      title={t("dashboard.products.filters.addDisabledNoProductType")}
-                    >
-                      <PlusCircle className="h-4 w-4" />
-                      <span>{t("dashboard.products.filters.addButton")}</span>
-                    </Button>
-                  )}
-                </div>
-              </div>
+              <DataTable columns={tourColumns} data={filteredTours} showSearch={false} />
             ) : (
-              <div className="flex flex-col sm:flex-row gap-4 items-end">
-                <div className="w-full sm:flex-1 min-w-0">
-                  <label className="text-sm font-medium mb-1 block">
-                    {t("dashboard.products.filters.searchRental")}
-                  </label>
-                  <Input
-                    value={rentalSearchTerm}
-                    onChange={(e) => setRentalSearchTerm(e.target.value)}
-                    placeholder={t("dashboard.products.filters.searchRentalPlaceholder")}
-                  />
-                </div>
-                <div className="flex items-center gap-2 sm:ml-auto">
-                  {filteredRentals.length > 0 && (
-                    <Button
-                      onClick={handleExportRentals}
-                      variant="outline"
-                      className="flex items-center gap-2"
-                    >
-                      <FileSpreadsheet className="h-4 w-4" />
-                      <span>{t("dashboard.products.filters.export")}</span>
-                    </Button>
-                  )}
-                  {isLoadingProductTypes ? (
-                    <Button type="button" disabled className="flex items-center gap-2">
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>{t("dashboard.products.filters.addButton")}</span>
-                    </Button>
-                  ) : productTypeIdForAdd ? (
-                    <Button asChild className="flex items-center gap-2">
-                      <Link
-                        href={`/dashboard/products/add?type=${encodeURIComponent(productTypeIdForAdd)}`}
-                      >
-                        <PlusCircle className="h-4 w-4" />
-                        <span>{t("dashboard.products.filters.addButton")}</span>
-                      </Link>
-                    </Button>
-                  ) : (
-                    <Button
-                      type="button"
-                      disabled
-                      className="flex items-center gap-2"
-                      title={t("dashboard.products.filters.addDisabledNoProductType")}
-                    >
-                      <PlusCircle className="h-4 w-4" />
-                      <span>{t("dashboard.products.filters.addButton")}</span>
-                    </Button>
-                  )}
-                </div>
-              </div>
+              <DataTable columns={rentalColumns} data={filteredRentals} showSearch={false} />
             )}
-          </div>
+          </CardContent>
+        </Card>
+      </div>
 
-          {tableKind === "tours" ? (
-            <DataTable columns={tourColumns} data={filteredTours} showSearch={false} />
-          ) : (
-            <DataTable columns={rentalColumns} data={filteredRentals} showSearch={false} />
-          )}
-        </CardContent>
-      </Card>
-    </div>
+      <AiCreateModal open={aiOpen} onOpenChange={setAiOpen} tableKind={tableKind} productTypeIdForAdd={productTypeIdForAdd} />
+    </>
   );
 }

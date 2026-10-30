@@ -1,0 +1,62 @@
+{
+  "title": "Messages",
+  "description": "Your conversations with hosts and travelers",
+  "list": {
+    "loading": "Loading conversations...",
+    "emptyTitle": "No conversations yet",
+    "emptyTravelerDescription": "Once you have a booking you will be able to chat with your host here.",
+    "emptyHostDescription": "Once you have bookings you will be able to chat with your travelers here.",
+    "emptyCta": "View my bookings",
+    "noMessages": "No messages yet",
+    "locationPreview": "Shared location",
+    "youPrefix": "You"
+  },
+  "conversation": {
+    "selectChat": "Select a conversation",
+    "selectChatHint": "Pick a chat from the list to see the messages.",
+    "back": "Back",
+    "loading": "Loading messages...",
+    "emptyTitle": "No messages yet",
+    "emptyHint": "Write the first message to start the conversation.",
+    "inputPlaceholder": "Write a message...",
+    "send": "Send",
+    "shareLocation": "Share location",
+    "blockedTitle": "Message not sent",
+    "loadMore": "Load older",
+    "newMessages": "New messages",
+    "imageAlt": "Profile picture",
+    "sent": "Sent",
+    "delivered": "Delivered",
+    "read": "Read",
+    "react": "React",
+    "removeReaction": "Remove reaction",
+    "openInMaps": "Open in Google Maps",
+    "sendError": "Could not send. Try again.",
+    "loadError": "Could not load the messages.",
+    "retry": "Retry"
+  },
+  "location": {
+    "dialogTitle": "Share location",
+    "dialogHint": "Move the map to place the pin where you want.",
+    "myLocation": "My location",
+    "locating": "Locating...",
+    "labelPlaceholder": "Optional label (e.g. Main entrance)",
+    "cancel": "Cancel",
+    "send": "Send location",
+    "error": "Could not get your location."
+  },
+  "time": {
+    "now": "just now"
+  },
+  "unknownUser": "User",
+  "voice": {
+    "record": "Record voice message",
+    "stopAndSend": "Stop and transcribe",
+    "cancel": "Discard recording",
+    "transcribing": "Transcribing...",
+    "denied": "Microphone permission denied.",
+    "unsupported": "Your browser does not support voice recording.",
+    "failed": "Could not record audio.",
+    "transcribeFailed": "Could not transcribe the audio."
+  }
+}

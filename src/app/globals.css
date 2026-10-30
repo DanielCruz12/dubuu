@@ -126,16 +126,14 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #534d4d; /* Change thumb color to darker shade in dark mode */
+  background-color: #534d4d;
 }
 
-/* Scrollbar thumb for light mode */
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(136, 131, 131, 0.205); /* Light thumb color */
+  background-color: rgba(136, 131, 131, 0.205);
   border-radius: 5px;
 }
 
-/* Scrollbar thumb for dark mode */
 @media (prefers-color-scheme: dark) {
   ::-webkit-scrollbar-thumb {
     background-color: #bdbdbd;
@@ -143,16 +141,12 @@ body {
   }
 }
 
-/* Optionally, using Tailwind's dark mode variant (if your project uses it) */
 @layer base {
-  /* Scrollbar thumb styles in dark mode with Tailwind */
   .dark ::-webkit-scrollbar-thumb {
     background-color: rgba(171, 171, 171, 0.4);
   }
-
-  /* Scrollbar track styles in dark mode with Tailwind */
   .dark::-webkit-scrollbar-thumb {
-    background-color: #141414; /* Dark background for thumb */
+    background-color: #141414;
   }
 }
 
@@ -160,11 +154,9 @@ body {
   body {
     background: white;
   }
-
   button {
     display: none !important;
   }
-
   #receipt-container {
     box-shadow: none !important;
     max-width: 100% !important;
@@ -398,9 +390,130 @@ h1[data-localization-key="userProfile.navbar.title"] {
   @apply text-foreground;
 }
 
-/* Lightbox de yet-another-react-lightbox: debe quedar POR ENCIMA de los
-   overlays de Dialog/Sheet (este proyecto los usa con z-[11000]; el default
-   del portal de YARL es 9999, por eso la imagen se veía detrás del modal). */
 .yarl__portal {
   --yarl__portal_zindex: 11001;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   IA — identidad futurista (azul costa + glassmorphism)
+   Acento primario: coast (azul). Acento secundario: sand (dorado Dubuu).
+   Todo respeta prefers-reduced-motion.
+   ───────────────────────────────────────────────────────────── */
+
+/* Rejilla técnica sutil de fondo */
+.ai-grid {
+  background-image:
+    linear-gradient(to right, rgba(111, 171, 204, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(111, 171, 204, 0.07) 1px, transparent 1px);
+  background-size: 42px 42px;
+}
+@keyframes ai-grid-move {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 0 42px, 0 42px; }
+}
+.ai-grid-move { animation: ai-grid-move 7s linear infinite; }
+
+/* Línea de escaneo (top animado) */
+@keyframes ai-scan {
+  0% { top: -2%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: 102%; opacity: 0; }
+}
+.ai-scan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(159, 199, 221, 0.95), rgba(111, 171, 204, 0.6), transparent);
+  box-shadow: 0 0 16px rgba(111, 171, 204, 0.85), 0 0 40px rgba(63, 143, 187, 0.45);
+  animation: ai-scan 2.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Barrido de brillo horizontal */
+@keyframes ai-shimmer {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+.ai-shimmer {
+  background: linear-gradient(100deg, transparent 25%, rgba(159, 199, 221, 0.16) 50%, transparent 75%);
+  animation: ai-shimmer 2.4s ease-in-out infinite;
+}
+
+/* Orbe de energía */
+@keyframes ai-orbPulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.32; }
+  50% { transform: translate(-50%, -50%) scale(1.16); opacity: 0.55; }
+}
+.ai-orb {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background: radial-gradient(circle, rgba(111, 171, 204, 0.6) 0%, rgba(28, 110, 156, 0.3) 45%, transparent 70%);
+  animation: ai-orbPulse 3.4s ease-in-out infinite;
+}
+
+/* Flotación suave */
+@keyframes ai-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.ai-float { animation: ai-float 5.5s ease-in-out infinite; }
+
+/* Pulso de resplandor */
+@keyframes ai-glowPulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.95; }
+}
+.ai-glow-pulse { animation: ai-glowPulse 3s ease-in-out infinite; }
+
+/* Anillo giratorio (para el indicador del paso de generación) */
+@keyframes ai-ring-spin {
+  to { transform: rotate(360deg); }
+}
+.ai-ring-spin { animation: ai-ring-spin 1.1s linear infinite; }
+
+/* Parpadeo tipo lectura de datos */
+@keyframes ai-blip {
+  0%, 100% { opacity: 0.25; transform: scaleY(0.4); }
+  50% { opacity: 1; transform: scaleY(1); }
+}
+.ai-blip { animation: ai-blip 0.9s ease-in-out infinite; transform-origin: center; }
+
+/* Barra de progreso del paso de generación (decorativa) */
+@keyframes ai-progress {
+  0% { width: 6%; }
+  60% { width: 82%; }
+  100% { width: 96%; }
+}
+.ai-progress { animation: ai-progress 9s ease-in-out infinite; }
+
+/* Panel glass reutilizable para la sección */
+.ai-panel {
+  position: relative;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015));
+  backdrop-filter: blur(14px);
+}
+.ai-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  border-radius: 1rem 1rem 0 0;
+  background: linear-gradient(90deg, transparent, rgba(159, 199, 221, 0.35), transparent);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-grid-move,
+  .ai-scan,
+  .ai-shimmer,
+  .ai-orb,
+  .ai-float,
+  .ai-glow-pulse,
+  .ai-ring-spin,
+  .ai-blip,
+  .ai-progress { animation: none !important; }
 }

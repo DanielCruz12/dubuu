@@ -7,6 +7,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 import {
   DropdownMenu,
@@ -32,6 +33,7 @@ import {
   guestMenuItems,
   hostDashboardItems,
 } from "@/utils/menu-options";
+import { useGetUnreadCountQuery } from "@/redux/slices/messaging/messaging-slice";
 // Selector de moneda deshabilitado por el momento
 // import CurrencySelectorDrawer from "@/components/currency-selector";
 import { LanguageSelector } from "@/components/language-selector";
@@ -43,6 +45,11 @@ export function Header() {
   const { user, signOut } = useClerk();
   const { role, hasRole } = useClerkToken();
   const { t } = useLanguage();
+
+  const { data: unread } = useGetUnreadCountQuery(undefined, {
+    skip: !user?.id,
+  });
+  const unreadCount = unread?.unreadCount ?? 0;
 
   // Home/landing (marketing) usa un header transparente que se superpone al hero
   // full-bleed y pasa a sólido al hacer scroll.
@@ -175,9 +182,14 @@ export function Header() {
 
                 {menuToRender.map((item, index) => (
                   <DropdownMenuItem key={index} asChild className="py-3">
-                    <Link href={item.href} className="flex items-center">
+                    <Link href={item.href} className="flex items-center w-full">
                       <item.icon className="mr-2 h-4 w-4" />
                       <span>{item.label}</span>
+                      {item.href.includes("/messages") && unreadCount > 0 && (
+                        <Badge className="ml-auto h-5 min-w-5 justify-center rounded-full px-1.5 text-[11px]">
+                          {unreadCount > 99 ? "99+" : unreadCount}
+                        </Badge>
+                      )}
                     </Link>
                   </DropdownMenuItem>
                 ))}
@@ -284,9 +296,14 @@ export function Header() {
 
               {menuToRender.map((item, index) => (
                 <DropdownMenuItem key={index} asChild className="py-3">
-                  <Link href={item.href} className="flex items-center">
+                  <Link href={item.href} className="flex items-center w-full">
                     <item.icon className="mr-2 h-4 w-4" />
                     <span>{item.label}</span>
+                    {item.href.includes("/messages") && unreadCount > 0 && (
+                      <Badge className="ml-auto h-5 min-w-5 justify-center rounded-full px-1.5 text-[11px]">
+                        {unreadCount > 99 ? "99+" : unreadCount}
+                      </Badge>
+                    )}
                   </Link>
                 </DropdownMenuItem>
               ))}

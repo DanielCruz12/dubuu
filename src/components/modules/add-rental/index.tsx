@@ -45,6 +45,7 @@ import { useLanguage } from "@/lib/i18n-context";
 import { isProductType } from "@/utils";
 import type { IRentalProduct, IRentalSpecificArea } from "@/types/rental";
 import { getRentalDraft, setRentalDraft, clearRentalDraft } from "./draft";
+import { getAiPrefill, clearAiPrefill } from "@/components/ai-create/ai-prefill";
 
 function toDateInputValue(isoOrDate: string | undefined): string {
   if (!isoOrDate) return "";
@@ -266,6 +267,7 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
   const { user, isSignedIn } = useUser();
   const userId = user?.id || "";
   const router = useRouter();
+  // (aiPrefill leído vía localStorage; no requiere searchParams)
   const { t } = useLanguage();
 
   const [createProduct, { isLoading: isCreating }] = useCreateProductMutation();
@@ -342,12 +344,55 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
   // Guard síncrono contra doble envío (isSaving llega un render después).
   const submitInFlightRef = useRef(false);
 
+  // IA prefill (Editar antes de publicar) tiene prioridad sobre borrador
+  useEffect(() => {
+    if (editProductId || draftRestoredRef.current) return;
+    if (!userId || !resolvedTypeId) return;
+    if (step > 1 || basic != null) {
+      draftRestoredRef.current = true;
+      return;
+    }
+    const aiPrefill = getAiPrefill(userId, resolvedTypeId);
+    if (aiPrefill) {
+      const s = aiPrefill.suggestion;
+      if (s.name || s.brand || s.model) {
+        setBasic({
+          name: s.name ?? "",
+          description: s.description ?? "",
+        });
+        setVehicle({
+          brand: s.brand ?? "",
+          model: s.model ?? "",
+          year: s.year ?? new Date().getFullYear(),
+          condition: (s.condition as RentalVehicleFormValues["condition"]) ?? "used",
+          fuel_type: (s.fuel_type as RentalVehicleFormValues["fuel_type"]) ?? "gasoline",
+          color: (s.color as RentalVehicleFormValues["color"]) ?? "white",
+          engine: s.engine ?? "",
+          transmission: (s.transmission as RentalVehicleFormValues["transmission"]) ?? "automatic",
+          seating_capacity: s.seating_capacity ?? 5,
+          plate: "",
+          vin: "",
+          has_gps: false,
+          has_deposit: false,
+          deposit_amount: "",
+        });
+        setMultimedia({
+          price: s.price_per_day ?? 1,
+          accepts_children: false,
+          children_price: null,
+        });
+        toast.success("Datos de IA precargados — revisa cada paso antes de publicar.");
+        clearAiPrefill(userId, resolvedTypeId);
+        draftRestoredRef.current = true;
+        return;
+      }
+    }
+  }, [editProductId, userId, resolvedTypeId, step, basic]);
+
   // Restaurar borrador al montar (solo cliente; no en modo edición).
-  // La clave es por usuario y tipo de producto; espera a que Clerk cargue el userId.
   useEffect(() => {
     if (editProductId || draftRestoredRef.current) return;
     if (!userId) return;
-    // Si el usuario ya avanzó antes de que cargara Clerk, no pisar su progreso.
     if (step > 1 || basic != null) {
       draftRestoredRef.current = true;
       return;
@@ -403,11 +448,9 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
     data: MultimediaFormValues,
     uploadedFiles: TourFiles,
   ) => {
-    // Evitar doble envío: el guard es síncrono (isSaving tarda un render en reflejarse).
     if (submitInFlightRef.current || isSaving) return;
     submitInFlightRef.current = true;
 
-    // ── Datos de diagnóstico (temporal, quitar al terminar de depurar) ──
     const started = Date.now();
     const allFiles = [
       uploadedFiles.bannerFile,
@@ -467,7 +510,6 @@ export function RentalForm({ editProductId, productTypeId }: RentalFormProps) {
 
       const secs = Math.round((Date.now() - started) / 1000);
       const status = error?.status ?? "sin-estado";
-      // FETCH_ERROR trae el motivo real en error.error (ej. "TypeError: Load failed")
       const detail =
         error?.data?.message ?? error?.error ?? error?.message ?? "sin detalle";
       const debug = `[${status}] ${detail} · ${allFiles.length} arch, ${totalMB} MB · video: ${videoTypes} · ${secs}s`;

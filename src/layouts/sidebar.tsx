@@ -8,11 +8,14 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Menu } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { useUser } from "@clerk/nextjs";
+import { useGetUnreadCountQuery } from "@/redux/slices/messaging/messaging-slice";
 
 export interface MenuProfileSheetProps {
   open: boolean;
@@ -31,6 +34,12 @@ export function MenuProfileSheet({
   dashboardNavItems,
   pathname,
 }: MenuProfileSheetProps) {
+  const { user } = useUser();
+  const { data: unread } = useGetUnreadCountQuery(undefined, {
+    skip: !user?.id,
+  });
+  const unreadCount = unread?.unreadCount ?? 0;
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
@@ -51,6 +60,8 @@ export function MenuProfileSheet({
         <ScrollArea className="my-4 h-[calc(100vh-8rem)] pb-10 ">
           <div className="flex flex-col space-y-6">
             {dashboardNavItems.map((item) => {
+              const showUnread =
+                item.href.endsWith("/messages") && unreadCount > 0;
               return (
                 <Link
                   key={item.href}
@@ -65,6 +76,11 @@ export function MenuProfileSheet({
                 >
                   {item.icon}
                   {item.title}
+                  {showUnread && (
+                    <Badge className="ml-auto mr-6 h-5 min-w-5 justify-center rounded-full px-1.5 text-[11px]">
+                      {unreadCount > 99 ? "99+" : unreadCount}
+                    </Badge>
+                  )}
                 </Link>
               );
             })}

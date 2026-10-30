@@ -13,6 +13,7 @@ import {
   User2,
   Tags,
   Wallet,
+  MessageCircle,
 } from "lucide-react";
 import { MenuNavItem, NavItem, RoleNavItem } from "@/types/dashboard-nav";
 
@@ -53,6 +54,11 @@ export const authenticatedUserMenuItems: MenuNavItem[] = [
     href: "/account",
   },
   {
+    icon: MessageCircle,
+    label: "Mensajes",
+    href: "/account/messages",
+  },
+  {
     icon: Handshake,
     label: "¿Quieres ser parte?",
     href: "/contact",
@@ -77,6 +83,11 @@ export const authenticatedHostOrAdminMenuItems: MenuNavItem[] = [
     href: "/dashboard",
   },
   {
+    icon: MessageCircle,
+    label: "Mensajes",
+    href: "/dashboard/messages",
+  },
+  {
     icon: Info,
     label: "Centro de ayuda",
     href: "/support",
@@ -99,6 +110,11 @@ export const accountNavItems: NavItem[] = [
     title: "dashboard.nav.myBookings",
     href: "/account/bookings",
     icon: <CalendarDays className="h-4 w-4 mr-2" />,
+  },
+  {
+    title: "messaging.title",
+    href: "/account/messages",
+    icon: <MessageCircle className="h-4 w-4 mr-2" />,
   },
   {
     title: "dashboard.nav.saved",
@@ -146,6 +162,11 @@ export const hostDashboardItems: NavItem[] = [
     title: "dashboard.nav.bookings",
     href: "/dashboard/bookings",
     icon: <CalendarDays className="h-4 w-4 mr-2" />,
+  },
+  {
+    title: "messaging.title",
+    href: "/dashboard/messages",
+    icon: <MessageCircle className="h-4 w-4 mr-2" />,
   },
   {
     title: "dashboard.nav.products",

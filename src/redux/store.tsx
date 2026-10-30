@@ -45,6 +45,8 @@ import { panelApiSlice } from "./slices/panel/panel-slice";
 import { blogsApiSlice } from "./slices/blog/blog-slice";
 import { contractsApiSlice } from "./slices/contract/contract-slice";
 import { payoutApiSlice } from "./slices/payout/payout-slice";
+import { aiProductApiSlice } from "./slices/ai-product/ai-product-slice";
+import { messagesApiSlice } from "./slices/messaging/messaging-slice";
 
 // Función para crear un almacenamiento "inerte" en entornos sin window (server-side)
 const createNoopStorage = () => {
@@ -79,19 +81,10 @@ const persistConfig = {
     "productCategories",
     "productAmenities",
     "productAudiences",
-    // Aquí puedes indicar qué reducers deseas persistir
-    // "productsApiSlice", // Si deseas persistir el slice de productos
-    // "paymentApiSlice", // Si deseas persistir el slice de pagos
-    // "paymentAccountApiSlice", // Si deseas persistir el slice de cuentas de pago
-    // "reviewsApiSlice", // Si deseas persistir el slice de reseñas
-    // "productTypesApiSlice", // Si deseas persistir el slice de tipos de productos
-    // "bookingsApiSlice", // Si deseas persistir el slice de reservas
-    // "usersApiSlice", // Si deseas persistir el slice de usuarios
-  ], // Aquí puedes indicar qué reducers deseas persistir
+  ],
 };
 
 const rootReducer = combineReducers({
-  //global: globalReducer,
   [productsApiSlice.reducerPath]: productsApiSlice.reducer,
   [paymentApiSlice.reducerPath]: paymentApiSlice.reducer,
   [paymentAccountApiSlice.reducerPath]: paymentAccountApiSlice.reducer,
@@ -109,6 +102,8 @@ const rootReducer = combineReducers({
   [blogsApiSlice.reducerPath]: blogsApiSlice.reducer,
   [contractsApiSlice.reducerPath]: contractsApiSlice.reducer,
   [payoutApiSlice.reducerPath]: payoutApiSlice.reducer,
+  [aiProductApiSlice.reducerPath]: aiProductApiSlice.reducer,
+  [messagesApiSlice.reducerPath]: messagesApiSlice.reducer,
   auth: authReducer,
   search: searchReducer,
 });
@@ -121,7 +116,6 @@ export const makeStore = () =>
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
         serializableCheck: {
-          // Ignoramos estas acciones para evitar problemas con redux-persist
           ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
         },
       }).concat(
@@ -142,6 +136,8 @@ export const makeStore = () =>
         blogsApiSlice.middleware,
         contractsApiSlice.middleware,
         payoutApiSlice.middleware,
+        aiProductApiSlice.middleware,
+        messagesApiSlice.middleware,
       ),
   });
 
@@ -173,6 +169,8 @@ export function invalidateApiCacheOnLocaleChange() {
       blogsApiSlice,
       contractsApiSlice,
       payoutApiSlice,
+      aiProductApiSlice,
+      messagesApiSlice,
     ].forEach((slice) => {
       dispatch(slice.util.resetApiState());
     });
