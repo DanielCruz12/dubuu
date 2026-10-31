@@ -19,6 +19,8 @@
 - **Fix 2026-10-30 (400 Malformed request)**: el endpoint valida estricto — `audioEncoding` debe ser `"WAV"` (no `LINEAR16`) y solo se envían `model` + `audioEncoding` en la parte `request`. Test agregado que fija el payload. Reinicia el backend y reintenta.
 - **Fix 2026-10-30 (docs oficiales dev.meta.ai/docs/speech-to-text)**: el request requiere `?sessionId=<uuid>` en la URL y `mode` en el JSON (`ENDPOINTING` para dictado); respuesta oficial `{transcript, turns[]}` (ya tolerada). Modelo default cambiado a `muse-voice-transcribe-1.0` — el endpoint ASR solo sirve el modelo de voz; resto del proyecto sigue en Spark. Jest 52/52.
 - **Fix 2026-10-30 (respuesta en texto plano)**: el proveedor a veces responde el transcript como string (no JSON) → se trataba como vacío (422). Parser tolera texto plano y JSON serializado + log con preview. Tests 22/22 en transcribe (54/54 total módulo).
+- **Resuelto 2026-10-30 (banner IA = original)**: causa raíz = procesos backend viejos (código sin la ruta enhance) + reinicios de nodemon por ediciones. Con procesos frescos el enhance completa end-to-end (hero + 5/5 galería + S3 + 200, verificado en log). Se dejaron logs por etapa en enhance (backend) para futuros diagnósticos.
+- **Fix 2026-10-30 (warning React)**: `persistStore()` se llamaba en cada render de `StoreProvider`, disparando dispatches a mitad del render ("Cannot update AiCreateModal while rendering StoreProvider"). Memoizado con `useRef` (una sola vez). `tsc` sin errores nuevos.
 
 ## Fix lint del build (2026-10-30)
 

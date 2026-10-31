@@ -12,7 +12,7 @@ import { AiGeneratingStep } from "./ai-generating-step";
 import { AiResultStep } from "./ai-result-step";
 import { AiSuccessStep } from "./ai-success-step";
 import { setAiPrefill } from "./ai-prefill";
-import type { AiAnalyzeResponse, AiEnhanceResponse, AiResultFormValues } from "./ai-types";
+import type { AiAnalyzeResponse, AiEnhanceJobStatus, AiEnhanceResponse, AiResultFormValues } from "./ai-types";
 import { useAnalyzeVehicleMutation, useEnhanceVehicleImageMutation, usePublishVehicleMutation, useGetAiLimitStatusQuery } from "@/redux/slices/ai-product/ai-product-slice";
 import { useGetProductTypesQuery } from "@/redux/slices/product/product-types";
 import { productTypeNameToFormKind } from "@/utils";
@@ -20,6 +20,39 @@ import { X, Sparkles } from "lucide-react";
 import { useLanguage } from "@/lib/i18n-context";
 import { productsApiSlice } from "@/redux/slices/product/product-slice";
 import { useAppDispatch } from "@/redux/store";
+
+/** Consulta el estado de un trabajo de enhance hasta que termine (o timeout). */
+async function pollEnhanceJob(
+  jobId: string,
+  timeoutMs = 120000,
+): Promise<AiEnhanceResponse | null> {
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    await new Promise((r) => setTimeout(r, 2000));
+    try {
+      const res = await fetch(
+        `/backend/api/v1/ai-products/vehicles/enhance-image/${jobId}`,
+      );
+      if (!res.ok) continue;
+      const data = (await res.json()) as AiEnhanceJobStatus;
+      if (data.status === "done") {
+        return {
+          bannerUrl: data.bannerUrl ?? "",
+          socialUrl: data.socialUrl ?? "",
+          gallery: data.gallery ?? [],
+          aiGenerated: data.aiGenerated ?? false,
+          remainingUses: data.remainingUses,
+        };
+      }
+      if (data.status === "error") {
+        return null;
+      }
+    } catch {
+      // error de red transitorio; reintenta en la siguiente iteración
+    }
+  }
+  return null;
+}
 
 type View = "choice" | "upload" | "generating" | "result" | "success";
 
@@ -146,7 +179,8 @@ export function AiCreateModal({ open, onOpenChange, tableKind, productTypeIdForA
         const efd = new FormData();
         efd.append("image", file);
         efd.append("file", file);
-        const enh = await enhanceVehicleImage(efd).unwrap();
+        const { jobId } = await enhanceVehicleImage(efd).unwrap();
+        const enh = await pollEnhanceJob(jobId);
         setEnhanceResult(enh);
       } catch {
         setEnhanceResult(null);
@@ -425,7 +459,6 @@ export function AiCreateModal({ open, onOpenChange, tableKind, productTypeIdForA
             <AiResultStep
               preview={preview}
               bannerUrl={enhanceResult?.bannerUrl ?? null}
-              socialUrl={enhanceResult?.socialUrl ?? null}
               gallery={enhanceResult?.gallery ?? []}
               bannerAiGenerated={enhanceResult?.aiGenerated ?? false}
               suggestion={analyzeResult.data}

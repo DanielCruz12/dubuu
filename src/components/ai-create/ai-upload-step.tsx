@@ -89,7 +89,7 @@ export function AiUploadStep({
         }}
         className={cn(
           "cursor-pointer transition-all duration-300",
-          dragOver && "border-coast-300 bg-coast-500/10 shadow-[0_0_30px_rgba(63,143,187,0.25)]",
+          dragOver && "border-coast-300 bg-coast-500/10 shadow-[0_0_30px_rgba(51,150,255,0.25)]",
         )}
       >
         <input
@@ -102,7 +102,7 @@ export function AiUploadStep({
 
         {!file || !preview ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/[0.02] p-3 text-center">
-            <div className="h-9 w-9 rounded-lg bg-coast-500/15 border border-coast-400/25 flex items-center justify-center shadow-[0_0_18px_rgba(63,143,187,0.2)]">
+            <div className="h-9 w-9 rounded-lg bg-coast-500/15 border border-coast-400/25 flex items-center justify-center shadow-[0_0_18px_rgba(51,150,255,0.2)]">
               <Upload className="h-4 w-4 text-coast-200" />
             </div>
             <p className="mt-1.5 text-[13px] font-medium text-white">
@@ -154,16 +154,13 @@ export function AiUploadStep({
         type="button"
         onClick={onGenerate}
         disabled={!file || !preview || generating}
-        className="group relative h-10 w-full overflow-hidden rounded-xl border border-coast-400/50 bg-gradient-to-br from-coast-400/30 via-coast-700/70 to-coast-500/30 text-sm font-semibold text-white shadow-[0_0_24px_rgba(63,143,187,0.35)] backdrop-blur-xl transition-all duration-300 hover:border-coast-300 hover:shadow-[0_0_36px_rgba(63,143,187,0.5)] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coast-300 focus-visible:ring-offset-2 focus-visible:ring-offset-black disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-none disabled:hover:border-coast-400/30"
+        className="h-10 sm:h-9 w-full rounded-xl bg-coast-500 text-white font-semibold shadow-md transition-all hover:bg-coast-400 active:scale-[0.98] disabled:opacity-50"
       >
-        <span className="pointer-events-none absolute inset-0 ai-shimmer opacity-70" aria-hidden />
-        <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(111,171,204,0.35),transparent_55%)]" aria-hidden />
-        <span className="pointer-events-none absolute -top-12 -right-4 h-28 w-28 rounded-full bg-coast-400/40 blur-3xl transition-colors duration-300 group-hover:bg-coast-300/50" aria-hidden />
         {generating ? (
-          <span className="relative">{t("dashboard.aiCreate.generating")}</span>
+          t("dashboard.aiCreate.generating")
         ) : (
-          <span className="relative inline-flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-coast-200" />
+          <span className="inline-flex items-center gap-2">
+            <Sparkles className="h-4 w-4" />
             {t("dashboard.aiCreate.generateButton")}
           </span>
         )}

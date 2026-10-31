@@ -1,7 +1,7 @@
 "use client";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { urlWithLocale } from "@/redux/url-with-locale";
-import type { AiAnalyzeResponse, AiEnhanceResponse } from "@/components/ai-create/ai-types";
+import type { AiAnalyzeResponse } from "@/components/ai-create/ai-types";
 import type { IProduct } from "@/types/product";
 
 export interface AiLimitStatus {
@@ -25,7 +25,7 @@ export const aiProductApiSlice = createApi({
       invalidatesTags: [{ type: "AiLimit" as const, id: "STATUS" }],
     }),
 
-    enhanceVehicleImage: builder.mutation<AiEnhanceResponse, FormData>({
+    enhanceVehicleImage: builder.mutation<{ jobId: string }, FormData>({
       query: (formData) => ({
         url: urlWithLocale("/api/v1/ai-products/vehicles/enhance-image"),
         method: "POST",

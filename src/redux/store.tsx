@@ -189,7 +189,13 @@ export default function StoreProvider({
     setupListeners(storeRef.current.dispatch);
   }
 
-  const persistor = persistStore(storeRef.current);
+  // Crear el persistor una sola vez: persistStore() dispara dispatches, y
+  // hacerlo en cada render actualiza a los suscritos a mitad del render
+  // (warning "Cannot update a component while rendering StoreProvider").
+  const persistorRef = useRef<ReturnType<typeof persistStore>>();
+  if (!persistorRef.current) {
+    persistorRef.current = persistStore(storeRef.current);
+  }
 
   return <Provider store={storeRef.current}>{children}</Provider>;
 }

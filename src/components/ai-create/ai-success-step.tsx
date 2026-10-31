@@ -18,7 +18,7 @@ export function AiSuccessStep({ productId, productName, onClose }: AiSuccessStep
       <div className="relative mx-auto h-20 w-20">
         <div className="absolute -inset-3 rounded-full bg-coast-500/25 blur-xl ai-glow-pulse" />
         <div className="absolute -inset-1 rounded-full border border-coast-400/30" />
-        <div className="relative h-20 w-20 rounded-full bg-gradient-to-br from-coast-300 to-coast-600 flex items-center justify-center shadow-[0_0_40px_rgba(63,143,187,0.55)] animate-in zoom-in duration-300">
+        <div className="relative h-20 w-20 rounded-full bg-gradient-to-br from-coast-300 to-coast-600 flex items-center justify-center shadow-[0_0_40px_rgba(51,150,255,0.55)] animate-in zoom-in duration-300">
           <CheckCircle2 className="h-9 w-9 text-white" />
         </div>
       </div>

@@ -81,6 +81,17 @@ export interface AiEnhanceResponse {
   remainingUses?: number;
 }
 
+export interface AiEnhanceJobStatus {
+  status: "processing" | "done" | "error";
+  bannerUrl?: string;
+  socialUrl?: string;
+  gallery?: { view: string; url: string }[];
+  aiGenerated?: boolean;
+  remainingUses?: number;
+  code?: string;
+  message?: string;
+}
+
 export type AiLocale = "es" | "en";
 
 export function overallConfidenceLevel(

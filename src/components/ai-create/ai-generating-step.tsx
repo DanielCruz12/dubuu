@@ -105,7 +105,7 @@ export function AiGeneratingStep({ preview }: AiGeneratingStepProps) {
             className={
               "h-1.5 rounded-full transition-all duration-500 " +
               (i === idx
-                ? "w-6 bg-coast-300 shadow-[0_0_10px_rgba(111,171,204,0.8)]"
+                ? "w-6 bg-coast-300 shadow-[0_0_10px_rgba(117,184,255,0.8)]"
                 : i < idx
                   ? "w-1.5 bg-coast-500"
                   : "w-1.5 bg-white/15")

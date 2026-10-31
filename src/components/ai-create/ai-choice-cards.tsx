@@ -30,19 +30,19 @@ export function AiChoiceCards({
         aria-label={t("dashboard.aiCreate.aiCardTitle")}
         className={cn(
           "group relative flex flex-col text-left rounded-xl border p-3 overflow-hidden transition-all duration-300",
-          "border-coast-400/30 bg-gradient-to-br from-coast-500/15 via-[#06121f]/60 to-coast-900/30 backdrop-blur-xl",
-          "hover:border-coast-300/60 hover:shadow-[0_0_30px_rgba(63,143,187,0.28)] hover:-translate-y-0.5",
+          "border-coast-400/30 bg-gradient-to-br from-coast-500/15 via-[#002B66]/60 to-coast-900/30 backdrop-blur-xl",
+          "hover:border-coast-300/60 hover:shadow-[0_0_30px_rgba(51,150,255,0.28)] hover:-translate-y-0.5",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-coast-300 focus-visible:ring-offset-2 focus-visible:ring-offset-black",
           aiDisabled &&
           "opacity-50 cursor-not-allowed hover:translate-y-0 hover:shadow-none hover:border-coast-400/20",
         )}
       >
         <div className="pointer-events-none absolute inset-0 ai-shimmer opacity-70" />
-        <div className="pointer-events-none absolute inset-0 opacity-60 bg-[radial-gradient(ellipse_at_top_left,_rgba(111,171,204,0.22),transparent_55%)]" />
+        <div className="pointer-events-none absolute inset-0 opacity-60 bg-[radial-gradient(ellipse_at_top_left,_rgba(117,184,255,0.22),transparent_55%)]" />
         <div className="pointer-events-none absolute -top-10 -right-10 h-32 w-32 rounded-full bg-coast-400/25 blur-3xl transition-colors duration-300 group-hover:bg-coast-400/40" />
 
         <div className="relative flex items-start justify-between">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-coast-400 to-coast-500 px-2 py-0.5 text-[9px] font-bold tracking-widest uppercase text-white shadow-[0_0_14px_rgba(63,143,187,0.5)]">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-coast-400 to-coast-500 px-2 py-0.5 text-[9px] font-bold tracking-widest uppercase text-white shadow-[0_0_14px_rgba(51,150,255,0.5)]">
             {t("dashboard.aiCreate.aiCardBadge")}
           </span>
           {aiDisabled && <Lock className="h-4 w-4 text-coast-200" aria-hidden />}
