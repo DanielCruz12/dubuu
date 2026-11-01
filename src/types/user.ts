@@ -14,6 +14,7 @@ export interface IUser {
     zip_code?: string;
     phone_number?: string;
     role_id?: string;
+    locale?: string;
     created_at?: string;
     updated_at?: string;
   }

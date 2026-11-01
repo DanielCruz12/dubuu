@@ -1,5 +1,12 @@
 # Estado actual
-Última actualización: 2026-10-30
+Última actualización: 2026-11-01
+
+## Sincronización de idioma al backend (2026-11-01)
+
+- Nuevo `LocaleSync` (montado en `global-providers.tsx` junto a `NotificationsAutoEnabler`): con sesión iniciada guarda el idioma activo (`useLanguage`) en `POST /backend/api/v1/users/locale` con token Clerk (mismo patrón que el registro FCM), una vez por usuario+idioma. Silencioso: si falla, el servidor usa español.
+- `IUser` ahora incluye `locale?: string` (el backend lo devuelve en `getUserById`).
+- Motivo: los mensajes del chat y pushes de reserva/payout se componen en el servidor en el idioma de cada destinatario (ver HANDOFF del backend 2026-11-01).
+- Verificación: `npx tsc --noEmit` sin errores nuevos (5 preexistentes intactos en `home/[slug]/[id]/page.tsx` y `clerk-localized-provider.tsx`). Build/lint no corridos (regla del proyecto).
 
 ## Módulo de mensajería host ↔ usuario (entregado 2026-10-30)
 
