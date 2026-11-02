@@ -1,6 +1,6 @@
 import { DashboardContent } from "./(components)/dashboard-content";
 import { Metadata } from "next";
-import { auth } from "@clerk/nextjs/server";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
@@ -13,9 +13,18 @@ export const metadata: Metadata = {
 };
 
 export default async function DashboardPage() {
-  const { sessionClaims } = await auth();
-  const metadata = sessionClaims?.publicMetadata as Record<string, unknown> | undefined;
-  const roles = (metadata?.roles as string[]) ?? [];
+  const { userId } = await auth();
+  // Rol en vivo: sessionClaims no trae publicMetadata por defecto.
+  let roles: string[] = [];
+  if (userId) {
+    try {
+      const client = await clerkClient();
+      const user = await client.users.getUser(userId);
+      roles = (user.publicMetadata?.roles as string[]) ?? [];
+    } catch {
+      roles = [];
+    }
+  }
 
   if (roles.includes("admin")) {
     redirect("/dashboard/payouts");
