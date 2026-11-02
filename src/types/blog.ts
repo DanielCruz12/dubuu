@@ -12,6 +12,8 @@ export interface IBlogPost {
   slug: string
   excerpt: string
   content: IBlogSection[]
+  /** HTML sanitizado del editor (posts nuevos). Null en posts legado de secciones. */
+  content_html?: string | null
   category: string
   category_id?: string
   published_at: string

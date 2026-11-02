@@ -149,6 +149,11 @@ export const adminDashboardItems: NavItem[] = [
     href: "/dashboard/payouts",
     icon: <Wallet className="h-4 w-4 mr-2" />,
   },
+  {
+    title: "Blog",
+    href: "/admin/blogs",
+    icon: <Rss className="h-4 w-4 mr-2" />,
+  },
 ];
 
 // Host-only dashboard items

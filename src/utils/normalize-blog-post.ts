@@ -140,7 +140,9 @@ function pickReadingMinutes(r: Record<string, unknown>): number | null {
 export function normalizeBlogPost(raw: unknown): IBlogPost {
   const r = unwrapBlogPayload(raw)
 
-  const sections = normalizeSections(r.content)
+  const rawContent: unknown = r.content
+  const contentHtml = typeof rawContent === "string" ? rawContent : null
+  const sections = normalizeSections(rawContent)
 
   const authorName =
     pickNullableString(r, ["author_bio", "author_name", "authorName", "author", "writer"]) ??
@@ -154,8 +156,9 @@ export function normalizeBlogPost(raw: unknown): IBlogPost {
     id: pickString(r, ["id", "uuid", "_id"]),
     title: pickString(r, ["title", "name", "headline", "post_title", "postTitle"]),
     slug: pickString(r, ["slug"]),
-    excerpt: pickString(r, ["excerpt", "summary", "description", "subtitle"]) || getFirstSectionExcerpt(sections),
+    excerpt: pickString(r, ["excerpt", "summary", "description", "subtitle"]) || (contentHtml ? contentHtml.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 200) : "") || getFirstSectionExcerpt(sections),
     content: sections,
+    content_html: contentHtml,
     category: pickString(r, ["category", "category_name", "categoryName", "tag"]),
     category_id: pickNullableString(r, ["category_id", "categoryId"]) ?? undefined,
     published_at: pickString(r, ["published_at", "publishedAt", "created_at", "createdAt", "date"]),

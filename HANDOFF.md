@@ -1,6 +1,15 @@
 # Estado actual
 Última actualización: 2026-11-01
 
+## Módulo de blog terminado (2026-11-01, pendiente install de pnpm)
+
+- **Editor Tiptap** (`src/components/blog/blog-editor.tsx`): reemplaza el textarea (no existía formulario previo; se creó todo). Toolbar: H1-H3, negrita, cursiva, subrayado, listas, alineación, enlaces, imágenes (por URL) y citas, más undo/redo. Guarda HTML (el backend lo sanitiza).
+- **Admin** (`/admin/blogs`, solo rol admin): layout con guard de servidor (no-admin → /dashboard, anónimo → /sign-in) + middleware existente; tabla con portada/título/categoría/estado/fecha, editar, eliminar con confirmación (AlertDialog) y toasts; formulario crear/editar con título, slug auto, categoría, portada (upload), switch publicado y editor. Enlace "Blog" agregado a `adminDashboardItems` (oculto a no-admin por el patrón existente).
+- **Vista pública** (`/blog/[id]`): si el post trae `content_html` lo renderiza con `prose prose-invert` (plugin typography); posts legado de secciones siguen con `BlogBody`. Cards/excerpts derivan texto plano del HTML (`htmlToText`).
+- **Datos**: sin tablas nuevas ni migraciones. `content` (jsonb) ahora acepta string HTML sanitizado; `IBlogPost.content_html` + normalizador toleran ambos formatos. Slice RTK con `getAdminPosts`, `getAdminPostById`, `getBlogCategories`, `create/update/deleteBlogPost` (FormData). Textos admin en `blog.json` es/en.
+- **PENDIENTE DEL USUARIO (shell bloqueado en esta sesión, no verificado)**: en `dubuu/` correr `pnpm install` (node_modules quedó incompleto tras un reinstall interrumpido) y luego `pnpm add @tiptap/react@^2 @tiptap/starter-kit@^2 @tiptap/extension-underline@^2 @tiptap/extension-text-align@^2 @tiptap/extension-link@^2 @tiptap/extension-image@^2 @tailwindcss/typography`; después `npx tsc --noEmit` debe quedar sin errores nuevos. No se corrió build/lint (regla) ni dev smoke.
+- Nota: durante la sesión algunas lecturas iniciales llegaron obsoletas (versiones viejas de `blog-slice.ts`/`blog-post-view.tsx`); todo lo entregado se verificó contra lecturas frescas de disco.
+
 ## Sincronización de idioma al backend (2026-11-01)
 
 - Nuevo `LocaleSync` (montado en `global-providers.tsx` junto a `NotificationsAutoEnabler`): con sesión iniciada guarda el idioma activo (`useLanguage`) en `POST /backend/api/v1/users/locale` con token Clerk (mismo patrón que el registro FCM), una vez por usuario+idioma. Silencioso: si falla, el servidor usa español.

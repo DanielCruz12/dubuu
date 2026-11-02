@@ -24,6 +24,8 @@ export function useVoiceRecorder(
   status: VoiceRecorderStatus;
   error: VoiceRecorderError;
   elapsedMs: number;
+  /** Stream vivo del micrófono (solo durante la grabación, para visualizar). */
+  stream: MediaStream | null;
   startRecording: () => Promise<boolean>;
   stopRecording: () => Promise<Blob | null>;
   cancelRecording: () => void;
@@ -31,6 +33,7 @@ export function useVoiceRecorder(
   const [status, setStatus] = useState<VoiceRecorderStatus>("idle");
   const [error, setError] = useState<VoiceRecorderError>(null);
   const [elapsedMs, setElapsedMs] = useState(0);
+  const [stream, setStream] = useState<MediaStream | null>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -53,6 +56,7 @@ export function useVoiceRecorder(
     streamRef.current?.getTracks().forEach((track) => track.stop());
     streamRef.current = null;
     mediaRecorderRef.current = null;
+    setStream(null);
   };
 
   // Soltar el micrófono si el componente se desmonta grabando.
@@ -71,6 +75,7 @@ export function useVoiceRecorder(
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
+      setStream(stream);
       chunksRef.current = [];
       const mimeType = pickMimeType();
       const recorder = new MediaRecorder(
@@ -147,6 +152,7 @@ export function useVoiceRecorder(
     status,
     error,
     elapsedMs,
+    stream,
     startRecording,
     stopRecording,
     cancelRecording,

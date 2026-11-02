@@ -21,6 +21,7 @@ import {
 } from "@/redux/slices/messaging/messaging-slice";
 import { useVoiceRecorder } from "@/hooks/use-voice-recorder";
 import { blobToWav16kMono } from "./audio-to-wav";
+import { VoiceWaveform } from "./voice-waveform";
 import type { MessageBlockedError } from "@/types/messaging";
 
 const LocationPickerDialog = dynamic(
@@ -104,6 +105,7 @@ export function MessageComposer({ bookingId }: { bookingId: string }) {
     status: voiceStatus,
     error: voiceError,
     elapsedMs,
+    stream: voiceStream,
     startRecording,
     stopRecording,
     cancelRecording,
@@ -201,7 +203,10 @@ export function MessageComposer({ bookingId }: { bookingId: string }) {
           <span className="text-sm tabular-nums" aria-live="off">
             {formatElapsed(elapsedMs)}
           </span>
-          <span className="flex-1" />
+          <VoiceWaveform
+            stream={voiceStream}
+            className="h-8 min-w-0 flex-1 text-red-500"
+          />
           <Button
             type="button"
             variant="ghost"

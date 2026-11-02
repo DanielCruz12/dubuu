@@ -208,7 +208,14 @@ export function BlogPostView({ id }: { id: string }) {
 
         {/* Content — sections */}
         <div className="mt-14 md:mt-20">
-          <BlogBody sections={post.content || []} />
+          {post.content_html ? (
+            <div
+              className="prose prose-invert max-w-none break-words prose-img:rounded-2xl"
+              dangerouslySetInnerHTML={{ __html: post.content_html }}
+            />
+          ) : (
+            <BlogBody sections={post.content || []} />
+          )}
         </div>
 
         {/* Footer */}

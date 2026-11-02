@@ -26,8 +26,27 @@ export function resolveAuthorAvatar(url: string | null | undefined): string | un
   return url
 }
 
+const HTML_ENTITIES: Record<string, string> = {
+  "&amp;": "&",
+  "&lt;": "<",
+  "&gt;": ">",
+  "&quot;": '"',
+  "&#39;": "'",
+  "&nbsp;": " ",
+}
+
+export function htmlToText(html: string): string {
+  if (!html) return ""
+  return html
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&(?:amp|lt|gt|quot|#39|nbsp);/g, (m) => HTML_ENTITIES[m] ?? " ")
+    .replace(/\s+/g, " ")
+    .trim()
+}
+
 export function getContentPreview(post: IBlogPost): string {
   if (post.excerpt) return post.excerpt
+  if (post.content_html) return htmlToText(post.content_html).slice(0, 200)
   for (const section of post.content || []) {
     if (section.content?.trim()) {
       return section.content.trim().slice(0, 200)

@@ -89,7 +89,62 @@ export const blogsApiSlice = createApi({
       transformResponse: (raw: unknown) => normalizeBlogPost(raw),
       providesTags: (result, error, id) => [{ type: "BlogPosts", id }],
     }),
+    getAdminPosts: builder.query<IBlogPost[], void>({
+      query: () => urlWithLocale("/api/v1/blog/admin/posts"),
+      transformResponse: (raw: unknown) =>
+        (Array.isArray(raw) ? raw : []).map(normalizeBlogPost),
+      providesTags: [{ type: "BlogPosts", id: "LIST" }],
+    }),
+    getAdminPostById: builder.query<IBlogPost, string>({
+      query: (id) =>
+        urlWithLocale(
+          `/api/v1/blog/admin/posts/${encodeURIComponent(id)}`,
+        ),
+      transformResponse: (raw: unknown) => normalizeBlogPost(raw),
+      providesTags: (result, error, id) => [{ type: "BlogPosts", id }],
+    }),
+    getBlogCategories: builder.query<
+      { id: string; name: string | null; description?: string | null }[],
+      void
+    >({
+      query: () => urlWithLocale("/api/v1/blog/categories"),
+    }),
+    createBlogPost: builder.mutation<unknown, FormData>({
+      query: (body) => ({
+        url: urlWithLocale("/api/v1/blog/posts"),
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: [{ type: "BlogPosts", id: "LIST" }],
+    }),
+    updateBlogPost: builder.mutation<unknown, { id: string; data: FormData }>({
+      query: ({ id, data }) => ({
+        url: urlWithLocale(`/api/v1/blog/posts/${id}`),
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "BlogPosts", id: "LIST" },
+        { type: "BlogPosts", id },
+      ],
+    }),
+    deleteBlogPost: builder.mutation<void, string>({
+      query: (id) => ({
+        url: urlWithLocale(`/api/v1/blog/posts/${id}`),
+        method: "DELETE",
+      }),
+      invalidatesTags: [{ type: "BlogPosts", id: "LIST" }],
+    }),
   }),
 });
 
-export const { useGetBlogPostsQuery, useGetBlogPostQuery } = blogsApiSlice;
+export const {
+  useGetBlogPostsQuery,
+  useGetBlogPostQuery,
+  useGetAdminPostsQuery,
+  useGetAdminPostByIdQuery,
+  useGetBlogCategoriesQuery,
+  useCreateBlogPostMutation,
+  useUpdateBlogPostMutation,
+  useDeleteBlogPostMutation,
+} = blogsApiSlice;
